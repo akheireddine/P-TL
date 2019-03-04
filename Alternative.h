@@ -3,6 +3,10 @@
 
 using namespace std;
 
+struct A_matrix{
+
+};
+
 class Alternative {
 
 private:
@@ -15,9 +19,6 @@ public:
 	vector< float > get_criteria_values { return criteria_values; };
 
 };
-
-
-
 
 
 
