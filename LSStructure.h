@@ -6,15 +6,21 @@
 
 class LSStructure {
 private :
-	vector< int > OPT_Solution;
-	A WF_matrix;
+	list< Alternative * > OPT_Solution;
+	vector< vector < float >> WS_matrix;
+	int n_objective;
 	int p_criteria;
-	vector< Alternative* > initial_population;
+	list< Alternative* > Population;
 
 public:
-	vector< Alternative * > MOLS();
 	void readFilenameInstance(string filename);
+	void readWS_Matrix(string filename);
+	vector< Alternative * > MOLS();
+
+
 	int get_p_criteria(){ return p_criteria; };
+	int get_n_objective(){ return n_objective; };
+	vector< vector< float > > get_WS_matrix(){ return WS_matrix; };
 
 };
 
@@ -31,7 +37,10 @@ public :
 	vector< tuple<float, vector< float> > > Items_information;
 
 	int get_n_items(){ return n_items; };
-	float get_weight_of(int i) { return get<0>(Items_information[i]); };
-	float get_utility(int i, int j) { return get<1>(Items_information[i][j]); };
+	float get_weight_of(int i) { return std::get<0>(Items_information[i]); };
+	float get_utility(int i, int j) { return std::get<1>(Items_information[i])[j]; };
+
+	void readInitPopulationFile(string filename);
+
 
 }

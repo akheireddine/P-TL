@@ -5,21 +5,43 @@
 
 
 
-AlternativeKnapsack::AlternativeKnapsack(Set<int> objects, MainKnapsack * mknapsack){
+AlternativeKnapsack::AlternativeKnapsack(Set<int> items, MainKnapsack * mknapsack){
 
-	mainKnapsack = mknapsack;
-	neighborhood.clean();
-	alternative.resize(mknapsack.get_n_items(),0);
+	mainLSStructure = mknapsack;
+	neighborhood.clear();
+	alternatives.resize(mainLSStructure->get_n_items(),0);
+	criteria_values.resize(mainLSStructure->get_p_criteria(), 0);
+	objective_values.resize(mainLSStructure->get_n_objective(), 0);
 
-	for(Set<int>::iterator o = objects.begin(); o != objects.end(); o++){
-		alternative[*o] = 1;
-		weight += mknapsack.get_weight_of(*o);
-		for(int i = 0; i < mknapsack.get_p_criteria(); i++){
-			criteria_values[i] += mknapsack.get_utility(*o,i);
+	WS_matrix = mainLSStructure->get_WS_matrix();
+
+	for(Set<int>::iterator o = items.begin(); o != items.end(); o++){
+		alternatives[*o] = 1;
+		weight += mainLSStructure->get_weight_of(*o);
+		for(int i = 0; i < mainLSStructure->get_p_criteria(); i++){
+			criteria_values[i] += mainLSStructure->get_utility(*o,i);
+		}
+	}
+
+	for(int i = 0; i < mainLSStructure->get_n_objective(); i++){
+		for(int j = 0; j < mainLSStructure->get_p_criteria(); j++){
+			objective_values[i] += WS_matrix[i][j] * criteria_values[j];
 		}
 	}
 
 }
+
+bool AlternativeKnapsack::dominates(Alternative* alt){
+
+	vector<float> ob_alt = alt->get_objective_values();
+
+	for(int i = 0; i < objective_values.size(); i++){
+		if( objective_values[i] < ob_alt[i])											// MAXIMIZATION DES OBJECTIFS ! ! !
+			return false;
+	}
+	return true;
+}
+
 
 
 vector< AlternativeKnapsack * > AlternativeKnapsack::get_neighborhood(){
@@ -39,6 +61,8 @@ void copy_alternative(vector<int> src, vector<int> &dest){
 }
 
 void remove_object_neighborhood(){
+
+
 
 }
 
