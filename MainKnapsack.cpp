@@ -24,6 +24,8 @@ void MainKnapsack::readFilenameInstance(string filename){
 	string line;
 	char buff[100];
 	int i = 0;
+	vector< tuple<float, vector< float> > > Items_information;
+
 	vector< float > line_value;
 
 	ifstream fic(filename.c_str());
@@ -35,33 +37,39 @@ void MainKnapsack::readFilenameInstance(string filename){
 
 	//comments
 	getline(fic,line);
-	while( line[0] == "c" )
+	while( line[0] == 'c' )
 		getline(fic,line);
 
 	//number of items
-	if( line[0] == "n")
-		sscanf(line.c_str(),%c %d,buff,&n_items);
+	int n_items = 0;
+	if( line[0] == 'n')
+		sscanf(line.c_str(),"%s %d",buff,&n_items);
 
 	Items_information.resize(n_items);
 
 	//comments
 	getline(fic,line);
-	while( line[0] == "c" )
+	while( line[0] == 'c' )
 		getline(fic,line);
 
 	//items information
 
-	while(line[0] == "i"){
+
+	while(line[0] == 'i'){
+
+		line.erase(line.begin());
+		char *cline = new char[line.length() + 1]; // or
+		std::strcpy(cline, line.c_str());
 
 		line_value.clear();
-		char * pch = strtok (line.c_str()," ");
+		char * pch = strtok (cline," 	");
 		while (pch != NULL){
-//			printf ("%s\n",pch);
-			line_value.push_back(stof(pch));
-			pch = strtok (NULL, " ");
+			line_value.push_back(atof(pch));
+			pch = strtok (NULL, " 	");
 		}
 
 		float weight = line_value[0];
+
 		line_value.erase(line_value.begin());
 
 		Items_information[i] = make_tuple(weight,line_value);
@@ -72,16 +80,18 @@ void MainKnapsack::readFilenameInstance(string filename){
 	}
 
 	//number of criteria
-	p_criteria = line_value.size() ;
+	int p_criteria = 0;
+	p_criteria = line_value.size();
 
 	//comments
-	while( line[0] == "c" )
+	while( line[0] == 'c' )
 		getline(fic,line);
 
 
 	//total capacity
-	if( line[0] == "W" )
-		sscanf(line.c_str(),%f,buff,&Backpack_capacity);
+	float Backpack_capacity = 0;
+	if( line[0] == 'W' )
+		sscanf(line.c_str(),"%s %f",buff,&Backpack_capacity);
 
 }
 
