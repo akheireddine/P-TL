@@ -37,16 +37,19 @@ CCFLAGS = $(CCOPT)
 
 all: WS_KNAPSACK
 
-#Graph_AK.o: ../Graph_AK.cpp ../Graph_AK.h
-#	$(CCC) -c $(CCFLAGS) $(CCLNDIRS) -c ../Graph_AK.cpp -o ../Graph_AK.o
-#
-#
-#meta-heuristic-VRP.o : meta-heuristic-VRP.cpp 
-#	$(CCC) -c $(CCFLAGS) $(CCLNDIRS)  -c meta-heuristic-VRP.cpp
-#	
-#META_HEURISTIC_RESOLUTION : meta-heuristic-VRP.o Graph_AK.o 
-#	$(CCC) $(CCFLAGS) $(CCLNDIRS) ../Graph_AK.o meta-heuristic-VRP.o  -o META_HEURISTIC_RESOLUTION $(CCLNFLAGS)
+MainKnapsack.o: MainKnapsack.cpp MainKnapsack.h
+	$(CCC) -c $(CCFLAGS) $(CCLNDIRS) -c MainKnapsack.cpp -o MainKnapsack.o
 
+
+#MainClass.o : MainClass.cpp 
+#	$(CCC) -c $(CCFLAGS) $(CCLNDIRS) -c MainClass.cpp
+	
+#WS_KNAPSACK : MainClass.o MainKnapsack.o 
+#	$(CCC) $(CCFLAGS) $(CCLNDIRS) MainKnapsack.o MainClass.o -o WS_KNAPSACK $(CCLNFLAGS)
+
+
+WS_KNAPSACK : MainKnapsack.o
+	$(CCC) $(CCFLAGS) $(CCLNDIRS) MainKnapsack.o -o WS_KNAPSACK $(CCLNFLAGS)
 
 clean:
 	rm -f *.o WS_Knapsack

@@ -48,8 +48,57 @@ vector< AlternativeKnapsack * > AlternativeKnapsack::get_neighborhood(){
 	if(neighborhood.size() > 0)
 		return neighborhood;
 
-	add_object_neighborhood();
-	remove_object_neighborhood();
+	vector< int > In_BP, Out_BP;
+
+	for(int i = 0; i < alternatives.size(); i++){
+		if( alternatives[i] == 1)
+			In_BP.push_back(i);
+		else
+			Out_BP.push_back(i);
+	}
+
+	float weight_neighbor = weight;
+	Set<int> set_neighbor;
+
+	for(vector< int >::iterator in = In_BP.begin(); in != In_BP.end(); in++){									//REMOVE ITEM
+
+		set_neighbor(In_BP.begin(),In_BP.end());         // OOU   std::set<int> first (myints,myints+5);   // set with 5 ints
+		weight_neighbor = weight - mainLSStructure->get_weight_of(*in);
+		set_neighbor.erase(*in);
+
+
+		for(int i = 0; i < Out_BP.size(); i++){																// ADD ITEM UNTILL FULL
+
+			Set< int > fill_bp(set_neighbor.begin(), set_neighbor.end());
+			float weight_alt = weight_neighbor;
+
+			if( weight_alt + mainLSStructure->get_weight_of(Out_BP[i]) > main.LSStructure->get_capacity())
+				continue;
+
+			fill_bp.push_back(Out_BP[i]);
+			weight_alt += mainLSStructure->get_weight_of(Out_BP[i]);
+
+			for(int j = i + 1; j < Out_BP.size(); j++){
+
+				if( weight_alt + mainLSStructure->get_weight_of(Out_BP[j]) > main.LSStructure->get_capacity())
+						continue;
+
+				fill_bp.push_back(Out_BP[j]);
+				weight_alt += mainLSStructure->get_weight_of(Out_BP[j]);
+			}
+
+			Alternative *alt = AlternativeKnapsack(fill_bp, mainLSStructure);
+			neighborhood.push_back(alt);
+
+		}
+	}
+
+
+
+
+
+
+
 
 	return neighborhood;
 }
@@ -68,8 +117,11 @@ void remove_object_neighborhood(){
 
 void add_object_neighborhood(){
 
-	if(weight >= Backpack_weight)
+	if(weight == mainLSStructure->get_capacity())
 		return;
+
+
+
 //
 //	vector< int > alternative_neighbor(n_objects,0);
 //	copy_alternative(alternative,alternative_neighbor);

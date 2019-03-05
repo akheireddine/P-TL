@@ -1,7 +1,9 @@
 
+#ifndef ____ALTERNATIVE___
+#define ____ALTERNATIVE___
 
 
-using namespace std;
+#include "LSStructure.h"
 
 
 class Alternative {
@@ -29,6 +31,7 @@ public:
 class AlternativeKnapsack : Alternative{
 private :
 	float weight;
-//	MainKnapsack * mainKnapsack;
 
 };
+
+#endif

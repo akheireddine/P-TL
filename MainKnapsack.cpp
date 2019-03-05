@@ -1,11 +1,13 @@
 
 
-#include "LSStructure.h"
+#include "MainKnapsack.h"
 
 
 MainKnapsack::MainKnapsack(string filename, string pref_filename, string init_population_filename){
 
-	readFilenameInstance(filename);
+	filename_instance = filename;
+
+	readFilenameInstance(filename_instance);
 
 	readInitPopulationFile(init_population_filename);
 
@@ -161,6 +163,20 @@ void MainKnapsack::readWS_Matrix(string filename){
 }
 
 
+void MainKnapsack::write_solution(){
+
+	ostringstream FileName;
+	FileName.str("");
+	FileName <<filename_instance.c_str() << ".sol";
+	ofstream fic(FileName.str().c_str());
+
+	for(list< Alternative *>::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); i++){
+		for(int i = 0; i < n_objective; i++)
+			fic<< (*alt)->get_objective_values()[i]<< " ";
+		fic <<endl;
+	}
+}
+
 
 vector< Alternative * > MainKnapsack::MOLS(){
 
@@ -190,17 +206,20 @@ vector< Alternative * > MainKnapsack::MOLS(){
 		Local_front.clear();
 	}
 
+
+	write_solution();
+
 }
 
 
 bool Update_Archive(Alternative* p, list< Alternative* > set_SOL){
 
-	for(list< Alternative* > alt = set_SOL.begin(); alt != set_SOL.end(); alt++){
+	for(list< Alternative* >::iterator alt = set_SOL.begin(); alt != set_SOL.end(); alt++){
 		if((*alt)->dominates(p))
 			return false;
 	}
 
-	for(list< Alternative* > alt_sol = set_SOL.begin(); alt_sol != set_SOL.end(); alt_sol++){
+	for(list< Alternative* >::iterator alt_sol = set_SOL.begin(); alt_sol != set_SOL.end(); ++alt_sol){
 		if(p->dominates(*alt_sol))
 			set_SOL.erase(alt_sol);
 	}

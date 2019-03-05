@@ -1,6 +1,5 @@
 
-#include <map>
-#include "Alternative.h"
+#include "MainKnapsack.h"
 
 using namespace std;
 
@@ -8,37 +7,30 @@ using namespace std;
 
 
 
-void main_Knapsack(string filename, A relation, vector< Set<int> > start_alternative){
+void main_Knapsack(string filename_instance, string pref_filename, string init_population_filename){
 
-	MainKnapsack knaps = MainKnapsack(filename, relation, start_alternative);
+	MainKnapsack * knaps = MainKnapsack(filename_instance, pref_filename, init_population_filename);
 
-
-	AlternativeKnapsack * population = AlternativeKnapsack(start_alternative[0], data_Object);
-
-	vector< AlternativeKnapsack * > solution_set = MOLS(population, relation);
-
-	save_knapsack_solution_set(solution_set);
-}
-
-
-
-void main_PFS(string filename){
+	knaps->MOLS();
 
 }
 
 
 
 
+int main(int argc, char** argv){
 
-
-void main(int argc, char** argv){
-
-	if(argc!=1){
+	if(argc!=3){
 		cerr<<"Error arguments"<<endl;
 		return 1;
 	}
 
-	string filename = argv[1];
+	string filename_instance = argv[1];
+	string pref_filename = argv[2];
+	string init_population_filename = argv[3];
 
+	main_Knapsack(filename_instance, pref_filename, init_population_filename);
+
+	return 1;
 
 }
