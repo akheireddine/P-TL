@@ -1,7 +1,10 @@
 
-
+#include <set>
 #include "MainKnapsack.h"
 
+
+
+#include <sstream>      // std::ostringstream
 
 MainKnapsack::MainKnapsack(string filename, string pref_filename, string init_population_filename){
 
@@ -9,9 +12,10 @@ MainKnapsack::MainKnapsack(string filename, string pref_filename, string init_po
 
 	readFilenameInstance(filename_instance);
 
+	readWS_Matrix(pref_filename);
+
 	readInitPopulationFile(init_population_filename);
 
-	readWS_Matrix(pref_filename);
 
 }
 
@@ -19,21 +23,26 @@ MainKnapsack::MainKnapsack(string filename, string pref_filename, string init_po
 void MainKnapsack::readInitPopulationFile(string filename){
 
 	ifstream fic(filename.c_str());
+
+
+	if (!(fic) or filename.find(".ks") == std::string::npos){
+		cerr<<"Error occurred"<<endl;
+	}
+
 	string line;
 	float total_weight;
 
 	while(!fic.eof()){
-
 		total_weight = 0;
 		getline(fic,line);
 
-		Set<int> set_items;
+		set<int> set_items;
 		char *cline = new char[line.length() + 1];
 		std::strcpy(cline, line.c_str());
 
 		char * pch = strtok (cline," 	,");
 		while (pch != NULL){
-			set_items.push_back(atoi(pch));
+			set_items.insert(atoi(pch));
 			total_weight += std::get<0>(Items_information[atoi(pch)]);
 			pch = strtok (NULL, " 	,");
 		}
@@ -42,15 +51,14 @@ void MainKnapsack::readInitPopulationFile(string filename){
 			cerr<<"Not feasable initialization"<<endl;
 			exit(1);
 		}
-		AlternativeKnapsack * alt = AlternativeKnapsack(set_items, this);
+
+		AlternativeKnapsack* alt = new AlternativeKnapsack(set_items, this);
 		Population.push_back(alt);
 
 	}
 
 	fic.close();
 }
-
-
 
 
 void MainKnapsack::readFilenameInstance(string filename){
@@ -63,7 +71,7 @@ void MainKnapsack::readFilenameInstance(string filename){
 
 	ifstream fic(filename.c_str());
 
-	if (!(fic) or filename.find(".ks") == std::string::npos){
+	if (!(fic) or filename.find(".dat") == std::string::npos){
 		cerr<<"Error occurred"<<endl;
 	}
 
@@ -74,7 +82,7 @@ void MainKnapsack::readFilenameInstance(string filename){
 		getline(fic,line);
 
 	//number of items
-	int n_items = 0;
+	n_items = 0;
 	if( line[0] == 'n')
 		sscanf(line.c_str(),"%s %d",buff,&n_items);
 
@@ -113,7 +121,7 @@ void MainKnapsack::readFilenameInstance(string filename){
 	}
 
 	//number of criteria
-	int p_criteria = 0;
+	p_criteria = 0;
 	p_criteria = line_value.size();
 
 	//comments
@@ -122,9 +130,9 @@ void MainKnapsack::readFilenameInstance(string filename){
 
 
 	//total capacity
-	float Backpack_capacity = 0;
 	if( line[0] == 'W' )
 		sscanf(line.c_str(),"%s %f",buff,&Backpack_capacity);
+
 
 
 	fic.close();
@@ -140,6 +148,7 @@ void MainKnapsack::readWS_Matrix(string filename){
 		cerr<<"Error occurred"<<endl;
 	}
 
+	WS_matrix.resize(p_criteria,vector< float >());
 
 	while( !fic.eof() and i < p_criteria){
 
@@ -148,7 +157,6 @@ void MainKnapsack::readWS_Matrix(string filename){
 		char *cline = new char[line.length() + 1]; // or
 		std::strcpy(cline, line.c_str());
 
-		WS_matrix[i].clear();
 		char * pch = strtok (cline," 	,;");
 		while (pch != NULL){
 			WS_matrix[i].push_back(atof(pch));
@@ -170,7 +178,7 @@ void MainKnapsack::write_solution(){
 	FileName <<filename_instance.c_str() << ".sol";
 	ofstream fic(FileName.str().c_str());
 
-	for(list< Alternative *>::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); i++){
+	for(list< Alternative *>::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); alt++){
 		for(int i = 0; i < n_objective; i++)
 			fic<< (*alt)->get_objective_values()[i]<< " ";
 		fic <<endl;
@@ -178,51 +186,65 @@ void MainKnapsack::write_solution(){
 }
 
 
-vector< Alternative * > MainKnapsack::MOLS(){
+list< Alternative * > MainKnapsack::MOLS(){
 
 	Alternative* alt;
 	list< Alternative* > Local_front;
 	//First initialization
 	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); p++){
-		Update_Archive(p,OPT_Solution);
+		Update_Archive(*p,OPT_Solution);
 	}
 
 	while(Population.size() > 0){
 
+		cout<<" pop size "<< Population.size()<<endl;
 		//erase the first element
-		alt = Population.pop_front();
+		alt = Population.front();
 
-		for(vector<Alternative *>::iterator neighbor = alt->get_neighborhood().begin(); neighbor != alt->get_neighborhood().end(); neighbor++){
-			if( !alt->dominates(neighbor) )
-				Update_Archive(neighbor,Local_front);
+		vector<Alternative *> current_neighbors = alt->get_neighborhood();
+
+		for(vector< Alternative* >::iterator neighbor = current_neighbors.begin(); neighbor != current_neighbors.end(); ++neighbor){
+
+			if( !alt->dominates(*neighbor) ){
+//				cout<<"1 NOT DOMINATE 2"<<endl;
+				Update_Archive(*neighbor,Local_front);
+			}
+//			alt->print_objective_values();
+//			cout<<"  VS  ";
+//			(*neighbor)->print_objective_values();
 		}
+
 
 		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); new_alt++){
 			if ( Update_Archive(*new_alt, OPT_Solution) )
 				Population.push_back(*new_alt);
 		}
 
-//		Population.erase(alt);
+		Population.pop_front();
 		Local_front.clear();
 	}
 
 
 	write_solution();
 
+	return OPT_Solution;
 }
 
 
-bool Update_Archive(Alternative* p, list< Alternative* > set_SOL){
+bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL){
 
-	for(list< Alternative* >::iterator alt = set_SOL.begin(); alt != set_SOL.end(); alt++){
-		if((*alt)->dominates(p))
+	for(list< Alternative* >::iterator alt = set_SOL.begin(); alt != set_SOL.end(); ++alt){
+		int dom_val = (*alt)->dominates(p);
+		if(dom_val == 1)			// alt dominates p
 			return false;
+		else if( dom_val == -1 )   // p dominates alt
+			set_SOL.remove(*alt);
 	}
 
-	for(list< Alternative* >::iterator alt_sol = set_SOL.begin(); alt_sol != set_SOL.end(); ++alt_sol){
-		if(p->dominates(*alt_sol))
-			set_SOL.erase(alt_sol);
-	}
+//	for(list< Alternative* >::iterator alt_sol = set_SOL.begin(); alt_sol != set_SOL.end(); ++alt_sol){
+//		if(p->dominates(*alt_sol))
+//			set_SOL.erase(alt_sol);
+//	}
 
 	set_SOL.push_back(p);
 

@@ -12,23 +12,29 @@
 #include <cstring>
 #include <list>
 
+
+#include "Alternative.h"
+
+
 using namespace std;
 
 
+
+
 class LSStructure {
-private :
+protected :
 	list< Alternative * > OPT_Solution;
-	vector< vector < float >> WS_matrix;
+	vector< vector < float > > WS_matrix;
 	int n_objective;
 	int p_criteria;
 	list< Alternative* > Population;
 	string filename_instance;
 
 public:
-	void readFilenameInstance(string filename);
-	void readWS_Matrix(string filename);
-	vector< Alternative * > MOLS();
-	void write_solution(string filename_instance);
+	virtual void readFilenameInstance(string filename) = 0;
+	virtual void readWS_Matrix(string filename) = 0;
+	virtual list< Alternative * > MOLS() = 0;
+	virtual void write_solution() = 0;
 
 
 
@@ -39,7 +45,6 @@ public:
 };
 
 
-#include "Alternative.h"
 
 
 #endif

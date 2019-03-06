@@ -3,35 +3,43 @@
 #define ____ALTERNATIVE___
 
 
-#include "LSStructure.h"
+
+//#include "LSStructure.h"
+#include <vector>
+#include <set>
+
+
+using namespace std;
 
 
 class Alternative {
 
-private:
+protected:
 	vector< int > alternatives;
 	vector< float > criteria_values;
 	vector< float > objective_values;
 	vector< Alternative* > neighborhood;
-	LSStructure * mainLSStructure;
+//	LSStructure * mainLSStructure;
 
 public:
+	//constructor
+//	Alternative(set<int> items, LSStructure* mStruct);
+
 	vector< float > get_objective_values(){ return objective_values; };
 	vector< float > get_criteria_values() { return criteria_values; };
-	vector< Alternative* > get_neighborhood();
-
-	bool dominates(Alternative* alt);
 
 
-};
+	virtual vector< Alternative* > get_neighborhood() = 0;
+	virtual int dominates(Alternative* alt) = 0;
+	virtual void print_aternative() = 0;
+	virtual void print_objective_values() = 0;
 
 
-
-
-class AlternativeKnapsack : Alternative{
-private :
-	float weight;
 
 };
+
+
+
+
 
 #endif

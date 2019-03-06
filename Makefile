@@ -1,8 +1,5 @@
 
 
-SYSTEM     = x86-64_linux
-LIBFORMAT  = static_pic
-
 
 # ---------------------------------------------------------------------
 # Compiler selection 
@@ -37,19 +34,39 @@ CCFLAGS = $(CCOPT)
 
 all: WS_KNAPSACK
 
-MainKnapsack.o: MainKnapsack.cpp MainKnapsack.h
-	$(CCC) -c $(CCFLAGS) $(CCLNDIRS) -c MainKnapsack.cpp -o MainKnapsack.o
 
 
-#MainClass.o : MainClass.cpp 
-#	$(CCC) -c $(CCFLAGS) $(CCLNDIRS) -c MainClass.cpp
+WS_KNAPSACK: MainKnapsack.o AlternativeKnapsack.o MainClass.o
+	$(CCC) $(CCFLAGS) $(CCLNFLAGS) -o WS_KNAPSACK MainKnapsack.o AlternativeKnapsack.o MainClass.o
+
+
+AlternativeKnapsack.o: AlternativeKnapsack.cpp
+	$(CCC) $(CCFLAGS) -o AlternativeKnapsack.o -c AlternativeKnapsack.cpp 
 	
-#WS_KNAPSACK : MainClass.o MainKnapsack.o 
-#	$(CCC) $(CCFLAGS) $(CCLNDIRS) MainKnapsack.o MainClass.o -o WS_KNAPSACK $(CCLNFLAGS)
+MainKnapsack.o: MainKnapsack.cpp
+	$(CCC) $(CCFLAGS) -o MainKnapsack.o -c MainKnapsack.cpp 
+
+MainClass.o: MainClass.cpp MainKnapsack.h
+	$(CCC) $(CCFLAGS) -o MainClass.o -c MainClass.cpp 
 
 
-WS_KNAPSACK : MainKnapsack.o
-	$(CCC) $(CCFLAGS) $(CCLNDIRS) MainKnapsack.o -o WS_KNAPSACK $(CCLNFLAGS)
+
+
+
+#MainKnapsack.o: MainKnapsack.cpp MainKnapsack.h AlternativeKnapsack.h
+#	$(CCC) -c $(CCFLAGS)  -c MainKnapsack.cpp -o MainKnapsack.o
+#	
+#
+#AlternativeKnapsack.o: AlternativeKnapsack.cpp AlternativeKnapsack.h Alternative.h 
+#	$(CCC) -c $(CCFLAGS)  -c AlternativeKnapsack.cpp -o AlternativeKnapsack.o
+#
+#
+#MainClass.o : MainClass.cpp  MainKnapsack.h
+#	$(CCC) -c $(CCFLAGS)  -c MainClass.cpp
+#	
+#
+#WS_KNAPSACK : MainKnapsack.o AlternativeKnapsack.o MainKnapsack.o 
+#	$(CCC) $(CCFLAGS)  AlternativeKnapsack.o MainKnapsack.o MainKnapsack.o  -o WS_KNAPSACK $(CCLNFLAGS)
 
 clean:
-	rm -f *.o WS_Knapsack
+	rm -f *.o WS_KNAPSACK
