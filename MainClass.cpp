@@ -31,7 +31,7 @@ int main(int argc, char** argv){
 
 
 
-	string filename_instance = "./Instances_Knapsack/Type_A/100_items/2KP100-TA-0.dat";
+	string filename_instance = "./Instances_Knapsack/Type_A/100_items/2KP100-TA-1.dat";
 	string pref_filename = "./WS_Matrix.csv";
 	string init_population_filename = "./initial_population_knapsack.ks";
 

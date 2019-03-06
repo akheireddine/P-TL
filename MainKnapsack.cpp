@@ -191,13 +191,13 @@ list< Alternative * > MainKnapsack::MOLS(){
 	Alternative* alt;
 	list< Alternative* > Local_front;
 	//First initialization
-	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); p++){
+	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p){
 		Update_Archive(*p,OPT_Solution);
 	}
 
 	while(Population.size() > 0){
 
-		cout<<" pop size "<< Population.size()<<endl;
+		cout<<"Population : "<< Population.size()<<endl;
 		//erase the first element
 		alt = Population.front();
 
@@ -205,23 +205,25 @@ list< Alternative * > MainKnapsack::MOLS(){
 
 		for(vector< Alternative* >::iterator neighbor = current_neighbors.begin(); neighbor != current_neighbors.end(); ++neighbor){
 
-			if( !alt->dominates(*neighbor) ){
+			cout<<"STARTING ERROR"<<endl;
+
+			if( alt->dominates(*neighbor) != 1 ){
 //				cout<<"1 NOT DOMINATE 2"<<endl;
 				Update_Archive(*neighbor,Local_front);
 			}
+
 //			alt->print_objective_values();
 //			cout<<"  VS  ";
 //			(*neighbor)->print_objective_values();
 		}
 
-
 		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); new_alt++){
 			if ( Update_Archive(*new_alt, OPT_Solution) )
 				Population.push_back(*new_alt);
 		}
-
 		Population.pop_front();
 		Local_front.clear();
+
 	}
 
 
@@ -247,6 +249,7 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 //	}
 
 	set_SOL.push_back(p);
+	cout<<" AFTER ADD SIZE : "<<set_SOL.size()<<endl;
 
 	return true;
 }
