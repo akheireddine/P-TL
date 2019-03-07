@@ -30,7 +30,7 @@ public:
 
 	virtual vector< Alternative* > get_neighborhood() = 0;
 	virtual int dominates(Alternative* alt) = 0;
-	virtual void print_aternative() = 0;
+	virtual void print_alternative() = 0;
 	virtual void print_objective_values() = 0;
 
 

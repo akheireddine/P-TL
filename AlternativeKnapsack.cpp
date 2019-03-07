@@ -46,23 +46,32 @@ AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct){
 int AlternativeKnapsack::dominates(Alternative* alt){
 
 	int i = 0;
+	bool AdomB = false, BdomA = false;
+
 	vector< float > obj_alt = alt->get_objective_values();
 
 	for(i = 0; i < objective_values.size(); i++){
-		if( objective_values[i] < obj_alt[i] and (i > 0))									// MAXIMIZATION DES OBJECTIFS ! ! !
-			return -1;
+
+		if( objective_values[i] < obj_alt[i] )									// MAXIMIZATION DES OBJECTIFS ! ! !
+			BdomA = true;
+
+		else if ( objective_values[i] > obj_alt[i] )
+			AdomB = true;
+
+		if( AdomB and BdomA)
+			return 0;
 	}
-	if (i == objective_values.size())
-		return 0;
+
+	if ( BdomA and !AdomB)
+		return -1;
+
+
+	// AdomB and !BdomA   or   !AdomB and !BdomA
 	return 1;
 }
 
 
-
-vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
-
-	if(neighborhood.size() > 0)
-		return neighborhood;
+void AlternativeKnapsack::improving_initial_population(){
 
 	vector< int > In_BP, Out_BP;
 
@@ -73,14 +82,49 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 			Out_BP.push_back(i);
 	}
 
+	for(int i = 0; i < Out_BP.size(); i++){																// ADD ITEM UNTILL FULL
+
+		set< int > fill_bp(In_BP.begin(),In_BP.end());
+		float weight_alt = weight;
+
+		if( weight_alt + mainLSStructure->get_weight_of(Out_BP[i]) > mainLSStructure->get_capacity())
+			continue;
+		fill_bp.insert(Out_BP[i]);
+		weight_alt += mainLSStructure->get_weight_of(Out_BP[i]);
+
+		for(int j = i + 1; j < Out_BP.size(); j++){
+
+			if( weight_alt + mainLSStructure->get_weight_of(Out_BP[j]) > mainLSStructure->get_capacity())
+					continue;
+
+			fill_bp.insert(Out_BP[j]);
+			weight_alt += mainLSStructure->get_weight_of(Out_BP[j]);
+		}
+
+		AlternativeKnapsack* alt = new AlternativeKnapsack(fill_bp, mainLSStructure);
+		neighborhood.push_back(alt);
+	}
+}
+
+
+vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
+
+
+	vector< int > In_BP, Out_BP;
+
+	for(int i = 0; i < alternatives.size(); i++){
+		if( alternatives[i] == 1)
+			In_BP.push_back(i);
+		else
+			Out_BP.push_back(i);
+	}
 
 	for(vector< int >::iterator in = In_BP.begin(); in != In_BP.end(); in++){									//REMOVE ITEM
 
-		set<int> set_neighbor(In_BP.begin(),In_BP.end());         // OOU   std::set<int> first (myints,myints+5);   // set with 5 ints
+		set<int> set_neighbor(In_BP.begin(),In_BP.end());
 		float weight_neighbor = weight - mainLSStructure->get_weight_of(*in);
 
 		set_neighbor.erase(*in);
-
 
 		for(int i = 0; i < Out_BP.size(); i++){																// ADD ITEM UNTILL FULL
 
@@ -101,6 +145,7 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 				fill_bp.insert(Out_BP[j]);
 				weight_alt += mainLSStructure->get_weight_of(Out_BP[j]);
 			}
+
 
 			AlternativeKnapsack* alt = new AlternativeKnapsack(fill_bp, mainLSStructure);
 			neighborhood.push_back(alt);

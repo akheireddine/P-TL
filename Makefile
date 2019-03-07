@@ -19,8 +19,6 @@ CCOPT = -m64 -O -fPIC -fno-strict-aliasing -fexceptions -DNDEBUG -DIL_STD
 # ---------------------------------------------------------------------
 
 
-CCLNFLAGS = -lm -lpthread -ldl
-
 CCFLAGS = $(CCOPT)
 
 
@@ -37,7 +35,7 @@ all: WS_KNAPSACK
 
 
 WS_KNAPSACK: MainKnapsack.o AlternativeKnapsack.o MainClass.o
-	$(CCC) $(CCFLAGS) $(CCLNFLAGS) -o WS_KNAPSACK MainKnapsack.o AlternativeKnapsack.o MainClass.o
+	$(CCC) $(CCFLAGS) -o WS_KNAPSACK MainKnapsack.o AlternativeKnapsack.o MainClass.o
 
 
 AlternativeKnapsack.o: AlternativeKnapsack.cpp

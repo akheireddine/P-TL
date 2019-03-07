@@ -24,13 +24,16 @@ public:
 
 	float get_weight(){ return weight; }
 
+	void improving_initial_population();
+
+
 
 
 	int dominates(Alternative* alt);
 	vector< Alternative* > get_neighborhood();
 
 
-	inline void print_aternative(){
+	inline void print_alternative(){
 		cout<<"(";
 		for(int i = 0; i < alternatives.size(); i++)
 			cout<< alternatives[i] <<", ";
@@ -40,7 +43,7 @@ public:
 		cout<<"(";
 		for(int i = 0; i < objective_values.size(); i++)
 			cout<< objective_values[i] <<", ";
-		cout<<") ";
+		cout<<")   ";
 	}
 
 

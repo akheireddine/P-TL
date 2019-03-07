@@ -16,6 +16,23 @@ MainKnapsack::MainKnapsack(string filename, string pref_filename, string init_po
 
 	readInitPopulationFile(init_population_filename);
 
+//	cout<<"- Instance name     : "<<filename_instance<<endl;
+//	cout<<"- Backpack capacity : "<<Backpack_capacity<<endl;
+//	cout<<"- number of items   : "<<n_items<<endl;
+//	cout<<"- number of criteria  : "<<p_criteria<<endl;
+//	cout<<"- size of initial population : "<<Population.size()<<endl<<"  ";
+//	for(list< Alternative* >::iterator i = Population.begin(); i != Population.end(); ++i ){
+//		(*i)->print_alternative();
+//		cout<<"  ";
+//	}
+//	cout<<endl;
+//	cout<<"- number of objective : "<<n_objective<<endl<<"  ";
+//	for(int i = 0; i < p_criteria; i++){
+//		for(int j = 0; j < n_objective; j++)
+//			cout<< WS_matrix[i][j] <<" ";
+//		cout<<endl<<"  ";
+//	}
+//	cout<<endl;
 
 }
 
@@ -51,7 +68,6 @@ void MainKnapsack::readInitPopulationFile(string filename){
 			cerr<<"Not feasable initialization"<<endl;
 			exit(1);
 		}
-
 		AlternativeKnapsack* alt = new AlternativeKnapsack(set_items, this);
 		Population.push_back(alt);
 
@@ -179,9 +195,12 @@ void MainKnapsack::write_solution(){
 	ofstream fic(FileName.str().c_str());
 
 	for(list< Alternative *>::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); alt++){
-		for(int i = 0; i < n_objective; i++)
+		for(int i = 0; i < n_objective; i++){
 			fic<< (*alt)->get_objective_values()[i]<< " ";
+			cout<< (*alt)->get_objective_values()[i]<< " ";
+		}
 		fic <<endl;
+		cout<<endl;
 	}
 }
 
@@ -191,39 +210,38 @@ list< Alternative * > MainKnapsack::MOLS(){
 	Alternative* alt;
 	list< Alternative* > Local_front;
 	//First initialization
+
 	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p){
+		((AlternativeKnapsack*)(*p))->improving_initial_population();
 		Update_Archive(*p,OPT_Solution);
 	}
 
 	while(Population.size() > 0){
 
-		cout<<"Population : "<< Population.size()<<endl;
-		//erase the first element
+		//get first element
 		alt = Population.front();
 
 		vector<Alternative *> current_neighbors = alt->get_neighborhood();
 
 		for(vector< Alternative* >::iterator neighbor = current_neighbors.begin(); neighbor != current_neighbors.end(); ++neighbor){
 
-			cout<<"STARTING ERROR"<<endl;
-
-			if( alt->dominates(*neighbor) != 1 ){
-//				cout<<"1 NOT DOMINATE 2"<<endl;
+			if( alt->dominates(*neighbor) != 1 )
 				Update_Archive(*neighbor,Local_front);
-			}
-
-//			alt->print_objective_values();
-//			cout<<"  VS  ";
-//			(*neighbor)->print_objective_values();
 		}
 
 		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); new_alt++){
-			if ( Update_Archive(*new_alt, OPT_Solution) )
-				Population.push_back(*new_alt);
-		}
-		Population.pop_front();
-		Local_front.clear();
 
+			if ( Update_Archive(*new_alt, OPT_Solution) ){
+				Population.push_back(*new_alt);
+			}
+
+		}
+		//remove first element
+		Population.pop_front();
+//		cout<<"Population size : "<<Population.size()<<endl;
+//		cout<<"  OPT SOLUTION size : "<<OPT_Solution.size()<<endl;
+
+		Local_front.clear();
 	}
 
 
@@ -235,22 +253,22 @@ list< Alternative * > MainKnapsack::MOLS(){
 
 bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL){
 
+	vector< Alternative* > to_remove;
+
 	for(list< Alternative* >::iterator alt = set_SOL.begin(); alt != set_SOL.end(); ++alt){
+
 		int dom_val = (*alt)->dominates(p);
 		if(dom_val == 1)			// alt dominates p
 			return false;
 		else if( dom_val == -1 )   // p dominates alt
-			set_SOL.remove(*alt);
+			to_remove.push_back(*alt);
+
 	}
 
-//	for(list< Alternative* >::iterator alt_sol = set_SOL.begin(); alt_sol != set_SOL.end(); ++alt_sol){
-//		if(p->dominates(*alt_sol))
-//			set_SOL.erase(alt_sol);
-//	}
+	for(vector< Alternative* >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm)
+		set_SOL.remove(*rm);
 
 	set_SOL.push_back(p);
-	cout<<" AFTER ADD SIZE : "<<set_SOL.size()<<endl;
-
 	return true;
 }
 
