@@ -6,6 +6,7 @@
 
 #include "Alternative.h"
 #include <iostream>
+#include <map>
 
 class MainKnapsack;
 
@@ -24,7 +25,8 @@ public:
 
 	float get_weight(){ return weight; }
 
-	void improving_initial_population();
+//	void improving_initial_population();
+	void enumerate_neighborhood(set<int> & curr_BP, set<int> &item_OUT, float bp_weight, map< float, int, greater <float> > ratio_items);
 
 
 

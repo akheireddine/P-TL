@@ -27,6 +27,7 @@ public :
 
 	void readInitPopulationFile(string filename);
 	bool Update_Archive(Alternative* p, list< Alternative* > &set_SOL);
+	void filter_efficient_set();
 
 
 	//functions to overload

@@ -161,7 +161,7 @@ void MainKnapsack::readWS_Matrix(string filename){
 	string line;
 	int i = 0;
 	if (!(fic) or filename.find(".csv") == std::string::npos){
-		cerr<<"Error occurred"<<endl;
+		cerr<<"Error occurred fileMatrix"<<endl;
 	}
 
 	WS_matrix.resize(p_criteria,vector< float >());
@@ -197,10 +197,70 @@ void MainKnapsack::write_solution(){
 	for(list< Alternative *>::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); alt++){
 		for(int i = 0; i < n_objective; i++){
 			fic<< (*alt)->get_objective_values()[i]<< " ";
-			cout<< (*alt)->get_objective_values()[i]<< " ";
+//			cout<< (*alt)->get_objective_values()[i]<< " ";
 		}
 		fic <<endl;
-		cout<<endl;
+//		cout<<endl;
+	}
+}
+
+
+/**
+ * TODO CONTINUER !!!!!!!!!!!!!!!!!!!
+ */
+void MainKnapsack::evaluate_solutions(string weighted_DM_preferences){
+
+	ifstream fic_read(weighted_DM_preferences.c_str());
+	string line;
+	int i = 0;
+	if (!(fic_read) or weighted_DM_preferences.find(".csv") == std::string::npos){
+		cerr<<"Error occurred eval_sol"<<endl;
+	}
+
+	vector<float > weight_DM(p_criteria,0);
+
+	getline(fic_read,line);
+	char *cline = new char[line.length() + 1]; // or
+	std::strcpy(cline, line.c_str());
+
+	char * pch = strtok (cline," 	,;");
+	while (pch != NULL and i < p_criteria){
+		weight_DM[i] = atof(pch);
+		pch = strtok (NULL, " 	,;");
+		i++;
+	}
+
+
+
+
+	ostringstream FileName;
+	FileName.str("");
+	FileName <<filename_instance.c_str() << ".eval";
+	ofstream fic(FileName.str().c_str());
+
+	for(list< Alternative *>::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); ++alt){
+		vector<float > obj_val = (*alt)->get_objective_values();
+
+	}
+
+
+}
+
+
+
+void MainKnapsack::filter_efficient_set(){
+
+	list< Alternative* > fixed_opt_set(OPT_Solution.begin(),OPT_Solution.end());
+	for(list< Alternative* >::iterator el1 = fixed_opt_set.begin(); el1 != fixed_opt_set.end(); ++el1){
+		for(list< Alternative* >::iterator el2 = fixed_opt_set.begin(); el2 != fixed_opt_set.end(); ++el2){
+			if((*el1)->get_id() == (*el2)->get_id())
+				continue;
+			if( (*el1)->dominates(*el2) == 1)
+				OPT_Solution.erase(el2);
+			else if((*el1)->dominates(*el2) == -1)
+				OPT_Solution.erase(el1);
+
+		}
 	}
 }
 
@@ -212,7 +272,6 @@ list< Alternative * > MainKnapsack::MOLS(){
 	//First initialization
 
 	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p){
-		((AlternativeKnapsack*)(*p))->improving_initial_population();
 		Update_Archive(*p,OPT_Solution);
 	}
 
@@ -238,12 +297,12 @@ list< Alternative * > MainKnapsack::MOLS(){
 		}
 		//remove first element
 		Population.pop_front();
-//		cout<<"Population size : "<<Population.size()<<endl;
-//		cout<<"  OPT SOLUTION size : "<<OPT_Solution.size()<<endl;
-
 		Local_front.clear();
 	}
 
+	cout<<"OPT before filter "<<OPT_Solution.size()<<endl;
+	filter_efficient_set();
+	cout<<"OPT after filter "<<OPT_Solution.size()<<endl;
 
 	write_solution();
 

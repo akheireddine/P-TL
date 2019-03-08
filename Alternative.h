@@ -14,6 +14,7 @@ using namespace std;
 class Alternative {
 
 protected:
+	int id_alt;
 	vector< int > alternatives;
 	vector< float > criteria_values;
 	vector< float > objective_values;
@@ -26,7 +27,7 @@ public:
 
 	vector< float > get_objective_values(){ return objective_values; };
 	vector< float > get_criteria_values() { return criteria_values; };
-
+	int get_id(){ return id_alt; };
 
 	virtual vector< Alternative* > get_neighborhood() = 0;
 	virtual int dominates(Alternative* alt) = 0;
