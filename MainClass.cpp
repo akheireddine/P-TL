@@ -17,7 +17,7 @@ void main_Knapsack(string filename_instance, string pref_filename, string init_p
 	cout<<"Resolution time : "<<t2<<" sec"<<endl;
 
 
-	knaps->evaluate_solutions(weighted_DM_preferences);
+	knaps->evaluate_solutions(weighted_DM_preferences,t2);
 
 
 }
@@ -35,13 +35,13 @@ int main(int argc, char** argv){
 //	string pref_filename = argv[2];
 //	string init_population_filename = argv[3];
 
-
-//	string filename_instance ="./Instances_Knapsack/Type_A/100_items/mini_inst_10.dat";
-	string filename_instance = "./Instances_Knapsack/Type_A/600_items/2KP600-TA-8.dat";
+	//without extension
+//	string filename_instance ="./Instances_Knapsack/Type_A/100_items/mini_inst_10";
+	string filename_instance = "./Instances_Knapsack/Type_A/600_items/2KP600-TA-8";
 	string pref_filename = "./WS_Matrix.csv";
 	string init_population_filename = "./initial_population_knapsack.ks";
-
-	main_Knapsack(filename_instance, pref_filename, init_population_filename);
+	string WS_DM = "./weighted_DM_preferences.csv";
+	main_Knapsack(filename_instance, pref_filename, init_population_filename,WS_DM);
 
 	return 1;
 

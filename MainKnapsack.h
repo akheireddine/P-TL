@@ -28,6 +28,10 @@ public :
 	void readInitPopulationFile(string filename);
 	bool Update_Archive(Alternative* p, list< Alternative* > &set_SOL);
 	void filter_efficient_set();
+	float nearest_alternative(string filename, vector<float> opt_values);
+	vector< float > solve_plne_ws_function(vector<float> weighted_sum);
+	void evaluate_solutions(string weighted_DM_preferences,float time);
+
 
 
 	//functions to overload
