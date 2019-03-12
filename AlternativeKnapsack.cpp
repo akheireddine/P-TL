@@ -16,6 +16,7 @@ AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct){
 	alternatives.resize(mainLSStructure->get_n_items(),0);
 	criteria_values.resize(mainLSStructure->get_p_criteria(), 0);
 	objective_values.resize(mainLSStructure->get_n_objective(), 0);
+	weight = 0;
 
 
 	vector< vector < float > > WS_matrix = mainLSStructure->get_WS_matrix();
@@ -89,7 +90,7 @@ void AlternativeKnapsack::enumerate_neighborhood(set<int> & curr_BP, set<int> &i
 
 		for(map<float,int, greater <float> >::iterator best_ratio = ratio_items.begin(); best_ratio != ratio_items.end(); ++best_ratio){
 			int id_object = (*best_ratio).second;
-			if( id_object == *elem or weight_neighbor + mainLSStructure->get_weight_of(id_object) > BP_capacity)
+			if( (id_object == *elem) or ((weight_neighbor + mainLSStructure->get_weight_of(id_object)) > BP_capacity))
 				continue;
 			new_neighbor.insert(id_object);
 			weight_neighbor += mainLSStructure->get_weight_of(id_object);
@@ -124,16 +125,14 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 		}
 	}
 
-
 	for(set< int >::iterator in = In_BP.begin(); in != In_BP.end(); ++in){
-
 		float new_weight = weight - mainLSStructure->get_weight_of(*in);
 		set< int > in_tmp(In_BP.begin(),In_BP.end());
 
 		in_tmp.erase(*in);
-
 		enumerate_neighborhood(in_tmp,Out_BP, new_weight, ratio_items);
 	}
+
 
 
 	return neighborhood;

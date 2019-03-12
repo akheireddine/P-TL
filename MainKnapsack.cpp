@@ -18,24 +18,6 @@ MainKnapsack::MainKnapsack(string filename, string pref_filename, string init_po
 
 	readInitPopulationFile(init_population_filename);
 
-//	cout<<"- Instance name     : "<<filename_instance<<endl;
-//	cout<<"- Backpack capacity : "<<Backpack_capacity<<endl;
-//	cout<<"- number of items   : "<<n_items<<endl;
-//	cout<<"- number of criteria  : "<<p_criteria<<endl;
-//	cout<<"- size of initial population : "<<Population.size()<<endl<<"  ";
-//	for(list< Alternative* >::iterator i = Population.begin(); i != Population.end(); ++i ){
-//		(*i)->print_alternative();
-//		cout<<"  ";
-//	}
-//	cout<<endl;
-//	cout<<"- number of objective : "<<n_objective<<endl<<"  ";
-//	for(int i = 0; i < p_criteria; i++){
-//		for(int j = 0; j < n_objective; j++)
-//			cout<< WS_matrix[i][j] <<" ";
-//		cout<<endl<<"  ";
-//	}
-//	cout<<endl;
-
 }
 
 
@@ -72,7 +54,12 @@ void MainKnapsack::readInitPopulationFile(string filename){
 		}
 		AlternativeKnapsack* alt = new AlternativeKnapsack(set_items, this);
 		Population.push_back(alt);
+	}
 
+	if( Population.size() == 0){
+		set<int> empt;
+		AlternativeKnapsack *alt = new AlternativeKnapsack(empt, this);
+		Population.push_back(alt);
 	}
 
 	fic.close();
@@ -196,14 +183,14 @@ void MainKnapsack::write_solution(){
 //	filename_instance.replace(filename_instance.find(dat_format,dat_format.length(),".sol"));
 	FileName <<filename_instance.c_str()<<".sol";
 	ofstream fic(FileName.str().c_str());
-
+	cout<<"============================="<<endl;
 	for(list< Alternative *>::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); alt++){
 		for(int i = 0; i < n_objective; i++){
 			fic<< (*alt)->get_objective_values()[i]<< " ";
-//			cout<< (*alt)->get_objective_values()[i]<< " ";
+			cout<< (*alt)->get_objective_values()[i]<< " ";
 		}
 		fic <<endl;
-//		cout<<endl;
+		cout<<endl;
 	}
 }
 
@@ -220,6 +207,11 @@ float euclidien_distance(vector<float> v1, vector<float> v2){
 	return dist;
 }
 
+void print_vector(vector<float> v){
+	for(int i = 0 ; i < v.size(); i++)
+		cout<<v[i]<<" ";
+	cout<<endl;
+}
 
 float MainKnapsack::nearest_alternative(string filename, vector<float> opt_values){
 
@@ -248,6 +240,8 @@ float MainKnapsack::nearest_alternative(string filename, vector<float> opt_value
 			pch = strtok (NULL, " 	,;");
 		}
 
+		tmp_dist = euclidien_distance(tmp_obj, opt_values);
+
 		if( min_dist == -1 or tmp_dist < min_dist ){
 			min_dist = tmp_dist;
 			obj_val = tmp_obj;
@@ -258,7 +252,7 @@ float MainKnapsack::nearest_alternative(string filename, vector<float> opt_value
 	}
 
 	fic.close();
-
+	print_vector(obj_val);
 	return min_dist;
 
 }
@@ -305,13 +299,15 @@ vector< float > MainKnapsack::solve_plne_ws_function(vector<float> weighted_sum)
 	//SOLVE
 	IloCplex cplex(model);
 
+	cplex.setOut(env.getNullStream());
+
 	if ( !cplex.solve() ) {
 		 env.error() << "Failed to optimize LP" << endl;
 		 exit(1);
 	}
 
-	env.out() << "Solution status = " << cplex.getStatus() << endl;
-	env.out() << "Solution value  = " << cplex.getObjValue() << endl;
+//	env.out() << "Solution status = " << cplex.getStatus() << endl;
+//	env.out() << "Solution value  = " << cplex.getObjValue() << endl;
 
 	//GET SOLUTION
 	set< int > items;
@@ -333,7 +329,7 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time)
 	ifstream fic_read(weighted_DM_preferences.c_str());
 	string line;
 	int i = 0;
-	if (!(fic_read) or weighted_DM_preferences.find(".csv") == std::string::npos){
+	if (!(fic_read) or weighted_DM_preferences.find(".ks") == std::string::npos){
 		cerr<<"Error occurred eval_sol"<<endl;
 	}
 
@@ -353,17 +349,16 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time)
 
 	//get best alternative according to WS_DM
 	vector< float > opt_values = solve_plne_ws_function(weight_DM);
-	cout<<"OPT VAL : ";
-	for(int i = 0; i < opt_values.size(); i++)
-		cout<<opt_values[i]<< " ";
-	cout<<endl;
+//	cout<<"OPT VAL : ";
+//	print_vector(opt_values);
+
 	//Get minimum objective values difference between the best alternative and PLS front computed
 	float min_eff_dist = nearest_alternative(filename_instance+".eff",opt_values);
-	cout<<"min eff dist VAL "<<min_eff_dist<<endl;
+//	cout<<"min eff dist VAL "<<min_eff_dist<<endl;
 
 	//Get minimum objective values difference between the best alternative and WS-MOLS front computed
 	float min_mols_dist = nearest_alternative(filename_instance+".sol",opt_values);
-	cout<<"min mols dist VAL "<<min_mols_dist<<endl;
+//	cout<<"min mols dist VAL "<<min_mols_dist<<endl;
 
 
 	//write evaluation
@@ -375,8 +370,6 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time)
 	fic<<min_mols_dist<<","<<min_eff_dist<<","<<time<<endl;
 
 	fic.close();
-
-
 }
 
 
@@ -401,7 +394,7 @@ void MainKnapsack::filter_efficient_set(){
 list< Alternative * > MainKnapsack::MOLS(){
 
 	Alternative* alt;
-	list< Alternative* > Local_front;
+	list< Alternative* > Local_front(0);
 	//First initialization
 
 	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p){
@@ -421,7 +414,7 @@ list< Alternative * > MainKnapsack::MOLS(){
 				Update_Archive(*neighbor,Local_front);
 		}
 
-		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); new_alt++){
+		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
 
 			if ( Update_Archive(*new_alt, OPT_Solution) ){
 				Population.push_back(*new_alt);
@@ -433,9 +426,7 @@ list< Alternative * > MainKnapsack::MOLS(){
 		Local_front.clear();
 	}
 
-	cout<<"OPT before filter "<<OPT_Solution.size()<<endl;
 	filter_efficient_set();
-	cout<<"OPT after filter "<<OPT_Solution.size()<<endl;
 
 	write_solution();
 
@@ -446,19 +437,25 @@ list< Alternative * > MainKnapsack::MOLS(){
 bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL){
 
 	vector< Alternative* > to_remove;
+	bool dominated = false;
 
 	for(list< Alternative* >::iterator alt = set_SOL.begin(); alt != set_SOL.end(); ++alt){
 
 		int dom_val = (*alt)->dominates(p);
-		if(dom_val == 1)			// alt dominates p
-			return false;
+		if(dom_val == 1){			// alt dominates p
+			dominated = true;
+//			return false;
+		}
 		else if( dom_val == -1 )   // p dominates alt
 			to_remove.push_back(*alt);
-
 	}
 
 	for(vector< Alternative* >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm)
 		set_SOL.remove(*rm);
+
+
+	if( dominated )
+		return false;
 
 	set_SOL.push_back(p);
 	return true;
