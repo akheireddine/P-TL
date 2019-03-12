@@ -35,7 +35,7 @@ AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct){
 
 	for(int i = 0; i < mainLSStructure->get_n_objective(); i++){
 		for(int j = 0; j < mainLSStructure->get_p_criteria(); j++){
-			objective_values[i] += WS_matrix[i][j] * criteria_values[j];
+			objective_values[i] += WS_matrix[j][i] * criteria_values[j];
 		}
 	}
 }

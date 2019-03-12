@@ -31,6 +31,7 @@ public :
 	float nearest_alternative(string filename, vector<float> opt_values);
 	vector< float > solve_plne_ws_function(vector<float> weighted_sum);
 	void evaluate_solutions(string weighted_DM_preferences,float time);
+	void pareto_front_evaluation();
 
 
 

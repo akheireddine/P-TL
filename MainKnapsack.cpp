@@ -179,18 +179,16 @@ void MainKnapsack::write_solution(){
 
 	ostringstream FileName;
 	FileName.str("");
-//	string dat_format = ".dat";
-//	filename_instance.replace(filename_instance.find(dat_format,dat_format.length(),".sol"));
 	FileName <<filename_instance.c_str()<<".sol";
 	ofstream fic(FileName.str().c_str());
-	cout<<"============================="<<endl;
+//	cout<<"============================="<<endl;
 	for(list< Alternative *>::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); alt++){
 		for(int i = 0; i < n_objective; i++){
 			fic<< (*alt)->get_objective_values()[i]<< " ";
-			cout<< (*alt)->get_objective_values()[i]<< " ";
+//			cout<< (*alt)->get_objective_values()[i]<< " ";
 		}
 		fic <<endl;
-		cout<<endl;
+//		cout<<endl;
 	}
 }
 
@@ -252,7 +250,7 @@ float MainKnapsack::nearest_alternative(string filename, vector<float> opt_value
 	}
 
 	fic.close();
-	print_vector(obj_val);
+//	print_vector(obj_val);
 	return min_dist;
 
 }
@@ -332,7 +330,6 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time)
 	if (!(fic_read) or weighted_DM_preferences.find(".ks") == std::string::npos){
 		cerr<<"Error occurred eval_sol"<<endl;
 	}
-
 	//read WS_DMs_preference
 	vector<float > weight_DM(p_criteria,0);
 
@@ -364,12 +361,69 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time)
 	//write evaluation
 	ostringstream FileName;
 	FileName.str("");
-	FileName <<filename_instance.c_str() << ".eval";
-	ofstream fic(FileName.str(), ios::app);
+//	FileName <<filename_instance.c_str() << ".eval";
+	ofstream fic("distance_to_optimum_"+to_string(n_items)+".eval", ios::app);
+
+//	string str ="Coeff Objective : \n";
+//	for(int i = 0; i < WS_matrix.size(); i++){
+//		for(int j = 0; j < WS_matrix[i].size(); j++)
+//			str +=to_string(WS_matrix[i][j])+" ";
+//		str +="\n";
+//	}
+//
+//	fic<<str<<endl;
+
 
 	fic<<min_mols_dist<<","<<min_eff_dist<<","<<time<<endl;
 
 	fic.close();
+}
+
+
+
+void MainKnapsack::pareto_front_evaluation(){
+	string line;
+	int opt_size_fornt = 0, nb_found = 0;
+	ifstream fic((filename_instance+".eff").c_str());
+
+	vector< Alternative* > tmp_opt(OPT_Solution.begin(),OPT_Solution.end());
+
+	while(!fic.eof()){
+		vector< float > opt_alt;
+
+		getline(fic,line);
+
+		char *cline = new char[line.length() + 1]; // or
+		std::strcpy(cline, line.c_str());
+
+		char * pch = strtok (cline," 	,;");
+		while (pch != NULL){
+			opt_alt.push_back(atof(pch));
+			pch = strtok (NULL, " 	,;");
+		}
+
+
+		for(vector< Alternative* >::iterator alt = tmp_opt.begin(); alt != tmp_opt.end(); ++alt){
+			if(euclidien_distance((*alt)->get_objective_values(),opt_alt) == 0){
+				nb_found += 1;
+				tmp_opt.erase(alt);
+				continue;
+			}
+		}
+		opt_size_fornt++;
+	}
+
+	fic.close();
+
+	ofstream write_fic("pareto_front_efficiency_"+to_string(n_items)+".eval", ios::app);
+
+	string curr_size = to_string(OPT_Solution.size());
+
+	write_fic<<curr_size<<","<<to_string(nb_found)<<","<<to_string(opt_size_fornt)<<endl;
+
+	write_fic.close();
+
+
 }
 
 
