@@ -35,7 +35,11 @@ void MainKnapsack::readInitPopulationFile(string filename){
 
 	while(!fic.eof()){
 		total_weight = 0;
+
 		getline(fic,line);
+
+		if( line.size() == 0)
+			continue;
 
 		set<int> set_items;
 		char *cline = new char[line.length() + 1];
@@ -52,16 +56,18 @@ void MainKnapsack::readInitPopulationFile(string filename){
 			cerr<<"Not feasable initialization"<<endl;
 			exit(1);
 		}
+
 		AlternativeKnapsack* alt = new AlternativeKnapsack(set_items, this);
 		Population.push_back(alt);
+
 	}
+	cout<<"   Taille de la population initiale ("<<to_string(Population.size())<<")"<<endl;
 
 	if( Population.size() == 0){
 		set<int> empt;
 		AlternativeKnapsack *alt = new AlternativeKnapsack(empt, this);
 		Population.push_back(alt);
 	}
-
 	fic.close();
 }
 
@@ -137,7 +143,10 @@ void MainKnapsack::readFilenameInstance(string filename){
 	if( line[0] == 'W' )
 		sscanf(line.c_str(),"%s %f",buff,&Backpack_capacity);
 
-
+	cout<<"Information sur l'instance : "<<endl;
+	cout<<"   Instance de taille ("<<to_string(n_items)<<")"<<endl;
+	cout<<"   Capacité du sac-à-dos ("<<to_string(Backpack_capacity)<<")"<<endl;
+	cout<<"   Nombre de criètres ("<<to_string(p_criteria)<<")"<<endl;
 
 	fic.close();
 }
@@ -171,7 +180,13 @@ void MainKnapsack::readWS_Matrix(string filename){
 
 	n_objective = WS_matrix[0].size();
 
-
+	cout<<"   Matrice des objectives :"<<endl;
+	for(int i = 0; i < p_criteria; i++){
+		cout<<"   ";
+		for(int j = 0; j < n_objective; j++)
+			cout<<WS_matrix[i][j]<< " ";
+		cout<<endl;
+	}
 }
 
 
@@ -183,9 +198,9 @@ void MainKnapsack::write_solution(){
 	ofstream fic(FileName.str().c_str());
 //	cout<<"============================="<<endl;
 	for(list< Alternative *>::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); alt++){
-		for(int i = 0; i < n_objective; i++){
-			fic<< (*alt)->get_objective_values()[i]<< " ";
-//			cout<< (*alt)->get_objective_values()[i]<< " ";
+		for(int i = 0; i < p_criteria; i++){
+			fic<< (*alt)->get_criteria_values()[i]<< " ";
+//			cout<< (*alt)->get_criteria_values()[i]<< " ";
 		}
 		fic <<endl;
 //		cout<<endl;
@@ -205,44 +220,70 @@ float euclidien_distance(vector<float> v1, vector<float> v2){
 	return dist;
 }
 
-void print_vector(vector<float> v){
+string print_vector(vector<float> v){
+	string str ="";
 	for(int i = 0 ; i < v.size(); i++)
-		cout<<v[i]<<" ";
-	cout<<endl;
+		str += to_string(v[i]) + " ";
+
+	return str;
 }
 
-float MainKnapsack::nearest_alternative(string filename, vector<float> opt_values){
+vector< float > decompose_line_to_float_vector(string line){
 
-	int number_of_objective = opt_values.size();
+	char *cline = new char[line.length() + 1];
+	int i = 0;
+	vector< float > vect;
+	std::strcpy(cline, line.c_str());
+
+	char * pch = strtok (cline," 	,;");
+	while (pch != NULL ){
+		vect.push_back(atof(pch));
+		pch = strtok (NULL, " 	,;");
+		i++;
+	}
+	return vect;
+}
+
+
+void MainKnapsack::write_coeff_functions(){
+	ofstream fic("distance_to_optimum_"+to_string(n_items)+".eval", ios::app);
+
+	fic<<endl<<"Matrice des objectives :"<<endl;
+
+	for(int i = 0; i < p_criteria; i++){
+		fic<<"   ";
+		for(int j = 0; j < n_objective; j++)
+			fic<<to_string(WS_matrix[i][j])<< " ";
+		fic<<endl;
+	}
+	fic<<endl;
+
+	fic.close();
+}
+
+
+float MainKnapsack::nearest_alternative(string filename, vector<float> opt_values, vector< float > & vect_obj ){
+
 	ifstream fic(filename.c_str());
 
-	vector< float > obj_val(number_of_objective,0);
+	vector< float > criteria_val(p_criteria,0);
 	float min_dist = -1, tmp_dist = 0;
-	int i;
 	string line;
-	cout<<filename<<endl;
 
 	while(!fic.eof()){
 
-		i = 0;
-		vector< float >tmp_obj(number_of_objective,0);
-
 		getline(fic,line);
 
-		char *cline = new char[line.length() + 1]; // or
-		std::strcpy(cline, line.c_str());
+		if(line.size() == 0)
+			continue;
 
-		char * pch = strtok (cline," 	,;");
-		while (pch != NULL){
-			tmp_obj[i++] = atof(pch);
-			pch = strtok (NULL, " 	,;");
-		}
+		vector< float >tmp_obj = decompose_line_to_float_vector(line);
 
 		tmp_dist = euclidien_distance(tmp_obj, opt_values);
 
-		if( min_dist == -1 or tmp_dist < min_dist ){
+		if( (min_dist == -1) or (tmp_dist < min_dist) ){
 			min_dist = tmp_dist;
-			obj_val = tmp_obj;
+			criteria_val = tmp_obj;
 		}
 
 		if( min_dist == 0 )
@@ -250,10 +291,11 @@ float MainKnapsack::nearest_alternative(string filename, vector<float> opt_value
 	}
 
 	fic.close();
-//	print_vector(obj_val);
+	vect_obj = criteria_val;
 	return min_dist;
 
 }
+
 
 
 vector< float > MainKnapsack::solve_plne_ws_function(vector<float> weighted_sum){
@@ -293,6 +335,7 @@ vector< float > MainKnapsack::solve_plne_ws_function(vector<float> weighted_sum)
 		obj.setLinearCoef(x[i], coeff);
 	}
 
+//	cout<<obj<<endl;
 
 	//SOLVE
 	IloCplex cplex(model);
@@ -304,21 +347,17 @@ vector< float > MainKnapsack::solve_plne_ws_function(vector<float> weighted_sum)
 		 exit(1);
 	}
 
-//	env.out() << "Solution status = " << cplex.getStatus() << endl;
-//	env.out() << "Solution value  = " << cplex.getObjValue() << endl;
-
 	//GET SOLUTION
 	set< int > items;
 	for(int i = 0; i < n_items; i++){
 		if( cplex.getValue(x[i]) > 0)
 			items.insert(i);
 	}
-
 	env.end();
 
 	AlternativeKnapsack * alt = new AlternativeKnapsack(items, this);
 
-	return alt->get_objective_values();
+	return alt->get_criteria_values();
 }
 
 
@@ -327,41 +366,41 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time)
 	ifstream fic_read(weighted_DM_preferences.c_str());
 	string line;
 	int i = 0;
+	vector<float> vector_criteria;
+	vector<float > weight_DM(p_criteria,0);
+
+
 	if (!(fic_read) or weighted_DM_preferences.find(".ks") == std::string::npos){
 		cerr<<"Error occurred eval_sol"<<endl;
 	}
 	//read WS_DMs_preference
-	vector<float > weight_DM(p_criteria,0);
 
 	getline(fic_read,line);
-	char *cline = new char[line.length() + 1]; // or
-	std::strcpy(cline, line.c_str());
 
-	char * pch = strtok (cline," 	,;");
-	while (pch != NULL and i < p_criteria){
-		weight_DM[i] = atof(pch);
-		pch = strtok (NULL, " 	,;");
-		i++;
-	}
+	weight_DM = decompose_line_to_float_vector(line);
 
+	cout<<"----------------------- EVALUATION ----------------------"<<endl;
 	//get best alternative according to WS_DM
 	vector< float > opt_values = solve_plne_ws_function(weight_DM);
-//	cout<<"OPT VAL : ";
-//	print_vector(opt_values);
+	cout<<"Preference du décideur ([ " << print_vector(weight_DM) <<" ]) : "<<endl;
+	cout<<"    "<< print_vector(opt_values)<<endl;
 
 	//Get minimum objective values difference between the best alternative and PLS front computed
-	float min_eff_dist = nearest_alternative(filename_instance+".eff",opt_values);
-//	cout<<"min eff dist VAL "<<min_eff_dist<<endl;
+	float min_eff_dist = nearest_alternative(filename_instance+".eff",opt_values, vector_criteria);
+	cout<<"Solution found in Pareto (optimal) front "<<endl;
+	cout<<"   distance ( "<<to_string(min_eff_dist)<<" )"<<endl;
+	cout<<"   vector objective( "<<print_vector(vector_criteria)<<" )"<<endl;
 
 	//Get minimum objective values difference between the best alternative and WS-MOLS front computed
-	float min_mols_dist = nearest_alternative(filename_instance+".sol",opt_values);
-//	cout<<"min mols dist VAL "<<min_mols_dist<<endl;
+	float min_mols_dist = nearest_alternative(filename_instance+".sol",opt_values, vector_criteria);
+	cout<<"Solution found in (efficient) front "<<endl;
+	cout<<"   distance ( "<<min_mols_dist<<" )"<<endl;
+	cout<<"   vector objective ( "<<print_vector(vector_criteria)<<" )"<<endl;
 
 
 	//write evaluation
 	ostringstream FileName;
 	FileName.str("");
-//	FileName <<filename_instance.c_str() << ".eval";
 	ofstream fic("distance_to_optimum_"+to_string(n_items)+".eval", ios::app);
 
 //	string str ="Coeff Objective : \n";
@@ -375,6 +414,7 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time)
 
 
 	fic<<min_mols_dist<<","<<min_eff_dist<<","<<time<<endl;
+	cout<<"----------------------- END EVALUATION ----------------------"<<endl<<endl;
 
 	fic.close();
 }
@@ -389,19 +429,12 @@ void MainKnapsack::pareto_front_evaluation(){
 	vector< Alternative* > tmp_opt(OPT_Solution.begin(),OPT_Solution.end());
 
 	while(!fic.eof()){
-		vector< float > opt_alt;
 
 		getline(fic,line);
+		if (line.size() == 0)
+			continue;
 
-		char *cline = new char[line.length() + 1]; // or
-		std::strcpy(cline, line.c_str());
-
-		char * pch = strtok (cline," 	,;");
-		while (pch != NULL){
-			opt_alt.push_back(atof(pch));
-			pch = strtok (NULL, " 	,;");
-		}
-
+		vector< float > opt_alt = decompose_line_to_float_vector(line);
 
 		for(vector< Alternative* >::iterator alt = tmp_opt.begin(); alt != tmp_opt.end(); ++alt){
 			if(euclidien_distance((*alt)->get_objective_values(),opt_alt) == 0){

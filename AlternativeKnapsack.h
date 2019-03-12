@@ -40,13 +40,21 @@ public:
 		for(int i = 0; i < alternatives.size(); i++)
 			cout<< alternatives[i] <<", ";
 		cout<<")"<<endl;
-	}
+	};
+
 	inline void print_objective_values(){
 		cout<<"(";
 		for(int i = 0; i < objective_values.size(); i++)
 			cout<< objective_values[i] <<", ";
 		cout<<")   ";
-	}
+	};
+
+	inline void print_criteria_values(){
+		cout<<"(";
+		for(int i = 0; i < criteria_values.size(); i++)
+			cout<< criteria_values[i] <<", ";
+		cout<<")"<<endl;
+	};
 
 
 

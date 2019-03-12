@@ -38,6 +38,7 @@ AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct){
 			objective_values[i] += WS_matrix[j][i] * criteria_values[j];
 		}
 	}
+
 }
 
 /**
