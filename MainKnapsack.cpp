@@ -478,7 +478,7 @@ void MainKnapsack::filter_efficient_set(){
 }
 
 
-list< Alternative * > MainKnapsack::MOLS(){
+list< Alternative * > MainKnapsack::MOLS(int timeout =  180){
 
 	Alternative* alt;
 	list< Alternative* > Local_front(0);

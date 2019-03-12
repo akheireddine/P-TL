@@ -40,7 +40,7 @@ public :
 	//functions to overload
 	void readFilenameInstance(string filename);
 	void readWS_Matrix(string filename);
-	list< Alternative * > MOLS();
+	list< Alternative * > MOLS(int timeout =  180);
 	void write_solution();
 
 
