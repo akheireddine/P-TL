@@ -30,7 +30,6 @@ public:
 
 
 
-
 	int dominates(Alternative* alt);
 	vector< Alternative* > get_neighborhood();
 

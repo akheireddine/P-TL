@@ -33,7 +33,7 @@ protected :
 public:
 	virtual void readFilenameInstance(string filename) = 0;
 	virtual void readWS_Matrix(string filename) = 0;
-	virtual list< Alternative * > MOLS(int timeout =  180) = 0;
+	virtual list< Alternative * > MOLS(double MAX_ITERATION_TIME) = 0;
 	virtual void write_solution() = 0;
 
 

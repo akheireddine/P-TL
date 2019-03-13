@@ -208,16 +208,22 @@ void MainKnapsack::write_solution(){
 }
 
 
-float euclidien_distance(vector<float> v1, vector<float> v2){
+float get_ratio(vector<float> v, vector<float> v_opt, vector<float> weights){
 
-	float dist = 0;
-
-	for(int i = 0; i < v1.size(); i++)
-		dist += (v1[i] - v2[i]) * (v1[i] - v2[i]);
-
-	dist = sqrt(dist);
-
-	return dist;
+//	float dist = 0;
+//
+//	for(int i = 0; i < v1.size(); i++)
+//		dist += (v1[i] - v2[i]) * (v1[i] - v2[i]);
+//
+//	dist = sqrt(dist);
+//
+//	return dist;
+	float v_w = 0, v_w_opt = 0;
+	for(int i = 0; i < weights.size(); i++){
+		v_w += weights[i] * v[i];
+		v_w_opt += weights[i] * v_opt[i];
+	}
+	return (v_w_opt - v_w)/v_w_opt;                            //VALEURS POSITIVE
 }
 
 string print_vector(vector<float> v){
@@ -245,8 +251,8 @@ vector< float > decompose_line_to_float_vector(string line){
 }
 
 
-void MainKnapsack::write_coeff_functions(){
-	ofstream fic("distance_to_optimum_"+to_string(n_items)+".eval", ios::app);
+void MainKnapsack::write_coeff_functions(string type_inst){
+	ofstream fic("./Data/distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
 
 	fic<<endl<<"Matrice des objectives :"<<endl;
 
@@ -262,12 +268,12 @@ void MainKnapsack::write_coeff_functions(){
 }
 
 
-float MainKnapsack::nearest_alternative(string filename, vector<float> opt_values, vector< float > & vect_obj ){
+float MainKnapsack::nearest_alternative(string filename, vector<float > weight_DM, vector< float > opt_values, vector< float > & vect_criteria ){
 
 	ifstream fic(filename.c_str());
 
 	vector< float > criteria_val(p_criteria,0);
-	float min_dist = -1, tmp_dist = 0;
+	float min_ratio = -1, tmp_ratio = 1;
 	string line;
 
 	while(!fic.eof()){
@@ -277,22 +283,22 @@ float MainKnapsack::nearest_alternative(string filename, vector<float> opt_value
 		if(line.size() == 0)
 			continue;
 
-		vector< float >tmp_obj = decompose_line_to_float_vector(line);
+		vector< float >tmp_criteria_values = decompose_line_to_float_vector(line);
 
-		tmp_dist = euclidien_distance(tmp_obj, opt_values);
+		tmp_ratio = get_ratio(tmp_criteria_values, opt_values, weight_DM);
 
-		if( (min_dist == -1) or (tmp_dist < min_dist) ){
-			min_dist = tmp_dist;
-			criteria_val = tmp_obj;
+		if( (min_ratio == -1) or (tmp_ratio < min_ratio) ){
+			min_ratio = tmp_ratio;
+			criteria_val = tmp_criteria_values;
 		}
 
-		if( min_dist == 0 )
+		if( min_ratio == 0 )  // equal to DMs preferences
 			break;
 	}
 
 	fic.close();
-	vect_obj = criteria_val;
-	return min_dist;
+	vect_criteria = criteria_val;
+	return min_ratio;
 
 }
 
@@ -361,7 +367,7 @@ vector< float > MainKnapsack::solve_plne_ws_function(vector<float> weighted_sum)
 }
 
 
-void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time){
+void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time, string type_inst){
 
 	ifstream fic_read(weighted_DM_preferences.c_str());
 	string line;
@@ -386,40 +392,36 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time)
 	cout<<"    "<< print_vector(opt_values)<<endl;
 
 	//Get minimum objective values difference between the best alternative and PLS front computed
-	float min_eff_dist = nearest_alternative(filename_instance+".eff",opt_values, vector_criteria);
+	float min_eff_ratio = nearest_alternative(filename_instance+".eff", weight_DM, opt_values, vector_criteria);
 	cout<<"Solution found in Pareto (optimal) front "<<endl;
-	cout<<"   distance ( "<<to_string(min_eff_dist)<<" )"<<endl;
+	cout<<"   ratio ( "<<to_string(min_eff_ratio)<<" )"<<endl;
 	cout<<"   vector objective( "<<print_vector(vector_criteria)<<" )"<<endl;
 
 	//Get minimum objective values difference between the best alternative and WS-MOLS front computed
-	float min_mols_dist = nearest_alternative(filename_instance+".sol",opt_values, vector_criteria);
+	float min_mols_ratio = nearest_alternative(filename_instance+".sol", weight_DM, opt_values, vector_criteria);
 	cout<<"Solution found in (efficient) front "<<endl;
-	cout<<"   distance ( "<<min_mols_dist<<" )"<<endl;
+	cout<<"   ratio ( "<<min_mols_ratio<<" )"<<endl;
 	cout<<"   vector objective ( "<<print_vector(vector_criteria)<<" )"<<endl;
 
 
 	//write evaluation
 	ostringstream FileName;
 	FileName.str("");
-	ofstream fic("distance_to_optimum_"+to_string(n_items)+".eval", ios::app);
-
-//	string str ="Coeff Objective : \n";
-//	for(int i = 0; i < WS_matrix.size(); i++){
-//		for(int j = 0; j < WS_matrix[i].size(); j++)
-//			str +=to_string(WS_matrix[i][j])+" ";
-//		str +="\n";
-//	}
-//
-//	fic<<str<<endl;
+	ofstream fic("./Data/distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
 
 
-	fic<<min_mols_dist<<","<<min_eff_dist<<","<<time<<endl;
+	fic<<min_mols_ratio<<","<<min_eff_ratio<<","<<time<<endl;
 	cout<<"----------------------- END EVALUATION ----------------------"<<endl<<endl;
 
 	fic.close();
 }
 
-
+bool equal_vectors(vector<float> v1, vector<float> v2){
+	for(int i = 0; i < v1.size(); i++)
+		if ( v1[i] != v2[i])
+			return false;
+	return true;
+}
 
 void MainKnapsack::pareto_front_evaluation(){
 	string line;
@@ -437,7 +439,7 @@ void MainKnapsack::pareto_front_evaluation(){
 		vector< float > opt_alt = decompose_line_to_float_vector(line);
 
 		for(vector< Alternative* >::iterator alt = tmp_opt.begin(); alt != tmp_opt.end(); ++alt){
-			if(euclidien_distance((*alt)->get_objective_values(),opt_alt) == 0){
+			if( equal_vectors((*alt)->get_criteria_values(),opt_alt) ){
 				nb_found += 1;
 				tmp_opt.erase(alt);
 				continue;
@@ -448,7 +450,7 @@ void MainKnapsack::pareto_front_evaluation(){
 
 	fic.close();
 
-	ofstream write_fic("pareto_front_efficiency_"+to_string(n_items)+".eval", ios::app);
+	ofstream write_fic("./Data/pareto_front_efficiency_"+to_string(n_items)+".eval", ios::app);
 
 	string curr_size = to_string(OPT_Solution.size());
 
@@ -478,7 +480,7 @@ void MainKnapsack::filter_efficient_set(){
 }
 
 
-list< Alternative * > MainKnapsack::MOLS(int timeout){
+list< Alternative * > MainKnapsack::MOLS(double MAX_ITERATION_TIME){
 
 	Alternative* alt;
 	list< Alternative* > Local_front(0);
@@ -488,8 +490,9 @@ list< Alternative * > MainKnapsack::MOLS(int timeout){
 		Update_Archive(*p,OPT_Solution);
 	}
 
-	while(Population.size() > 0){
-
+//	double nb_iteration = 0;
+	while(Population.size() > 0  and ((clock() /CLOCKS_PER_SEC) - MAX_ITERATION_TIME <= 180 ) ){//(nb_iteration < MAX_ITERATION_TIME)){
+//		nb_iteration++;
 		//get first element
 		alt = Population.front();
 
