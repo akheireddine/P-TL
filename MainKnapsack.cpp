@@ -361,7 +361,7 @@ vector< float > MainKnapsack::solve_plne_ws_function(vector<float> weighted_sum)
 }
 
 
-void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time){
+void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time, string type_inst){
 
 	ifstream fic_read(weighted_DM_preferences.c_str());
 	string line;
@@ -401,7 +401,7 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time)
 	//write evaluation
 	ostringstream FileName;
 	FileName.str("");
-	ofstream fic("distance_to_optimum_"+to_string(n_items)+".eval", ios::app);
+	ofstream fic("distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
 
 //	string str ="Coeff Objective : \n";
 //	for(int i = 0; i < WS_matrix.size(); i++){
@@ -478,7 +478,7 @@ void MainKnapsack::filter_efficient_set(){
 }
 
 
-list< Alternative * > MainKnapsack::MOLS(int timeout =  180){
+list< Alternative * > MainKnapsack::MOLS(int MAX_ITERATION){
 
 	Alternative* alt;
 	list< Alternative* > Local_front(0);
@@ -487,9 +487,9 @@ list< Alternative * > MainKnapsack::MOLS(int timeout =  180){
 	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p){
 		Update_Archive(*p,OPT_Solution);
 	}
-
-	while(Population.size() > 0){
-
+	int nb_iteration = 0;
+	while(Population.size() > 0  and (nb_iteration < MAX_ITERATION)){
+		nb_iteration++;
 		//get first element
 		alt = Population.front();
 
