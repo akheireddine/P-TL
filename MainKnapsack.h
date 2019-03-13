@@ -12,6 +12,7 @@ class MainKnapsack : public LSStructure{
 protected:
 	float Backpack_capacity = 0;
 	int n_items;
+	vector< vector<float> > ParetoFront;
 
 public :
 	//constructor
@@ -26,15 +27,21 @@ public :
 	float get_capacity(){ return Backpack_capacity; };
 
 	void readInitPopulationFile(string filename);
+	void readParetoFront();
+
 	bool Update_Archive(Alternative* p, list< Alternative* > &set_SOL);
 	void filter_efficient_set();
 	float nearest_alternative(string filename, vector<float > weight_DM, vector< float > opt_values,  vector< float > & vect_obj );
 	vector< float > solve_plne_ws_function(vector<float> weighted_sum);
 	void evaluate_solutions(string weighted_DM_preferences,float time, string type_inst);
-	void pareto_front_evaluation();
+	void pareto_front_evaluation(string type_inst);
 	void write_coeff_functions(string type_inst);
 
 
+	//INDICATORS
+	float average_distance_D1();
+	float maximum_distance_D2();
+	float PR_D3();
 
 
 	//functions to overload

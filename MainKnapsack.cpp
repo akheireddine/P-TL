@@ -18,6 +18,35 @@ MainKnapsack::MainKnapsack(string filename, string pref_filename, string init_po
 
 	readInitPopulationFile(init_population_filename);
 
+	readParetoFront();
+}
+
+
+
+
+vector< float > decompose_line_to_float_vector(string line){
+
+	char *cline = new char[line.length() + 1];
+	int i = 0;
+	vector< float > vect;
+	std::strcpy(cline, line.c_str());
+
+	char * pch = strtok (cline," 	,;");
+	while (pch != NULL ){
+		vect.push_back(atof(pch));
+		pch = strtok (NULL, " 	,;");
+		i++;
+	}
+	return vect;
+}
+
+
+string print_vector(vector<float> v){
+	string str ="";
+	for(int i = 0 ; i < v.size(); i++)
+		str += to_string(v[i]) + " ";
+
+	return str;
 }
 
 
@@ -208,16 +237,44 @@ void MainKnapsack::write_solution(){
 }
 
 
-float get_ratio(vector<float> v, vector<float> v_opt, vector<float> weights){
+void MainKnapsack::readParetoFront(){
 
-//	float dist = 0;
-//
-//	for(int i = 0; i < v1.size(); i++)
-//		dist += (v1[i] - v2[i]) * (v1[i] - v2[i]);
-//
-//	dist = sqrt(dist);
-//
-//	return dist;
+	string file_extension = filename_instance+".eff";
+	ifstream fic(file_extension.c_str());
+	string line;
+
+	if (!(fic) or file_extension.find(".eff") == std::string::npos){
+		cerr<<"Error occurred paretofront"<<endl;
+	}
+
+	ParetoFront.clear();
+
+	while(!fic.eof()){
+
+		getline(fic,line);
+		if (line.size() == 0)
+			continue;
+
+		vector< float > vector_objective = decompose_line_to_float_vector(line);
+
+		ParetoFront.push_back(vector_objective);
+	}
+
+}
+
+
+float euclidian_distance(vector<float> v1, vector<float> v2){
+	float dist = 0;
+
+	for(int i = 0; i < v1.size(); i++)
+		dist += (v1[i] - v2[i]) * (v1[i] - v2[i]);
+
+	dist = sqrt(dist);
+
+	return dist;
+}
+
+float get_ratio(vector<float> v, vector<float> v_opt, vector<float> weights){
 	float v_w = 0, v_w_opt = 0;
 	for(int i = 0; i < weights.size(); i++){
 		v_w += weights[i] * v[i];
@@ -226,29 +283,6 @@ float get_ratio(vector<float> v, vector<float> v_opt, vector<float> weights){
 	return (v_w_opt - v_w)/v_w_opt;                            //VALEURS POSITIVE
 }
 
-string print_vector(vector<float> v){
-	string str ="";
-	for(int i = 0 ; i < v.size(); i++)
-		str += to_string(v[i]) + " ";
-
-	return str;
-}
-
-vector< float > decompose_line_to_float_vector(string line){
-
-	char *cline = new char[line.length() + 1];
-	int i = 0;
-	vector< float > vect;
-	std::strcpy(cline, line.c_str());
-
-	char * pch = strtok (cline," 	,;");
-	while (pch != NULL ){
-		vect.push_back(atof(pch));
-		pch = strtok (NULL, " 	,;");
-		i++;
-	}
-	return vect;
-}
 
 
 void MainKnapsack::write_coeff_functions(string type_inst){
@@ -418,46 +452,82 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time,
 
 bool equal_vectors(vector<float> v1, vector<float> v2){
 	for(int i = 0; i < v1.size(); i++)
-		if ( v1[i] != v2[i])
+		if ( abs(v1[i] -  v2[i]) > 0.001 )
 			return false;
 	return true;
 }
 
-void MainKnapsack::pareto_front_evaluation(){
-	string line;
-	int opt_size_fornt = 0, nb_found = 0;
-	ifstream fic((filename_instance+".eff").c_str());
+
+float MainKnapsack::PR_D3(){
+
+	int opt_size_front = 0, nb_found = 0;
 
 	vector< Alternative* > tmp_opt(OPT_Solution.begin(),OPT_Solution.end());
-
-	while(!fic.eof()){
-
-		getline(fic,line);
-		if (line.size() == 0)
-			continue;
-
-		vector< float > opt_alt = decompose_line_to_float_vector(line);
-
+	for(vector< vector<float > >::iterator pareto_sol = ParetoFront.begin(); pareto_sol != ParetoFront.end(); ++pareto_sol){
 		for(vector< Alternative* >::iterator alt = tmp_opt.begin(); alt != tmp_opt.end(); ++alt){
-			if( equal_vectors((*alt)->get_criteria_values(),opt_alt) ){
+			if( equal_vectors((*alt)->get_criteria_values(),*pareto_sol) ){
 				nb_found += 1;
 				tmp_opt.erase(alt);
-				continue;
+				break;
 			}
 		}
-		opt_size_fornt++;
+		opt_size_front++;
 	}
 
-	fic.close();
+	return nb_found*100.0/opt_size_front;
+}
 
-	ofstream write_fic("./Data/pareto_front_efficiency_"+to_string(n_items)+".eval", ios::app);
+float MainKnapsack::average_distance_D1(){
 
-	string curr_size = to_string(OPT_Solution.size());
+	float min_dist = -1;
+	float avg_dist = 0;
+	for(vector< vector<float > >::iterator pareto_sol = ParetoFront.begin(); pareto_sol != ParetoFront.end(); ++pareto_sol){
+		min_dist = -1;
+		for(list<Alternative*>::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
+			float euclid_dist_tmp = euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
 
-	write_fic<<curr_size<<","<<to_string(nb_found)<<","<<to_string(opt_size_fornt)<<endl;
+			if(euclid_dist_tmp < min_dist  or min_dist == -1)
+				min_dist = euclid_dist_tmp;
+		}
+
+		avg_dist += min_dist;
+	}
+
+	return avg_dist/ ParetoFront.size();
+}
+
+
+float MainKnapsack::maximum_distance_D2(){
+	float min_dist = -1;
+	float max_dist_PF = 0;
+
+	for(vector< vector<float > >::iterator pareto_sol = ParetoFront.begin(); pareto_sol != ParetoFront.end(); ++pareto_sol){
+		min_dist = -1;
+		for(list<Alternative*>::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
+			float euclid_dist_tmp = euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
+			if(euclid_dist_tmp < min_dist  or min_dist == -1)
+				min_dist = euclid_dist_tmp;
+		}
+
+		if( max_dist_PF < min_dist)
+			max_dist_PF = min_dist;
+	}
+
+	return max_dist_PF;
+}
+
+void MainKnapsack::pareto_front_evaluation(string type_inst){
+
+	float D1 = average_distance_D1();
+	float D2 = maximum_distance_D2();
+	float D3 = PR_D3();
+
+	ofstream write_fic("./Data/pareto_front_efficiency_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
+
+
+	write_fic<<D1<<","<<to_string(D2)<<","<<to_string(D3)<<endl;
 
 	write_fic.close();
-
 
 }
 

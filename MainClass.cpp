@@ -20,6 +20,8 @@ MainKnapsack* main_Knapsack_PLS(string filename_instance, string init_population
 
 	knaps->evaluate_solutions(weighted_DM_preferences,t2,type_inst);
 
+	knaps->pareto_front_evaluation(type_inst);
+
 	return knaps;
 }
 
@@ -36,6 +38,8 @@ MainKnapsack* main_Knapsack_WSLS(string filename_instance, string init_populatio
 
 	knaps->evaluate_solutions(weighted_DM_preferences,t2,type_inst);
 
+	knaps->pareto_front_evaluation(type_inst);
+
 	return knaps;
 }
 
@@ -49,12 +53,12 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "300";
+	string taille = "500";
 
 	MainKnapsack * knaps;
 
 
-	//PLS
+////	PLS
 	for(int i = 0; i < 10; i++){
 		//without extension
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
@@ -64,14 +68,14 @@ int main(int argc, char** argv){
 	knaps->write_coeff_functions(type_inst+"_PLS");
 
 
-	//WSLS
-	for(int i = 0; i < 10; i++){
-		//without extension
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		//WSLS
-		knaps = main_Knapsack_WSLS(filename_instance, init_population_filename,WS_DM,type_inst+"_WS");
-	}
-	knaps->write_coeff_functions(type_inst+"_WS");
+////	WSLS
+//	for(int i = 0; i < 10; i++){
+//		//without extension
+//		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+//		//WSLS
+//		knaps = main_Knapsack_WSLS(filename_instance, init_population_filename,WS_DM,type_inst+"_WS");
+//	}
+//	knaps->write_coeff_functions(type_inst+"_WS");
 
 
 
