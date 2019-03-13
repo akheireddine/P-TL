@@ -245,8 +245,8 @@ vector< float > decompose_line_to_float_vector(string line){
 }
 
 
-void MainKnapsack::write_coeff_functions(){
-	ofstream fic("distance_to_optimum_"+to_string(n_items)+".eval", ios::app);
+void MainKnapsack::write_coeff_functions(string type_inst){
+	ofstream fic("./Data/distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
 
 	fic<<endl<<"Matrice des objectives :"<<endl;
 
@@ -401,7 +401,7 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time,
 	//write evaluation
 	ostringstream FileName;
 	FileName.str("");
-	ofstream fic("distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
+	ofstream fic("./Data/distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
 
 //	string str ="Coeff Objective : \n";
 //	for(int i = 0; i < WS_matrix.size(); i++){
@@ -448,7 +448,7 @@ void MainKnapsack::pareto_front_evaluation(){
 
 	fic.close();
 
-	ofstream write_fic("pareto_front_efficiency_"+to_string(n_items)+".eval", ios::app);
+	ofstream write_fic("./Data/pareto_front_efficiency_"+to_string(n_items)+".eval", ios::app);
 
 	string curr_size = to_string(OPT_Solution.size());
 

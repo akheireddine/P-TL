@@ -57,21 +57,21 @@ int main(int argc, char** argv){
 	//PLS
 	for(int i = 0; i < 10; i++){
 		//without extension
-		string filename_instance = "./Instances_Knapsack/"+type_inst+"/100_items/2KP100-TA-"+to_string(i);
+		string filename_instance = "./Instances_Knapsack/"+type_inst+"/300_items/2KP300-TA-"+to_string(i);
 		//PLS
 		knaps = main_Knapsack_PLS(filename_instance, init_population_filename,WS_DM,type_inst);
 	}
-	knaps->write_coeff_functions();
+	knaps->write_coeff_functions(type_inst);
 
 
 	//WSLS
 	for(int i = 0; i < 10; i++){
 		//without extension
-		string filename_instance = "./Instances_Knapsack/Type_A/100_items/2KP100-TA-"+to_string(i);
+		string filename_instance = "./Instances_Knapsack/"+type_inst+"/300_items/2KP300-TA-"+to_string(i);
 		//WSLS
 		knaps = main_Knapsack_WSLS(filename_instance, init_population_filename,WS_DM,type_inst);
 	}
-	knaps->write_coeff_functions();
+	knaps->write_coeff_functions(type_inst);
 
 
 

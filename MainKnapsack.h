@@ -32,7 +32,7 @@ public :
 	vector< float > solve_plne_ws_function(vector<float> weighted_sum);
 	void evaluate_solutions(string weighted_DM_preferences,float time, string type_inst);
 	void pareto_front_evaluation();
-	void write_coeff_functions();
+	void write_coeff_functions(string type_inst);
 
 
 
