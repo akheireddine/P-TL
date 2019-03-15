@@ -53,19 +53,19 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "100";
+	string taille = "500";
 
 	MainKnapsack * knaps;
 
 
 ////	PLS
-	for(int i = 0; i < 10; i++){
-		//without extension
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		//PLS
-		knaps = main_Knapsack_PLS(filename_instance, init_population_filename,WS_DM,type_inst+"_PLS");
-	}
-	knaps->write_coeff_functions(type_inst+"_PLS");
+//	for(int i = 0; i < 10; i++){
+//		//without extension
+//		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+//		//PLS
+//		knaps = main_Knapsack_PLS(filename_instance, init_population_filename,WS_DM,type_inst+"_PLS");
+//	}
+//	knaps->write_coeff_functions(type_inst+"_PLS");
 
 
 ////	WSLS
