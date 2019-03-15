@@ -53,7 +53,7 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "500";
+	string taille = "100";
 
 	MainKnapsack * knaps;
 

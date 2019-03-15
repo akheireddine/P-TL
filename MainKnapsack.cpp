@@ -5,16 +5,13 @@
 #include "MainKnapsack.h"
 
 
-
-#include <sstream>      // std::ostringstream
-
-MainKnapsack::MainKnapsack(string filename, string pref_filename, string init_population_filename){
+MainKnapsack::MainKnapsack(string filename, string matrix_filename, string init_population_filename){
 
 	filename_instance = filename;
 
 	readFilenameInstance(filename_instance);
 
-	readWS_Matrix(pref_filename);
+	readWS_Matrix(matrix_filename);
 
 	readInitPopulationFile(init_population_filename);
 
@@ -22,33 +19,9 @@ MainKnapsack::MainKnapsack(string filename, string pref_filename, string init_po
 }
 
 
-
-
-vector< float > decompose_line_to_float_vector(string line){
-
-	char *cline = new char[line.length() + 1];
-	int i = 0;
-	vector< float > vect;
-	std::strcpy(cline, line.c_str());
-
-	char * pch = strtok (cline," 	,;");
-	while (pch != NULL ){
-		vect.push_back(atof(pch));
-		pch = strtok (NULL, " 	,;");
-		i++;
-	}
-	return vect;
-}
-
-
-string print_vector(vector<float> v){
-	string str ="";
-	for(int i = 0 ; i < v.size(); i++)
-		str += to_string(v[i]) + " ";
-
-	return str;
-}
-
+/**
+ * ************************************************* READING PART (INITIALIZATION)  *************************************************
+ */
 
 void MainKnapsack::readInitPopulationFile(string filename){
 
@@ -255,34 +228,12 @@ void MainKnapsack::readParetoFront(){
 		if (line.size() == 0)
 			continue;
 
-		vector< float > vector_objective = decompose_line_to_float_vector(line);
+		vector< float > vector_objective = Tools::decompose_line_to_float_vector(line);
 
 		ParetoFront.push_back(vector_objective);
 	}
 
 }
-
-
-float euclidian_distance(vector<float> v1, vector<float> v2){
-	float dist = 0;
-
-	for(int i = 0; i < v1.size(); i++)
-		dist += (v1[i] - v2[i]) * (v1[i] - v2[i]);
-
-	dist = sqrt(dist);
-
-	return dist;
-}
-
-float get_ratio(vector<float> v, vector<float> v_opt, vector<float> weights){
-	float v_w = 0, v_w_opt = 0;
-	for(int i = 0; i < weights.size(); i++){
-		v_w += weights[i] * v[i];
-		v_w_opt += weights[i] * v_opt[i];
-	}
-	return (v_w_opt - v_w)/v_w_opt;                            //VALEURS POSITIVE
-}
-
 
 
 void MainKnapsack::write_coeff_functions(string type_inst){
@@ -302,6 +253,105 @@ void MainKnapsack::write_coeff_functions(string type_inst){
 }
 
 
+
+/**
+ * ************************************************* SOLVING PART *************************************************
+ */
+
+//Filter the final archive
+void MainKnapsack::filter_efficient_set(){
+
+	list< Alternative* > fixed_opt_set(OPT_Solution.begin(),OPT_Solution.end());
+	for(list< Alternative* >::iterator el1 = fixed_opt_set.begin(); el1 != fixed_opt_set.end(); ++el1){
+		for(list< Alternative* >::iterator el2 = fixed_opt_set.begin(); el2 != fixed_opt_set.end(); ++el2){
+			if((*el1)->get_id() == (*el2)->get_id())
+				continue;
+			if( (*el1)->dominates(*el2) == 1)
+				OPT_Solution.erase(el2);
+			else if((*el1)->dominates(*el2) == -1)
+				OPT_Solution.erase(el1);
+
+		}
+	}
+}
+
+
+list< Alternative * > MainKnapsack::MOLS(double START_TIME){
+
+	Alternative* alt;
+	list< Alternative* > Local_front(0);
+
+	//First initialization
+	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p)
+		Update_Archive(*p,OPT_Solution);
+
+
+	while(Population.size() > 0  and ((clock() /CLOCKS_PER_SEC) - START_TIME <= 180 ) ){
+		//get first element
+		alt = Population.front();
+
+		vector<Alternative *> current_neighbors = alt->get_neighborhood();
+
+		for(vector< Alternative* >::iterator neighbor = current_neighbors.begin(); neighbor != current_neighbors.end(); ++neighbor){
+			//Prefiltrage
+			if( alt->dominates(*neighbor) != 1 )
+				Update_Archive(*neighbor,Local_front);
+		}
+
+		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
+			//Filter OPT_Solution set
+			if ( Update_Archive(*new_alt, OPT_Solution) ){
+				Population.push_back(*new_alt);
+			}
+
+		}
+		//remove first element
+		Population.pop_front();
+		Local_front.clear();
+	}
+
+	filter_efficient_set();
+
+	write_solution();
+
+	return OPT_Solution;
+}
+
+
+bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL){
+
+	vector< Alternative* > to_remove;
+	int dom_val;
+
+	for(list< Alternative* >::iterator alt = set_SOL.begin(); alt != set_SOL.end(); ++alt){
+
+		dom_val = (*alt)->dominates(p);
+		if(dom_val == 1)			// alt dominates p
+			return false;
+
+		else if( dom_val == -1 )   // p dominates alt
+			to_remove.push_back(*alt);
+	}
+
+	for(vector< Alternative* >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm)
+		set_SOL.remove(*rm);
+
+	set_SOL.push_back(p);
+	return true;
+}
+
+
+
+
+
+
+
+
+/**
+ * ************************************************* EVALUATION PART *************************************************
+ */
+
+//Get minimum gap from opt_values and save the objective values in vect_criteria
 float MainKnapsack::nearest_alternative(string filename, vector<float > weight_DM, vector< float > opt_values, vector< float > & vect_criteria ){
 
 	ifstream fic(filename.c_str());
@@ -317,9 +367,9 @@ float MainKnapsack::nearest_alternative(string filename, vector<float > weight_D
 		if(line.size() == 0)
 			continue;
 
-		vector< float >tmp_criteria_values = decompose_line_to_float_vector(line);
+		vector< float >tmp_criteria_values = Tools::decompose_line_to_float_vector(line);
 
-		tmp_ratio = get_ratio(tmp_criteria_values, opt_values, weight_DM);
+		tmp_ratio = Tools::get_ratio(tmp_criteria_values, opt_values, weight_DM);
 
 		if( (min_ratio == -1) or (tmp_ratio < min_ratio) ){
 			min_ratio = tmp_ratio;
@@ -336,8 +386,7 @@ float MainKnapsack::nearest_alternative(string filename, vector<float > weight_D
 
 }
 
-
-
+//Get optima values of objective with WS aggregator
 vector< float > MainKnapsack::solve_plne_ws_function(vector<float> weighted_sum){
 
 	IloEnv   env;
@@ -401,6 +450,7 @@ vector< float > MainKnapsack::solve_plne_ws_function(vector<float> weighted_sum)
 }
 
 
+//Evaluation the quality of PLS and WS-PLS solutions to DMs real preferences
 void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time, string type_inst){
 
 	ifstream fic_read(weighted_DM_preferences.c_str());
@@ -417,25 +467,25 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time,
 
 	getline(fic_read,line);
 
-	weight_DM = decompose_line_to_float_vector(line);
+	weight_DM = Tools::decompose_line_to_float_vector(line);
 
 	cout<<"----------------------- EVALUATION ----------------------"<<endl;
 	//get best alternative according to WS_DM
 	vector< float > opt_values = solve_plne_ws_function(weight_DM);
-	cout<<"Preference du décideur ([ " << print_vector(weight_DM) <<" ]) : "<<endl;
-	cout<<"    "<< print_vector(opt_values)<<endl;
+	cout<<"Preference du décideur ([ " << Tools::print_vector(weight_DM) <<" ]) : "<<endl;
+	cout<<"    "<< Tools::print_vector(opt_values)<<endl;
 
 	//Get minimum objective values difference between the best alternative and PLS front computed
 	float min_eff_ratio = nearest_alternative(filename_instance+".eff", weight_DM, opt_values, vector_criteria);
 	cout<<"Solution found in Pareto (optimal) front "<<endl;
 	cout<<"   ratio ( "<<to_string(min_eff_ratio)<<" )"<<endl;
-	cout<<"   vector objective( "<<print_vector(vector_criteria)<<" )"<<endl;
+	cout<<"   vector objective( "<<Tools::print_vector(vector_criteria)<<" )"<<endl;
 
 	//Get minimum objective values difference between the best alternative and WS-MOLS front computed
 	float min_mols_ratio = nearest_alternative(filename_instance+".sol", weight_DM, opt_values, vector_criteria);
 	cout<<"Solution found in (efficient) front "<<endl;
 	cout<<"   ratio ( "<<min_mols_ratio<<" )"<<endl;
-	cout<<"   vector objective ( "<<print_vector(vector_criteria)<<" )"<<endl;
+	cout<<"   vector objective ( "<<Tools::print_vector(vector_criteria)<<" )"<<endl;
 
 
 	//write evaluation
@@ -450,14 +500,20 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time,
 	fic.close();
 }
 
-bool equal_vectors(vector<float> v1, vector<float> v2){
-	for(int i = 0; i < v1.size(); i++)
-		if ( abs(v1[i] -  v2[i]) > 0.001 )
-			return false;
-	return true;
-}
 
 
+
+
+
+
+
+
+
+
+
+/**
+ * ************************************************* PF MEASUREMENT PART *************************************************
+ */
 float MainKnapsack::PR_D3(){
 
 	int opt_size_front = 0, nb_found = 0;
@@ -465,7 +521,7 @@ float MainKnapsack::PR_D3(){
 	vector< Alternative* > tmp_opt(OPT_Solution.begin(),OPT_Solution.end());
 	for(vector< vector<float > >::iterator pareto_sol = ParetoFront.begin(); pareto_sol != ParetoFront.end(); ++pareto_sol){
 		for(vector< Alternative* >::iterator alt = tmp_opt.begin(); alt != tmp_opt.end(); ++alt){
-			if( equal_vectors((*alt)->get_criteria_values(),*pareto_sol) ){
+			if( Tools::equal_vectors((*alt)->get_criteria_values(),*pareto_sol) ){
 				nb_found += 1;
 				tmp_opt.erase(alt);
 				break;
@@ -484,7 +540,7 @@ float MainKnapsack::average_distance_D1(){
 	for(vector< vector<float > >::iterator pareto_sol = ParetoFront.begin(); pareto_sol != ParetoFront.end(); ++pareto_sol){
 		min_dist = -1;
 		for(list<Alternative*>::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
-			float euclid_dist_tmp = euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
+			float euclid_dist_tmp = Tools::euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
 
 			if(euclid_dist_tmp < min_dist  or min_dist == -1)
 				min_dist = euclid_dist_tmp;
@@ -496,7 +552,6 @@ float MainKnapsack::average_distance_D1(){
 	return avg_dist/ ParetoFront.size();
 }
 
-
 float MainKnapsack::maximum_distance_D2(){
 	float min_dist = -1;
 	float max_dist_PF = 0;
@@ -504,7 +559,7 @@ float MainKnapsack::maximum_distance_D2(){
 	for(vector< vector<float > >::iterator pareto_sol = ParetoFront.begin(); pareto_sol != ParetoFront.end(); ++pareto_sol){
 		min_dist = -1;
 		for(list<Alternative*>::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
-			float euclid_dist_tmp = euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
+			float euclid_dist_tmp = Tools::euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
 			if(euclid_dist_tmp < min_dist  or min_dist == -1)
 				min_dist = euclid_dist_tmp;
 		}
@@ -515,6 +570,7 @@ float MainKnapsack::maximum_distance_D2(){
 
 	return max_dist_PF;
 }
+
 
 void MainKnapsack::pareto_front_evaluation(string type_inst){
 
@@ -530,98 +586,6 @@ void MainKnapsack::pareto_front_evaluation(string type_inst){
 	write_fic.close();
 
 }
-
-
-
-void MainKnapsack::filter_efficient_set(){
-
-	list< Alternative* > fixed_opt_set(OPT_Solution.begin(),OPT_Solution.end());
-	for(list< Alternative* >::iterator el1 = fixed_opt_set.begin(); el1 != fixed_opt_set.end(); ++el1){
-		for(list< Alternative* >::iterator el2 = fixed_opt_set.begin(); el2 != fixed_opt_set.end(); ++el2){
-			if((*el1)->get_id() == (*el2)->get_id())
-				continue;
-			if( (*el1)->dominates(*el2) == 1)
-				OPT_Solution.erase(el2);
-			else if((*el1)->dominates(*el2) == -1)
-				OPT_Solution.erase(el1);
-
-		}
-	}
-}
-
-
-list< Alternative * > MainKnapsack::MOLS(double MAX_ITERATION_TIME){
-
-	Alternative* alt;
-	list< Alternative* > Local_front(0);
-	//First initialization
-
-	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p){
-		Update_Archive(*p,OPT_Solution);
-	}
-
-//	double nb_iteration = 0;
-	while(Population.size() > 0  and ((clock() /CLOCKS_PER_SEC) - MAX_ITERATION_TIME <= 180 ) ){//(nb_iteration < MAX_ITERATION_TIME)){
-//		nb_iteration++;
-		//get first element
-		alt = Population.front();
-
-		vector<Alternative *> current_neighbors = alt->get_neighborhood();
-
-		for(vector< Alternative* >::iterator neighbor = current_neighbors.begin(); neighbor != current_neighbors.end(); ++neighbor){
-
-			if( alt->dominates(*neighbor) != 1 )
-				Update_Archive(*neighbor,Local_front);
-		}
-
-		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
-
-			if ( Update_Archive(*new_alt, OPT_Solution) ){
-				Population.push_back(*new_alt);
-			}
-
-		}
-		//remove first element
-		Population.pop_front();
-		Local_front.clear();
-	}
-
-	filter_efficient_set();
-
-	write_solution();
-
-	return OPT_Solution;
-}
-
-
-bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL){
-
-	vector< Alternative* > to_remove;
-	bool dominated = false;
-
-	for(list< Alternative* >::iterator alt = set_SOL.begin(); alt != set_SOL.end(); ++alt){
-
-		int dom_val = (*alt)->dominates(p);
-		if(dom_val == 1){			// alt dominates p
-			dominated = true;
-//			return false;
-		}
-		else if( dom_val == -1 )   // p dominates alt
-			to_remove.push_back(*alt);
-	}
-
-	for(vector< Alternative* >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm)
-		set_SOL.remove(*rm);
-
-
-	if( dominated )
-		return false;
-
-	set_SOL.push_back(p);
-	return true;
-}
-
-
 
 
 
