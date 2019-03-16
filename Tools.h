@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <time.h>
+#include <ostream>
 
 #pragma once
 
@@ -26,6 +27,7 @@ public:
 	static vector< float > decompose_line_to_float_vector(string line);
 	static string print_vector(vector<float> v);
 	static vector<float> generate_random_WS_aggregator(int n_w);
+	static void generate_random_WS(string filename, int nb_criteria);
 
 };
 

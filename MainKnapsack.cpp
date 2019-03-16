@@ -489,8 +489,6 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time,
 
 
 	//write evaluation
-	ostringstream FileName;
-	FileName.str("");
 	ofstream fic("./Data/distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
 
 

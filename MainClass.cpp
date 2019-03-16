@@ -1,6 +1,7 @@
 
 #include "MainKnapsack.h"
 #include <time.h>
+#include "Tools.h"
 using namespace std;
 
 
@@ -58,26 +59,29 @@ int main(int argc, char** argv){
 	MainKnapsack * knaps;
 
 
-////	PLS
-//	for(int i = 0; i < 10; i++){
-//		//without extension
-//		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-//		//PLS
-//		knaps = main_Knapsack_PLS(filename_instance, init_population_filename,WS_DM,type_inst+"_PLS");
-//	}
-//	knaps->write_coeff_functions(type_inst+"_PLS");
+
+	////	PLS
+		for(int i = 0; i < 10; i++){
+			//without extension
+			string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+			//PLS
+			knaps = main_Knapsack_PLS(filename_instance, init_population_filename,WS_DM,type_inst+"_PLS");
+		}
+		knaps->write_coeff_functions(type_inst+"_PLS");
 
 
-////	WSLS
-	for(int i = 0; i < 10; i++){
-		//without extension
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		//WSLS
-		knaps = main_Knapsack_WSLS(filename_instance, init_population_filename,WS_DM,type_inst+"_WS");
+	////	WSLS
+	for(int k = 0; k < 50; k++){
+		Tools::generate_random_WS("WS_Matrix.csv",2);
+		for(int i = 0; i < 10; i++){
+			//without extension
+			string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+			//WSLS
+			knaps = main_Knapsack_WSLS(filename_instance, init_population_filename,WS_DM,type_inst+"_WS");
+		}
+		knaps->write_coeff_functions(type_inst+"_WS");
+
 	}
-	knaps->write_coeff_functions(type_inst+"_WS");
-
-
 
 	return 1;
 
