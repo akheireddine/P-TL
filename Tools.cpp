@@ -89,7 +89,9 @@ void Tools::generate_random_WS(string filename, int nb_criteria){
 
 	vector<float > weighted_sum = generate_random_WS_aggregator(nb_criteria);
 
-	ofstream fic(filename);
+	ofstream fic(filename.c_str());
+
+
 	for(int i = 0; i < weighted_sum.size(); i++)
 		fic<<weighted_sum[i]<<endl;
 

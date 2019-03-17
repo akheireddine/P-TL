@@ -10,6 +10,8 @@
 #include <vector>
 #include <time.h>
 #include <ostream>
+#include <fstream>
+
 
 #pragma once
 
