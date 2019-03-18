@@ -53,15 +53,15 @@ int main(int argc, char** argv){
 	string init_population_filename = "./initial_population_knapsack.ks";
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "A";
-	string taille = "100";
+	string type_inst = "C";
+	string taille = "300";
 
 	MainKnapsack * knaps;
 
 
-//	for(int k = 0; k < 50; k++){
+	for(int k = 0; k < 20; k++){
 
-////PLS
+//PLS
 		for(int i = 0; i < 10; i++){
 			//without extension
 			string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
@@ -71,7 +71,7 @@ int main(int argc, char** argv){
 //		knaps->write_coeff_functions(type_inst+"_PLS");
 
 
-////WSLS
+//WSLS
 //		Tools::generate_random_WS("WS_Matrix.csv",2);
 //		for(int i = 0; i < 10; i++){
 //			//without extension
@@ -81,7 +81,7 @@ int main(int argc, char** argv){
 //		}
 //		knaps->write_coeff_functions(type_inst+"_WS");
 
-//	}
+	}
 
 	return 1;
 

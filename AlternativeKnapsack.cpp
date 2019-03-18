@@ -122,10 +122,8 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 			float aggregate_func_val_item = 0;
 
 			Out_BP.insert(i);
-
 			for(int j = 0; j < ws_aggr_utility.size(); j++)
-				aggregate_func_val_item += ws_aggr_utility[i] * mainLSStructure->get_utility(i,j);
-
+				aggregate_func_val_item += ws_aggr_utility[j] * mainLSStructure->get_utility(i,j);
 
 			float val_key = aggregate_func_val_item / mainLSStructure->get_weight_of(i);
 			ratio_items[val_key] = i;

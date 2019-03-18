@@ -25,6 +25,7 @@ MainKnapsack::MainKnapsack(string filename, string matrix_filename, string init_
 
 void MainKnapsack::readInitPopulationFile(string filename){
 
+	Population.clear();
 	ifstream fic(filename.c_str());
 
 
@@ -287,6 +288,7 @@ list< Alternative * > MainKnapsack::MOLS(double START_TIME){
 
 
 	while((Population.size() > 0)  and ((clock() /CLOCKS_PER_SEC) - START_TIME <= 180 ) ){
+
 		//get first element
 		alt = Population.front();
 
@@ -297,8 +299,6 @@ list< Alternative * > MainKnapsack::MOLS(double START_TIME){
 			if( alt->dominates(*neighbor) != 1 )
 				Update_Archive(*neighbor,Local_front);
 		}
-		cout<<"cocoooooo POP ZIE"<<Population.size()<<endl;
-
 		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
 			//Filter OPT_Solution set
 			if ( Update_Archive(*new_alt, OPT_Solution) ){
@@ -308,7 +308,9 @@ list< Alternative * > MainKnapsack::MOLS(double START_TIME){
 		}
 		//remove first element
 		Population.pop_front();
+
 		Local_front.clear();
+
 	}
 
 	filter_efficient_set();
@@ -477,10 +479,10 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time,
 	cout<<"    "<< Tools::print_vector(opt_values)<<endl;
 
 	//Get minimum objective values difference between the best alternative and PLS front computed
-	float min_eff_ratio = nearest_alternative(filename_instance+".eff", weight_DM, opt_values, vector_criteria);
-	cout<<"Solution found in Pareto (optimal) front "<<endl;
-	cout<<"   ratio ( "<<to_string(min_eff_ratio)<<" )"<<endl;
-	cout<<"   vector objective( "<<Tools::print_vector(vector_criteria)<<" )"<<endl;
+//	float min_eff_ratio = nearest_alternative(filename_instance+".eff", weight_DM, opt_values, vector_criteria);
+//	cout<<"Solution found in Pareto (optimal) front "<<endl;
+//	cout<<"   ratio ( "<<to_string(min_eff_ratio)<<" )"<<endl;
+//	cout<<"   vector objective( "<<Tools::print_vector(vector_criteria)<<" )"<<endl;
 
 	//Get minimum objective values difference between the best alternative and WS-MOLS front computed
 	float min_mols_ratio = nearest_alternative(filename_instance+".sol", weight_DM, opt_values, vector_criteria);
@@ -495,7 +497,7 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time,
 			//distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
 
 
-	fic<<min_mols_ratio<<","<<min_eff_ratio<<","<<time<<endl;
+	fic<<min_mols_ratio<<","<<time<<endl;
 	cout<<"----------------------- END EVALUATION ----------------------"<<endl<<endl;
 
 	fic.close();
