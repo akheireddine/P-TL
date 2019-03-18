@@ -286,7 +286,7 @@ list< Alternative * > MainKnapsack::MOLS(double START_TIME){
 		Update_Archive(*p,OPT_Solution);
 
 
-	while(Population.size() > 0  and ((clock() /CLOCKS_PER_SEC) - START_TIME <= 180 ) ){
+	while((Population.size() > 0)  and ((clock() /CLOCKS_PER_SEC) - START_TIME <= 180 ) ){
 		//get first element
 		alt = Population.front();
 
@@ -297,6 +297,7 @@ list< Alternative * > MainKnapsack::MOLS(double START_TIME){
 			if( alt->dominates(*neighbor) != 1 )
 				Update_Archive(*neighbor,Local_front);
 		}
+		cout<<"cocoooooo POP ZIE"<<Population.size()<<endl;
 
 		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
 			//Filter OPT_Solution set
@@ -489,7 +490,9 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time,
 
 
 	//write evaluation
-	ofstream fic("./Data/distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
+	ofstream fic("./Data/"+to_string(n_items)+"_"+type_inst+".eval", ios::app);
+
+			//distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
 
 
 	fic<<min_mols_ratio<<","<<min_eff_ratio<<","<<time<<endl;
@@ -576,7 +579,8 @@ void MainKnapsack::pareto_front_evaluation(string type_inst){
 	float D2 = maximum_distance_D2();
 	float D3 = PR_D3();
 
-	ofstream write_fic("./Data/pareto_front_efficiency_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
+	ofstream write_fic("./Data/"+to_string(n_items)+"_"+type_inst+".eval", ios::app);
+			//"pareto_front_efficiency_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
 
 
 	write_fic<<D1<<","<<to_string(D2)<<","<<to_string(D3)<<endl;
