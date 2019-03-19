@@ -4,6 +4,9 @@
 #include "Tools.h"
 
 
+
+
+
 float Tools::euclidian_distance(vector<float> v1, vector<float> v2){
 	float dist = 0;
 

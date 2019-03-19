@@ -31,18 +31,37 @@ protected :
 	int p_criteria;									// Number of criteria
 	list< Alternative* > Population;				// current set of non-dominated alternatives during the solving process
 	string filename_instance;					    // instance pathname
+	string num_instance;
+	string type_instance;
 
 public:
 
 	virtual void readFilenameInstance(string filename) = 0;
 	virtual void readWS_Matrix(string filename) = 0;
-	virtual list< Alternative * > MOLS(double START_TIME) = 0;
-	virtual void write_solution() = 0;
+	virtual list< Alternative * > MOLS(double starting_time_sec) = 0;
+	virtual void write_solution(string filename) = 0;
+	virtual void GenerateInitialPopulation(int size_population) = 0;
 
 	//GETTERS
 	int get_p_criteria(){ return p_criteria; };
 	int get_n_objective(){ return n_objective; };
 	vector< vector< float > > get_WS_matrix(){ return WS_matrix; };
+
+	inline void change_to_pareto_selection(){
+
+		WS_matrix.resize(p_criteria,vector< float >());
+
+		for(int i = 0 ; i < p_criteria; i++){
+			WS_matrix[i].clear();
+			for(int j = 0; j < p_criteria; j++){
+				if( i == j)
+					WS_matrix[i].push_back(1.);
+				else
+					WS_matrix[i].push_back(0.);
+			}
+		}
+	};
+
 
 };
 

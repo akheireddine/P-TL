@@ -130,6 +130,8 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 		}
 	}
 
+
+
 	for(set< int >::iterator in = In_BP.begin(); in != In_BP.end(); ++in){
 
 		float new_weight = weight - mainLSStructure->get_weight_of(*in);
@@ -141,6 +143,8 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 	}
 
 
+	if(In_BP.size() == 0)
+		enumerate_neighborhood(In_BP,Out_BP, weight, ratio_items);
 
 	return neighborhood;
 }

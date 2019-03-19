@@ -5,15 +5,19 @@
 #include "MainKnapsack.h"
 
 
-MainKnapsack::MainKnapsack(string filename, string matrix_filename, string init_population_filename){
+MainKnapsack::MainKnapsack(string filename,string type_inst, string num_inst, int init_population_size , string matrix_filename){
 
 	filename_instance = filename;
+	type_instance = type_inst;
+	num_instance = num_inst;
 
 	readFilenameInstance(filename_instance);
 
 	readWS_Matrix(matrix_filename);
 
-	readInitPopulationFile(init_population_filename);
+	GenerateInitialPopulation(init_population_size);
+
+//	readInitPopulationFile(init_population_filename);
 
 	readParetoFront();
 }
@@ -23,56 +27,58 @@ MainKnapsack::MainKnapsack(string filename, string matrix_filename, string init_
  * ************************************************* READING PART (INITIALIZATION)  *************************************************
  */
 
-void MainKnapsack::readInitPopulationFile(string filename){
+//void MainKnapsack::readInitPopulationFile(string filename){
+//
+//	Population.clear();
+//	ifstream fic(filename.c_str());
+//
+//
+//	if (!(fic) or filename.find(".ks") == std::string::npos){
+//		cerr<<"Error occurred"<<endl;
+//	}
+//
+//	string line;
+//	float total_weight;
+//
+//	while(!fic.eof()){
+//		total_weight = 0;
+//
+//		getline(fic,line);
+//
+//		if( line.size() == 0)
+//			continue;
+//
+//		set<int> set_items;
+//		char *cline = new char[line.length() + 1];
+//		std::strcpy(cline, line.c_str());
+//
+//		char * pch = strtok (cline," 	,");
+//		while (pch != NULL){
+//			set_items.insert(atoi(pch));
+//			total_weight += std::get<0>(Items_information[atoi(pch)]);
+//			pch = strtok (NULL, " 	,");
+//		}
+//
+//		if(total_weight > Backpack_capacity){
+//			cerr<<"Not feasable initialization"<<endl;
+//			exit(1);
+//		}
+//
+//		AlternativeKnapsack* alt = new AlternativeKnapsack(set_items, this);
+//		Population.push_back(alt);
+//
+//	}
+//	cout<<"   Taille de la population initiale ("<<to_string(Population.size())<<")"<<endl;
+//
+//	if( Population.size() == 0){
+//		set<int> empt;
+//		AlternativeKnapsack *alt = new AlternativeKnapsack(empt, this);
+//		Population.push_back(alt);
+//	}
+//	fic.close();
+//}
 
-	Population.clear();
-	ifstream fic(filename.c_str());
 
-
-	if (!(fic) or filename.find(".ks") == std::string::npos){
-		cerr<<"Error occurred"<<endl;
-	}
-
-	string line;
-	float total_weight;
-
-	while(!fic.eof()){
-		total_weight = 0;
-
-		getline(fic,line);
-
-		if( line.size() == 0)
-			continue;
-
-		set<int> set_items;
-		char *cline = new char[line.length() + 1];
-		std::strcpy(cline, line.c_str());
-
-		char * pch = strtok (cline," 	,");
-		while (pch != NULL){
-			set_items.insert(atoi(pch));
-			total_weight += std::get<0>(Items_information[atoi(pch)]);
-			pch = strtok (NULL, " 	,");
-		}
-
-		if(total_weight > Backpack_capacity){
-			cerr<<"Not feasable initialization"<<endl;
-			exit(1);
-		}
-
-		AlternativeKnapsack* alt = new AlternativeKnapsack(set_items, this);
-		Population.push_back(alt);
-
-	}
-	cout<<"   Taille de la population initiale ("<<to_string(Population.size())<<")"<<endl;
-
-	if( Population.size() == 0){
-		set<int> empt;
-		AlternativeKnapsack *alt = new AlternativeKnapsack(empt, this);
-		Population.push_back(alt);
-	}
-	fic.close();
-}
 
 
 void MainKnapsack::readFilenameInstance(string filename){
@@ -157,31 +163,37 @@ void MainKnapsack::readFilenameInstance(string filename){
 
 void MainKnapsack::readWS_Matrix(string filename){
 
-	ifstream fic(filename.c_str());
-	string line;
-	int i = 0;
-	if (!(fic) or filename.find(".csv") == std::string::npos){
-		cerr<<"Error occurred fileMatrix"<<endl;
-	}
+	if(filename.find("PARETO") != std::string::npos)
+		change_to_pareto_selection();
 
-	WS_matrix.resize(p_criteria,vector< float >());
-
-	while( !fic.eof() and i < p_criteria){
-
-		getline(fic,line);
-
-		char *cline = new char[line.length() + 1]; // or
-		std::strcpy(cline, line.c_str());
-
-		char * pch = strtok (cline," 	,;");
-		while (pch != NULL){
-			WS_matrix[i].push_back(atof(pch));
-			pch = strtok (NULL, " 	,;");
+	else {
+		ifstream fic(filename.c_str());
+		string line;
+		int i = 0;
+		if (!(fic) or filename.find(".csv") == std::string::npos){
+			cerr<<"Error occurred fileMatrix"<<endl;
 		}
-		i++;
+
+		WS_matrix.resize(p_criteria,vector< float >());
+
+		while( !fic.eof() and i < p_criteria){
+			WS_matrix[i].clear();
+			getline(fic,line);
+
+			char *cline = new char[line.length() + 1]; // or
+			std::strcpy(cline, line.c_str());
+
+			char * pch = strtok (cline," 	,;");
+			while (pch != NULL){
+				WS_matrix[i].push_back(atof(pch));
+				pch = strtok (NULL, " 	,;");
+			}
+			i++;
+		}
 	}
 
 	n_objective = WS_matrix[0].size();
+
 
 	cout<<"   Matrice des objectives :"<<endl;
 	for(int i = 0; i < p_criteria; i++){
@@ -193,20 +205,17 @@ void MainKnapsack::readWS_Matrix(string filename){
 }
 
 
-void MainKnapsack::write_solution(){
+void MainKnapsack::write_solution(string filename){
 
 	ostringstream FileName;
 	FileName.str("");
-	FileName <<filename_instance.c_str()<<".sol";
+	FileName <<filename.c_str();
 	ofstream fic(FileName.str().c_str());
-//	cout<<"============================="<<endl;
+
 	for(list< Alternative *>::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); alt++){
-		for(int i = 0; i < p_criteria; i++){
+		for(int i = 0; i < p_criteria; i++)
 			fic<< (*alt)->get_criteria_values()[i]<< " ";
-//			cout<< (*alt)->get_criteria_values()[i]<< " ";
-		}
-		fic <<endl;
-//		cout<<endl;
+		fic<<endl;
 	}
 }
 
@@ -236,24 +245,70 @@ void MainKnapsack::readParetoFront(){
 
 }
 
+//
+//void MainKnapsack::write_coeff_functions(string type_inst){
+//	ofstream fic("./Data/distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
+//
+//	fic<<endl<<"Matrice des objectives :"<<endl;
+//
+//	for(int i = 0; i < p_criteria; i++){
+//		fic<<"   ";
+//		for(int j = 0; j < n_objective; j++)
+//			fic<<to_string(WS_matrix[i][j])<< " ";
+//		fic<<endl;
+//	}
+//	fic<<endl;
+//
+//	fic.close();
+//}
 
-void MainKnapsack::write_coeff_functions(string type_inst){
-	ofstream fic("./Data/distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
 
-	fic<<endl<<"Matrice des objectives :"<<endl;
+void MainKnapsack::GenerateInitialPopulation(int size_population){
 
-	for(int i = 0; i < p_criteria; i++){
-		fic<<"   ";
-		for(int j = 0; j < n_objective; j++)
-			fic<<to_string(WS_matrix[i][j])<< " ";
-		fic<<endl;
+	float bp = 0;
+
+	vector<int> all_items;
+
+	for(int i = 0; i < n_items; i++)
+		all_items.push_back(i);
+
+	for (int i = 0; i < size_population; i++){
+		bp = 0;
+		set<int> individu;
+		list<int> items(all_items.begin(), all_items.end());
+
+		while(bp < Backpack_capacity  and (items.size() != 0)  and (rand()*1.0/RAND_MAX) < 0.7){
+			list<int>::iterator iteratour = items.begin();
+			advance(iteratour, rand()%items.size() );
+
+			int itm = *iteratour;// items[ rand()%items.size() ];
+			items.remove( itm );
+
+			if ( (get_weight_of(itm) + bp) > Backpack_capacity )
+				continue;
+
+			individu.insert(itm);
+			bp += get_weight_of(itm);
+		}
+		AlternativeKnapsack * alt = new AlternativeKnapsack(individu, this);
+		Population.push_back(alt);
 	}
+
+}
+
+
+void MainKnapsack::save_new_point(string filename, Alternative * alt){
+	ostringstream FileName;
+	FileName.str("");
+	FileName <<filename.c_str();
+	ofstream fic(FileName.str().c_str(),ios::app);
+
+	for(int i = 0; i < p_criteria; i++)
+		fic<< alt->get_criteria_values()[i]<< " ";
 	fic<<endl;
 
 	fic.close();
 }
-
-
 
 /**
  * ************************************************* SOLVING PART *************************************************
@@ -277,18 +332,20 @@ void MainKnapsack::filter_efficient_set(){
 }
 
 
-list< Alternative * > MainKnapsack::MOLS(double START_TIME){
+list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 
 	Alternative* alt;
 	list< Alternative* > Local_front(0);
+
+	int nb_iteration=0;
 
 	//First initialization
 	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p)
 		Update_Archive(*p,OPT_Solution);
 
 
-	while((Population.size() > 0)  and ((clock() /CLOCKS_PER_SEC) - START_TIME <= 180 ) ){
-
+	while((Population.size() > 0)  and ((clock() /CLOCKS_PER_SEC) - starting_time_sec <= 180 ) ){
+		nb_iteration++;
 		//get first element
 		alt = Population.front();
 
@@ -299,25 +356,40 @@ list< Alternative * > MainKnapsack::MOLS(double START_TIME){
 			if( alt->dominates(*neighbor) != 1 )
 				Update_Archive(*neighbor,Local_front);
 		}
+
 		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
 			//Filter OPT_Solution set
 			if ( Update_Archive(*new_alt, OPT_Solution) ){
 				Population.push_back(*new_alt);
+				save_new_point(filename_instance+".expl",*new_alt);
 			}
-
 		}
+
 		//remove first element
 		Population.pop_front();
-
 		Local_front.clear();
 
 	}
 
+	cout<<"Number of iteration "<<nb_iteration<<endl;
+
 	filter_efficient_set();
 
-	write_solution();
+	write_solution(filename_instance+".sol");
 
 	return OPT_Solution;
+}
+
+
+void MainKnapsack::HYBRID_WS_PLS(double starting_time_sec){
+
+	//WS
+	MOLS(starting_time_sec);
+	Population.push_back(* OPT_Solution.begin());
+	change_to_pareto_selection();
+	//PLS
+	MOLS(starting_time_sec);
+
 }
 
 
@@ -454,7 +526,7 @@ vector< float > MainKnapsack::solve_plne_ws_function(vector<float> weighted_sum)
 
 
 //Evaluation the quality of PLS and WS-PLS solutions to DMs real preferences
-void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time, string type_inst){
+void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time){
 
 	ifstream fic_read(weighted_DM_preferences.c_str());
 	string line;
@@ -492,10 +564,7 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time,
 
 
 	//write evaluation
-	ofstream fic("./Data/"+to_string(n_items)+"_"+type_inst+".eval", ios::app);
-
-			//distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
-
+	ofstream fic("./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+to_string(n_items)+".eval", ios::app);
 
 	fic<<min_mols_ratio<<","<<time<<endl;
 	cout<<"----------------------- END EVALUATION ----------------------"<<endl<<endl;
@@ -517,6 +586,7 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time,
 /**
  * ************************************************* PF MEASUREMENT PART *************************************************
  */
+
 float MainKnapsack::PR_D3(){
 
 	int opt_size_front = 0, nb_found = 0;
@@ -539,7 +609,7 @@ float MainKnapsack::PR_D3(){
 float MainKnapsack::average_distance_D1(){
 
 	float min_dist = -1;
-	float avg_dist = 0;
+	float avg_dist = 0.;
 	for(vector< vector<float > >::iterator pareto_sol = ParetoFront.begin(); pareto_sol != ParetoFront.end(); ++pareto_sol){
 		min_dist = -1;
 		for(list<Alternative*>::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
@@ -557,7 +627,7 @@ float MainKnapsack::average_distance_D1(){
 
 float MainKnapsack::maximum_distance_D2(){
 	float min_dist = -1;
-	float max_dist_PF = 0;
+	float max_dist_PF = 0.;
 
 	for(vector< vector<float > >::iterator pareto_sol = ParetoFront.begin(); pareto_sol != ParetoFront.end(); ++pareto_sol){
 		min_dist = -1;
@@ -575,17 +645,15 @@ float MainKnapsack::maximum_distance_D2(){
 }
 
 
-void MainKnapsack::pareto_front_evaluation(string type_inst){
+void MainKnapsack::pareto_front_evaluation(){
 
 	float D1 = average_distance_D1();
 	float D2 = maximum_distance_D2();
 	float D3 = PR_D3();
 
-	ofstream write_fic("./Data/"+to_string(n_items)+"_"+type_inst+".eval", ios::app);
-			//"pareto_front_efficiency_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
+	ofstream write_fic("./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+to_string(n_items)+".front", ios::app);
 
-
-	write_fic<<D1<<","<<to_string(D2)<<","<<to_string(D3)<<endl;
+	write_fic<<D1<<","<<D2<<","<<D3<<endl;
 
 	write_fic.close();
 
