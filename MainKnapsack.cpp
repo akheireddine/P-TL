@@ -387,6 +387,11 @@ void MainKnapsack::HYBRID_WS_PLS(double starting_time_sec){
 	MOLS(starting_time_sec);
 	Population.push_back(* OPT_Solution.begin());
 	change_to_pareto_selection();
+	for(int i = 0; i < p_criteria; i++){
+		for(int j = 0; j < p_criteria; j++)
+			cout<<WS_matrix[i][j]<<" ";
+		cout<<endl;
+	}
 	//PLS
 	MOLS(starting_time_sec);
 

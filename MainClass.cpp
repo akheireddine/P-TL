@@ -47,12 +47,42 @@ MainKnapsack* main_Knapsack_WSLS(string filename_instance,string type_instance, 
 
 
 
+MainKnapsack* main_Knapsack_WSPLS(string filename_instance,string type_instance, string num_instance, int size_population, string weighted_DM_preferences){
+
+	string pref_filename = "./WS_Matrix.csv";
+
+	MainKnapsack * knaps = new MainKnapsack(filename_instance, type_instance+"_WS", num_instance, size_population, pref_filename);
+
+	clock_t t1 = clock();
+	knaps->HYBRID_WS_PLS(t1/CLOCKS_PER_SEC);
+	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
+
+	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
+
+	knaps->evaluate_solutions(weighted_DM_preferences,t2);
+
+	knaps->pareto_front_evaluation();
+
+	return knaps;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "A";
-	string taille = "100";
+	string type_inst = "C";
+	string taille = "500";
 
 	MainKnapsack * knaps;
 
@@ -60,24 +90,36 @@ int main(int argc, char** argv){
 
 
 //PLS
-//		for(int i = 5; i < 6; i++){
-//			//without extension
-//			string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-//			knaps = main_Knapsack_PLS(filename_instance, type_inst,to_string(i),1,WS_DM);
-//		}
-
-
-
-	for(int k = 0; k < 30; k++){
-//WSLS
-//		Tools::generate_random_WS("WS_Matrix.csv",2);
-		for(int i = 9; i < 10; i++){
+		for(int i = 2; i < 3; i++){
 			//without extension
 			string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-			knaps = main_Knapsack_WSLS(filename_instance, type_inst,to_string(i),1,WS_DM);
+			knaps = main_Knapsack_PLS(filename_instance, type_inst,to_string(i),1,WS_DM);
 		}
 
-	}
+
+
+//	for(int k = 0; k < 30; k++){
+////WSLS
+//		Tools::generate_random_WS("WS_Matrix.csv",2);
+//		for(int i = 2; i < 3; i++){
+//			//without extension
+//			string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+//			knaps = main_Knapsack_WSLS(filename_instance, type_inst,to_string(i),1,WS_DM);
+//		}
+//
+//	}
+
+
+
+//	Tools::generate_random_WS("WS_Matrix.csv",2);
+//	for(int i = 2; i < 3; i++){
+//		//without extension
+//		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+//		knaps = main_Knapsack_WSPLS(filename_instance, type_inst,to_string(i),1,WS_DM);
+//	}
+
+
+
 	return 1;
 
 }
