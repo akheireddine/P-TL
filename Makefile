@@ -54,6 +54,7 @@ all: WS_KNAPSACK
 Tools.o: Tools.cpp
 	$(CCC) $(CCFLAGS) -c Tools.cpp 
 
+	
 AlternativeKnapsack.o: AlternativeKnapsack.cpp 
 	$(CCC) $(CCFLAGS) -o AlternativeKnapsack.o  -c AlternativeKnapsack.cpp 
 	

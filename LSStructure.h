@@ -45,6 +45,7 @@ public:
 	//GETTERS
 	int get_p_criteria(){ return p_criteria; };
 	int get_n_objective(){ return n_objective; };
+	string get_filename_isntance(){ return filename_instance; };
 	vector< vector< float > > get_WS_matrix(){ return WS_matrix; };
 
 	inline void change_to_pareto_selection(){
