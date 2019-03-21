@@ -40,7 +40,8 @@ public :
 	//RESOLUTION
 	bool Update_Archive(Alternative* p, list< Alternative* > &set_SOL);
 	void filter_efficient_set();
-	void HYBRID_WS_PLS(double starting_time_sec);
+	void HYBRID_WS_PLS(double starting_time_sec, int steps);
+	list< Alternative * > MOLS(double starting_time_sec,int steps);
 
 
 	//EVALUATION

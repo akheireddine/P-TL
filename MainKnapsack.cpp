@@ -348,6 +348,7 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 		nb_iteration++;
 		//get first element
 		alt = Population.front();
+		save_new_point(filename_instance+".expl",alt);
 
 		vector<Alternative *> current_neighbors = alt->get_neighborhood();
 
@@ -359,10 +360,8 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 
 		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
 			//Filter OPT_Solution set
-			if ( Update_Archive(*new_alt, OPT_Solution) ){
+			if ( Update_Archive(*new_alt, OPT_Solution) )
 				Population.push_back(*new_alt);
-				save_new_point(filename_instance+".expl",*new_alt);
-			}
 		}
 
 		//remove first element
@@ -381,17 +380,65 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 }
 
 
-void MainKnapsack::HYBRID_WS_PLS(double starting_time_sec){
+
+
+list< Alternative * > MainKnapsack::MOLS(double starting_time_sec,int steps){
+
+	Alternative* alt;
+	list< Alternative* > Local_front(0);
+
+	int nb_iteration=0;
+
+	//First initialization
+	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p)
+		Update_Archive(*p,OPT_Solution);
+
+
+	while((Population.size() > 0)  and ((clock() /CLOCKS_PER_SEC) - starting_time_sec <= 180 )  and nb_iteration < steps){
+		nb_iteration++;
+		//get first element
+		alt = Population.front();
+		save_new_point(filename_instance+".expl",alt);
+
+		vector<Alternative *> current_neighbors = alt->get_neighborhood();
+
+		for(vector< Alternative* >::iterator neighbor = current_neighbors.begin(); neighbor != current_neighbors.end(); ++neighbor){
+			//Prefiltrage
+			if( alt->dominates(*neighbor) != 1 )
+				Update_Archive(*neighbor,Local_front);
+		}
+
+		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
+			//Filter OPT_Solution set
+			if ( Update_Archive(*new_alt, OPT_Solution) or  (rand()*1.0/RAND_MAX) < 0.5 )
+				Population.push_back(*new_alt);
+		}
+
+		//remove first element
+		Population.pop_front();
+		Local_front.clear();
+
+	}
+
+	cout<<"Number of iteration "<<nb_iteration<<endl;
+
+	filter_efficient_set();
+
+	write_solution(filename_instance+".sol");
+
+	return OPT_Solution;
+}
+
+
+
+void MainKnapsack::HYBRID_WS_PLS(double starting_time_sec,int steps){
 
 	//WS
-	MOLS(starting_time_sec);
-	Population.push_back(* OPT_Solution.begin());
+	MOLS(starting_time_sec,steps);
+
+	Population = OPT_Solution;
+
 	change_to_pareto_selection();
-	for(int i = 0; i < p_criteria; i++){
-		for(int j = 0; j < p_criteria; j++)
-			cout<<WS_matrix[i][j]<<" ";
-		cout<<endl;
-	}
 	//PLS
 	MOLS(starting_time_sec);
 
