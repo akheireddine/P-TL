@@ -16,7 +16,7 @@ protected:
 	float Backpack_capacity = 0;							// capacity ofthe backpack
 	int n_items;											// number of items
 	vector< vector<float> > ParetoFront;					// Optimal pareto front from .eff
-
+	AlternativeKnapsack * OPT_Alternative;
 public :
 
 	//information about each item : (key:weight : value:utility list for each criteria)
@@ -34,8 +34,7 @@ public :
 	//READ FILES
 //	void readInitPopulationFile(string filename);
 	void readParetoFront();
-
-//	void write_coeff_functions(string type_inst);
+	void write_coeff_functions(string filename );
 
 	//RESOLUTION
 	bool Update_Archive(Alternative* p, list< Alternative* > &set_SOL);
@@ -45,8 +44,8 @@ public :
 
 
 	//EVALUATION
-	float nearest_alternative(string filename, vector<float > weight_DM, vector< float > opt_values,  vector< float > & vect_obj );
-	vector< float > solve_plne_ws_function(vector<float> weighted_sum);
+	float nearest_alternative(string filename, vector<float > weight_DM,  vector< float > & vect_obj );
+	void solve_plne_ws_function(vector<float> weighted_sum);
 	void evaluate_solutions(string weighted_DM_preferences,float time);
 	void pareto_front_evaluation();
 	void save_new_point(string filename, Alternative * alt);

@@ -86,8 +86,6 @@ vector<float> Tools::generate_random_WS_aggregator(int n_w){
 }
 
 
-
-
 void Tools::generate_random_WS(string filename, int nb_criteria){
 
 	vector<float > weighted_sum = generate_random_WS_aggregator(nb_criteria);
@@ -104,5 +102,42 @@ void Tools::generate_random_WS(string filename, int nb_criteria){
 
 
 
+void Tools::compute_average_column_files(string filename, int nb_column){
+
+	vector< float > avg_columns(nb_column,0);
+	int cpt = 0;
+	ifstream fic(filename.c_str());
+	string line;
+
+	while(!fic.eof()){
+
+		getline(fic,line);
+		if (line.size() == 0)
+			continue;
+
+		vector< float > vect_line = decompose_line_to_float_vector(line);
+
+		for(int i = 0; i < nb_column; i++)
+			avg_columns[i] += vect_line[i];
+
+		cpt++;
+	}
+
+	fic.close();
+
+
+
+	ofstream fic_write(filename.c_str(), ios::app);
+
+	fic_write<<"________________________"<<endl;
+	for(int i = 0; i < nb_column; i++){
+		avg_columns[i] = avg_columns[i]/cpt;
+		fic_write<<avg_columns[i]<<" ";
+	}
+
+	fic_write<<endl;
+
+	fic_write.close();
+}
 
 

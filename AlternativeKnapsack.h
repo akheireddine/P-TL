@@ -51,6 +51,7 @@ public:
 
 	inline void print_criteria_values(){ cout<<"("; for(int i = 0; i < criteria_values.size(); i++) cout<< criteria_values[i] <<", "; cout<<")"<<endl; };
 
+	inline float get_criteria(int i ){ return criteria_values[i]; };
 };
 
 #endif

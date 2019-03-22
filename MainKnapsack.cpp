@@ -245,22 +245,28 @@ void MainKnapsack::readParetoFront(){
 
 }
 
-//
-//void MainKnapsack::write_coeff_functions(string type_inst){
-//	ofstream fic("./Data/distance_to_optimum_"+type_inst+"_"+to_string(n_items)+".eval", ios::app);
-//
-//	fic<<endl<<"Matrice des objectives :"<<endl;
-//
-//	for(int i = 0; i < p_criteria; i++){
-//		fic<<"   ";
-//		for(int j = 0; j < n_objective; j++)
-//			fic<<to_string(WS_matrix[i][j])<< " ";
-//		fic<<endl;
-//	}
-//	fic<<endl;
-//
-//	fic.close();
-//}
+
+void MainKnapsack::write_coeff_functions(string filename ){
+
+	ostringstream FileName;
+	FileName.str("");
+	FileName <<filename.c_str();
+	ofstream fic(FileName.str().c_str(), ios::app);
+
+	fic<<endl<<"Optimal solution :"<<endl;
+	fic<<"("; for(int i = 0; i < p_criteria; i++) fic<< OPT_Alternative->get_criteria(i) <<", "; fic<<")"<<endl;
+	fic<<endl<<"Matrice des objectives & Optimal solution:"<<endl;
+
+	for(int i = 0; i < p_criteria; i++){
+		fic<<"   ";
+		for(int j = 0; j < n_objective; j++)
+			fic<<to_string(WS_matrix[i][j])<< " ";
+		fic<<endl;
+	}
+	fic<<endl;
+
+	fic.close();
+}
 
 
 void MainKnapsack::GenerateInitialPopulation(int size_population){
@@ -478,8 +484,8 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
  * ************************************************* EVALUATION PART *************************************************
  */
 
-//Get minimum gap from opt_values and save the objective values in vect_criteria
-float MainKnapsack::nearest_alternative(string filename, vector<float > weight_DM, vector< float > opt_values, vector< float > & vect_criteria ){
+//Get minimum gap from OPT_Alternative and save the objective values in vect_criteria
+float MainKnapsack::nearest_alternative(string filename, vector<float > weight_DM,  vector< float > & vect_criteria ){
 
 	ifstream fic(filename.c_str());
 
@@ -496,7 +502,7 @@ float MainKnapsack::nearest_alternative(string filename, vector<float > weight_D
 
 		vector< float >tmp_criteria_values = Tools::decompose_line_to_float_vector(line);
 
-		tmp_ratio = Tools::get_ratio(tmp_criteria_values, opt_values, weight_DM);
+		tmp_ratio = Tools::get_ratio(tmp_criteria_values, OPT_Alternative->get_criteria_values(), weight_DM);
 
 		if( (min_ratio == -1) or (tmp_ratio < min_ratio) ){
 			min_ratio = tmp_ratio;
@@ -514,7 +520,7 @@ float MainKnapsack::nearest_alternative(string filename, vector<float > weight_D
 }
 
 //Get optima values of objective with WS aggregator
-vector< float > MainKnapsack::solve_plne_ws_function(vector<float> weighted_sum){
+void MainKnapsack::solve_plne_ws_function(vector<float> weighted_sum){
 
 	IloEnv   env;
 	IloModel model(env);
@@ -571,9 +577,8 @@ vector< float > MainKnapsack::solve_plne_ws_function(vector<float> weighted_sum)
 	}
 	env.end();
 
-	AlternativeKnapsack * alt = new AlternativeKnapsack(items, this);
+	OPT_Alternative = new AlternativeKnapsack(items, this);
 
-	return alt->get_criteria_values();
 }
 
 
@@ -597,19 +602,14 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time)
 	weight_DM = Tools::decompose_line_to_float_vector(line);
 
 	cout<<"----------------------- EVALUATION ----------------------"<<endl;
-	//get best alternative according to WS_DM
-	vector< float > opt_values = solve_plne_ws_function(weight_DM);
-	cout<<"Preference du décideur ([ " << Tools::print_vector(weight_DM) <<" ]) : "<<endl;
-	cout<<"    "<< Tools::print_vector(opt_values)<<endl;
+	//set best alternative OPT_Alternative according to WS_DM
+	solve_plne_ws_function(weight_DM);
 
-	//Get minimum objective values difference between the best alternative and PLS front computed
-//	float min_eff_ratio = nearest_alternative(filename_instance+".eff", weight_DM, opt_values, vector_criteria);
-//	cout<<"Solution found in Pareto (optimal) front "<<endl;
-//	cout<<"   ratio ( "<<to_string(min_eff_ratio)<<" )"<<endl;
-//	cout<<"   vector objective( "<<Tools::print_vector(vector_criteria)<<" )"<<endl;
+	cout<<"Preference du décideur ([ " << Tools::print_vector(weight_DM) <<" ]) : "<<endl;
+	cout<<"    "<< Tools::print_vector(OPT_Alternative->get_criteria_values())<<endl;
 
 	//Get minimum objective values difference between the best alternative and WS-MOLS front computed
-	float min_mols_ratio = nearest_alternative(filename_instance+".sol", weight_DM, opt_values, vector_criteria);
+	float min_mols_ratio = nearest_alternative(filename_instance+".sol", weight_DM, vector_criteria);
 	cout<<"Solution found in (efficient) front "<<endl;
 	cout<<"   ratio ( "<<min_mols_ratio<<" )"<<endl;
 	cout<<"   vector objective ( "<<Tools::print_vector(vector_criteria)<<" )"<<endl;

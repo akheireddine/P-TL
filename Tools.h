@@ -30,6 +30,7 @@ public:
 	static string print_vector(vector<float> v);
 	static vector<float> generate_random_WS_aggregator(int n_w);
 	static void generate_random_WS(string filename, int nb_criteria);
+	static void compute_average_column_files(string filename, int nb_column);
 
 };
 
