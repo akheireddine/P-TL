@@ -81,7 +81,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "A";
+	string type_inst = "C";
 	string taille = "100";
 
 	MainKnapsack * knaps;
@@ -98,13 +98,13 @@ int main(int argc, char** argv){
 
 
 	//WSLS
-	for(int step = 0; step < 10; step++){
+	for(int step = 0; step < 8; step++){
+		//SET COEFF_OBJECTIVE      !!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix.csv");
 
-		//SET COEFF_OBJECTIVE
+		for(int i = 0; i < 10; i++){
 
-		for(int i = 0; i < 1; i++){
-
-			for(int k = 0; k < 3; k++){
+			for(int k = 0; k < 30; k++){
 	//		Tools::generate_random_WS("WS_Matrix.csv",2);
 				//without extension
 				string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);

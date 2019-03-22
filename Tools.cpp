@@ -141,3 +141,23 @@ void Tools::compute_average_column_files(string filename, int nb_column){
 }
 
 
+
+void Tools::copy_into(string src_filename, string dest_filename){
+
+	ifstream src(src_filename.c_str());
+	ofstream dest(dest_filename.c_str());
+
+	string line;
+
+	while(!src.eof()){
+
+		getline(src,line);
+		dest<<line<<endl;
+	}
+
+	src.close();
+	dest.close();
+}
+
+
+
