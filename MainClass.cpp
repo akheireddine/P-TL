@@ -81,25 +81,15 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "C";
-	string taille = "100";
+	string type_inst = "A";
+	string taille = "200";
 
 	MainKnapsack * knaps;
 
 
 
-
-////PLS
-//		for(int i = 7; i < 8; i++){
-//			//without extension
-//			string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-//			knaps = main_Knapsack_PLS(filename_instance, type_inst,to_string(i),1,WS_DM);
-//		}
-
-
-	//WSLS
-	for(int step = 0; step < 8; step++){
-		//SET COEFF_OBJECTIVE      !!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//SET COEFF_OBJECTIVE      !!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	for(int step = 1; step < 8; step++){
 		Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix.csv");
 
 		for(int i = 0; i < 10; i++){
@@ -122,6 +112,9 @@ int main(int argc, char** argv){
 		}
 
 	}
+
+
+
 
 
 
