@@ -81,20 +81,12 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "C";
+	string type_inst = "D";
 	string taille = "100";
 
 	MainKnapsack * knaps;
 
 
-
-
-////PLS
-//		for(int i = 7; i < 8; i++){
-//			//without extension
-//			string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-//			knaps = main_Knapsack_PLS(filename_instance, type_inst,to_string(i),1,WS_DM);
-//		}
 
 
 	//WSLS
@@ -123,14 +115,6 @@ int main(int argc, char** argv){
 
 	}
 
-
-
-//	Tools::generate_random_WS("WS_Matrix.csv",2);
-//	for(int i = 7; i < 8; i++){
-//		//without extension
-//		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-//		knaps = main_Knapsack_WSPLS(filename_instance, type_inst,to_string(i),1,WS_DM);
-//	}
 
 
 
