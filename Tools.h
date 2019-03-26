@@ -8,7 +8,6 @@
 #include <cstring>
 #include <string>
 #include <vector>
-#include <time.h>
 #include <ostream>
 #include <fstream>
 
@@ -21,8 +20,15 @@ using namespace std;
 
 class Tools{
 
+
+
 public:
 
+	static vector< float > dist_time_avg;
+	static vector< float > indicator_avg;
+	static int cpt;
+
+	static inline void clean_up(){ 	dist_time_avg.clear();dist_time_avg.resize(2,0); indicator_avg.clear(); indicator_avg.resize(3,0); };
 	static float euclidian_distance(vector<float> v1, vector<float> v2);
 	static float get_ratio(vector<float> v, vector<float> v_opt, vector<float> weights);
 	static bool equal_vectors(vector<float> v1, vector<float> v2);
@@ -32,6 +38,10 @@ public:
 	static void generate_random_WS(string filename, int nb_criteria);
 	static void compute_average_column_files(string filename, int nb_column);
 	static void copy_into(string src_filename, string dest_filename);
+	static void save_average_dist_time(string filename);
+	static void save_average_indicator(string filename);
+	static void update_dist_time(float dist_min,float time);
+	static void update_indicators(float D1, float D2, float D3);
 
 
 };

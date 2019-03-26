@@ -104,12 +104,31 @@ void AlternativeKnapsack::enumerate_neighborhood(set<int> & curr_BP, set<int> &i
 	}
 }
 
+map< float, int, greater <float> > AlternativeKnapsack::generate_ordered_ratio_items(set<int> set_items){
+
+	map< float, int, greater <float> > ratio_items;
+
+	vector<float> ws_aggr_utility = Tools::generate_random_WS_aggregator(mainLSStructure->get_p_criteria());
+
+	for(set<int>::iterator i = set_items.begin(); i != set_items.end(); ++i){
+
+		float aggregate_func_val_item = 0;
+
+		for(int j = 0; j < ws_aggr_utility.size(); j++)
+			aggregate_func_val_item += ws_aggr_utility[j] * mainLSStructure->get_utility(*i,j);
+
+		float val_key = aggregate_func_val_item / mainLSStructure->get_weight_of(*i);
+		ratio_items[val_key] = *i;
+	}
+
+	return ratio_items;
+}
+
 
 
 vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 
 	set< int > In_BP, Out_BP;
-	map< float, int, greater <float> > ratio_items;
 
 	//Generate a random set of WS to select the next item to insert
 	vector<float> ws_aggr_utility = Tools::generate_random_WS_aggregator(mainLSStructure->get_p_criteria());
@@ -117,22 +136,15 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 	for(int i = 0; i < alternatives.size(); i++){
 		if( alternatives[i] == 1)
 			In_BP.insert(i);
-		else{
-
-			float aggregate_func_val_item = 0;
-
+		else
 			Out_BP.insert(i);
-			for(int j = 0; j < ws_aggr_utility.size(); j++)
-				aggregate_func_val_item += ws_aggr_utility[j] * mainLSStructure->get_utility(i,j);
-
-			float val_key = aggregate_func_val_item / mainLSStructure->get_weight_of(i);
-			ratio_items[val_key] = i;
-		}
 	}
 
 
 
 	for(set< int >::iterator in = In_BP.begin(); in != In_BP.end(); ++in){
+
+		map< float, int, greater <float> > ratio_items = generate_ordered_ratio_items(Out_BP);
 
 		float new_weight = weight - mainLSStructure->get_weight_of(*in);
 		set< int > in_tmp(In_BP.begin(),In_BP.end());
@@ -143,8 +155,10 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 	}
 
 
-	if(In_BP.size() == 0)
+	if(In_BP.size() == 0){
+		map< float, int, greater <float> > ratio_items = generate_ordered_ratio_items(Out_BP);
 		enumerate_neighborhood(In_BP,Out_BP, weight, ratio_items);
+	}
 
 	return neighborhood;
 }

@@ -20,6 +20,8 @@ MainKnapsack::MainKnapsack(string filename,string type_inst, string num_inst, in
 //	readInitPopulationFile(init_population_filename);
 
 	readParetoFront();
+
+
 }
 
 
@@ -615,10 +617,11 @@ void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time)
 	cout<<"   vector objective ( "<<Tools::print_vector(vector_criteria)<<" )"<<endl;
 
 
-	//write evaluation
+//	write evaluation
 	ofstream fic("./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+to_string(n_items)+".eval", ios::app);
-
 	fic<<min_mols_ratio<<","<<time<<endl;
+
+	Tools::update_dist_time(min_mols_ratio,time);
 	cout<<"----------------------- END EVALUATION ----------------------"<<endl<<endl;
 
 	fic.close();
@@ -702,6 +705,8 @@ void MainKnapsack::pareto_front_evaluation(){
 	float D1 = average_distance_D1();
 	float D2 = maximum_distance_D2();
 	float D3 = PR_D3();
+
+	Tools::update_indicators(D1,D2,D3);
 
 	ofstream write_fic("./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+to_string(n_items)+".front", ios::app);
 

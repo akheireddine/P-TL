@@ -2,8 +2,7 @@
 
 
 #include "Tools.h"
-
-
+#include <iostream>
 
 
 
@@ -66,7 +65,6 @@ vector<float> Tools::generate_random_WS_aggregator(int n_w){
 
 	float sum = 0;
 	vector<float> weighted_sum;
-	srand(time(NULL));
 
 
 	for(int i =0; i < n_w - 1; i++){
@@ -80,7 +78,7 @@ vector<float> Tools::generate_random_WS_aggregator(int n_w){
 		weighted_sum.push_back(wi);
 	}
 
-	weighted_sum.push_back(1 - sum);
+	weighted_sum.push_back(1.0 - sum);
 
 	return weighted_sum;
 }
@@ -128,11 +126,10 @@ void Tools::compute_average_column_files(string filename, int nb_column){
 
 
 	ofstream fic_write(filename.c_str(), ios::app);
-
 	fic_write<<"________________________"<<endl;
 	for(int i = 0; i < nb_column; i++){
-		avg_columns[i] = avg_columns[i]/cpt;
-		fic_write<<avg_columns[i]<<" ";
+		avg_columns[i] = avg_columns[i]*1.0/cpt;
+		fic_write<<to_string(avg_columns[i])<<" ";
 	}
 
 	fic_write<<endl;
@@ -140,7 +137,47 @@ void Tools::compute_average_column_files(string filename, int nb_column){
 	fic_write.close();
 }
 
+void Tools::update_dist_time(float dist_min,float time){
+	Tools::dist_time_avg[0] += dist_min*100;
+	Tools::dist_time_avg[1] += time;
 
+	Tools::cpt++;
+}
+
+void Tools::update_indicators(float D1, float D2, float D3){
+	Tools::indicator_avg[0] += D1;
+	Tools::indicator_avg[1] += D2;
+	Tools::indicator_avg[2] += D3;
+}
+
+
+void Tools::save_average_dist_time(string filename){
+
+	ofstream fic_write(filename.c_str(), ios::app);
+	fic_write<<"________________________"<<endl;
+	for(int i = 0; i < Tools::dist_time_avg.size(); i++){
+		Tools::dist_time_avg[i] = Tools::dist_time_avg[i]*1.0/cpt;
+		fic_write<<Tools::dist_time_avg[i]<<" ";
+	}
+	fic_write<<endl;
+	fic_write.close();
+
+	Tools::dist_time_avg.clear();
+}
+
+void Tools::save_average_indicator(string filename){
+
+	ofstream fic_write(filename.c_str(), ios::app);
+	fic_write<<"________________________"<<endl;
+	for(int i = 0; i < indicator_avg.size(); i++){
+		Tools::indicator_avg[i] = Tools::indicator_avg[i]*1.0/cpt;
+		fic_write<<Tools::indicator_avg[i]<<" ";
+	}
+	fic_write<<endl;
+	fic_write.close();
+	Tools::indicator_avg.clear();
+
+}
 
 void Tools::copy_into(string src_filename, string dest_filename){
 
