@@ -1,8 +1,8 @@
 
 #include <set>
-#include <ilcplex/ilocplex.h>
 
 #include "MainKnapsack.h"
+#define TIMEOUT 180
 
 
 MainKnapsack::MainKnapsack(string filename,string type_inst, string num_inst, int init_population_size , string matrix_filename){
@@ -18,8 +18,6 @@ MainKnapsack::MainKnapsack(string filename,string type_inst, string num_inst, in
 	GenerateInitialPopulation(init_population_size);
 
 //	readInitPopulationFile(init_population_filename);
-
-	readParetoFront();
 
 
 }
@@ -91,11 +89,12 @@ void MainKnapsack::readFilenameInstance(string filename){
 
 	vector< float > line_value;
 
-	ostringstream FileName;
-	FileName.str("");
-	FileName <<filename.c_str()<<".dat";
-	ifstream fic(FileName.str());
+//	ostringstream FileName;
+//	FileName.str("");
+//	FileName <<filename.c_str()<<".dat";
+//	ifstream fic(FileName.str());
 
+	ifstream fic((filename+".dat").c_str());
 
 	//comments
 	getline(fic,line);
@@ -209,10 +208,7 @@ void MainKnapsack::readWS_Matrix(string filename){
 
 void MainKnapsack::write_solution(string filename){
 
-	ostringstream FileName;
-	FileName.str("");
-	FileName <<filename.c_str();
-	ofstream fic(FileName.str().c_str());
+	ofstream fic(filename.c_str());
 
 	for(list< Alternative *>::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); alt++){
 		for(int i = 0; i < p_criteria; i++)
@@ -222,38 +218,9 @@ void MainKnapsack::write_solution(string filename){
 }
 
 
-void MainKnapsack::readParetoFront(){
-
-	string file_extension = filename_instance+".eff";
-	ifstream fic(file_extension.c_str());
-	string line;
-
-	if (!(fic) or file_extension.find(".eff") == std::string::npos){
-		cerr<<"Error occurred paretofront"<<endl;
-	}
-
-	ParetoFront.clear();
-
-	while(!fic.eof()){
-
-		getline(fic,line);
-		if (line.size() == 0)
-			continue;
-
-		vector< float > vector_objective = Tools::decompose_line_to_float_vector(line);
-
-		ParetoFront.push_back(vector_objective);
-	}
-
-}
-
-
 void MainKnapsack::write_coeff_functions(string filename ){
 
-	ostringstream FileName;
-	FileName.str("");
-	FileName <<filename.c_str();
-	ofstream fic(FileName.str().c_str(), ios::app);
+	ofstream fic(filename.c_str(), ios::app);
 
 	fic<<endl<<"Optimal solution :"<<endl;
 	fic<<"("; for(int i = 0; i < p_criteria; i++) fic<< OPT_Alternative->get_criteria(i) <<", "; fic<<")"<<endl;
@@ -306,10 +273,7 @@ void MainKnapsack::GenerateInitialPopulation(int size_population){
 
 
 void MainKnapsack::save_new_point(string filename, Alternative * alt){
-	ostringstream FileName;
-	FileName.str("");
-	FileName <<filename.c_str();
-	ofstream fic(FileName.str().c_str(),ios::app);
+	ofstream fic(filename.c_str(),ios::app);
 
 	for(int i = 0; i < p_criteria; i++)
 		fic<< alt->get_criteria_values()[i]<< " ";
@@ -321,6 +285,9 @@ void MainKnapsack::save_new_point(string filename, Alternative * alt){
 /**
  * ************************************************* SOLVING PART *************************************************
  */
+
+
+
 
 //Filter the final archive
 void MainKnapsack::filter_efficient_set(){
@@ -352,7 +319,7 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 		Update_Archive(*p,OPT_Solution);
 
 
-	while((Population.size() > 0)  and ((clock() /CLOCKS_PER_SEC) - starting_time_sec <= 180 ) ){
+	while((Population.size() > 0)  and ((clock() /CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
 		//get first element
 		alt = Population.front();
@@ -402,7 +369,7 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec,int steps){
 		Update_Archive(*p,OPT_Solution);
 
 
-	while((Population.size() > 0)  and ((clock() /CLOCKS_PER_SEC) - starting_time_sec <= 180 )  and nb_iteration < steps){
+	while((Population.size() > 0)  and ((clock() /CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT )  and nb_iteration < steps){
 		nb_iteration++;
 		//get first element
 		alt = Population.front();
@@ -482,239 +449,15 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 
 
 
-/**
- * ************************************************* EVALUATION PART *************************************************
- */
 
-//Get minimum gap from OPT_Alternative and save the objective values in vect_criteria
-float MainKnapsack::nearest_alternative(string filename, vector<float > weight_DM,  vector< float > & vect_criteria ){
 
-	ifstream fic(filename.c_str());
 
-	vector< float > criteria_val(p_criteria,0);
-	float min_ratio = -1, tmp_ratio = 1;
-	string line;
 
-	while(!fic.eof()){
 
-		getline(fic,line);
 
-		if(line.size() == 0)
-			continue;
 
-		vector< float >tmp_criteria_values = Tools::decompose_line_to_float_vector(line);
 
-		tmp_ratio = Tools::get_ratio(tmp_criteria_values, OPT_Alternative->get_criteria_values(), weight_DM);
 
-		if( (min_ratio == -1) or (tmp_ratio < min_ratio) ){
-			min_ratio = tmp_ratio;
-			criteria_val = tmp_criteria_values;
-		}
-
-		if( min_ratio == 0 )  // equal to DMs preferences
-			break;
-	}
-
-	fic.close();
-	vect_criteria = criteria_val;
-	return min_ratio;
-
-}
-
-//Get optima values of objective with WS aggregator
-void MainKnapsack::solve_plne_ws_function(vector<float> weighted_sum){
-
-	IloEnv   env;
-	IloModel model(env);
-	vector<IloNumVar > x(n_items);
-	IloRangeArray Constraints(env);
-
-	//VARIABLES
-	for(int i = 0; i < n_items; i++){
-		x[i] = IloNumVar(env, 0.0, 1.0, ILOINT);
-		ostringstream varname;
-		varname.str("");
-		varname<<"x_"<<i;
-		x[i].setName(varname.str().c_str());
-	}
-
-	//CONSTRAINTS
-	IloExpr c1(env);
-
-	for(int j = 0; j < n_items ; j++)
-		c1 += x[j] * get_weight_of(j);
-
-	Constraints.add(c1 <= Backpack_capacity );
-
-	model.add(Constraints);
-
-	//OBJECTIVE
-	IloObjective obj=IloAdd(model, IloMaximize(env));
-
-	for(int i = 0; i < n_items; i++){
-		float coeff = 0.;
-		for(int j = 0; j < p_criteria ; j++)
-			  coeff += get_utility(i,j) * weighted_sum[j];
-
-		obj.setLinearCoef(x[i], coeff);
-	}
-
-//	cout<<obj<<endl;
-
-	//SOLVE
-	IloCplex cplex(model);
-
-	cplex.setOut(env.getNullStream());
-
-	if ( !cplex.solve() ) {
-		 env.error() << "Failed to optimize LP" << endl;
-		 exit(1);
-	}
-
-	//GET SOLUTION
-	set< int > items;
-	for(int i = 0; i < n_items; i++){
-		if( cplex.getValue(x[i]) > 0)
-			items.insert(i);
-	}
-	env.end();
-
-	OPT_Alternative = new AlternativeKnapsack(items, this);
-
-}
-
-
-//Evaluation the quality of PLS and WS-PLS solutions to DMs real preferences
-void MainKnapsack::evaluate_solutions(string weighted_DM_preferences,float time){
-
-	ifstream fic_read(weighted_DM_preferences.c_str());
-	string line;
-	int i = 0;
-	vector<float> vector_criteria;
-	vector<float > weight_DM(p_criteria,0);
-
-
-	if (!(fic_read) or weighted_DM_preferences.find(".ks") == std::string::npos){
-		cerr<<"Error occurred eval_sol"<<endl;
-	}
-	//read WS_DMs_preference
-
-	getline(fic_read,line);
-
-	weight_DM = Tools::decompose_line_to_float_vector(line);
-
-	cout<<"----------------------- EVALUATION ----------------------"<<endl;
-	//set best alternative OPT_Alternative according to WS_DM
-	solve_plne_ws_function(weight_DM);
-
-	cout<<"Preference du décideur ([ " << Tools::print_vector(weight_DM) <<" ]) : "<<endl;
-	cout<<"    "<< Tools::print_vector(OPT_Alternative->get_criteria_values())<<endl;
-
-	//Get minimum objective values difference between the best alternative and WS-MOLS front computed
-	float min_mols_ratio = nearest_alternative(filename_instance+".sol", weight_DM, vector_criteria);
-	cout<<"Solution found in (efficient) front "<<endl;
-	cout<<"   ratio ( "<<min_mols_ratio<<" )"<<endl;
-	cout<<"   vector objective ( "<<Tools::print_vector(vector_criteria)<<" )"<<endl;
-
-
-//	write evaluation
-	ofstream fic("./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+to_string(n_items)+".eval", ios::app);
-	fic<<min_mols_ratio<<","<<time<<endl;
-
-	Tools::update_dist_time(min_mols_ratio,time);
-	cout<<"----------------------- END EVALUATION ----------------------"<<endl<<endl;
-
-	fic.close();
-}
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * ************************************************* PF MEASUREMENT PART *************************************************
- */
-
-float MainKnapsack::PR_D3(){
-
-	int opt_size_front = 0, nb_found = 0;
-
-	vector< Alternative* > tmp_opt(OPT_Solution.begin(),OPT_Solution.end());
-	for(vector< vector<float > >::iterator pareto_sol = ParetoFront.begin(); pareto_sol != ParetoFront.end(); ++pareto_sol){
-		for(vector< Alternative* >::iterator alt = tmp_opt.begin(); alt != tmp_opt.end(); ++alt){
-			if( Tools::equal_vectors((*alt)->get_criteria_values(),*pareto_sol) ){
-				nb_found += 1;
-				tmp_opt.erase(alt);
-				break;
-			}
-		}
-		opt_size_front++;
-	}
-
-	return nb_found*100.0/opt_size_front;
-}
-
-float MainKnapsack::average_distance_D1(){
-
-	float min_dist = -1;
-	float avg_dist = 0.;
-	for(vector< vector<float > >::iterator pareto_sol = ParetoFront.begin(); pareto_sol != ParetoFront.end(); ++pareto_sol){
-		min_dist = -1;
-		for(list<Alternative*>::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
-			float euclid_dist_tmp = Tools::euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
-
-			if(euclid_dist_tmp < min_dist  or min_dist == -1)
-				min_dist = euclid_dist_tmp;
-		}
-
-		avg_dist += min_dist;
-	}
-
-	return avg_dist/ ParetoFront.size();
-}
-
-float MainKnapsack::maximum_distance_D2(){
-	float min_dist = -1;
-	float max_dist_PF = 0.;
-
-	for(vector< vector<float > >::iterator pareto_sol = ParetoFront.begin(); pareto_sol != ParetoFront.end(); ++pareto_sol){
-		min_dist = -1;
-		for(list<Alternative*>::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
-			float euclid_dist_tmp = Tools::euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
-			if(euclid_dist_tmp < min_dist  or min_dist == -1)
-				min_dist = euclid_dist_tmp;
-		}
-
-		if( max_dist_PF < min_dist)
-			max_dist_PF = min_dist;
-	}
-
-	return max_dist_PF;
-}
-
-
-void MainKnapsack::pareto_front_evaluation(){
-
-	float D1 = average_distance_D1();
-	float D2 = maximum_distance_D2();
-	float D3 = PR_D3();
-
-	Tools::update_indicators(D1,D2,D3);
-
-	ofstream write_fic("./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+to_string(n_items)+".front", ios::app);
-
-	write_fic<<D1<<","<<D2<<","<<D3<<endl;
-
-	write_fic.close();
-
-}
 
 
 

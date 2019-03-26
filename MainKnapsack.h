@@ -33,7 +33,6 @@ public :
 
 	//READ FILES
 //	void readInitPopulationFile(string filename);
-	void readParetoFront();
 	void write_coeff_functions(string filename );
 
 	//RESOLUTION
@@ -44,17 +43,10 @@ public :
 
 
 	//EVALUATION
-	float nearest_alternative(string filename, vector<float > weight_DM,  vector< float > & vect_obj );
-	void solve_plne_ws_function(vector<float> weighted_sum);
-	void evaluate_solutions(string weighted_DM_preferences,float time);
-	void pareto_front_evaluation();
 	void save_new_point(string filename, Alternative * alt);
 
 
-	//INDICATORS
-	float average_distance_D1();
-	float maximum_distance_D2();
-	float PR_D3();
+
 
 
 	//functions to overload

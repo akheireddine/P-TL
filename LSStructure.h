@@ -47,6 +47,7 @@ public:
 	int get_n_objective(){ return n_objective; };
 	string get_filename_isntance(){ return filename_instance; };
 	vector< vector< float > > get_WS_matrix(){ return WS_matrix; };
+	list<Alternative* > get_OPT_Solution(){ return OPT_Solution; };
 
 	inline void change_to_pareto_selection(){
 

@@ -109,7 +109,6 @@ map< float, int, greater <float> > AlternativeKnapsack::generate_ordered_ratio_i
 	map< float, int, greater <float> > ratio_items;
 
 	vector<float> ws_aggr_utility = Tools::generate_random_WS_aggregator(mainLSStructure->get_p_criteria());
-
 	for(set<int>::iterator i = set_items.begin(); i != set_items.end(); ++i){
 
 		float aggregate_func_val_item = 0;

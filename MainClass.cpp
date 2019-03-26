@@ -2,6 +2,10 @@
 #include "MainKnapsack.h"
 #include <time.h>
 #include "Tools.h"
+
+#define WS_ITERATION 10
+
+
 using namespace std;
 
 
@@ -24,9 +28,9 @@ MainKnapsack* main_Knapsack(string filename_instance,string type_instance, strin
 
 	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
 
-	knaps->evaluate_solutions(weighted_DM_preferences,t2);
+//	knaps->evaluate_solutions(weighted_DM_preferences,t2);
 
-	knaps->pareto_front_evaluation();
+//	knaps->pareto_front_evaluation();
 
 	return knaps;
 }
@@ -44,13 +48,13 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "300";
+	string taille = "100";
 
 	MainKnapsack * knaps;
 
 
 
-	for(int i = 3; i < 4; i++){
+	for(int i = 0; i < 1; i++){
 
 	//SET COEFF_OBJECTIVE      !!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		for(int step = 0; step < 1; step++){
@@ -80,6 +84,28 @@ int main(int argc, char** argv){
 		}
 
 	}
+
+
+
+
+
+
+
+	for(int i = 0; i < 9; i++){
+
+		Tools::generate_random_WS("WS_Matrix.csv",2);
+		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+
+
+		for(int iter = 0; iter < WS_ITERATION; iter++)
+			 knaps = main_Knapsack(filename_instance, type_inst, to_string(i)+"_"+to_string(iter),1, WS_DM);
+
+
+
+	}
+
+
+
 
 
 	return 1;
