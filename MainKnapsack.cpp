@@ -2,7 +2,8 @@
 #include <set>
 
 #include "MainKnapsack.h"
-#define TIMEOUT 400
+#define TIMEOUT 900
+#define __PRINT__
 
 
 MainKnapsack::MainKnapsack(string filename, int init_population_size , string matrix_filename){
@@ -150,12 +151,12 @@ void MainKnapsack::readFilenameInstance(string filename){
 	//total capacity
 	if( line[0] == 'W' )
 		sscanf(line.c_str(),"%s %f",buff,&Backpack_capacity);
-
+#ifdef __PRINT__
 	cout<<"Information sur l'instance : "<<endl;
 	cout<<"   Instance de taille ("<<to_string(n_items)<<")"<<endl;
 	cout<<"   Capacité du sac-à-dos ("<<to_string(Backpack_capacity)<<")"<<endl;
 	cout<<"   Nombre de criètres ("<<to_string(p_criteria)<<")"<<endl;
-
+#endif
 	fic.close();
 }
 
@@ -193,7 +194,7 @@ void MainKnapsack::readWS_Matrix(string filename){
 
 	n_objective = WS_matrix[0].size();
 
-
+#ifdef __PRINT__
 	cout<<"   Matrice des objectives :"<<endl;
 	for(int i = 0; i < p_criteria; i++){
 		cout<<"   ";
@@ -201,6 +202,7 @@ void MainKnapsack::readWS_Matrix(string filename){
 			cout<<WS_matrix[i][j]<< " ";
 		cout<<endl;
 	}
+#endif
 }
 
 

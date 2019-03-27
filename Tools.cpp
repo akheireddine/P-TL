@@ -65,7 +65,7 @@ vector<float> Tools::generate_random_WS_aggregator(int n_w){
 
 	float sum = 0;
 	vector<float> weighted_sum;
-//	srand(time(NULL));
+	srand(time(NULL));
 
 	for(int i =0; i < n_w - 1; i++){
 		float wi = rand()*1.0/RAND_MAX;

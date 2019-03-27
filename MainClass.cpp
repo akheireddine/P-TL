@@ -5,6 +5,7 @@
 #include "Evaluator.h"
 
 #define WS_ITERATION 10
+#define __PRINT__
 
 
 using namespace std;
@@ -53,18 +54,20 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "300";
+	string taille = "200";
 
 	Evaluator * eval_ks;
 
 
 
-	for(int i = 3; i < 4 ; i++){
+	for(int i = 0; i < 10 ; i++){
 		//without extension
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
+		//string filename_instance = "./Instances_Knapsack/instance_test";
+
 		//SET COEFF_OBJECTIVE      !!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 0; step < 1; step++){
+		for(int step = 0; step < 8; step++){
 
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix.csv");
 
@@ -72,7 +75,7 @@ int main(int argc, char** argv){
 			Tools::clean_up();
 
 			for(int k = 0; k < 1; k++){
-				//Tools::generate_random_WS("WS_Matrix.csv",2);
+//				Tools::generate_random_WS("WS_Matrix.csv",2);
 				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
 			}
 
