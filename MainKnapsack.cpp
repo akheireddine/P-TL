@@ -2,7 +2,7 @@
 #include <set>
 
 #include "MainKnapsack.h"
-#define TIMEOUT 900
+#define TIMEOUT 360
 #define __PRINT__
 
 
