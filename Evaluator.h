@@ -10,9 +10,11 @@ class Evaluator{
 private:
 
 	string filename_instance;
-	vector<vector< float > > PFront;
+	string dist_time_file;
+	string pf_indicators_file;
+	list< vector< float > > PFront;
 	string PF_filename;
-	Alternative * OPT_Alternative;
+	AlternativeKnapsack * OPT_Alternative;
 	vector<float > WS_DM_vector;
 
 	MainKnapsack * mainProblem;
@@ -21,12 +23,18 @@ private:
 public:
 
 	//CONSTRUCTOR
-	Evaluator(string filename, LSStructure * problemInstance, string WS_DM_preferences,string dist_time_file, float time, string pf_indicators_file);
+	Evaluator(string filename, MainKnapsack * problemInstance, string WS_DM_preferences, string DT_file, float time, string PFI_file);
 
-
+	//GETTERS
+	string get_filename_instance(){ return filename_instance; };
 
 	//READ FILES
 	void readParetoFront();
+
+	//WRITE INFORMATION WS_MAT & OPT SOLUTION
+	void write_objective_OPT_information();
+	void write_coeff_functions(string filename);
+
 
 
 	//INTERN OPERATIONS

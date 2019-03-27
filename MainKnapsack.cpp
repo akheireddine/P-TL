@@ -2,14 +2,12 @@
 #include <set>
 
 #include "MainKnapsack.h"
-#define TIMEOUT 180
+#define TIMEOUT 400
 
 
-MainKnapsack::MainKnapsack(string filename,string type_inst, string num_inst, int init_population_size , string matrix_filename){
+MainKnapsack::MainKnapsack(string filename, int init_population_size , string matrix_filename){
 
 	filename_instance = filename;
-	type_instance = type_inst;
-	num_instance = num_inst;
 
 	readFilenameInstance(filename_instance);
 
@@ -217,25 +215,6 @@ void MainKnapsack::write_solution(string filename){
 	}
 }
 
-
-void MainKnapsack::write_coeff_functions(string filename ){
-
-	ofstream fic(filename.c_str(), ios::app);
-
-	fic<<endl<<"Optimal solution :"<<endl;
-	fic<<"("; for(int i = 0; i < p_criteria; i++) fic<< OPT_Alternative->get_criteria(i) <<", "; fic<<")"<<endl;
-	fic<<endl<<"Matrice des objectives & Optimal solution:"<<endl;
-
-	for(int i = 0; i < p_criteria; i++){
-		fic<<"   ";
-		for(int j = 0; j < n_objective; j++)
-			fic<<to_string(WS_matrix[i][j])<< " ";
-		fic<<endl;
-	}
-	fic<<endl;
-
-	fic.close();
-}
 
 
 void MainKnapsack::GenerateInitialPopulation(int size_population){

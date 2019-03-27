@@ -154,7 +154,6 @@ void Tools::update_indicators(float D1, float D2, float D3){
 void Tools::save_average_dist_time(string filename){
 
 	ofstream fic_write(filename.c_str(), ios::app);
-	fic_write<<"________________________"<<endl;
 	for(int i = 0; i < Tools::dist_time_avg.size(); i++){
 		Tools::dist_time_avg[i] = Tools::dist_time_avg[i]*1.0/cpt;
 		fic_write<<Tools::dist_time_avg[i]<<" ";
@@ -168,7 +167,6 @@ void Tools::save_average_dist_time(string filename){
 void Tools::save_average_indicator(string filename){
 
 	ofstream fic_write(filename.c_str(), ios::app);
-	fic_write<<"________________________"<<endl;
 	for(int i = 0; i < indicator_avg.size(); i++){
 		Tools::indicator_avg[i] = Tools::indicator_avg[i]*1.0/cpt;
 		fic_write<<Tools::indicator_avg[i]<<" ";
@@ -177,6 +175,13 @@ void Tools::save_average_indicator(string filename){
 	fic_write.close();
 	Tools::indicator_avg.clear();
 
+}
+
+
+void Tools::separate_results(string filename, string separator){
+	ofstream fic_write(filename.c_str(), ios::app);
+	fic_write<<separator<<endl;
+	fic_write.close();
 }
 
 void Tools::copy_into(string src_filename, string dest_filename){

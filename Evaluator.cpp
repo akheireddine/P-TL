@@ -3,19 +3,68 @@
 #include "Evaluator.h"
 #include <ilcplex/ilocplex.h>
 
+#define __PRINT__
 
-Evaluator::Evaluator(string filename, LSStructure * problemInstance, string WS_DM_preferences,
-		string dist_time_file, float time, string pf_indicators_file){
+Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_DM_preferences,
+		string DT_file, float time, string PFI_file){
 
 
+	filename_instance = filename;
 	mainProblem = problemInstance;
+
+	dist_time_file = DT_file;
+	pf_indicators_file = PFI_file;
+
 	readParetoFront();
 
+#ifdef __PRINT___
 	cout<<"----------------------- EVALUATION ----------------------"<<endl;
+#endif
 
 	OPT_Alternative_PLNE(WS_DM_preferences);
+	evaluate_Dist_Time(dist_time_file, time);
+	evaluate_PF(pf_indicators_file);
 
 
+#ifdef __PRINT___
+	cout<<"----------------------- END EVALUATION ----------------------"<<endl<<endl;
+#endif
+
+
+
+}
+
+
+
+
+
+void Evaluator::write_coeff_functions(string filename){
+
+	ofstream fic(filename.c_str(), ios::app);
+
+	fic<<endl<<"Optimal solution :"<<endl;
+	fic<<"("; for(int i = 0; i < mainProblem->get_p_criteria(); i++) fic<< OPT_Alternative->get_criteria(i) <<", "; fic<<")"<<endl;
+	fic<<endl<<"Matrice des objectives & Optimal solution:"<<endl;
+
+	for(int i = 0; i < mainProblem->get_p_criteria(); i++){
+		fic<<"   ";
+		for(int j = 0; j < mainProblem->get_n_objective(); j++)
+			fic<<to_string(mainProblem->get_WS_matrix()[i][j])<< " ";
+		fic<<endl;
+	}
+	fic<<endl;
+
+	fic.close();
+
+}
+
+
+void Evaluator::write_objective_OPT_information(){
+
+	write_coeff_functions(dist_time_file);
+	cout<<"DT FILE "<<dist_time_file<<endl;
+	write_coeff_functions(pf_indicators_file);
+	cout<<"INDICT FILE "<<pf_indicators_file<<endl;
 
 }
 
@@ -35,12 +84,17 @@ vector<float> Evaluator::get_objective_values(vector<float> v_src){
 
 
 
+
 bool Evaluator::is_dominated(vector<float> v){
 
-	for(int k = 0; k < PFront.size(); k++){
+	vector< vector< float >::iterator > add_to_rm;
+	list< vector<float > > cp_PF(PFront.begin(), PFront.end());
+
+
+	for(list< vector<float > >::iterator k = cp_PF.begin(); k != cp_PF.end(); ++k){
 
 		bool dominated = false, dominates = false;
-		vector<float > pf_alt = PFront[k];
+		vector<float > pf_alt = *k ;
 
 		for(int i = 0; i < pf_alt.size(); i++){
 
@@ -53,6 +107,8 @@ bool Evaluator::is_dominated(vector<float> v){
 
 		if ( dominated and !dominates)
 			return true;
+		else if ( !dominated and dominates )
+			PFront.remove(*k);
 	}
 
 	return false;
@@ -135,7 +191,6 @@ void Evaluator::OPT_Alternative_PLNE(string WS_DM_preferences){
 
 	ifstream fic_read(WS_DM_preferences.c_str());
 	string line;
-	vector<float > WS_DM_vector;
 
 
 	if (!(fic_read) or WS_DM_preferences.find(".ks") == std::string::npos){
@@ -203,11 +258,12 @@ void Evaluator::OPT_Alternative_PLNE(string WS_DM_preferences){
 	}
 	env.end();
 
-	OPT_Alternative = new AlternativeKnapsack(items, this);
+	OPT_Alternative = new AlternativeKnapsack(items, mainProblem);
 
+#ifdef __PRINT___
 	cout<<"Preference du décideur ([ " << Tools::print_vector(WS_DM_vector) <<" ]) : "<<endl;
 	cout<<"    "<< Tools::print_vector(OPT_Alternative->get_criteria_values())<<endl;
-
+#endif
 }
 
 
@@ -220,18 +276,18 @@ void Evaluator::evaluate_Dist_Time(string dist_time_file, float time){
 
 	//Get minimum objective values difference between the best alternative and WS-MOLS front computed
 	float min_mols_ratio = nearest_alternative(vector_criteria);
+
+#ifdef __PRINT___
 	cout<<"Solution found in (efficient) front "<<endl;
 	cout<<"   ratio ( "<<min_mols_ratio<<" )"<<endl;
 	cout<<"   vector objective ( "<<Tools::print_vector(vector_criteria)<<" )"<<endl;
+#endif
 
-
-//	write evaluation
 	ofstream fic(dist_time_file,ios::app);
 	//"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+to_string(mainProblem->get_n_items())+".eval", ios::app);
 	fic<<min_mols_ratio<<","<<time<<endl;
 
 	Tools::update_dist_time(min_mols_ratio,time);
-	cout<<"----------------------- END EVALUATION ----------------------"<<endl<<endl;
 
 	fic.close();
 }
@@ -246,10 +302,11 @@ void Evaluator::evaluate_Dist_Time(string dist_time_file, float time){
 float Evaluator::PR_D3(){
 
 	int opt_size_front = 0, nb_found = 0;
+	list<Alternative* > OPT_Solution = mainProblem->get_OPT_Solution();
 
-	vector< Alternative* > tmp_opt(mainProblem->get_OPT_Solution().begin(),mainProblem->get_OPT_Solution().end());
+	vector< Alternative* > tmp_opt(OPT_Solution.begin(),OPT_Solution.end());
 
-	for(vector< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
+	for(list< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
 		for(vector< Alternative* >::iterator alt = tmp_opt.begin(); alt != tmp_opt.end(); ++alt){
 			if( Tools::equal_vectors((*alt)->get_criteria_values(),*pareto_sol) ){
 				nb_found += 1;
@@ -267,15 +324,17 @@ float Evaluator::average_distance_D1(){
 
 	float min_dist = -1;
 	float avg_dist = 0.;
+	list<Alternative* > OPT_Solution = mainProblem->get_OPT_Solution();
 
-	for(vector< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
+	for(list< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
 		min_dist = -1;
-		for(list<Alternative*>::iterator eff_sol = mainProblem->get_OPT_Solution().begin(); eff_sol != mainProblem->get_OPT_Solution().end(); ++eff_sol){
+
+		for(list<Alternative*>::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
+
 			float euclid_dist_tmp = Tools::euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
 			if(euclid_dist_tmp < min_dist  or min_dist == -1)
 				min_dist = euclid_dist_tmp;
 		}
-
 		avg_dist += min_dist;
 	}
 
@@ -285,10 +344,11 @@ float Evaluator::average_distance_D1(){
 float Evaluator::maximum_distance_D2(){
 	float min_dist = -1;
 	float max_dist_PF = 0.;
+	list<Alternative* > OPT_Solution = mainProblem->get_OPT_Solution();
 
-	for(vector< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
+	for(list< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
 		min_dist = -1;
-		for(list<Alternative*>::iterator eff_sol = mainProblem->get_OPT_Solution().begin(); eff_sol != mainProblem->get_OPT_Solution().end(); ++eff_sol){
+		for(list<Alternative*>::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
 			float euclid_dist_tmp = Tools::euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
 			if(euclid_dist_tmp < min_dist  or min_dist == -1)
 				min_dist = euclid_dist_tmp;
@@ -304,12 +364,14 @@ float Evaluator::maximum_distance_D2(){
 void Evaluator::evaluate_PF(string pf_indicators_file){
 
 	float D1 = average_distance_D1();
+
 	float D2 = maximum_distance_D2();
+
 	float D3 = PR_D3();
 
 	Tools::update_indicators(D1,D2,D3);
 
-	ofstream write_fic(pf_indicators_file,io::app);
+	ofstream write_fic(pf_indicators_file,ios::app);
 	//"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+to_string(mainProblem->get_n_items())+".front", ios::app);
 
 	write_fic<<D1<<","<<D2<<","<<D3<<endl;

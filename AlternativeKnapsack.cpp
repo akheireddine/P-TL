@@ -139,11 +139,25 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 			Out_BP.insert(i);
 	}
 
+//	map< float, int, greater <float> > ratio_items = generate_ordered_ratio_items(Out_BP);
 
 
 	for(set< int >::iterator in = In_BP.begin(); in != In_BP.end(); ++in){
 
 		map< float, int, greater <float> > ratio_items = generate_ordered_ratio_items(Out_BP);
+
+//
+//		cout<<"____________________________"<<endl;
+//		for(map< float, int, greater <float> >::iterator rt = ratio_items.begin(); rt != ratio_items.end(); ++rt){
+//			cout<<"("<<(*rt).first<<" : "<<(*rt).second<<")"<<"         (";
+//			for(int i = 0; i < mainLSStructure->get_p_criteria(); i++){
+//				cout<<mainLSStructure->get_utility((*rt).second, i)<<" , ";
+//			}
+//			cout<<mainLSStructure->get_weight_of((*rt).second)<<")"<<endl;
+//		}
+//		cout<<"____________________________"<<endl;
+
+
 
 		float new_weight = weight - mainLSStructure->get_weight_of(*in);
 		set< int > in_tmp(In_BP.begin(),In_BP.end());

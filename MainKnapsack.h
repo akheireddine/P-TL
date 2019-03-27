@@ -15,15 +15,15 @@ protected:
 
 	float Backpack_capacity = 0;							// capacity ofthe backpack
 	int n_items;											// number of items
-	vector< vector<float> > ParetoFront;					// Optimal pareto front from .eff
-	AlternativeKnapsack * OPT_Alternative;
+
+
 public :
 
 	//information about each item : (key:weight : value:utility list for each criteria)
 	vector< tuple<float, vector< float> > > Items_information;
 
 	//constructor
-	MainKnapsack(string filename,string type_inst, string num_inst, int init_population_size , string matrix_filename="PARETO");
+	MainKnapsack(string filename, int init_population_size , string matrix_filename="PARETO");
 
 	//GETTERS
 	int get_n_items(){ return n_items; };
@@ -33,7 +33,6 @@ public :
 
 	//READ FILES
 //	void readInitPopulationFile(string filename);
-	void write_coeff_functions(string filename );
 
 	//RESOLUTION
 	bool Update_Archive(Alternative* p, list< Alternative* > &set_SOL);

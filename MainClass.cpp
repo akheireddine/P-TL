@@ -2,6 +2,7 @@
 #include "MainKnapsack.h"
 #include <time.h>
 #include "Tools.h"
+#include "Evaluator.h"
 
 #define WS_ITERATION 10
 
@@ -16,11 +17,11 @@ int Tools::cpt = 0;
 
 
 
-MainKnapsack* main_Knapsack(string filename_instance,string type_instance, string num_instance, int size_population, string weighted_DM_preferences){
+Evaluator* main_Knapsack(string filename_instance, string type_instance, string num_instance, int size_population, string WS_DM_preferences){
 
 	string pref_filename = "./WS_Matrix.csv";
 
-	MainKnapsack * knaps = new MainKnapsack(filename_instance, type_instance, num_instance, size_population, pref_filename);
+	MainKnapsack * knaps = new MainKnapsack(filename_instance, size_population, pref_filename);
 
 	clock_t t1 = clock();
 	knaps->MOLS(t1/CLOCKS_PER_SEC); 								 //3min
@@ -28,11 +29,15 @@ MainKnapsack* main_Knapsack(string filename_instance,string type_instance, strin
 
 	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
 
-//	knaps->evaluate_solutions(weighted_DM_preferences,t2);
+	string size_instance = to_string(knaps->get_n_items());
 
-//	knaps->pareto_front_evaluation();
+	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
+			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+".eval"
+			, t2,
+			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+".front");
 
-	return knaps;
+
+	return eval;
 }
 
 
@@ -48,15 +53,17 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "100";
+	string taille = "300";
 
-	MainKnapsack * knaps;
+	Evaluator * eval_ks;
 
 
 
-	for(int i = 0; i < 1; i++){
+	for(int i = 3; i < 4 ; i++){
+		//without extension
+		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
-	//SET COEFF_OBJECTIVE      !!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//SET COEFF_OBJECTIVE      !!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		for(int step = 0; step < 1; step++){
 
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix.csv");
@@ -65,44 +72,42 @@ int main(int argc, char** argv){
 			Tools::clean_up();
 
 			for(int k = 0; k < 1; k++){
-	//		Tools::generate_random_WS("WS_Matrix.csv",2);
-				//without extension
-				string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-
-				knaps = main_Knapsack(filename_instance, type_inst,to_string(i),1,WS_DM);
+				//Tools::generate_random_WS("WS_Matrix.csv",2);
+				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
 			}
 
-			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I"+to_string(i)+"_"+taille+".eval");
-			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I"+to_string(i)+"_"+taille+".front");
-//			Tools::compute_average_column_files("./Data/DistTime/"+type_inst+"/I"+to_string(i)+"_"+taille+".eval",2);
-//
-//			Tools::compute_average_column_files("./Data/ParetoFront/"+type_inst+"/I"+to_string(i)+"_"+taille+".front",3);
+//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I"+to_string(i)+"_"+taille+".eval");
+//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I"+to_string(i)+"_"+taille+".front");
 
-			knaps->write_coeff_functions("./Data/DistTime/"+type_inst+"/I"+to_string(i)+"_"+taille+".eval");
-			knaps->write_coeff_functions("./Data/ParetoFront/"+type_inst+"/I"+to_string(i)+"_"+taille+".front");
+			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval");
+			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front");
+			eval_ks->write_objective_OPT_information();
 
 		}
 
-	}
-
-
-
-
-
-
-
-	for(int i = 0; i < 9; i++){
-
-		Tools::generate_random_WS("WS_Matrix.csv",2);
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-
-
-		for(int iter = 0; iter < WS_ITERATION; iter++)
-			 knaps = main_Knapsack(filename_instance, type_inst, to_string(i)+"_"+to_string(iter),1, WS_DM);
-
-
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval",type_inst+to_string(i)+"____");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front",type_inst+to_string(i)+"____");
 
 	}
+
+
+
+
+
+
+
+//	for(int i = 0; i < 9; i++){
+//
+//		Tools::generate_random_WS("WS_Matrix.csv",2);
+//		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+//
+//
+//		for(int iter = 0; iter < WS_ITERATION; iter++)
+//			 eval_ks = main_Knapsack(filename_instance, type_inst, to_string(i)+"_"+to_string(iter),1, WS_DM);
+//
+//
+//
+//	}
 
 
 
