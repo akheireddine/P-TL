@@ -14,13 +14,22 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 	dist_time_file = DT_file;
 	pf_indicators_file = PFI_file;
 
+	WS_DM_vector = Tools::readWS_DM(WS_DM_preferences);
+
 	readParetoFront();
 
 #ifdef __PRINT___
 	cout<<"----------------------- EVALUATION ----------------------"<<endl;
 #endif
 
-	OPT_Alternative_PLNE(WS_DM_preferences);
+	OPT_Alternative = OPT_Alternative_PLNE(WS_DM_vector);
+
+#ifdef __PRINT___
+	cout<<"Preference du décideur ([ " << Tools::print_vector(WS_DM_vector) <<" ]) : "<<endl;
+	cout<<"    "<< Tools::print_vector(OPT_Alternative->get_criteria_values())<<endl;
+#endif
+
+
 	evaluate_Dist_Time(dist_time_file, time);
 	evaluate_PF(pf_indicators_file);
 
@@ -81,9 +90,6 @@ vector<float> Evaluator::get_objective_values(vector<float> v_src){
 	return v_dest;
 }
 
-
-
-
 bool Evaluator::is_dominated(vector<float> v){
 
 	vector< vector< float >::iterator > add_to_rm;
@@ -126,7 +132,7 @@ void Evaluator::readParetoFront(){
 	}
 
 	PFront.clear();
-
+	PF_Efficient.clear();
 	while(!fic.eof()){
 
 		getline(fic,line);
@@ -134,6 +140,7 @@ void Evaluator::readParetoFront(){
 			continue;
 
 		vector< float > vector_pareto_objective = Tools::decompose_line_to_float_vector(line);
+		PF_Efficient.push_back(vector_pareto_objective);
 		vector< float > transformed_objective = get_objective_values(vector_pareto_objective);
 
 		if( !is_dominated(transformed_objective) )
@@ -184,23 +191,9 @@ float Evaluator::nearest_alternative(vector< float > & vect_criteria ){
 
 }
 
+
 //Get optima values of objective with WS aggregator
-void Evaluator::OPT_Alternative_PLNE(string WS_DM_preferences){
-
-
-	ifstream fic_read(WS_DM_preferences.c_str());
-	string line;
-
-
-	if (!(fic_read) or WS_DM_preferences.find(".ks") == std::string::npos){
-		cerr<<"Error occurred eval_sol"<<endl;
-	}
-	//read WS_DMs_preference
-	getline(fic_read,line);
-
-	WS_DM_vector = Tools::decompose_line_to_float_vector(line);
-
-
+AlternativeKnapsack * Evaluator::OPT_Alternative_PLNE(vector<float> WS_vector){
 
 	IloEnv   env;
 	IloModel model(env);
@@ -232,7 +225,7 @@ void Evaluator::OPT_Alternative_PLNE(string WS_DM_preferences){
 	for(int i = 0; i < mainProblem->get_n_items(); i++){
 		float coeff = 0.;
 		for(int j = 0; j < mainProblem->get_p_criteria() ; j++)
-			  coeff += mainProblem->get_utility(i,j) * WS_DM_vector[j];
+			  coeff += mainProblem->get_utility(i,j) * WS_vector[j];
 
 		obj.setLinearCoef(x[i], coeff);
 	}
@@ -257,12 +250,11 @@ void Evaluator::OPT_Alternative_PLNE(string WS_DM_preferences){
 	}
 	env.end();
 
-	OPT_Alternative = new AlternativeKnapsack(items, mainProblem);
+	AlternativeKnapsack * opt_alt = new AlternativeKnapsack(items, mainProblem);
 
-#ifdef __PRINT___
-	cout<<"Preference du décideur ([ " << Tools::print_vector(WS_DM_vector) <<" ]) : "<<endl;
-	cout<<"    "<< Tools::print_vector(OPT_Alternative->get_criteria_values())<<endl;
-#endif
+
+
+	return opt_alt;
 }
 
 
@@ -380,3 +372,65 @@ void Evaluator::evaluate_PF(string pf_indicators_file){
 }
 
 
+
+
+
+/**
+ * ************************************************* INFORMATION RATE PART *************************************************
+ */
+
+
+
+void Evaluator::compute_information_rate(){
+
+	int nb_criteria = mainProblem->get_p_criteria();
+	vector< float > inf_intervalls(nb_criteria,-1);
+	vector< float > sup_intervalls(nb_criteria,-1);
+	vector<AlternativeKnapsack* > lexmaxs(nb_criteria);
+
+	for(int i = 0; i < mainProblem->get_n_objective(); i++){
+
+		lexmaxs[i] = OPT_Alternative_PLNE(mainProblem->get_WS_matrix()[i]);
+
+		cout<<Tools::print_vector(lexmaxs[i]->get_criteria_values())<<endl;
+
+		for(int j =0; j < nb_criteria; j++){
+
+			float value_criteria = lexmaxs[i]->get_criteria_values()[j];
+			if( (inf_intervalls[j] > value_criteria )   or  (inf_intervalls[j] == -1) )
+				inf_intervalls[j] = value_criteria;
+
+			if( (sup_intervalls[j] < value_criteria)   or  (sup_intervalls[j] == -1) )
+				sup_intervalls[j] = value_criteria;
+
+		}
+	}
+
+	cout<<" INF SUP INTERVALLS"<<endl;
+	cout<<Tools::print_vector(inf_intervalls)<<endl;
+	cout<<Tools::print_vector(sup_intervalls)<<endl;
+
+	int cpt = 0;
+	bool contained;
+
+	for(int i = 0; i < PF_Efficient.size(); i++){
+		vector<float> vect_alt = PF_Efficient[i];
+
+		contained = true;
+		for(int j = 0; j < nb_criteria; j++ ){
+
+			if( (vect_alt[j] < inf_intervalls[j])  or  (vect_alt[j] > sup_intervalls[j]) )
+				contained = false;
+		}
+		if(contained)
+			cpt++;
+	}
+
+
+	cout<<"______________________________________________"<<endl;
+	cout<<cpt<<"   :  "<<cpt*100.0/PF_Efficient.size()<<endl;
+	cout<<"______________________________________________"<<endl;
+
+
+
+}

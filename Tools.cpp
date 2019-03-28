@@ -203,3 +203,19 @@ void Tools::copy_into(string src_filename, string dest_filename){
 
 
 
+
+vector<float> Tools::readWS_DM(string WS_DM_preferences){
+
+	ifstream fic_read(WS_DM_preferences.c_str());
+	string line;
+
+
+	if (!(fic_read) or WS_DM_preferences.find(".ks") == std::string::npos){
+		cerr<<"Error occurred readWS_DM"<<endl;
+	}
+	//read WS_DMs_preference
+	getline(fic_read,line);
+
+	return Tools::decompose_line_to_float_vector(line);
+
+}

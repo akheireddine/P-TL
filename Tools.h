@@ -43,6 +43,7 @@ public:
 	static void update_dist_time(float dist_min,float time);
 	static void update_indicators(float D1, float D2, float D3);
 	static void separate_results(string filename, string separator);
+	static vector<float> readWS_DM(string WS_DM_preferences);
 
 
 };
