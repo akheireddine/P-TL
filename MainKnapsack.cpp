@@ -2,7 +2,7 @@
 #include <set>
 
 #include "MainKnapsack.h"
-#define TIMEOUT 360
+#define TIMEOUT 240
 #define __PRINT__
 
 
@@ -87,11 +87,6 @@ void MainKnapsack::readFilenameInstance(string filename){
 	int i = 0;
 
 	vector< float > line_value;
-
-//	ostringstream FileName;
-//	FileName.str("");
-//	FileName <<filename.c_str()<<".dat";
-//	ifstream fic(FileName.str());
 
 	ifstream fic((filename+".dat").c_str());
 
@@ -396,6 +391,15 @@ void MainKnapsack::HYBRID_WS_PLS(double starting_time_sec,int steps){
 
 	change_to_pareto_selection();
 	//PLS
+#ifdef __PRINT__
+	cout<<"   Matrice des objectives :"<<endl;
+	for(int i = 0; i < p_criteria; i++){
+		cout<<"   ";
+		for(int j = 0; j < n_objective; j++)
+			cout<<WS_matrix[i][j]<< " ";
+		cout<<endl;
+	}
+#endif
 	MOLS(starting_time_sec);
 
 }

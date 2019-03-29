@@ -52,7 +52,7 @@ public:
 	inline void change_to_pareto_selection(){
 
 		WS_matrix.resize(p_criteria,vector< float >());
-
+		n_objective = p_criteria;
 		for(int i = 0 ; i < p_criteria; i++){
 			WS_matrix[i].clear();
 			for(int j = 0; j < p_criteria; j++){
@@ -62,6 +62,7 @@ public:
 					WS_matrix[i].push_back(0.);
 			}
 		}
+
 	};
 
 

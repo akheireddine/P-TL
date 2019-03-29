@@ -18,13 +18,13 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 
 	readParetoFront();
 
-#ifdef __PRINT___
+#ifdef __PRINT__
 	cout<<"----------------------- EVALUATION ----------------------"<<endl;
 #endif
 
 	OPT_Alternative = OPT_Alternative_PLNE(WS_DM_vector);
 
-#ifdef __PRINT___
+#ifdef __PRINT__
 	cout<<"Preference du décideur ([ " << Tools::print_vector(WS_DM_vector) <<" ]) : "<<endl;
 	cout<<"    "<< Tools::print_vector(OPT_Alternative->get_criteria_values())<<endl;
 #endif
@@ -34,7 +34,7 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 	evaluate_PF(pf_indicators_file);
 
 
-#ifdef __PRINT___
+#ifdef __PRINT__
 	cout<<"----------------------- END EVALUATION ----------------------"<<endl<<endl;
 #endif
 
@@ -70,9 +70,7 @@ void Evaluator::write_coeff_functions(string filename){
 void Evaluator::write_objective_OPT_information(){
 
 	write_coeff_functions(dist_time_file);
-	cout<<"DT FILE "<<dist_time_file<<endl;
 	write_coeff_functions(pf_indicators_file);
-	cout<<"INDICT FILE "<<pf_indicators_file<<endl;
 
 }
 
@@ -268,7 +266,7 @@ void Evaluator::evaluate_Dist_Time(string dist_time_file, float time){
 	//Get minimum objective values difference between the best alternative and WS-MOLS front computed
 	float min_mols_ratio = nearest_alternative(vector_criteria);
 
-#ifdef __PRINT___
+#ifdef __PRINT__
 	cout<<"Solution found in (efficient) front "<<endl;
 	cout<<"   ratio ( "<<min_mols_ratio<<" )"<<endl;
 	cout<<"   vector objective ( "<<Tools::print_vector(vector_criteria)<<" )"<<endl;
