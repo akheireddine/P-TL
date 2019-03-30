@@ -26,7 +26,9 @@ public:
 
 	//CONSTRUCTOR
 	AlternativeKnapsack(set<int> items, MainKnapsack* mStruct);
-
+	~AlternativeKnapsack(){
+		free(mainLSStructure);
+	};
 	//GETTERS
 	float get_weight(){ return weight; }
 

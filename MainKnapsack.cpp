@@ -345,7 +345,7 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec,int steps){
 		Update_Archive(*p,OPT_Solution);
 
 
-	while((Population.size() > 0)  and ((clock() /CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT )  and nb_iteration < steps){
+	while((Population.size() > 0)  and ((clock() /CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT )   and (nb_iteration < steps)){
 		nb_iteration++;
 		//get first element
 		alt = Population.front();
@@ -361,7 +361,7 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec,int steps){
 
 		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
 			//Filter OPT_Solution set
-			if ( Update_Archive(*new_alt, OPT_Solution) or  (rand()*1.0/RAND_MAX) < 0.5 )
+			if ( Update_Archive(*new_alt, OPT_Solution) )
 				Population.push_back(*new_alt);
 		}
 

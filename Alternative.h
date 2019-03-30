@@ -23,6 +23,10 @@ protected:
 
 public:
 
+	~Alternative(){
+		for(int i =0; i < neighborhood.size(); i++) free(neighborhood[i]);
+	};
+
 	//GETTERS
 	int get_id(){ return id_alt; };
 	vector< float > get_objective_values(){ return objective_values; };

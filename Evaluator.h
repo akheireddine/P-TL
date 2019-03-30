@@ -25,6 +25,10 @@ public:
 
 	//CONSTRUCTOR
 	Evaluator(string filename, MainKnapsack * problemInstance, string WS_DM_preferences, string DT_file, float time, string PFI_file);
+	~Evaluator(){
+		delete OPT_Alternative;
+		free(mainProblem);
+	};
 
 	//GETTERS
 	string get_filename_instance(){ return filename_instance; };
