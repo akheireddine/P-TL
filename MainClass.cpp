@@ -15,7 +15,7 @@ using namespace std;
 vector< float > Tools::dist_time_avg(2,0);
 vector< float > Tools::indicator_avg(3,0);
 int Tools::cpt = 0;
-
+int ITERATION_WS_PLS = 0;
 
 
 Evaluator* main_Knapsack(string filename_instance, string type_instance, string num_instance, int size_population, string WS_DM_preferences){
@@ -79,8 +79,8 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "A";
-	string taille = "200";
+	string type_inst = "C";
+	string taille = "100";
 
 	Evaluator * eval_ks;
 
@@ -128,14 +128,14 @@ int main(int argc, char** argv){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 
-		for(int iter = 3; iter <= 35 ; iter++){
+		for(int iter = 2; iter <= 14 ; iter++){
 			cout<<"============================================   "<<iter<<" STEPS   ============================================"<<endl;
-			iter+=4;
-
+			iter+=1;
+			ITERATION_WS_PLS = iter;
 			Tools::cpt = 0;
 			Tools::clean_up();
 
-			for(int k = 0; k < 20; k++){
+			for(int k = 0; k < 10; k++){
 				Tools::generate_random_WS("WS_Matrix.csv",2);
 				eval_ks = main_Knapsack_WSPLS(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
 			}

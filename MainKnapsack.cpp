@@ -273,10 +273,14 @@ void MainKnapsack::filter_efficient_set(){
 		for(list< Alternative* >::iterator el2 = fixed_opt_set.begin(); el2 != fixed_opt_set.end(); ++el2){
 			if((*el1)->get_id() == (*el2)->get_id())
 				continue;
-			if( (*el1)->dominates(*el2) == 1)
+			if( (*el1)->dominates(*el2) == 1){
 				OPT_Solution.erase(el2);
-			else if((*el1)->dominates(*el2) == -1)
+				free(*el2);
+			}
+			else if((*el1)->dominates(*el2) == -1){
 				OPT_Solution.erase(el1);
+				free(*el1);
+			}
 
 		}
 	}
@@ -420,8 +424,10 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 			to_remove.push_back(*alt);
 	}
 
-	for(vector< Alternative* >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm)
+	for(vector< Alternative* >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm){
 		set_SOL.remove(*rm);
+//		free(*rm);
+	}
 
 	set_SOL.push_back(p);
 	return true;
