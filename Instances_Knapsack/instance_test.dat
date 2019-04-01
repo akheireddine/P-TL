@@ -1,19 +1,11 @@
 c Instance Type test
 c
-n 11
+n 3
 c w	 v1	 v2
-i 10 10 0 
-i 22 9 1 
-i 7	8 2 
-i 15 7 3 
-i 4	6 4
-i 20 5 5 
-i 12 4 6 
-i 6	3 7 
-i 18 2 8 
-i 8 1 9 
-i 27 0 10
+i 10 0 1 
+i 7 2 0 
+i 7 1 0.5 
 c
 c
-W 30
+W 10
 c end of file
