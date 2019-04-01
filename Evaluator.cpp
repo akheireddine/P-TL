@@ -90,9 +90,7 @@ vector<float> Evaluator::get_objective_values(vector<float> v_src){
 
 bool Evaluator::is_dominated(vector<float> v){
 
-	vector< vector< float >::iterator > add_to_rm;
 	list< vector<float > > cp_PF(PFront.begin(), PFront.end());
-
 
 	for(list< vector<float > >::iterator k = cp_PF.begin(); k != cp_PF.end(); ++k){
 
@@ -113,6 +111,8 @@ bool Evaluator::is_dominated(vector<float> v){
 		else if ( !dominated and dominates )
 			PFront.remove(*k);
 	}
+
+	list<vector<float>>().swap(cp_PF);
 
 	return false;
 }
@@ -143,7 +143,11 @@ void Evaluator::readParetoFront(){
 
 		if( !is_dominated(transformed_objective) )
 			PFront.push_back(vector_pareto_objective);
+
+		vector<float>().swap(transformed_objective);
 	}
+
+
 
 }
 
@@ -181,6 +185,7 @@ float Evaluator::nearest_alternative(vector< float > & vect_criteria ){
 
 		if( min_ratio == 0 )  // equal to DMs preferences
 			break;
+
 	}
 
 	fic.close();
@@ -251,6 +256,7 @@ AlternativeKnapsack * Evaluator::OPT_Alternative_PLNE(vector<float> WS_vector){
 	AlternativeKnapsack * opt_alt = new AlternativeKnapsack(items, mainProblem);
 
 
+	set< int >().swap(items);
 
 	return opt_alt;
 }
@@ -279,6 +285,10 @@ void Evaluator::evaluate_Dist_Time(string dist_time_file, float time){
 	Tools::update_dist_time(min_mols_ratio,time);
 
 	fic.close();
+
+
+	vector< float >().swap(vector_criteria);
+
 }
 
 
@@ -305,6 +315,8 @@ float Evaluator::PR_D3(){
 		}
 		opt_size_front++;
 	}
+
+	vector< Alternative* >().swap(tmp_opt);
 
 	return nb_found*100.0/opt_size_front;
 }
@@ -429,6 +441,10 @@ void Evaluator::compute_information_rate(){
 	cout<<cpt<<"   :  "<<cpt*100.0/PF_Efficient.size()<<endl;
 	cout<<"______________________________________________"<<endl;
 
+
+	vector< float >().swap(inf_intervalls);
+	vector< float >().swap(sup_intervalls);
+	vector<  AlternativeKnapsack* >().swap(lexmaxs);
 
 
 }

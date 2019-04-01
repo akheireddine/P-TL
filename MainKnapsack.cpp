@@ -153,6 +153,9 @@ void MainKnapsack::readFilenameInstance(string filename){
 	cout<<"   Nombre de criètres ("<<to_string(p_criteria)<<")"<<endl;
 #endif
 	fic.close();
+
+
+	vector<float>().swap(line_value);
 }
 
 
@@ -241,9 +244,15 @@ void MainKnapsack::GenerateInitialPopulation(int size_population){
 			individu.insert(itm);
 			bp += get_weight_of(itm);
 		}
+//		set<int> individu;
+//		individu.insert(1);
+//		individu.insert(3);
 		AlternativeKnapsack * alt = new AlternativeKnapsack(individu, this);
 		Population.push_back(alt);
+		set<int>().swap(individu);
 	}
+	vector<int>().swap(all_items);
+
 
 }
 
@@ -331,6 +340,9 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 
 	write_solution(filename_instance+".sol");
 
+
+	list<Alternative*>().swap(Local_front);
+
 	return OPT_Solution;
 }
 
@@ -381,6 +393,8 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec,int steps){
 
 	write_solution(filename_instance+".sol");
 
+	list<Alternative*>().swap(Local_front);
+
 	return OPT_Solution;
 }
 
@@ -430,6 +444,9 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 	}
 
 	set_SOL.push_back(p);
+
+
+	vector<Alternative*>().swap(to_remove);
 	return true;
 }
 

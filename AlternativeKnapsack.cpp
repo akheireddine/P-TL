@@ -99,7 +99,7 @@ void AlternativeKnapsack::enumerate_neighborhood(set<int> & curr_BP, set<int> &i
 		}
 
 		AlternativeKnapsack * alt = new AlternativeKnapsack(new_neighbor, mainLSStructure );
-
+		set< int  >().swap(new_neighbor);
 		neighborhood.push_back(alt);
 	}
 }
@@ -130,7 +130,7 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 	set< int > In_BP, Out_BP;
 
 	//Generate a random set of WS to select the next item to insert
-	vector<float> ws_aggr_utility = Tools::generate_random_WS_aggregator(mainLSStructure->get_p_criteria());
+//	vector<float> ws_aggr_utility = Tools::generate_random_WS_aggregator(mainLSStructure->get_p_criteria());
 
 	for(int i = 0; i < alternatives.size(); i++){
 		if( alternatives[i] == 1)
@@ -141,10 +141,11 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 
 //	map< float, int, greater <float> > ratio_items = generate_ordered_ratio_items(Out_BP);
 
+	map< float, int, greater <float> > ratio_items;
 
 	for(set< int >::iterator in = In_BP.begin(); in != In_BP.end(); ++in){
 
-		map< float, int, greater <float> > ratio_items = generate_ordered_ratio_items(Out_BP);
+		ratio_items = generate_ordered_ratio_items(Out_BP);
 
 //
 //		cout<<"____________________________"<<endl;
@@ -165,13 +166,17 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 		in_tmp.erase(*in);
 
 		enumerate_neighborhood(in_tmp,Out_BP, new_weight, ratio_items);
+
 	}
 
 
 	if(In_BP.size() == 0){
-		map< float, int, greater <float> > ratio_items = generate_ordered_ratio_items(Out_BP);
+		ratio_items = generate_ordered_ratio_items(Out_BP);
 		enumerate_neighborhood(In_BP,Out_BP, weight, ratio_items);
 	}
+
+
+	map< float, int, greater <float> >().swap(ratio_items);
 
 	return neighborhood;
 }
