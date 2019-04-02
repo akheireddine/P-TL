@@ -27,7 +27,7 @@ public:
 	//CONSTRUCTOR
 	AlternativeKnapsack(set<int> items, MainKnapsack* mStruct);
 	~AlternativeKnapsack(){
-		delete this;
+//		delete this;
 	};
 	//GETTERS
 	float get_weight(){ return weight; }

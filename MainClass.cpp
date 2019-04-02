@@ -16,6 +16,7 @@ vector< float > Tools::dist_time_avg(2,0);
 vector< float > Tools::indicator_avg(3,0);
 int Tools::cpt = 0;
 int ITERATION_WS_PLS = 0;
+int Alternative::id = 0;
 
 
 Evaluator* main_Knapsack(string filename_instance, string type_instance, string num_instance, int size_population, string WS_DM_preferences){
@@ -125,7 +126,7 @@ void script_WSPLS(string type_inst, string taille, string WS_DM){
 			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_WSPLS"+taille+"_AVG.front");
 
 			eval_ks->write_objective_OPT_information();
-			delete eval_ks;
+//			free(eval_ks);
 		}
 		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_WSPLS"+taille+"_AVG.eval",type_inst+to_string(i)+"___");
 		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_WSPLS"+taille+"_AVG.front",type_inst+to_string(i)+"___");
@@ -142,28 +143,29 @@ void script_PLSWS(string type_inst, string taille, string WS_DM){
 	Evaluator * eval_ks;
 
 
-	for(int i = 0; i < 1; i++){
+	for(int i = 0; i < 10; i++){
 
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 
-		for(int iter = 1; iter <= 2 ; iter+= 20 ){
+		for(int iter = 5; iter <= 1205 ; iter+= 100 ){
 			cout<<"============================================   "<<iter<<" STEPS   ============================================"<<endl;
 			Tools::cpt = 0;
 			Tools::clean_up();
-
 			ITERATION_WS_PLS = iter;
 
 
-			for(int k = 0; k < 1; k++){
+			for(int k = 0; k < 10; k++){
+				Alternative::id = 0;
 				eval_ks = main_Knapsack_PLSWS(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
 			}
-
 			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_PLSWS"+taille+"_AVG.eval");
-			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_PLSWS"+taille+"_AVG.front");
-			eval_ks->write_objective_OPT_information();
-			delete eval_ks;
 
+			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_PLSWS"+taille+"_AVG.front");
+
+			eval_ks->write_objective_OPT_information();
+
+			free( eval_ks );
 		}
 		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_PLSWS"+taille+"_AVG.eval",type_inst+to_string(i)+"___");
 		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_PLSWS"+taille+"_AVG.front",type_inst+to_string(i)+"___");
@@ -202,7 +204,7 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval");
 			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front");
 			eval_ks->write_objective_OPT_information();
-			delete eval_ks;
+//			free(eval_ks);
 
 		}
 		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval",type_inst+to_string(i)+"____");
@@ -217,7 +219,7 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "100";
+	string taille = "200";
 
 //	script_knapsack(type_inst, taille, WS_DM);
 

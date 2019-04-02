@@ -5,7 +5,6 @@
 
 using namespace std;
 
-static int id = 0;
 
 
 AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct){

@@ -22,6 +22,7 @@ protected:
 //	LSStructure * mainLSStructure;
 
 public:
+	static int id;
 
 //	~Alternative(){
 //		for(int i =0; i < neighborhood.size(); i++) free(neighborhood[i]);

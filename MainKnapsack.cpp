@@ -283,7 +283,8 @@ void MainKnapsack::filter_efficient_set(){
 	list< Alternative* > fixed_opt_set(OPT_Solution.begin(),OPT_Solution.end());
 	for(list< Alternative* >::iterator el1 = fixed_opt_set.begin(); el1 != fixed_opt_set.end(); ++el1){
 		for(list< Alternative* >::iterator el2 = fixed_opt_set.begin(); el2 != fixed_opt_set.end(); ++el2){
-			if((*el1)->get_id() == (*el2)->get_id())
+//			cout<<"___________"<<endl<<"id el1 "<<(*el1)->get_id()<<"     id el2 "<<(*el1)->get_id()<<endl<<"___________"<<endl;
+			if((*el1)->get_id() == (*el1)->get_id())
 				continue;
 			if( (*el1)->dominates(*el2) == 1){
 				OPT_Solution.erase(el2);
@@ -437,25 +438,12 @@ void MainKnapsack::HYBRID_PLS_WS(double starting_time_sec, int steps){
 	MOLS(starting_time_sec,steps);
 
 	Population = OPT_Solution;
-	OPT_Solution.clear();
-	cout<<"NUMBER OF OPT SOL "<<OPT_Solution.size()<<endl;
-	cout<<"NUMBER OF POPULAT "<<Population.size()<<endl;
-
 	//WS
+	Tools::generate_random_WS("WS_Matrix.csv",p_criteria);
 	readWS_Matrix("WS_Matrix.csv");
 	update_alternatives(Population);
-//#ifdef __PRINT__
-//	cout<<"   Matrice des objectives :"<<endl;
-//	for(int i = 0; i < p_criteria; i++){
-//		cout<<"   ";
-//		for(int j = 0; j < n_objective; j++)
-//			cout<<WS_matrix[i][j]<< " ";
-//		cout<<endl;
-//	}
-//#endif
 
 	MOLS(starting_time_sec);
-
 }
 
 void MainKnapsack::update_alternatives(list<Alternative*> set_Alt){
