@@ -38,7 +38,6 @@ Evaluator* main_Knapsack(string filename_instance, string type_instance, string 
 			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+".front");
 
 
-	free(knaps);
 	return eval;
 }
 
@@ -74,83 +73,155 @@ Evaluator* main_Knapsack_WSPLS(string filename_instance, string type_instance, s
 
 
 
+Evaluator* main_Knapsack_PLSWS(string filename_instance, string type_instance, string num_instance,
+		int size_population, string WS_DM_preferences, int max_step){
+
+//	string pref_filename = "./WS_Matrix.csv";
+
+	MainKnapsack * knaps = new MainKnapsack(filename_instance, size_population);
+
+	clock_t t1 = clock();
+	knaps->HYBRID_PLS_WS(t1/CLOCKS_PER_SEC,max_step);
+	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
+
+	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
+
+	string size_instance = to_string(knaps->get_n_items());
+
+	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
+			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+"_PLSWS.eval"
+			, t2,
+			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+"_PLSWS.front");
+
+	return eval;
+}
+
+
+
+
+
+void script_WSPLS(string type_inst, string taille, string WS_DM){
+
+	Evaluator * eval_ks;
+
+
+	for(int i = 0; i < 10; i++){
+
+		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+
+
+		for(int iter = 2; iter <= 14 ; iter += 2){
+			cout<<"============================================   "<<iter<<" STEPS   ============================================"<<endl;
+			ITERATION_WS_PLS = iter;
+			Tools::cpt = 0;
+			Tools::clean_up();
+
+			for(int k = 0; k < 10; k++){
+				Tools::generate_random_WS("WS_Matrix.csv",2);
+				eval_ks = main_Knapsack_WSPLS(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
+			}
+
+			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_WSPLS"+taille+"_AVG.eval");
+			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_WSPLS"+taille+"_AVG.front");
+
+			eval_ks->write_objective_OPT_information();
+			delete eval_ks;
+		}
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_WSPLS"+taille+"_AVG.eval",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_WSPLS"+taille+"_AVG.front",type_inst+to_string(i)+"___");
+
+	}
+
+
+}
+
+
+
+void script_PLSWS(string type_inst, string taille, string WS_DM){
+
+	Evaluator * eval_ks;
+
+
+	for(int i = 0; i < 1; i++){
+
+		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+
+
+		for(int iter = 1; iter <= 2 ; iter+= 20 ){
+			cout<<"============================================   "<<iter<<" STEPS   ============================================"<<endl;
+			Tools::cpt = 0;
+			Tools::clean_up();
+
+			ITERATION_WS_PLS = iter;
+
+
+			for(int k = 0; k < 1; k++){
+				eval_ks = main_Knapsack_PLSWS(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
+			}
+
+			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_PLSWS"+taille+"_AVG.eval");
+			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_PLSWS"+taille+"_AVG.front");
+			eval_ks->write_objective_OPT_information();
+			delete eval_ks;
+
+		}
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_PLSWS"+taille+"_AVG.eval",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_PLSWS"+taille+"_AVG.front",type_inst+to_string(i)+"___");
+
+	}
+
+
+}
+
+
+
+
+void script_knapsack(string type_inst, string taille, string WS_DM){
+
+	Evaluator * eval_ks;
+
+
+	for(int i = 1; i < 2 ; i++){
+		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+
+		//string filename_instance = "./Instances_Knapsack/instance_test";
+
+		//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		for(int step = 0; step < 1; step++){
+
+			Tools::copy_into("./Data/WS_Learning/Test1/Iteration_"+to_string(step),"WS_Matrix.csv");
+
+			Tools::cpt = 0;
+			Tools::clean_up();
+
+			for(int k = 0; k < 10; k++){
+				//Tools::generate_random_WS("WS_Matrix.csv",2);
+				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
+			}
+			//eval_ks->compute_information_rate();
+			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval");
+			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front");
+			eval_ks->write_objective_OPT_information();
+			delete eval_ks;
+
+		}
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval",type_inst+to_string(i)+"____");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front",type_inst+to_string(i)+"____");
+	}
+}
+
+
 
 int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "C";
+	string type_inst = "A";
 	string taille = "100";
 
-	Evaluator * eval_ks;
+//	script_knapsack(type_inst, taille, WS_DM);
 
-
-
-	for(int i = 0; i < 1 ; i++){
-		//without extension
-//		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-
-		string filename_instance = "./Instances_Knapsack/instance_test";
-
-		//SET COEFF_OBJECTIVE      !!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 9; step < 10; step++){
-
-//			Tools::copy_into("./Data/WS_Learning/Test1/Iteration_"+to_string(step),"WS_Matrix.csv");
-
-			Tools::cpt = 0;
-			Tools::clean_up();
-
-			for(int k = 0; k < 1; k++){
-//				Tools::generate_random_WS("WS_Matrix.csv",2);
-				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
-			}
-//			eval_ks->compute_information_rate();
-//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval");
-//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front");
-//			eval_ks->write_objective_OPT_information();
-//			free(eval_ks);
-
-		}
-//		int size_front = eval_ks->get_PFront().size();
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval",type_inst+to_string(i)+"____"+to_string(size_front));
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front",type_inst+to_string(i)+"____"+to_string(size_front));
-
-	}
-
-
-
-
-
-
-
-//	for(int i = 0; i < 10; i++){
-//
-//		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-//
-//
-//		for(int iter = 2; iter <= 14 ; iter++){
-//			cout<<"============================================   "<<iter<<" STEPS   ============================================"<<endl;
-//			iter+=1;
-//			ITERATION_WS_PLS = iter;
-//			Tools::cpt = 0;
-//			Tools::clean_up();
-//
-//			for(int k = 0; k < 10; k++){
-//				Tools::generate_random_WS("WS_Matrix.csv",2);
-//				eval_ks = main_Knapsack_WSPLS(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
-//			}
-//
-//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_WSPLS"+taille+"_AVG.eval");
-//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_WSPLS"+taille+"_AVG.front");
-//
-//			eval_ks->write_objective_OPT_information();
-//			free(eval_ks);
-//
-//		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_WSPLS"+taille+"_AVG.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_WSPLS"+taille+"_AVG.front",type_inst+to_string(i)+"___");
-//
-//	}
+	script_PLSWS(type_inst, taille, WS_DM);
 
 
 

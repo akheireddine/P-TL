@@ -161,6 +161,9 @@ void MainKnapsack::readFilenameInstance(string filename){
 
 void MainKnapsack::readWS_Matrix(string filename){
 
+	WS_matrix.clear();
+	WS_matrix.resize(0);
+
 	if(filename.find("PARETO") != std::string::npos)
 		change_to_pareto_selection();
 
@@ -284,11 +287,11 @@ void MainKnapsack::filter_efficient_set(){
 				continue;
 			if( (*el1)->dominates(*el2) == 1){
 				OPT_Solution.erase(el2);
-				free(*el2);
+//				delete (*el2);
 			}
 			else if((*el1)->dominates(*el2) == -1){
 				OPT_Solution.erase(el1);
-				free(*el1);
+//				delete (*el1);
 			}
 
 		}
@@ -306,7 +309,6 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 	//First initialization
 	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p)
 		Update_Archive(*p,OPT_Solution);
-
 
 	while((Population.size() > 0)  and ((clock() /CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
@@ -423,6 +425,51 @@ void MainKnapsack::HYBRID_WS_PLS(double starting_time_sec,int steps){
 }
 
 
+
+
+
+
+void MainKnapsack::HYBRID_PLS_WS(double starting_time_sec, int steps){
+
+	//PLS
+	change_to_pareto_selection();
+
+	MOLS(starting_time_sec,steps);
+
+	Population = OPT_Solution;
+	OPT_Solution.clear();
+	cout<<"NUMBER OF OPT SOL "<<OPT_Solution.size()<<endl;
+	cout<<"NUMBER OF POPULAT "<<Population.size()<<endl;
+
+	//WS
+	readWS_Matrix("WS_Matrix.csv");
+	update_alternatives(Population);
+//#ifdef __PRINT__
+//	cout<<"   Matrice des objectives :"<<endl;
+//	for(int i = 0; i < p_criteria; i++){
+//		cout<<"   ";
+//		for(int j = 0; j < n_objective; j++)
+//			cout<<WS_matrix[i][j]<< " ";
+//		cout<<endl;
+//	}
+//#endif
+
+	MOLS(starting_time_sec);
+
+}
+
+void MainKnapsack::update_alternatives(list<Alternative*> set_Alt){
+
+	for(list<Alternative*>::iterator alt = set_Alt.begin(); alt != set_Alt.end(); ++alt ){
+		(*alt)->update();
+	}
+}
+
+
+
+
+
+
 bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL){
 
 	vector< Alternative* > to_remove;
@@ -440,7 +487,6 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 
 	for(vector< Alternative* >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm){
 		set_SOL.remove(*rm);
-//		free(*rm);
 	}
 
 	set_SOL.push_back(p);

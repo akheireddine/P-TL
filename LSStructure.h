@@ -36,8 +36,9 @@ protected :
 
 public:
 	~LSStructure(){
-		for(list< Alternative* >::iterator i = OPT_Solution.begin(); i != OPT_Solution.end(); ++i) free(*i);
-		for(list< Alternative* >::iterator i = Population.begin(); i != Population.end(); ++i) free(*i);
+		for(list< Alternative* >::iterator i = OPT_Solution.begin(); i != OPT_Solution.end(); ++i){ delete (*i);}
+		for(list< Alternative* >::iterator i = Population.begin(); i != Population.end(); ++i){ delete (*i);}
+
 	};
 
 	virtual void readFilenameInstance(string filename) = 0;

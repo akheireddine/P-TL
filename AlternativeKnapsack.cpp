@@ -41,6 +41,21 @@ AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct){
 
 }
 
+void AlternativeKnapsack::update(){
+
+	vector< vector < float > > WS_matrix = mainLSStructure->get_WS_matrix();
+	objective_values.clear();
+
+	objective_values.resize(mainLSStructure->get_n_objective(), 0);
+
+
+	for(int i = 0; i < mainLSStructure->get_n_objective(); i++){
+		for(int j = 0; j < mainLSStructure->get_p_criteria(); j++){
+			objective_values[i] += WS_matrix[j][i] * criteria_values[j];
+		}
+	}
+}
+
 
 int AlternativeKnapsack::dominates(Alternative* alt){
 
@@ -109,6 +124,9 @@ map< float, int, greater <float> > AlternativeKnapsack::generate_ordered_ratio_i
 	map< float, int, greater <float> > ratio_items;
 
 	vector<float> ws_aggr_utility = Tools::generate_random_WS_aggregator(mainLSStructure->get_p_criteria());
+//	cout<<"______________"<<endl;
+//	cout<<Tools::print_vector(ws_aggr_utility)<<endl;
+//	cout<<"______________"<<endl;
 	for(set<int>::iterator i = set_items.begin(); i != set_items.end(); ++i){
 
 		float aggregate_func_val_item = 0;
@@ -139,7 +157,6 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 			Out_BP.insert(i);
 	}
 
-//	map< float, int, greater <float> > ratio_items = generate_ordered_ratio_items(Out_BP);
 
 	map< float, int, greater <float> > ratio_items;
 

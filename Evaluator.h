@@ -27,7 +27,7 @@ public:
 	Evaluator(string filename, MainKnapsack * problemInstance, string WS_DM_preferences, string DT_file, float time, string PFI_file);
 	~Evaluator(){
 		delete OPT_Alternative;
-		free(mainProblem);
+		delete mainProblem;
 	};
 
 	//GETTERS

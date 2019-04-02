@@ -23,9 +23,9 @@ protected:
 
 public:
 
-	~Alternative(){
-		for(int i =0; i < neighborhood.size(); i++) free(neighborhood[i]);
-	};
+//	~Alternative(){
+//		for(int i =0; i < neighborhood.size(); i++) free(neighborhood[i]);
+//	};
 
 	//GETTERS
 	int get_id(){ return id_alt; };
@@ -34,6 +34,7 @@ public:
 
 	virtual vector< Alternative* > get_neighborhood() = 0;
 	virtual int dominates(Alternative* alt) = 0;
+	virtual void update() = 0;
 
 //	virtual void print_alternative() = 0;
 //	virtual void print_objective_values() = 0;

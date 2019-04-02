@@ -27,7 +27,7 @@ public:
 	//CONSTRUCTOR
 	AlternativeKnapsack(set<int> items, MainKnapsack* mStruct);
 	~AlternativeKnapsack(){
-		free(mainLSStructure);
+		delete this;
 	};
 	//GETTERS
 	float get_weight(){ return weight; }
@@ -47,6 +47,7 @@ public:
 	 * -1 paramter alt dominates current alternative
 	 */
 	int dominates(Alternative* alt);
+	void update();
 
 
 	inline void print_alternative(){ cout<<"("; for(int i = 0; i < alternatives.size(); i++) cout<< alternatives[i] <<", "; cout<<")"<<endl;};

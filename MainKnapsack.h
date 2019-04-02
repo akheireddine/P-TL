@@ -24,7 +24,7 @@ public :
 
 	//constructor
 	MainKnapsack(string filename, int init_population_size , string matrix_filename="PARETO");
-	~MainKnapsack();
+//	~MainKnapsack();
 	//GETTERS
 	int get_n_items(){ return n_items; };
 	float get_weight_of(int i) { return std::get<0>(Items_information[i]); };
@@ -38,7 +38,9 @@ public :
 	bool Update_Archive(Alternative* p, list< Alternative* > &set_SOL);
 	void filter_efficient_set();
 	void HYBRID_WS_PLS(double starting_time_sec, int steps);
+	void HYBRID_PLS_WS(double starting_time_sec, int steps);
 	list< Alternative * > MOLS(double starting_time_sec,int steps);
+	void update_alternatives(list<Alternative*> set_Alt);
 
 
 	//EVALUATION
