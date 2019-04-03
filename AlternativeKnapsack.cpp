@@ -118,11 +118,28 @@ void AlternativeKnapsack::enumerate_neighborhood(set<int> & curr_BP, set<int> &i
 	}
 }
 
+
+
 map< float, int, greater <float> > AlternativeKnapsack::generate_ordered_ratio_items(set<int> set_items){
 
 	map< float, int, greater <float> > ratio_items;
 
-	vector<float> ws_aggr_utility = Tools::generate_random_WS_aggregator(mainLSStructure->get_p_criteria());
+	//RANDOM WEIGHTS
+//	vector<float> ws_aggr_utility = Tools::generate_random_WS_aggregator(mainLSStructure->get_p_criteria());
+
+	//EQ TO DM PREFERENCES
+	vector<float> ws_aggr_utility = Tools::readWS_DM("weighted_DM_preferences.ks");
+
+
+
+	//IN DOMAIN DEFINITION
+//	vector<float> ws_aggr_utility = Tools::generate_random_restricted_WS_aggregator(mainLSStructure->get_p_criteria(), mainLSStructure->get_WS_matrix());
+
+
+
+
+
+
 //	cout<<"______________"<<endl;
 //	cout<<Tools::print_vector(ws_aggr_utility)<<endl;
 //	cout<<"______________"<<endl;

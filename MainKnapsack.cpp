@@ -3,7 +3,7 @@
 
 #include "MainKnapsack.h"
 #define TIMEOUT 240
-#define __PRINT__
+//#define __PRINT__
 
 
 MainKnapsack::MainKnapsack(string filename, int init_population_size , string matrix_filename){

@@ -3,6 +3,7 @@
 
 #include "Tools.h"
 #include <iostream>
+#include <algorithm>
 
 
 
@@ -204,6 +205,38 @@ void Tools::copy_into(string src_filename, string dest_filename){
 
 
 
+vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, vector<vector<float> > ws_matrix){
+	float sum = 0;
+	vector<float> weighted_sum(p_criteria);
+//	srand(time(NULL));
+
+	while(sum != 1 ){
+		sum = 0;
+		weighted_sum.clear();
+		for(int i =0; i < p_criteria ; i++){
+	//		float minus = distance(ws_matrix[i].begin(),  min_element(begin(ws_matrix[i]), ws_matrix[i].end()));
+	//		float maxus = distance(ws_matrix[i].begin(),  max_element(begin(ws_matrix[i]), ws_matrix[i].end()));
+
+			const auto [minus, maxus] = minmax_element(begin(ws_matrix[i]), end(ws_matrix[i]));
+
+			float wi = 0;//( (rand()*1.0) / RAND_MAX) % (*maxus)  + (*minus);
+
+			while(wi + sum > 1){
+				wi = rand();
+			}
+
+			sum += wi;
+			weighted_sum[i] = wi;
+		}
+	}
+
+//	weighted_sum.push_back(1.0 - sum);
+
+	return weighted_sum;
+}
+
+
+
 vector<float> Tools::readWS_DM(string WS_DM_preferences){
 
 	ifstream fic_read(WS_DM_preferences.c_str());
@@ -219,3 +252,14 @@ vector<float> Tools::readWS_DM(string WS_DM_preferences){
 	return Tools::decompose_line_to_float_vector(line);
 
 }
+
+
+
+
+
+
+//void Tools::save_information_in(string filename, string smthing){
+//	ofstream fic_write(filename.c_str(), ios::app);
+//	fic<<smthing<<endl;
+//	fic.close();
+//}

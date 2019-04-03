@@ -5,7 +5,7 @@
 #include "Evaluator.h"
 
 #define WS_ITERATION 13   //A_100 max 13
-#define __PRINT__
+//#define __PRINT__
 
 
 using namespace std;
@@ -183,26 +183,29 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 	Evaluator * eval_ks;
 
 
-	for(int i = 1; i < 2 ; i++){
+	for(int i = 0; i < 10 ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 		//string filename_instance = "./Instances_Knapsack/instance_test";
 
 		//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 0; step < 1; step++){
+		for(int step = 0; step < 8; step++){
 
-			Tools::copy_into("./Data/WS_Learning/Test1/Iteration_"+to_string(step),"WS_Matrix.csv");
+			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix.csv");
 
 			Tools::cpt = 0;
 			Tools::clean_up();
 
-			for(int k = 0; k < 10; k++){
+			for(int k = 0; k < 30; k++){
 				//Tools::generate_random_WS("WS_Matrix.csv",2);
 				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
 			}
 			//eval_ks->compute_information_rate();
 			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval");
 			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front");
+//			if(i == 0)
+//				Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_Covered_PF.Test2",to_string((eval_ks->get_PFront()).size()));
+
 			eval_ks->write_objective_OPT_information();
 //			free(eval_ks);
 
@@ -219,11 +222,11 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "200";
+	string taille = "100";
 
-//	script_knapsack(type_inst, taille, WS_DM);
+	script_knapsack(type_inst, taille, WS_DM);
 
-	script_PLSWS(type_inst, taille, WS_DM);
+//	script_PLSWS(type_inst, taille, WS_DM);
 
 
 

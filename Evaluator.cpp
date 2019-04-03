@@ -286,7 +286,6 @@ void Evaluator::evaluate_Dist_Time(string dist_time_file, float time){
 
 	fic.close();
 
-
 	vector< float >().swap(vector_criteria);
 
 }

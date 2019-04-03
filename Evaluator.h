@@ -12,7 +12,7 @@ private:
 	string filename_instance;
 	string dist_time_file;
 	string pf_indicators_file;
-	list< vector< float > > PFront;
+	list< vector< float > > PFront;                 //covered pareto front
 	string PF_filename;
 	AlternativeKnapsack * OPT_Alternative;
 	vector<vector<float > > PF_Efficient;
