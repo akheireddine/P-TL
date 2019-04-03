@@ -73,7 +73,6 @@ Evaluator* main_Knapsack_WSPLS(string filename_instance, string type_instance, s
 
 
 
-
 Evaluator* main_Knapsack_PLSWS(string filename_instance, string type_instance, string num_instance,
 		int size_population, string WS_DM_preferences, int max_step){
 
@@ -183,20 +182,20 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 	Evaluator * eval_ks;
 
 
-	for(int i = 0; i < 10 ; i++){
+	for(int i = 0; i < 1 ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 		//string filename_instance = "./Instances_Knapsack/instance_test";
 
 		//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 0; step < 8; step++){
-
+		for(int step = 4; step < 8; step++){
+			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix.csv");
 
 			Tools::cpt = 0;
 			Tools::clean_up();
 
-			for(int k = 0; k < 30; k++){
+			for(int k = 0; k < 1; k++){
 				//Tools::generate_random_WS("WS_Matrix.csv",2);
 				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
 			}

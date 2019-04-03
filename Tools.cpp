@@ -205,24 +205,24 @@ void Tools::copy_into(string src_filename, string dest_filename){
 
 
 
-vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, vector<vector<float> > ws_matrix){
+vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, vector< vector< float > > ws_matrix){
 	float sum = 0;
 	vector<float> weighted_sum(p_criteria);
 //	srand(time(NULL));
 
 	while(sum != 1 ){
 		sum = 0;
-		weighted_sum.clear();
+//		weighted_sum.clear();
 		for(int i =0; i < p_criteria ; i++){
 	//		float minus = distance(ws_matrix[i].begin(),  min_element(begin(ws_matrix[i]), ws_matrix[i].end()));
 	//		float maxus = distance(ws_matrix[i].begin(),  max_element(begin(ws_matrix[i]), ws_matrix[i].end()));
 
 			const auto [minus, maxus] = minmax_element(begin(ws_matrix[i]), end(ws_matrix[i]));
 
-			float wi = 0;//( (rand()*1.0) / RAND_MAX) % (*maxus)  + (*minus);
+			float wi = (rand()*1.0) / RAND_MAX + (*minus);
 
-			while(wi + sum > 1){
-				wi = rand();
+			while( (wi + sum > 1)   and  (wi < *maxus) ){
+				wi = (rand()*1.0) / RAND_MAX + (*minus);
 			}
 
 			sum += wi;
@@ -231,6 +231,9 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 	}
 
 //	weighted_sum.push_back(1.0 - sum);
+	cout<<"==================================="<<endl;
+	cout<<print_vector(weighted_sum)<<endl;
+	cout<<"==================================="<<endl;
 
 	return weighted_sum;
 }
