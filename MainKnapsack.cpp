@@ -26,56 +26,6 @@ MainKnapsack::MainKnapsack(string filename, int init_population_size , string ma
  * ************************************************* READING PART (INITIALIZATION)  *************************************************
  */
 
-//void MainKnapsack::readInitPopulationFile(string filename){
-//
-//	Population.clear();
-//	ifstream fic(filename.c_str());
-//
-//
-//	if (!(fic) or filename.find(".ks") == std::string::npos){
-//		cerr<<"Error occurred"<<endl;
-//	}
-//
-//	string line;
-//	float total_weight;
-//
-//	while(!fic.eof()){
-//		total_weight = 0;
-//
-//		getline(fic,line);
-//
-//		if( line.size() == 0)
-//			continue;
-//
-//		set<int> set_items;
-//		char *cline = new char[line.length() + 1];
-//		std::strcpy(cline, line.c_str());
-//
-//		char * pch = strtok (cline," 	,");
-//		while (pch != NULL){
-//			set_items.insert(atoi(pch));
-//			total_weight += std::get<0>(Items_information[atoi(pch)]);
-//			pch = strtok (NULL, " 	,");
-//		}
-//
-//		if(total_weight > Backpack_capacity){
-//			cerr<<"Not feasable initialization"<<endl;
-//			exit(1);
-//		}
-//
-//		AlternativeKnapsack* alt = new AlternativeKnapsack(set_items, this);
-//		Population.push_back(alt);
-//
-//	}
-//	cout<<"   Taille de la population initiale ("<<to_string(Population.size())<<")"<<endl;
-//
-//	if( Population.size() == 0){
-//		set<int> empt;
-//		AlternativeKnapsack *alt = new AlternativeKnapsack(empt, this);
-//		Population.push_back(alt);
-//	}
-//	fic.close();
-//}
 
 
 
@@ -172,7 +122,7 @@ void MainKnapsack::readWS_Matrix(string filename){
 		string line;
 		int i = 0;
 		if (!(fic) or filename.find(".csv") == std::string::npos){
-			cerr<<"Error occurred fileMatrix"<<endl;
+			cerr<<"Error occurred readWS_Matrix"<<endl;
 		}
 
 		WS_matrix.resize(p_criteria,vector< float >());
@@ -283,7 +233,6 @@ void MainKnapsack::filter_efficient_set(){
 	list< Alternative* > fixed_opt_set(OPT_Solution.begin(),OPT_Solution.end());
 	for(list< Alternative* >::iterator el1 = fixed_opt_set.begin(); el1 != fixed_opt_set.end(); ++el1){
 		for(list< Alternative* >::iterator el2 = fixed_opt_set.begin(); el2 != fixed_opt_set.end(); ++el2){
-//			cout<<"___________"<<endl<<"id el1 "<<(*el1)->get_id()<<"     id el2 "<<(*el1)->get_id()<<endl<<"___________"<<endl;
 			if((*el1)->get_id() == (*el1)->get_id())
 				continue;
 			if( (*el1)->dominates(*el2) == 1){
@@ -311,11 +260,11 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p)
 		Update_Archive(*p,OPT_Solution);
 
-	while((Population.size() > 0)  and ((clock() /CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
+	while( (Population.size() > 0)  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
 		//get first element
 		alt = Population.front();
-		save_new_point(filename_instance+".expl",alt);
+//		save_new_point(filename_instance+".expl",alt);
 
 		vector<Alternative *> current_neighbors = alt->get_neighborhood();
 
@@ -326,7 +275,7 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 		}
 
 		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
-			//Filter OPT_Solution set
+			//Filtrage global
 			if ( Update_Archive(*new_alt, OPT_Solution) )
 				Population.push_back(*new_alt);
 		}
@@ -501,6 +450,60 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 
 
 
+
+
+
+
+//void MainKnapsack::readInitPopulationFile(string filename){
+//
+//	Population.clear();
+//	ifstream fic(filename.c_str());
+//
+//
+//	if (!(fic) or filename.find(".ks") == std::string::npos){
+//		cerr<<"Error occurred"<<endl;
+//	}
+//
+//	string line;
+//	float total_weight;
+//
+//	while(!fic.eof()){
+//		total_weight = 0;
+//
+//		getline(fic,line);
+//
+//		if( line.size() == 0)
+//			continue;
+//
+//		set<int> set_items;
+//		char *cline = new char[line.length() + 1];
+//		std::strcpy(cline, line.c_str());
+//
+//		char * pch = strtok (cline," 	,");
+//		while (pch != NULL){
+//			set_items.insert(atoi(pch));
+//			total_weight += std::get<0>(Items_information[atoi(pch)]);
+//			pch = strtok (NULL, " 	,");
+//		}
+//
+//		if(total_weight > Backpack_capacity){
+//			cerr<<"Not feasable initialization"<<endl;
+//			exit(1);
+//		}
+//
+//		AlternativeKnapsack* alt = new AlternativeKnapsack(set_items, this);
+//		Population.push_back(alt);
+//
+//	}
+//	cout<<"   Taille de la population initiale ("<<to_string(Population.size())<<")"<<endl;
+//
+//	if( Population.size() == 0){
+//		set<int> empt;
+//		AlternativeKnapsack *alt = new AlternativeKnapsack(empt, this);
+//		Population.push_back(alt);
+//	}
+//	fic.close();
+//}
 
 
 

@@ -206,38 +206,94 @@ void Tools::copy_into(string src_filename, string dest_filename){
 
 
 vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, vector< vector< float > > ws_matrix){
-	float sum = 0;
+	float sum = 0.0, big_max = -1;
 	vector<float> weighted_sum(p_criteria);
-//	srand(time(NULL));
+	vector<pair<float, float > > min_max(p_criteria,pair<float,float>());
+	//	srand(time(NULL));
 
-	while(sum != 1 ){
-		sum = 0;
-//		weighted_sum.clear();
-		for(int i =0; i < p_criteria ; i++){
-	//		float minus = distance(ws_matrix[i].begin(),  min_element(begin(ws_matrix[i]), ws_matrix[i].end()));
-	//		float maxus = distance(ws_matrix[i].begin(),  max_element(begin(ws_matrix[i]), ws_matrix[i].end()));
-
-			const auto [minus, maxus] = minmax_element(begin(ws_matrix[i]), end(ws_matrix[i]));
-
-			float wi = (rand()*1.0) / RAND_MAX + (*minus);
-
-			while( (wi + sum > 1)   and  (wi < *maxus) ){
-				wi = (rand()*1.0) / RAND_MAX + (*minus);
-			}
-
-			sum += wi;
-			weighted_sum[i] = wi;
-		}
+	for(int i = 0; i < p_criteria ; i++){
+		const auto [minus, maxus] = minmax_element(begin(ws_matrix[i]), end(ws_matrix[i]));
+		min_max[i] = make_pair (*minus,*maxus);
 	}
 
-//	weighted_sum.push_back(1.0 - sum);
-	cout<<"==================================="<<endl;
-	cout<<print_vector(weighted_sum)<<endl;
-	cout<<"==================================="<<endl;
+	for(int i =0; i < p_criteria ; i++){
+
+		float wi =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX / (min_max[i].second - min_max[i].first))) + min_max[i].first ;
+		for(int j = i+1; j < p_criteria ; j++){
+			if( big_max < min_max[j].second or big_max==-1 )
+				big_max = min_max[j].second;
+		}
+		while(  (1 - (wi+sum))  > big_max ){
+			float wi =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX / (min_max[i].second - min_max[i].first))) + min_max[i].first ;
+		}
+
+		sum += wi;
+		weighted_sum[i] = wi;
+	}
+
 
 	return weighted_sum;
 }
 
+
+
+
+vector<float> Tools::generate_random_restricted_WS_aggregator_PL(int p_criteria, vector< vector< float > > ws_matrix){
+
+	IloEnv   env;
+	IloModel model(env);
+	vector<IloNumVar > w(p_criteria);
+	IloRangeArray Constraints(env);
+	vector<float> weighted_sum(p_criteria);
+
+	//VARIABLES
+	for(int i = 0; i < p_criteria; i++){
+
+		const auto [minus, maxus] = minmax_element(begin(ws_matrix[i]), end(ws_matrix[i]));
+
+		w[i] = IloNumVar(env,*minus, *minus, ILOFLOAT);
+		ostringstream varname;
+		varname.str("");
+		varname<<"w_"<<i;
+		w[i].setName(varname.str().c_str());
+	}
+
+	//CONSTRAINTS
+	IloExpr c1(env);
+
+	for(int j = 0; j < p_criteria ; j++)
+		c1 += w[j] ;
+
+	Constraints.add(c1 <=  1 );
+
+	model.add(Constraints);
+
+	//OBJECTIVE
+	IloObjective obj=IloAdd(model, IloMaximize(env));
+
+//	cout<<obj<<endl;
+
+	//SOLVE
+	IloCplex cplex(model);
+
+	cplex.setOut(env.getNullStream());
+
+	if ( !cplex.solve() ) {
+		 env.error() << "Failed to optimize WEIGHTS LP" << endl;
+		 exit(1);
+	}
+
+	//GET SOLUTION
+	for(int i = 0; i < p_criteria; i++){
+			weighted_sum[i] = cplex.getValue(w[i])  ;
+	}
+	env.end();
+
+
+	return weighted_sum;
+
+
+}
 
 
 vector<float> Tools::readWS_DM(string WS_DM_preferences){

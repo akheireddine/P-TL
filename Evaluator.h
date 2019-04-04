@@ -56,6 +56,7 @@ public:
 	AlternativeKnapsack* OPT_Alternative_PLNE(vector<float> WS_vector);
 	void evaluate_Dist_Time(string dist_time_file, float time);
 	void evaluate_PF(string pf_indicators_file);
+	void compute_information_rate_front();
 	void compute_information_rate();
 
 

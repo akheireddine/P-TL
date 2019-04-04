@@ -390,7 +390,7 @@ void Evaluator::evaluate_PF(string pf_indicators_file){
 
 
 
-void Evaluator::compute_information_rate(){
+void Evaluator::compute_information_rate_front(){
 
 	int nb_criteria = mainProblem->get_p_criteria();
 	vector< float > inf_intervalls(nb_criteria,-1);
@@ -445,5 +445,41 @@ void Evaluator::compute_information_rate(){
 	vector< float >().swap(sup_intervalls);
 	vector<  AlternativeKnapsack* >().swap(lexmaxs);
 
+
+}
+
+
+
+
+
+void Evaluator::compute_information_rate(){
+
+
+//	vector<vector<float > > matrix = mainProblem->get_WS_matrix();
+//	float uv = 0;
+//	//compute angle
+//	if(mainProblem->get_p_criteria() == 2){
+//
+//		for(int i = 0; i < 2 ; i++){
+//			uv += matrix[i][0] * matrix[i][1] ;
+//			u_norme += matrix[i][0] * matrix[i][0];
+//			v_norme += matrix[i][1] * matrix[i][1];
+//		}
+//
+//
+//		float degree = arccos(uv*1.0 / sqrt(u_norme * v_norme));
+//
+//		return degree;
+//
+//	}
+//
+//	//compute volume
+//	if(mainProblem->get_p_criteria() == 3){
+//		const auto[u,v,w] = mainProblem->get_WS_matrix()[0], mainProblem->get_WS_matrix()[1], mainProblem->get_WS_matrix()[2];
+//
+//
+//	}
+
+	//compute MONTE CARLO APPORIXMATION
 
 }

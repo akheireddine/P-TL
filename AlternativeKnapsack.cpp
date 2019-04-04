@@ -163,8 +163,6 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 
 	set< int > In_BP, Out_BP;
 
-	//Generate a random set of WS to select the next item to insert
-//	vector<float> ws_aggr_utility = Tools::generate_random_WS_aggregator(mainLSStructure->get_p_criteria());
 
 	for(int i = 0; i < alternatives.size(); i++){
 		if( alternatives[i] == 1)
@@ -213,22 +211,6 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 
 	return neighborhood;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
