@@ -57,7 +57,7 @@ public:
 	void evaluate_Dist_Time(string dist_time_file, float time);
 	void evaluate_PF(string pf_indicators_file);
 	void compute_information_rate_front();
-	void compute_information_rate();
+	float compute_information_rate();
 
 
 	//INDICATORS

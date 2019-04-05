@@ -81,8 +81,8 @@ Evaluator* main_Knapsack_PLSWS(string filename_instance, string type_instance, s
 	MainKnapsack * knaps = new MainKnapsack(filename_instance, size_population);
 
 	clock_t t1 = clock();
-//	knaps->HYBRID_PLS_WS(t1/CLOCKS_PER_SEC,max_step);
-	knaps->MOLS(t1/CLOCKS_PER_SEC,max_step);
+	knaps->HYBRID_PLS_WS(t1/CLOCKS_PER_SEC,max_step);
+//	knaps->MOLS(t1/CLOCKS_PER_SEC,max_step);
 	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
 
 	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
@@ -143,7 +143,7 @@ void script_PLSWS(string type_inst, string taille, string WS_DM){
 	Evaluator * eval_ks;
 
 
-	for(int i = 0; i < 7; i++){
+	for(int i = 7; i < 8; i++){
 
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
@@ -186,20 +186,20 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 	Evaluator * eval_ks;
 
 
-	for(int i = 0; i < 10 ; i++){
+	for(int i = 0; i < 1 ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 		//string filename_instance = "./Instances_Knapsack/instance_test";
 
 		//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 0; step < 8; step++){
+		for(int step = 1; step < 2; step++){
 			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix.csv");
 
 			Tools::cpt = 0;
 			Tools::clean_up();
 
-			for(int k = 0; k < 20; k++){
+			for(int k = 0; k < 1; k++){
 				//Tools::generate_random_WS("WS_Matrix.csv",2);
 				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
 			}
@@ -232,9 +232,9 @@ int main(int argc, char** argv){
 	string type_inst = "A";
 	string taille = "100";
 
-//	script_knapsack(type_inst, taille, WS_DM);
+	script_knapsack(type_inst, taille, WS_DM);
 
-	script_PLSWS(type_inst, taille, WS_DM);
+//	script_PLSWS(type_inst, taille, WS_DM);
 
 
 

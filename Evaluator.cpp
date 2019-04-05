@@ -452,34 +452,55 @@ void Evaluator::compute_information_rate_front(){
 
 
 
-void Evaluator::compute_information_rate(){
+float Evaluator::compute_information_rate(){
 
 
-//	vector<vector<float > > matrix = mainProblem->get_WS_matrix();
-//	float uv = 0;
-//	//compute angle
-//	if(mainProblem->get_p_criteria() == 2){
-//
-//		for(int i = 0; i < 2 ; i++){
-//			uv += matrix[i][0] * matrix[i][1] ;
-//			u_norme += matrix[i][0] * matrix[i][0];
-//			v_norme += matrix[i][1] * matrix[i][1];
-//		}
-//
-//
-//		float degree = arccos(uv*1.0 / sqrt(u_norme * v_norme));
-//
-//		return degree;
-//
-//	}
-//
-//	//compute volume
-//	if(mainProblem->get_p_criteria() == 3){
-//		const auto[u,v,w] = mainProblem->get_WS_matrix()[0], mainProblem->get_WS_matrix()[1], mainProblem->get_WS_matrix()[2];
-//
-//
-//	}
+	vector<vector<float > > matrix = mainProblem->get_WS_matrix();
+	float uv = 0, u_norme = 0, v_norme = 0;
+	//compute angle
+
+	if(mainProblem->get_p_criteria() == 2){
+
+		for(int i = 0; i < 2 ; i++){
+			uv += matrix[i][0] * matrix[i][1] ;
+			u_norme += matrix[i][0] * matrix[i][0];
+			v_norme += matrix[i][1] * matrix[i][1];
+		}
+
+		float degree = acos(uv*1.0 / sqrt(u_norme * v_norme));
+
+		return degree;
+
+	}
+
+	//compute volume
+	if(mainProblem->get_p_criteria() == 3){
+		vector< vector<float > > matrix = mainProblem->get_WS_matrix();
+		vector<float> lengths(3,0);
+		float maxus, minus;
+
+		for(int i = 0; i < 3; i++){
+			maxus = -1, minus = -1;
+			for(int j = 0; j < mainProblem->get_n_objective(); j++){
+				if( matrix[i][j] < minus   or minus == -1 )
+					minus = matrix[i][j];
+				if( matrix[i][j] > maxus or maxus == -1)
+					maxus = matrix[i][j];
+			}
+
+			lengths[i] = abs(maxus - minus);
+
+		}
+
+		return lengths[0] * lengths[1] * lengths[2];
+	}
+
+
 
 	//compute MONTE CARLO APPORIXMATION
+
+
+
+
 
 }

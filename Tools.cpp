@@ -289,6 +289,7 @@ vector<float> Tools::generate_random_restricted_WS_aggregator_PL(int p_criteria,
 	}
 	env.end();
 
+	cout<<"----------------------"<<endl<<"WEIGHTED SUM PL ["<<print_vector(weighted_sum)<<"]"<<endl<<"----------------------"<<endl;
 
 	return weighted_sum;
 
