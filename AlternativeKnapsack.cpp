@@ -40,9 +40,14 @@ AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct){
 
 }
 
+void set_objective_matrix(vector< vector<float > > matrix){
+		local_Obj_Coef= matrix;
+}
+
 void AlternativeKnapsack::update(){
 
 	vector< vector < float > > WS_matrix = mainLSStructure->get_WS_matrix();
+
 	objective_values.clear();
 
 	objective_values.resize(mainLSStructure->get_n_objective(), 0);
@@ -50,7 +55,7 @@ void AlternativeKnapsack::update(){
 
 	for(int i = 0; i < mainLSStructure->get_n_objective(); i++){
 		for(int j = 0; j < mainLSStructure->get_p_criteria(); j++){
-			objective_values[i] += WS_matrix[j][i] * criteria_values[j];
+			objective_values[i] += local_Obj_Coef[j][i] * criteria_values[j];
 		}
 	}
 }
@@ -134,7 +139,7 @@ map< float, int, greater <float> > AlternativeKnapsack::generate_ordered_ratio_i
 
 	//IN DOMAIN DEFINITION
 //	vector<float> ws_aggr_utility = Tools::generate_random_restricted_WS_aggregator(mainLSStructure->get_p_criteria(), mainLSStructure->get_WS_matrix());
-
+//	vector<float> ws_aggr_utility = Tools::generate_random_restricted_WS_aggregator_PL(mainLSStructure->get_p_criteria(), mainLSStructure->get_WS_matrix());
 
 
 

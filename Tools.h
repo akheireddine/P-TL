@@ -47,7 +47,7 @@ public:
 	static vector<float> readWS_DM(string WS_DM_preferences);
 	static vector<float> generate_random_restricted_WS_aggregator(int p_criteria, vector< vector< float > > ws_matrix);
 //	static void save_information_in(string filename, string smthing);
-	static vector<float> generate_random_restricted_WS_aggregator_PL(int p_criteria, vector< vector< float > > ws_matrix);
+//	static vector<float> generate_random_restricted_WS_aggregator_PL(int p_criteria, vector< vector< float > > ws_matrix);
 
 
 };

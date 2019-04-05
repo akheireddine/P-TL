@@ -1,7 +1,7 @@
 
 
 #include "Evaluator.h"
-#include <ilcplex/ilocplex.h>
+//#include <ilcplex/ilocplex.h>
 
 
 Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_DM_preferences,
@@ -448,6 +448,7 @@ void Evaluator::compute_information_rate_front(){
 
 }
 
+#define PI 3.14159265
 
 
 
@@ -466,9 +467,9 @@ float Evaluator::compute_information_rate(){
 			u_norme += matrix[i][0] * matrix[i][0];
 			v_norme += matrix[i][1] * matrix[i][1];
 		}
+		if( sqrt(u_norme * v_norme) == 0 ) return 0;
 
-		float degree = acos(uv*1.0 / sqrt(u_norme * v_norme));
-
+		float degree = acos(uv*1.0 / sqrt(u_norme * v_norme)) * 180.0 / PI;
 		return degree;
 
 	}

@@ -19,7 +19,7 @@ class AlternativeKnapsack : public Alternative{
 
 protected :
 	float weight;													// total weight of the alternative
-	MainKnapsack* mainLSStructure;									// pointer to the main structure (get informations)
+	MainKnapsack* mainLSStructure;									// pointer to the main structure (for information)
 
 
 public:

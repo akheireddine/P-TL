@@ -388,15 +388,13 @@ void MainKnapsack::HYBRID_PLS_WS(double starting_time_sec, int steps){
 
 	Population = OPT_Solution;
 	//WS
-	Tools::generate_random_WS("WS_Matrix.csv",p_criteria);
-	readWS_Matrix("WS_Matrix.csv");
+
 	update_alternatives(Population);
 
 	MOLS(starting_time_sec);
 }
 
 void MainKnapsack::update_alternatives(list<Alternative*> set_Alt){
-
 	for(list<Alternative*>::iterator alt = set_Alt.begin(); alt != set_Alt.end(); ++alt ){
 		(*alt)->update();
 	}

@@ -238,63 +238,6 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 
 
 
-vector<float> Tools::generate_random_restricted_WS_aggregator_PL(int p_criteria, vector< vector< float > > ws_matrix){
-
-	IloEnv   env;
-	IloModel model(env);
-	vector<IloNumVar > w(p_criteria);
-	IloRangeArray Constraints(env);
-	vector<float> weighted_sum(p_criteria);
-
-	//VARIABLES
-	for(int i = 0; i < p_criteria; i++){
-
-		const auto [minus, maxus] = minmax_element(begin(ws_matrix[i]), end(ws_matrix[i]));
-
-		w[i] = IloNumVar(env,*minus, *minus, ILOFLOAT);
-		ostringstream varname;
-		varname.str("");
-		varname<<"w_"<<i;
-		w[i].setName(varname.str().c_str());
-	}
-
-	//CONSTRAINTS
-	IloExpr c1(env);
-
-	for(int j = 0; j < p_criteria ; j++)
-		c1 += w[j] ;
-
-	Constraints.add(c1 <=  1 );
-
-	model.add(Constraints);
-
-	//OBJECTIVE
-	IloObjective obj=IloAdd(model, IloMaximize(env));
-
-//	cout<<obj<<endl;
-
-	//SOLVE
-	IloCplex cplex(model);
-
-	cplex.setOut(env.getNullStream());
-
-	if ( !cplex.solve() ) {
-		 env.error() << "Failed to optimize WEIGHTS LP" << endl;
-		 exit(1);
-	}
-
-	//GET SOLUTION
-	for(int i = 0; i < p_criteria; i++){
-			weighted_sum[i] = cplex.getValue(w[i])  ;
-	}
-	env.end();
-
-	cout<<"----------------------"<<endl<<"WEIGHTED SUM PL ["<<print_vector(weighted_sum)<<"]"<<endl<<"----------------------"<<endl;
-
-	return weighted_sum;
-
-
-}
 
 
 vector<float> Tools::readWS_DM(string WS_DM_preferences){
@@ -314,6 +257,75 @@ vector<float> Tools::readWS_DM(string WS_DM_preferences){
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//vector<float> Tools::generate_random_restricted_WS_aggregator_PL(int p_criteria, vector< vector< float > > ws_matrix){
+//
+//	IloEnv   env;
+//	IloModel model(env);
+//	vector<IloNumVar > w(p_criteria);
+//	IloRangeArray Constraints(env);
+//	vector<float> weighted_sum(p_criteria);
+//
+//	//VARIABLES
+//	for(int i = 0; i < p_criteria; i++){
+//
+//		const auto [minus, maxus] = minmax_element(begin(ws_matrix[i]), end(ws_matrix[i]));
+//		w[i] = IloNumVar(env,*minus, *maxus, ILOFLOAT);
+//		ostringstream varname;
+//		varname.str("");
+//		varname<<"w_"<<i;
+//		w[i].setName(varname.str().c_str());
+//	}
+//
+//	//CONSTRAINTS
+//	IloExpr c1(env);
+//
+//	for(int j = 0; j < p_criteria ; j++)
+//		c1 += w[j] ;
+//	Constraints.add(c1 ==  1 );
+//
+//	model.add(Constraints);
+//
+//	//OBJECTIVE
+////	IloObjective obj=IloAdd(model, IloMaximize(env));
+//
+////	cout<<obj<<endl;
+//
+//	//SOLVE
+//	IloCplex cplex(model);
+//
+//	cplex.setOut(env.getNullStream());
+//
+//	if ( !cplex.solve() ) {
+//		 env.error() << "Failed to optimize WEIGHTS LP" << endl;
+//		 exit(1);
+//	}
+//
+//	//GET SOLUTION
+//	for(int i = 0; i < p_criteria; i++){
+//			weighted_sum[i] = cplex.getValue(w[i])  ;
+//	}
+//	env.end();
+//
+////	cout<<"----------------------"<<endl<<"WEIGHTED SUM PL ["<<print_vector(weighted_sum)<<"]"<<endl<<"----------------------"<<endl;
+//
+//	return weighted_sum;
+//
+//
+//}
 
 
 
