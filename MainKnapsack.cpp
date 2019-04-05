@@ -200,7 +200,7 @@ void MainKnapsack::GenerateInitialPopulation(int size_population){
 //		set<int> individu;
 //		individu.insert(1);
 //		individu.insert(3);
-		AlternativeKnapsack * alt = new AlternativeKnapsack(individu, this);
+		AlternativeKnapsack * alt = new AlternativeKnapsack(individu, this, WS_matrix);
 		Population.push_back(alt);
 		set<int>().swap(individu);
 	}
@@ -227,7 +227,7 @@ void MainKnapsack::save_new_point(string filename, Alternative * alt){
 
 
 
-//Filter the final archive
+//Filter the final archive (objective space)
 void MainKnapsack::filter_efficient_set(){
 
 	list< Alternative* > fixed_opt_set(OPT_Solution.begin(),OPT_Solution.end());
@@ -235,11 +235,11 @@ void MainKnapsack::filter_efficient_set(){
 		for(list< Alternative* >::iterator el2 = fixed_opt_set.begin(); el2 != fixed_opt_set.end(); ++el2){
 			if((*el1)->get_id() == (*el1)->get_id())
 				continue;
-			if( (*el1)->dominates(*el2) == 1){
+			if( (*el1)->dominates_objective_space(*el2) == 1){
 				OPT_Solution.erase(el2);
 //				delete (*el2);
 			}
-			else if((*el1)->dominates(*el2) == -1){
+			else if((*el1)->dominates_objective_space(*el2) == -1){
 				OPT_Solution.erase(el1);
 //				delete (*el1);
 			}
@@ -247,6 +247,33 @@ void MainKnapsack::filter_efficient_set(){
 		}
 	}
 }
+
+//Filter the final archive (decision spaec)
+void MainKnapsack::filter_efficient_set_decision_space(){
+
+	list< Alternative* > fixed_opt_set(OPT_Solution.begin(),OPT_Solution.end());
+	for(list< Alternative* >::iterator el1 = fixed_opt_set.begin(); el1 != fixed_opt_set.end(); ++el1){
+		for(list< Alternative* >::iterator el2 = fixed_opt_set.begin(); el2 != fixed_opt_set.end(); ++el2){
+
+			if((*el1)->get_id() == (*el1)->get_id())
+				continue;
+
+			int value = (*el1)->dominates_decision_space(*el2);
+
+			if( value  == 1){
+				OPT_Solution.erase(el2);
+//				delete (*el2);
+			}
+			else if( value == -1){
+				OPT_Solution.erase(el1);
+//				delete (*el1);
+			}
+
+		}
+	}
+}
+
+
 
 
 list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
@@ -264,15 +291,17 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 		nb_iteration++;
 		//get first element
 		alt = Population.front();
+
 //		save_new_point(filename_instance+".expl",alt);
 
 		vector<Alternative *> current_neighbors = alt->get_neighborhood();
 
 		for(vector< Alternative* >::iterator neighbor = current_neighbors.begin(); neighbor != current_neighbors.end(); ++neighbor){
 			//Prefiltrage
-			if( alt->dominates(*neighbor) != 1 )
+			if( alt->dominates_objective_space(*neighbor) != 1 )
 				Update_Archive(*neighbor,Local_front);
 		}
+
 
 		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
 			//Filtrage global
@@ -317,13 +346,13 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec,int steps){
 		nb_iteration++;
 		//get first element
 		alt = Population.front();
-		save_new_point(filename_instance+".expl",alt);
+//		save_new_point(filename_instance+".expl",alt);
 
 		vector<Alternative *> current_neighbors = alt->get_neighborhood();
 
 		for(vector< Alternative* >::iterator neighbor = current_neighbors.begin(); neighbor != current_neighbors.end(); ++neighbor){
 			//Prefiltrage
-			if( alt->dominates(*neighbor) != 1 )
+			if( alt->dominates_objective_space(*neighbor) != 1 )
 				Update_Archive(*neighbor,Local_front);
 		}
 
@@ -379,6 +408,73 @@ void MainKnapsack::HYBRID_WS_PLS(double starting_time_sec,int steps){
 
 
 
+
+list< Alternative * > MainKnapsack::MOLS_NO_FILTERING(double starting_time_sec){
+
+	Alternative* alt;
+	list< Alternative* > Local_front(0);
+
+	int nb_iteration=0;
+
+	//First initialization
+//	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p)
+//		Update_Archive(*p,OPT_Solution);
+
+	while( (Population.size() > 0)  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
+		nb_iteration++;
+		//get first element
+		alt = Population.front();
+		cout<<"__________________________"<<endl;
+		alt->print_objective_values();
+
+		save_new_point(filename_instance+".expl",alt);
+
+		vector<Alternative *> current_neighbors = alt->get_neighborhood();
+
+		for(vector< Alternative* >::iterator neighbor = current_neighbors.begin(); neighbor != current_neighbors.end(); ++neighbor){
+			//Prefiltrage
+			int value = alt->dominates_objective_space(*neighbor);
+			if( value != 1 )
+				Update_Archive(*neighbor,Local_front);
+			if( value == -1)
+				OPT_Solution.remove(alt);
+		}
+
+		cout<<"LOCAL ARCHIVE SIZE should be 1 : "<<Local_front.size()<<endl;
+//		for(list<Alternative*>::iterator lf = Local_front.begin(); lf != Local_front.end(); ++lf){
+//			(*lf)->print_objective_values();
+//			cout<<"      ";
+//			(*lf)->print_criteria_values();
+//		}
+
+
+		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
+			//Filtrage global
+//			if ( Update_Archive(*new_alt, OPT_Solution) )
+			OPT_Solution.push_back(*new_alt);
+			Population.push_back(*new_alt);
+		}
+
+		//remove first element
+		Population.pop_front();
+		Local_front.clear();
+
+	}
+
+	cout<<"Number of iteration "<<nb_iteration<<endl;
+	cout<<"NUMBER OF OPT SOL : "<<OPT_Solution.size()<<endl;
+	filter_efficient_set_decision_space();
+
+	write_solution(filename_instance+".sol");
+
+
+	list<Alternative*>().swap(Local_front);
+
+	return OPT_Solution;
+}
+
+
+
 void MainKnapsack::HYBRID_PLS_WS(double starting_time_sec, int steps){
 
 	//PLS
@@ -387,17 +483,29 @@ void MainKnapsack::HYBRID_PLS_WS(double starting_time_sec, int steps){
 	MOLS(starting_time_sec,steps);
 
 	Population = OPT_Solution;
+
 	//WS
 
 	update_alternatives(Population);
+	cout<<"Number of solution found with PLS : "<<OPT_Solution.size()<<endl;
 
-	MOLS(starting_time_sec);
+	MOLS_NO_FILTERING(starting_time_sec);
+	cout<<"Number of solution found with WS : "<<OPT_Solution.size()<<endl;
+
 }
 
-void MainKnapsack::update_alternatives(list<Alternative*> set_Alt){
+void MainKnapsack::update_alternatives(list<Alternative*> &set_Alt){
+
 	for(list<Alternative*>::iterator alt = set_Alt.begin(); alt != set_Alt.end(); ++alt ){
-		(*alt)->update();
+		vector<float> ws_random = Tools::generate_random_restricted_WS_aggregator(p_criteria, WS_matrix);
+		vector<vector<float> > ws_matrix(p_criteria,vector<float>());
+		for(int i = 0; i < p_criteria; i++)
+			ws_matrix[i].push_back(ws_random[i]);
+
+		(*alt)->set_local_WS_matrix(ws_matrix);
+		(*alt)->update_objective_vector();
 	}
+
 }
 
 
@@ -412,7 +520,7 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 
 	for(list< Alternative* >::iterator alt = set_SOL.begin(); alt != set_SOL.end(); ++alt){
 
-		dom_val = (*alt)->dominates(p);
+		dom_val = (*alt)->dominates_objective_space(p);
 		if(dom_val == 1)			// alt dominates p
 			return false;
 
@@ -425,7 +533,6 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 	}
 
 	set_SOL.push_back(p);
-
 
 	vector<Alternative*>().swap(to_remove);
 	return true;
@@ -489,7 +596,7 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 //			exit(1);
 //		}
 //
-//		AlternativeKnapsack* alt = new AlternativeKnapsack(set_items, this);
+//		AlternativeKnapsack* alt = new AlternativeKnapsack(set_items, this, WS_matrix);
 //		Population.push_back(alt);
 //
 //	}
@@ -497,7 +604,7 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 //
 //	if( Population.size() == 0){
 //		set<int> empt;
-//		AlternativeKnapsack *alt = new AlternativeKnapsack(empt, this);
+//		AlternativeKnapsack *alt = new AlternativeKnapsack(empt, this, WS_matrix);
 //		Population.push_back(alt);
 //	}
 //	fic.close();

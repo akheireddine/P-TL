@@ -25,38 +25,31 @@ protected :
 public:
 
 	//CONSTRUCTOR
-	AlternativeKnapsack(set<int> items, MainKnapsack* mStruct);
+	AlternativeKnapsack(set<int> items, MainKnapsack* mStruct, vector< vector< float > > WS_matrix);
 	~AlternativeKnapsack(){
 //		delete this;
 	};
 	//GETTERS
 	float get_weight(){ return weight; }
 
+	//ALGORITHMS
 	void enumerate_neighborhood(set<int> & curr_BP, set<int> &item_OUT, float bp_weight, map< float, int, greater <float> > ratio_items);
-
-
 	map< float, int, greater <float> > generate_ordered_ratio_items(set<int> set_items);
 
 
 
 	//OVERLOADED METHODS
-	vector< Alternative* > get_neighborhood();
 	/**
 	 * 1  current alternative dominates paramter alt
 	 * 0  incomparable
 	 * -1 paramter alt dominates current alternative
 	 */
-	int dominates(Alternative* alt);
-	void update();
+	int dominates_objective_space(Alternative* alt);
+	int dominates_decision_space(Alternative* alt);
+	vector< Alternative* > get_neighborhood();
+	void update_objective_vector();
 
 
-	inline void print_alternative(){ cout<<"("; for(int i = 0; i < alternatives.size(); i++) cout<< alternatives[i] <<", "; cout<<")"<<endl;};
-
-	inline void print_objective_values(){ cout<<"("; for(int i = 0; i < objective_values.size(); i++) cout<< objective_values[i] <<", "; cout<<")   "; };
-
-	inline void print_criteria_values(){ cout<<"("; for(int i = 0; i < criteria_values.size(); i++) cout<< criteria_values[i] <<", "; cout<<")"<<endl; };
-
-	inline float get_criteria(int i ){ return criteria_values[i]; };
 
 
 };

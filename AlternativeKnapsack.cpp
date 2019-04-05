@@ -7,19 +7,22 @@ using namespace std;
 
 
 
-AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct){
+AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct, vector< vector<float > > WS_matrix){
 
 	id_alt = id++;
 	mainLSStructure = mStruct;
+	nb_objective = WS_matrix[0].size();
+	local_WS_matrix = WS_matrix;
+
+
 
 	neighborhood.clear();
 	alternatives.resize(mainLSStructure->get_n_items(),0);
 	criteria_values.resize(mainLSStructure->get_p_criteria(), 0);
-	objective_values.resize(mainLSStructure->get_n_objective(), 0);
+	objective_values.resize( nb_objective , 0);
 	weight = 0;
 
 
-	vector< vector < float > > WS_matrix = mainLSStructure->get_WS_matrix();
 
 	for(set<int>::iterator o = items.begin(); o != items.end(); ++o){
 
@@ -32,36 +35,30 @@ AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct){
 		}
 	}
 
-	for(int i = 0; i < mainLSStructure->get_n_objective(); i++){
+	for(int i = 0; i <nb_objective; i++){
 		for(int j = 0; j < mainLSStructure->get_p_criteria(); j++){
-			objective_values[i] += WS_matrix[j][i] * criteria_values[j];
+			objective_values[i] += local_WS_matrix[j][i] * criteria_values[j];
 		}
 	}
 
 }
 
-void set_objective_matrix(vector< vector<float > > matrix){
-		local_Obj_Coef= matrix;
-}
 
-void AlternativeKnapsack::update(){
-
-	vector< vector < float > > WS_matrix = mainLSStructure->get_WS_matrix();
+void AlternativeKnapsack::update_objective_vector(){
 
 	objective_values.clear();
 
-	objective_values.resize(mainLSStructure->get_n_objective(), 0);
+	objective_values.resize(nb_objective, 0);
 
-
-	for(int i = 0; i < mainLSStructure->get_n_objective(); i++){
+	for(int i = 0; i < local_WS_matrix[0].size(); i++){
 		for(int j = 0; j < mainLSStructure->get_p_criteria(); j++){
-			objective_values[i] += local_Obj_Coef[j][i] * criteria_values[j];
+			objective_values[i] += local_WS_matrix[j][i] * criteria_values[j];
 		}
 	}
 }
 
 
-int AlternativeKnapsack::dominates(Alternative* alt){
+int AlternativeKnapsack::dominates_objective_space(Alternative* alt){
 
 	int i = 0;
 	bool AdomB = false, BdomA = false;
@@ -88,6 +85,33 @@ int AlternativeKnapsack::dominates(Alternative* alt){
 	return 1;
 }
 
+
+int AlternativeKnapsack::dominates_decision_space(Alternative* alt){
+
+	int i = 0;
+	bool AdomB = false, BdomA = false;
+
+	vector< float > crit_alt = alt->get_criteria_values();
+
+	for(i = 0; i < mainLSStructure->get_p_criteria(); i++){
+
+		if( criteria_values[i] < crit_alt[i] )									// MAXIMIZATION DES OBJECTIFS ! ! !
+			BdomA = true;
+
+		else if ( criteria_values[i] > crit_alt[i] )
+			AdomB = true;
+
+		if( AdomB and BdomA)
+			return 0;
+	}
+
+	if ( BdomA and !AdomB)
+		return -1;
+
+
+	// AdomB and !BdomA   or   !AdomB and !BdomA
+	return 1;
+}
 
 
 void AlternativeKnapsack::enumerate_neighborhood(set<int> & curr_BP, set<int> &item_OUT, float bp_weight, map< float, int, greater <float> > ratio_items){
@@ -116,8 +140,8 @@ void AlternativeKnapsack::enumerate_neighborhood(set<int> & curr_BP, set<int> &i
 			new_neighbor.insert(id_object);
 			weight_neighbor += mainLSStructure->get_weight_of(id_object);
 		}
+		AlternativeKnapsack * alt = new AlternativeKnapsack(new_neighbor, mainLSStructure, local_WS_matrix );
 
-		AlternativeKnapsack * alt = new AlternativeKnapsack(new_neighbor, mainLSStructure );
 		set< int  >().swap(new_neighbor);
 		neighborhood.push_back(alt);
 	}
@@ -138,8 +162,8 @@ map< float, int, greater <float> > AlternativeKnapsack::generate_ordered_ratio_i
 
 
 	//IN DOMAIN DEFINITION
-//	vector<float> ws_aggr_utility = Tools::generate_random_restricted_WS_aggregator(mainLSStructure->get_p_criteria(), mainLSStructure->get_WS_matrix());
-//	vector<float> ws_aggr_utility = Tools::generate_random_restricted_WS_aggregator_PL(mainLSStructure->get_p_criteria(), mainLSStructure->get_WS_matrix());
+//	vector<float> ws_aggr_utility = Tools::generate_random_restricted_WS_aggregator(mainLSStructure->get_p_criteria(), local_WS_matrix);
+//	vector<float> ws_aggr_utility = Tools::generate_random_restricted_WS_aggregator_PL(mainLSStructure->get_p_criteria(), local_WS_matrix);
 
 
 
@@ -200,7 +224,6 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 		set< int > in_tmp(In_BP.begin(),In_BP.end());
 
 		in_tmp.erase(*in);
-
 		enumerate_neighborhood(in_tmp,Out_BP, new_weight, ratio_items);
 
 	}

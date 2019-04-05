@@ -240,6 +240,7 @@ AlternativeKnapsack * Evaluator::OPT_Alternative_PLNE(vector<float> WS_vector){
 
 	cplex.setOut(env.getNullStream());
 
+
 	if ( !cplex.solve() ) {
 		 env.error() << "Failed to optimize LP" << endl;
 		 exit(1);
@@ -253,7 +254,7 @@ AlternativeKnapsack * Evaluator::OPT_Alternative_PLNE(vector<float> WS_vector){
 	}
 	env.end();
 
-	AlternativeKnapsack * opt_alt = new AlternativeKnapsack(items, mainProblem);
+	AlternativeKnapsack * opt_alt = new AlternativeKnapsack(items, mainProblem, mainProblem->get_WS_matrix());
 
 
 	set< int >().swap(items);
@@ -499,7 +500,7 @@ float Evaluator::compute_information_rate(){
 
 
 	//compute MONTE CARLO APPORIXMATION
-
+return -1;
 
 
 
