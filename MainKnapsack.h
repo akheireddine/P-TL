@@ -15,10 +15,10 @@ protected:
 
 	float Backpack_capacity = 0;							// capacity ofthe backpack
 	int n_items;											// number of items
+	double T_SA;
 
 
 public :
-
 	//information about each item : (key:weight : value:utility list for each criteria)
 	vector< tuple<float, vector< float> > > Items_information;
 
@@ -36,6 +36,9 @@ public :
 
 	//RESOLUTION
 	bool Update_Archive(Alternative* p, list< Alternative* > &set_SOL);
+	bool Update_Archive_Simulated_Annealing(Alternative* p, list< Alternative* > &set_SOL);
+	void update_alternatives(list<Alternative*> &set_Alt);
+
 	void filter_efficient_set();
 	void filter_efficient_set_decision_space();
 
@@ -43,7 +46,8 @@ public :
 	void HYBRID_PLS_WS(double starting_time_sec, int steps);
 	list< Alternative * > MOLS(double starting_time_sec,int steps);
 	list< Alternative * > MOLS_NO_FILTERING(double starting_time_sec);
-	void update_alternatives(list<Alternative*> &set_Alt);
+	list< Alternative * > MOLS_Simulated_Annealing(double starting_time_sec);
+
 
 
 	//EVALUATION

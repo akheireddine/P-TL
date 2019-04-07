@@ -30,6 +30,7 @@ public:
 	inline vector< float > get_objective_values(){ return objective_values; };
 	inline vector< float > get_criteria_values() { return criteria_values; };
 	inline float get_criteria(int i ){ return criteria_values[i]; };
+	inline vector<int> get_alternatives(){ return alternatives; }
 	inline vector< vector< float > > get_local_WS_matrix(){ return local_WS_matrix;};
 	//SETTERS
 	inline void set_local_WS_matrix(vector<vector<float > > matrix){ local_WS_matrix = matrix; nb_objective = local_WS_matrix[0].size();};
@@ -39,6 +40,8 @@ public:
 	virtual int dominates_objective_space(Alternative* alt) = 0;
 	virtual int dominates_decision_space(Alternative* alt) = 0;
 	virtual void update_objective_vector() = 0;
+	virtual int get_nb_items() = 0;
+	virtual bool contains_items(Alternative * alt) = 0;
 
 	//PRINT
 	inline void print_alternative(){ cout<<"("; for(int i = 0; i < alternatives.size(); i++) cout<< alternatives[i] <<", "; cout<<")"<<endl;};

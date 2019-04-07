@@ -48,6 +48,20 @@ public:
 	int dominates_decision_space(Alternative* alt);
 	vector< Alternative* > get_neighborhood();
 	void update_objective_vector();
+	inline int get_nb_items(){
+		int nb = 0;
+		for(int i = 0; i < alternatives.size(); i++)
+			if( alternatives[i] == 1)
+				nb++;
+		return nb;
+	};
+
+	inline bool contains_items(Alternative * alt){
+		for(int i = 0; i < alternatives.size(); i++)
+			if((alternatives[i] != alt->get_alternatives()[i])   and  (alt->get_alternatives()[i] == 1) )
+				return false;
+		return true;
+	};
 
 
 

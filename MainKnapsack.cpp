@@ -3,7 +3,13 @@
 
 #include "MainKnapsack.h"
 #define TIMEOUT 240
+
 //#define __PRINT__
+
+
+
+
+
 
 
 MainKnapsack::MainKnapsack(string filename, int init_population_size , string matrix_filename){
@@ -19,12 +25,18 @@ MainKnapsack::MainKnapsack(string filename, int init_population_size , string ma
 //	readInitPopulationFile(init_population_filename);
 
 
+
+
 }
 
 
 /**
  * ************************************************* READING PART (INITIALIZATION)  *************************************************
  */
+
+
+
+
 
 
 
@@ -197,9 +209,6 @@ void MainKnapsack::GenerateInitialPopulation(int size_population){
 			individu.insert(itm);
 			bp += get_weight_of(itm);
 		}
-//		set<int> individu;
-//		individu.insert(1);
-//		individu.insert(3);
 		AlternativeKnapsack * alt = new AlternativeKnapsack(individu, this, WS_matrix);
 		Population.push_back(alt);
 		set<int>().swap(individu);
@@ -220,9 +229,23 @@ void MainKnapsack::save_new_point(string filename, Alternative * alt){
 	fic.close();
 }
 
+
+
+
+
+
+
+
+
+
+
 /**
  * ************************************************* SOLVING PART *************************************************
  */
+
+
+
+
 
 
 
@@ -292,7 +315,7 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 		//get first element
 		alt = Population.front();
 
-//		save_new_point(filename_instance+".expl",alt);
+		//save_new_point(filename_instance+".expl",alt);
 
 		vector<Alternative *> current_neighbors = alt->get_neighborhood();
 
@@ -329,7 +352,6 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 
 
 
-
 list< Alternative * > MainKnapsack::MOLS(double starting_time_sec,int steps){
 
 	Alternative* alt;
@@ -346,7 +368,8 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec,int steps){
 		nb_iteration++;
 		//get first element
 		alt = Population.front();
-//		save_new_point(filename_instance+".expl",alt);
+
+		//save_new_point(filename_instance+".expl",alt);
 
 		vector<Alternative *> current_neighbors = alt->get_neighborhood();
 
@@ -381,27 +404,63 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec,int steps){
 
 
 
-void MainKnapsack::HYBRID_WS_PLS(double starting_time_sec,int steps){
+list< Alternative * > MainKnapsack::MOLS_Simulated_Annealing(double starting_time_sec){
 
-	//WS
-	MOLS(starting_time_sec,steps);
+	T_SA = 0.1;
 
-	Population = OPT_Solution;
+	Alternative* alt;
+	list< Alternative* > Local_front(0);
 
-	change_to_pareto_selection();
-	//PLS
-#ifdef __PRINT__
-	cout<<"   Matrice des objectives :"<<endl;
-	for(int i = 0; i < p_criteria; i++){
-		cout<<"   ";
-		for(int j = 0; j < n_objective; j++)
-			cout<<WS_matrix[i][j]<< " ";
-		cout<<endl;
+	int nb_iteration=0;
+
+	//First initialization
+	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p)
+		Update_Archive(*p,OPT_Solution);
+
+
+	while( (Population.size() > 0)  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
+		nb_iteration++;
+		//get first element
+		alt = Population.front();
+
+		//save_new_point(filename_instance+".expl",alt);
+
+		vector<Alternative *> current_neighbors = alt->get_neighborhood();
+
+		for(vector< Alternative* >::iterator neighbor = current_neighbors.begin(); neighbor != current_neighbors.end(); ++neighbor){
+			//Prefiltrage
+			if( alt->dominates_objective_space(*neighbor) != 1 )
+				Update_Archive(*neighbor,Local_front);
+		}
+
+
+		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
+			//Filtrage global
+			if ( Update_Archive_Simulated_Annealing(*new_alt, OPT_Solution) )
+				Population.push_back(*new_alt);
+		}
+
+		//remove first element
+		Population.pop_front();
+		Local_front.clear();
+
 	}
-#endif
-	MOLS(starting_time_sec);
 
+	cout<<"Number of iteration "<<nb_iteration<<endl;
+
+	filter_efficient_set();
+
+	write_solution(filename_instance+".sol");
+
+	list<Alternative*>().swap(Local_front);
+
+	return OPT_Solution;
 }
+
+
+
+
+
 
 
 
@@ -475,6 +534,36 @@ list< Alternative * > MainKnapsack::MOLS_NO_FILTERING(double starting_time_sec){
 
 
 
+
+
+
+
+
+
+
+void MainKnapsack::HYBRID_WS_PLS(double starting_time_sec,int steps){
+
+	//WS
+	MOLS(starting_time_sec,steps);
+
+	Population = OPT_Solution;
+
+	change_to_pareto_selection();
+	//PLS
+#ifdef __PRINT__
+	cout<<"   Matrice des objectives :"<<endl;
+	for(int i = 0; i < p_criteria; i++){
+		cout<<"   ";
+		for(int j = 0; j < n_objective; j++)
+			cout<<WS_matrix[i][j]<< " ";
+		cout<<endl;
+	}
+#endif
+	MOLS(starting_time_sec);
+
+}
+
+
 void MainKnapsack::HYBRID_PLS_WS(double starting_time_sec, int steps){
 
 	//PLS
@@ -493,6 +582,25 @@ void MainKnapsack::HYBRID_PLS_WS(double starting_time_sec, int steps){
 	cout<<"Number of solution found with WS : "<<OPT_Solution.size()<<endl;
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * ************************************************* UPDATE PART *************************************************
+ */
+
+
+
 
 void MainKnapsack::update_alternatives(list<Alternative*> &set_Alt){
 
@@ -527,6 +635,65 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 		else if( dom_val == -1 )   // p dominates alt
 			to_remove.push_back(*alt);
 	}
+
+	for(vector< Alternative* >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm){
+		set_SOL.remove(*rm);
+	}
+
+	set_SOL.push_back(p);
+
+	vector<Alternative*>().swap(to_remove);
+	return true;
+}
+
+
+
+
+
+
+
+#define Alpha_SA 0.8      // in 0.8 <= alpha <= 1
+
+
+bool MainKnapsack::Update_Archive_Simulated_Annealing(Alternative* p, list< Alternative* > &set_SOL){
+
+	bool is_dominated = false;
+	vector< Alternative* > to_remove;
+	int dom_val, nb_alt_composed_of = 0;
+
+	for(list< Alternative* >::iterator alt = set_SOL.begin(); alt != set_SOL.end(); ++alt){
+
+		dom_val = (*alt)->dominates_objective_space(p);
+
+		if(dom_val == 1){			// alt dominates p
+			is_dominated = true;
+			if((*alt)->contains_items(p))
+				nb_alt_composed_of++;
+
+		}
+
+		else if( dom_val == -1 )   // p dominates alt
+			to_remove.push_back(*alt);
+	}
+
+
+	//*****************************************************************//
+	if(is_dominated){
+
+		T_SA *= Alpha_SA;
+		float u = rand()*1.0/RAND_MAX;
+		float delta = (1+nb_alt_composed_of)*1.0 / (n_items - p->get_nb_items());
+//		cout<<"TSA  "<<T_SA<<"     DELTA  "<<delta<<"   u "<<u<<"   exp "<<exp(- delta/T_SA)<<endl;
+
+		ofstream fic("DELTA_SIMULATED_ANNEALING.txt",ios::app);
+		fic<<delta<<endl;
+		fic.close();
+
+		if ( u >= exp(-delta/T_SA) )
+			return false;
+	}
+	//*****************************************************************//
+
 
 	for(vector< Alternative* >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm){
 		set_SOL.remove(*rm);
