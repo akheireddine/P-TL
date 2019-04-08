@@ -652,7 +652,7 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 
 
 
-#define Alpha_SA 0.8      // in 0.8 <= alpha <= 1
+#define Alpha_SA 0.9      // in 0.8 <= alpha <= 1
 
 
 bool MainKnapsack::Update_Archive_Simulated_Annealing(Alternative* p, list< Alternative* > &set_SOL){
@@ -685,9 +685,9 @@ bool MainKnapsack::Update_Archive_Simulated_Annealing(Alternative* p, list< Alte
 		float delta = (1+nb_alt_composed_of)*1.0 / (n_items - p->get_nb_items());
 //		cout<<"TSA  "<<T_SA<<"     DELTA  "<<delta<<"   u "<<u<<"   exp "<<exp(- delta/T_SA)<<endl;
 
-		ofstream fic("DELTA_SIMULATED_ANNEALING.txt",ios::app);
-		fic<<delta<<endl;
-		fic.close();
+//		ofstream fic("DELTA_SIMULATED_ANNEALING.txt",ios::app);
+//		fic<<delta<<endl;
+//		fic.close();
 
 		if ( u >= exp(-delta/T_SA) )
 			return false;

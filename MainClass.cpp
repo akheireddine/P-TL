@@ -26,9 +26,9 @@ Evaluator* main_Knapsack(string filename_instance, string type_instance, string 
 	MainKnapsack * knaps = new MainKnapsack(filename_instance, size_population, pref_filename);
 
 	clock_t t1 = clock();
-	knaps->MOLS(t1/CLOCKS_PER_SEC); 								 //3min
+//	knaps->MOLS(t1/CLOCKS_PER_SEC); 								 //3min
 
-//	knaps->MOLS_Simulated_Annealing(t1/CLOCKS_PER_SEC);
+	knaps->MOLS_Simulated_Annealing(t1/CLOCKS_PER_SEC);
 
 	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
 
@@ -194,29 +194,31 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 		//string filename_instance = "./Instances_Knapsack/instance_test";
 
 		//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 0; step < 1; step++){
+		for(int step = 0; step < 8; step++){
 			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix.csv");
 
 			Tools::cpt = 0;
 			Tools::clean_up();
 
-			for(int k = 0; k < 1; k++){
+			for(int k = 0; k < 30; k++){
 				//Tools::generate_random_WS("WS_Matrix.csv",2);
 				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
 			}
 //			cout<<"______________"<<eval_ks->compute_information_rate()<<endl<<"_______________"<<endl;
 
-//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval");
-//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front");
+			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval");
+			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front");
 //			if(i == 0)
 //				Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_Covered_PF.Test2",to_string((eval_ks->get_PFront()).size()));
 
-//			eval_ks->write_objective_OPT_information();
+			eval_ks->write_objective_OPT_information();
+
+			delete eval_ks;
 
 		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval",type_inst+to_string(i)+"____");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front",type_inst+to_string(i)+"____");
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval",type_inst+to_string(i)+"____");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front",type_inst+to_string(i)+"____");
 	}
 }
 
