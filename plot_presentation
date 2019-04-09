@@ -18,7 +18,7 @@ replot "Instances_Knapsack/Type_A/100_items/2KP100-TA-3.eff" title "Pareto front
 replot 'file.dat' using 1:2:3:4 with vectors arrowstyle 1
 
 set style line 5 lc rgb '#009900' pt 7   
-replot "<echo '32549 41519'"   with points ls 5
+replot "<echo '32549 41519'"   with points ls 5 
 
 unset key
 
