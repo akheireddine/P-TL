@@ -36,7 +36,7 @@ public :
 
 	//RESOLUTION
 	bool Update_Archive(Alternative* p, list< Alternative* > &set_SOL);
-	bool Update_Archive_Simulated_Annealing(Alternative* p, list< Alternative* > &set_SOL);
+	bool Update_Archive_Threshold_Accepting(Alternative* p, list< Alternative* > &set_SOL);
 	void update_alternatives(list<Alternative*> &set_Alt);
 
 	void filter_efficient_set();
@@ -46,7 +46,9 @@ public :
 	void HYBRID_PLS_WS(double starting_time_sec, int steps);
 	list< Alternative * > MOLS(double starting_time_sec,int steps);
 	list< Alternative * > MOLS_NO_FILTERING(double starting_time_sec);
-	list< Alternative * > MOLS_Simulated_Annealing(double starting_time_sec);
+
+
+	list< Alternative * > MOLS_Threshold_Accepting(double starting_time_sec);
 
 
 

@@ -260,11 +260,11 @@ void MainKnapsack::filter_efficient_set(){
 				continue;
 			if( (*el1)->dominates_objective_space(*el2) == 1){
 				OPT_Solution.erase(el2);
-//				delete (*el2);
+				delete (*el2);
 			}
 			else if((*el1)->dominates_objective_space(*el2) == -1){
 				OPT_Solution.erase(el1);
-//				delete (*el1);
+				delete (*el1);
 			}
 
 		}
@@ -285,11 +285,11 @@ void MainKnapsack::filter_efficient_set_decision_space(){
 
 			if( value  == 1){
 				OPT_Solution.erase(el2);
-//				delete (*el2);
+				delete (*el2);
 			}
 			else if( value == -1){
 				OPT_Solution.erase(el1);
-//				delete (*el1);
+				delete (*el1);
 			}
 
 		}
@@ -404,7 +404,7 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec,int steps){
 
 
 
-list< Alternative * > MainKnapsack::MOLS_Simulated_Annealing(double starting_time_sec){
+list< Alternative * > MainKnapsack::MOLS_dominated_Portion(double starting_time_sec){
 
 	T_SA = 0.1;
 
@@ -428,15 +428,15 @@ list< Alternative * > MainKnapsack::MOLS_Simulated_Annealing(double starting_tim
 		vector<Alternative *> current_neighbors = alt->get_neighborhood();
 
 		for(vector< Alternative* >::iterator neighbor = current_neighbors.begin(); neighbor != current_neighbors.end(); ++neighbor){
-			//Prefiltrage
-			if( alt->dominates_objective_space(*neighbor) != 1 )
-				Update_Archive(*neighbor,Local_front);
+			//if neighbor is dominated add to Local_front
+			if( alt->dominates_objective_space(*neighbor) == 1 )
+				Local_front.push_back(*neigbhor);
 		}
 
 
 		for(list< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
 			//Filtrage global
-			if ( Update_Archive_Simulated_Annealing(*new_alt, OPT_Solution) )
+			if ( Update_Archive_Threshold_Accepting(*new_alt, OPT_Solution) )
 				Population.push_back(*new_alt);
 		}
 
@@ -652,10 +652,10 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 
 
 
-#define Alpha_SA 0.9      // in 0.8 <= alpha <= 1
+//#define Alpha_SA 0.9      // in 0.8 <= alpha <= 1
 
 
-bool MainKnapsack::Update_Archive_Simulated_Annealing(Alternative* p, list< Alternative* > &set_SOL){
+bool MainKnapsack::Update_Archive_Threshold_Accepting(Alternative* p, list< Alternative* > &set_SOL){
 
 	bool is_dominated = false;
 	vector< Alternative* > to_remove;
@@ -669,7 +669,6 @@ bool MainKnapsack::Update_Archive_Simulated_Annealing(Alternative* p, list< Alte
 			is_dominated = true;
 			if((*alt)->contains_items(p))
 				nb_alt_composed_of++;
-
 		}
 
 		else if( dom_val == -1 )   // p dominates alt
@@ -680,17 +679,17 @@ bool MainKnapsack::Update_Archive_Simulated_Annealing(Alternative* p, list< Alte
 	//*****************************************************************//
 	if(is_dominated){
 
-		T_SA *= Alpha_SA;
-		float u = rand()*1.0/RAND_MAX;
-		float delta = (1+nb_alt_composed_of)*1.0 / (n_items - p->get_nb_items());
+//		T_SA *= Alpha_SA;
+//		float u = rand()*1.0/RAND_MAX;
+//		float delta = (1+nb_alt_composed_of)*1.0 / (n_items - p->get_nb_items());
 //		cout<<"TSA  "<<T_SA<<"     DELTA  "<<delta<<"   u "<<u<<"   exp "<<exp(- delta/T_SA)<<endl;
 
 //		ofstream fic("DELTA_SIMULATED_ANNEALING.txt",ios::app);
 //		fic<<delta<<endl;
 //		fic.close();
 
-		if ( u >= exp(-delta/T_SA) )
-			return false;
+//		if ( u >= exp(-delta/T_SA) )
+//			return false;
 	}
 	//*****************************************************************//
 
@@ -704,6 +703,23 @@ bool MainKnapsack::Update_Archive_Simulated_Annealing(Alternative* p, list< Alte
 	vector<Alternative*>().swap(to_remove);
 	return true;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

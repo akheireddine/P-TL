@@ -26,9 +26,9 @@ Evaluator* main_Knapsack(string filename_instance, string type_instance, string 
 	MainKnapsack * knaps = new MainKnapsack(filename_instance, size_population, pref_filename);
 
 	clock_t t1 = clock();
-//	knaps->MOLS(t1/CLOCKS_PER_SEC); 								 //3min
+	knaps->MOLS(t1/CLOCKS_PER_SEC); 								 //3min
 
-	knaps->MOLS_Simulated_Annealing(t1/CLOCKS_PER_SEC);
+//	knaps->MOLS_Simulated_Annealing(t1/CLOCKS_PER_SEC);
 
 	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
 
