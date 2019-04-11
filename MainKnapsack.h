@@ -24,7 +24,7 @@ public :
 
 	//constructor
 	MainKnapsack(string filename, int init_population_size , string matrix_filename="PARETO");
-	~MainKnapsack(){ delete this; };
+//	~MainKnapsack();
 	//GETTERS
 	int get_n_items(){ return n_items; };
 	float get_weight_of(int i) { return std::get<0>(Items_information[i]); };

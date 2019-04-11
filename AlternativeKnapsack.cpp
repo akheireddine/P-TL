@@ -50,7 +50,7 @@ void AlternativeKnapsack::update_objective_vector(){
 
 	objective_values.resize(nb_objective, 0);
 
-	for(int i = 0; i < local_WS_matrix[0].size(); i++){
+	for(int i = 0; i < (int)local_WS_matrix[0].size(); i++){
 		for(int j = 0; j < mainLSStructure->get_p_criteria(); j++){
 			objective_values[i] += local_WS_matrix[j][i] * criteria_values[j];
 		}
@@ -60,12 +60,11 @@ void AlternativeKnapsack::update_objective_vector(){
 
 int AlternativeKnapsack::dominates_objective_space(Alternative* alt){
 
-	int i = 0;
 	bool AdomB = false, BdomA = false;
 
 	vector< float > obj_alt = alt->get_objective_values();
 
-	for(i = 0; i < objective_values.size(); i++){
+	for(int i = 0; i < (int)objective_values.size(); i++){
 
 		if( objective_values[i] < obj_alt[i] )									// MAXIMIZATION DES OBJECTIFS ! ! !
 			BdomA = true;
@@ -176,7 +175,7 @@ map< float, int, greater <float> > AlternativeKnapsack::generate_ordered_ratio_i
 
 		float aggregate_func_val_item = 0;
 
-		for(int j = 0; j < ws_aggr_utility.size(); j++)
+		for(int j = 0; j < (int)ws_aggr_utility.size(); j++)
 			aggregate_func_val_item += ws_aggr_utility[j] * mainLSStructure->get_utility(*i,j);
 
 		float val_key = aggregate_func_val_item / mainLSStructure->get_weight_of(*i);
@@ -193,7 +192,7 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 	set< int > In_BP, Out_BP;
 
 
-	for(int i = 0; i < alternatives.size(); i++){
+	for(int i = 0; i < (int)alternatives.size(); i++){
 		if( alternatives[i] == 1)
 			In_BP.insert(i);
 		else

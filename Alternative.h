@@ -24,6 +24,15 @@ protected:
 	//	LSStructure * mainLSStructure;
 public:
 	static int id;
+	virtual ~Alternative(){
+		cout<<"  number of neighborhood "<<neighborhood.size()<<endl;
+		cout<<"  DELETE ALTERNATIVE "<<id_alt<<endl;
+		for(int i = 0; i < (int)neighborhood.size(); i++) {delete neighborhood[i]; neighborhood[i] = NULL;}
+//		neighborhood.clear();
+//		vector<Alternative*>().swap(neighborhood);
+		cout<<"  ENDDELETE ALTERNATIVE"<<endl;
+
+	};
 
 	//GETTERS
 	int get_id(){ return id_alt; };
@@ -44,10 +53,10 @@ public:
 	virtual bool contains_items(Alternative * alt) = 0;
 
 	//PRINT
-	inline void print_alternative(){ cout<<"("; for(int i = 0; i < alternatives.size(); i++) cout<< alternatives[i] <<", "; cout<<")"<<endl;};
-	inline void print_objective_values(){ cout<<"("; for(int i = 0; i < objective_values.size(); i++) cout<< objective_values[i] <<", "; cout<<")   "; };
-	inline void print_criteria_values(){ cout<<"("; for(int i = 0; i < criteria_values.size(); i++) cout<< criteria_values[i] <<", "; cout<<")"<<endl; };
-	inline void print_local_WS_matrix(){ for(int i = 0; i < local_WS_matrix.size(); i++) { for(int j = 0; j < local_WS_matrix[i].size();j++) cout<< local_WS_matrix[i][j] <<"   "; cout<<endl; }
+	inline void print_alternative(){ cout<<"("; for(int i = 0; i < (int)alternatives.size(); i++) cout<< alternatives[i] <<", "; cout<<")"<<endl;};
+	inline void print_objective_values(){ cout<<"("; for(int i = 0; i < (int)objective_values.size(); i++) cout<< objective_values[i] <<", "; cout<<")   "; };
+	inline void print_criteria_values(){ cout<<"("; for(int i = 0; i < (int)criteria_values.size(); i++) cout<< criteria_values[i] <<", "; cout<<")"<<endl; };
+	inline void print_local_WS_matrix(){ for(int i = 0; i < (int)local_WS_matrix.size(); i++) { for(int j = 0; j < (int)local_WS_matrix[i].size();j++) cout<< local_WS_matrix[i][j] <<"   "; cout<<endl; }
 	};
 
 

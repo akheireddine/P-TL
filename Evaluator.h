@@ -27,7 +27,10 @@ public:
 	Evaluator(string filename, MainKnapsack * problemInstance, string WS_DM_preferences, string DT_file, float time, string PFI_file);
 	~Evaluator(){
 //		delete OPT_Alternative;
-//		delete mainProblem;
+//		cout<<"DELETE EVAL 1"<<endl;
+		delete mainProblem;
+		cout<<"DELETE EVAL 2"<<endl;
+
 	};
 
 	//GETTERS

@@ -10,7 +10,7 @@
 float Tools::euclidian_distance(vector<float> v1, vector<float> v2){
 	float dist = 0;
 
-	for(int i = 0; i < v1.size(); i++)
+	for(int i = 0; i < (int)v1.size(); i++)
 		dist += (v1[i] - v2[i]) * (v1[i] - v2[i]);
 
 	dist = sqrt(dist);
@@ -21,7 +21,7 @@ float Tools::euclidian_distance(vector<float> v1, vector<float> v2){
 
 float Tools::get_ratio(vector<float> v, vector<float> v_opt, vector<float> weights){
 	float v_w = 0, v_w_opt = 0;
-	for(int i = 0; i < weights.size(); i++){
+	for(int i = 0; i < (int)weights.size(); i++){
 		v_w += weights[i] * v[i];
 		v_w_opt += weights[i] * v_opt[i];
 	}
@@ -30,7 +30,7 @@ float Tools::get_ratio(vector<float> v, vector<float> v_opt, vector<float> weigh
 
 
 bool Tools::equal_vectors(vector<float> v1, vector<float> v2){
-	for(int i = 0; i < v1.size(); i++)
+	for(int i = 0; i < (int)v1.size(); i++)
 		if ( abs(v1[i] -  v2[i]) > 0.001 )
 			return false;
 	return true;
@@ -55,7 +55,7 @@ vector< float > Tools::decompose_line_to_float_vector(string line){
 
 string Tools::print_vector(vector<float> v){
 	string str ="";
-	for(int i = 0 ; i < v.size(); i++)
+	for(int i = 0 ; i < (int)v.size(); i++)
 		str += to_string(v[i]) + " ";
 
 	return str;
@@ -92,7 +92,7 @@ void Tools::generate_random_WS(string filename, int nb_criteria){
 	ofstream fic(filename.c_str());
 
 
-	for(int i = 0; i < weighted_sum.size(); i++)
+	for(int i = 0; i < (int)weighted_sum.size(); i++)
 		fic<<weighted_sum[i]<<endl;
 
 	fic.close();
@@ -155,7 +155,7 @@ void Tools::update_indicators(float D1, float D2, float D3){
 void Tools::save_average_dist_time(string filename){
 
 	ofstream fic_write(filename.c_str(), ios::app);
-	for(int i = 0; i < Tools::dist_time_avg.size(); i++){
+	for(int i = 0; i < (int)Tools::dist_time_avg.size(); i++){
 		Tools::dist_time_avg[i] = Tools::dist_time_avg[i]*1.0/cpt;
 		fic_write<<Tools::dist_time_avg[i]<<" ";
 	}
@@ -168,7 +168,7 @@ void Tools::save_average_dist_time(string filename){
 void Tools::save_average_indicator(string filename){
 
 	ofstream fic_write(filename.c_str(), ios::app);
-	for(int i = 0; i < indicator_avg.size(); i++){
+	for(int i = 0; i < (int)indicator_avg.size(); i++){
 		Tools::indicator_avg[i] = Tools::indicator_avg[i]*1.0/cpt;
 		fic_write<<Tools::indicator_avg[i]<<" ";
 	}
@@ -224,7 +224,7 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 				big_max = min_max[j].second;
 		}
 		while(  (1 - (wi+sum))  > big_max ){
-			float wi =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX / (min_max[i].second - min_max[i].first))) + min_max[i].first ;
+			wi =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX / (min_max[i].second - min_max[i].first))) + min_max[i].first ;
 		}
 
 		sum += wi;

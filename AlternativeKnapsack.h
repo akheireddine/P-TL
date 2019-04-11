@@ -26,9 +26,7 @@ public:
 
 	//CONSTRUCTOR
 	AlternativeKnapsack(set<int> items, MainKnapsack* mStruct, vector< vector< float > > WS_matrix);
-	~AlternativeKnapsack(){
-//		delete this;
-	};
+//	~AlternativeKnapsack();
 	//GETTERS
 	float get_weight(){ return weight; }
 
@@ -50,14 +48,14 @@ public:
 	void update_objective_vector();
 	inline int get_nb_items(){
 		int nb = 0;
-		for(int i = 0; i < alternatives.size(); i++)
+		for(int i = 0; i < (int)alternatives.size(); i++)
 			if( alternatives[i] == 1)
 				nb++;
 		return nb;
 	};
 
 	inline bool contains_items(Alternative * alt){
-		for(int i = 0; i < alternatives.size(); i++)
+		for(int i = 0; i < (int)alternatives.size(); i++)
 			if((alternatives[i] != alt->get_alternatives()[i])   and  (alt->get_alternatives()[i] == 1) )
 				return false;
 		return true;

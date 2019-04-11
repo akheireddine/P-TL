@@ -1585,3 +1585,66 @@ Matrice des objectives & Optimal solution:
 81.2564,1324.2,70.4082
 153.562,2004.85,55.102
 9.60657,168.87,84.6939
+32.0157,862.811,84.6939
+
+Optimal solution :
+(37946, 42859, )
+
+Matrice des objectives & Optimal solution:
+   1.000000 0.000000 
+   0.000000 1.000000 
+
+3477.4,5556.71,0
+
+Optimal solution :
+(37946, 42859, )
+
+Matrice des objectives & Optimal solution:
+   0.461538 0.000000 
+   0.538462 1.000000 
+
+4401.06,5975.93,0
+
+Optimal solution :
+(37946, 42859, )
+
+Matrice des objectives & Optimal solution:
+   0.348333 0.000000 
+   0.651667 1.000000 
+
+2244.77,7074.08,1.6129
+
+Optimal solution :
+(37946, 42859, )
+
+Matrice des objectives & Optimal solution:
+   0.348333 0.229086 
+   0.651667 0.770914 
+
+1771.75,6607.03,5.7971
+
+Optimal solution :
+(37946, 42859, )
+
+Matrice des objectives & Optimal solution:
+   0.348333 0.268030 
+   0.651667 0.731970 
+
+1736.91,6638.37,0
+
+Optimal solution :
+(37946, 42859, )
+
+Matrice des objectives & Optimal solution:
+   0.312115 0.268030 
+   0.687885 0.731970 
+
+1873.25,6638.37,0
+
+Optimal solution :
+(37946, 42859, )
+
+Matrice des objectives & Optimal solution:
+   0.312115 0.273973 
+   0.687885 0.726027 
+

@@ -97,7 +97,7 @@ bool Evaluator::is_dominated(vector<float> v){
 		bool dominated = false, dominates = false;
 		vector<float > pf_alt = *k ;
 
-		for(int i = 0; i < pf_alt.size(); i++){
+		for(int i = 0; i < (int)pf_alt.size(); i++){
 
 			if( v[i] < pf_alt[i] )									// MAXIMIZATION DES OBJECTIFS ! ! !
 				dominated = true;
@@ -267,7 +267,6 @@ AlternativeKnapsack * Evaluator::OPT_Alternative_PLNE(vector<float> WS_vector){
 void Evaluator::evaluate_Dist_Time(string dist_time_file, float time){
 
 	string line;
-	int i = 0;
 	vector<float> vector_criteria;
 
 	//Get minimum objective values difference between the best alternative and WS-MOLS front computed
@@ -423,7 +422,7 @@ void Evaluator::compute_information_rate_front(){
 	int cpt = 0;
 	bool contained;
 
-	for(int i = 0; i < PF_Efficient.size(); i++){
+	for(int i = 0; i < (int)PF_Efficient.size(); i++){
 		vector<float> vect_alt = PF_Efficient[i];
 
 		contained = true;

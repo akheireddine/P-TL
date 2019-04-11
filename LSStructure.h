@@ -35,9 +35,17 @@ protected :
 	string type_instance;
 
 public:
-	~LSStructure(){
-		for(list< Alternative* >::iterator i = OPT_Solution.begin(); i != OPT_Solution.end(); ++i){ delete (*i);}
-		for(list< Alternative* >::iterator i = Population.begin(); i != Population.end(); ++i){ delete (*i);}
+	virtual ~LSStructure(){
+		cout<<"DELETE LSSTRUCTURE 1 : "<<OPT_Solution.size()<<endl;
+		int index = 1;
+		for(list< Alternative* >::iterator i = OPT_Solution.begin(); i != OPT_Solution.end(); ++i){
+			cout<<"  ("<<index<<"/"<<OPT_Solution.size()<<")"<<endl;
+			index++;
+			delete (*i);
+			}
+		cout<<"DELETE LSSTRUCTURE 2 : "<<Population.size()<<endl;
+//		free(Population);
+		cout<<"DELETE LSSTRUCTURE 3"<<endl;
 
 	};
 
