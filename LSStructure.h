@@ -31,22 +31,12 @@ protected :
 	int p_criteria;									// Number of criteria
 	list< Alternative* > Population;				// current set of non-dominated alternatives during the solving process
 	string filename_instance;					    // instance pathname
-	string num_instance;
-	string type_instance;
 
 public:
 	virtual ~LSStructure(){
-		cout<<"DELETE LSSTRUCTURE 1 : "<<OPT_Solution.size()<<endl;
-		int index = 1;
 		for(list< Alternative* >::iterator i = OPT_Solution.begin(); i != OPT_Solution.end(); ++i){
-			cout<<"  ("<<index<<"/"<<OPT_Solution.size()<<")"<<endl;
-			index++;
 			delete (*i);
 			}
-		cout<<"DELETE LSSTRUCTURE 2 : "<<Population.size()<<endl;
-//		free(Population);
-		cout<<"DELETE LSSTRUCTURE 3"<<endl;
-
 	};
 
 	virtual void readFilenameInstance(string filename) = 0;

@@ -188,7 +188,7 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 	Evaluator * eval_ks;
 
 
-	for(int i = 3; i < 10 ; i++){
+	for(int i = 0; i < 10 ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 		//string filename_instance = "./Instances_Knapsack/instance_test";
@@ -201,7 +201,7 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 			Tools::cpt = 0;
 			Tools::clean_up();
 
-			for(int k = 0; k < 1; k++){
+			for(int k = 0; k < 30; k++){
 				//Tools::generate_random_WS("WS_Matrix.csv",2);
 				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
 			}

@@ -2,7 +2,6 @@
 #define ___EVALUATOR___
 
 
-//#include "AlternativeKnapsack.h"
 #include "MainKnapsack.h"
 
 
@@ -26,11 +25,8 @@ public:
 	//CONSTRUCTOR
 	Evaluator(string filename, MainKnapsack * problemInstance, string WS_DM_preferences, string DT_file, float time, string PFI_file);
 	~Evaluator(){
-//		delete OPT_Alternative;
-//		cout<<"DELETE EVAL 1"<<endl;
+		delete OPT_Alternative;
 		delete mainProblem;
-		cout<<"DELETE EVAL 2"<<endl;
-
 	};
 
 	//GETTERS

@@ -4,6 +4,7 @@
 #include "Tools.h"
 #include <iostream>
 #include <algorithm>
+#include <ilcplex/ilocplex.h>
 
 
 

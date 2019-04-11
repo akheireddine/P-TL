@@ -6,7 +6,7 @@
 
 #include <vector>
 #include <set>
-
+#include <algorithm>
 
 using namespace std;
 
@@ -24,15 +24,8 @@ protected:
 	//	LSStructure * mainLSStructure;
 public:
 	static int id;
-	virtual ~Alternative(){
-		cout<<"  number of neighborhood "<<neighborhood.size()<<endl;
-		cout<<"  DELETE ALTERNATIVE "<<id_alt<<endl;
-		for(int i = 0; i < (int)neighborhood.size(); i++) {delete neighborhood[i]; neighborhood[i] = NULL;}
-//		neighborhood.clear();
-//		vector<Alternative*>().swap(neighborhood);
-		cout<<"  ENDDELETE ALTERNATIVE"<<endl;
 
-	};
+	virtual ~Alternative(){	};
 
 	//GETTERS
 	int get_id(){ return id_alt; };

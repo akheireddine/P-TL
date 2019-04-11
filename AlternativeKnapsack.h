@@ -26,7 +26,15 @@ public:
 
 	//CONSTRUCTOR
 	AlternativeKnapsack(set<int> items, MainKnapsack* mStruct, vector< vector< float > > WS_matrix);
-//	~AlternativeKnapsack();
+	~AlternativeKnapsack(){
+		for(int i = 0; i < (int)neighborhood.size(); i++){
+			if( dominates_decision_space(neighborhood[i]) == 1 )
+				delete neighborhood[i];
+		}
+		neighborhood.clear();
+		vector<Alternative*>().swap(neighborhood);
+	};
+
 	//GETTERS
 	float get_weight(){ return weight; }
 
