@@ -15,7 +15,6 @@ protected:
 
 	float Backpack_capacity = 0;							// capacity ofthe backpack
 	int n_items;											// number of items
-	double T_SA;
 
 
 public :
@@ -45,10 +44,7 @@ public :
 	void HYBRID_WS_PLS(double starting_time_sec, int steps);
 	void HYBRID_PLS_WS(double starting_time_sec, int steps);
 	list< Alternative * > MOLS(double starting_time_sec,int steps);
-	list< Alternative * > MOLS_NO_FILTERING(double starting_time_sec);
-
-
-	list< Alternative * > MOLS_Threshold_Accepting(double starting_time_sec);
+	list< Alternative * > MOLS_Population_Size_FIXE(double starting_time_sec, int UB_Population_size);
 
 
 
