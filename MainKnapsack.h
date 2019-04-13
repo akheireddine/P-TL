@@ -45,6 +45,8 @@ public :
 	void HYBRID_PLS_WS(double starting_time_sec, int steps);
 	list< Alternative * > MOLS(double starting_time_sec,int steps);
 	list< Alternative * > MOLS_Population_Size_FIXE(double starting_time_sec, int UB_Population_size);
+	list< Alternative * > MOLS_Population_Size_FIXE_DiversificationSimple(double starting_time_sec, int UB_Population_size);
+	list< Alternative * > MOLS_Population_Size_FIXE_TA(double starting_time_sec, int UB_Population_size);
 
 
 

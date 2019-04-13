@@ -235,7 +235,7 @@ Evaluator* main_Knapsack_PopulationSize(string filename_instance, string type_in
 			, t2,
 			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+"_POPSIZE_"+to_string(max_size_population)+".front");
 
-	return NULL;
+	return eval;
 }
 
 
@@ -244,34 +244,34 @@ void script_PopulationSize(string type_inst, string taille, string WS_DM){
 	Evaluator * eval_ks;
 
 
-	for(int i = 0; i < 1; i++){
+	for(int i = 0; i < 10; i++){
 
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 
-		for(int iter = 50; iter <= 450 ; iter += 100){
-			cout<<"============================================   "<<iter<<" STEPS   ============================================"<<endl;
-			ITERATION_WS_PLS = iter;
-			Tools::cpt = 0;
-			Tools::clean_up();
+		for(int iter = 250; iter <= 450 ; iter += 100){
+			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
-			for(int k = 0; k < 1; k++){
-				Tools::generate_random_WS("WS_Matrix.csv",2);
-				eval_ks = main_Knapsack_PopulationSize(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
+			for(int step = 0; step < 8; step++){
+				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
+				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix.csv");
+				Tools::cpt = 0;
+				Tools::clean_up();
+
+				for(int k = 0; k < 10; k++){
+					eval_ks = main_Knapsack_PopulationSize(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
+				}
+
+				Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I__POPSIZE"+taille+"_AVG.eval");
+				Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I__POPSIZE"+taille+"_AVG.front");
+				delete eval_ks;
+
 			}
 
-			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I__POPSIZE"+taille+"_AVG.eval");
-			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I__POPSIZE"+taille+"_AVG.front");
-
-			eval_ks->write_objective_OPT_information();
-			delete eval_ks;
+			Tools::separate_results("./Data/DistTime/"+type_inst+"/I__POPSIZE"+taille+"_AVG.eval",type_inst+to_string(i)+"___"+to_string(iter)+"__");
+			Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I__POPSIZE"+taille+"_AVG.front",type_inst+to_string(i)+"___"+to_string(iter)+"__");
 		}
-		Tools::separate_results("./Data/DistTime/"+type_inst+"/I__POPSIZE"+taille+"_AVG.eval",type_inst+to_string(i)+"___");
-		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I__POPSIZE"+taille+"_AVG.front",type_inst+to_string(i)+"___");
-
 	}
-
-
 }
 
 

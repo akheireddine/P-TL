@@ -232,7 +232,7 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 		weighted_sum[i] = wi;
 	}
 
-
+//	cout<<print_vector(weighted_sum)<<endl;
 	return weighted_sum;
 }
 

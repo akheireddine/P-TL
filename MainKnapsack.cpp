@@ -441,26 +441,38 @@ list< Alternative * > MainKnapsack::MOLS_Population_Size_FIXE(double starting_ti
 
 		if( front_size == 0 ){
 			int pop_size = 0;
+			bool converge = true;
 			random_shuffle( Local_front.begin(), Local_front.end() );
 			for(vector< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
-				if( pop_size < UB_Population_size and Update_Archive(*new_alt, OPT_Solution) ){
-					Population.push_back(*new_alt);
-					pop_size++;
+				if( pop_size < UB_Population_size ){
+
+					if( Update_Archive(*new_alt, OPT_Solution) ){
+						Population.push_back(*new_alt);
+						pop_size++;
+						converge = false;
+					}
+					else
+						Dominated_alt.push_back(*new_alt);
 				}
-				else if( !Update_Archive(*new_alt, OPT_Solution) )
-					Dominated_alt.push_back(*new_alt);
+
+				else
+					delete (*new_alt);
 			}
 
 			int nb_dominated_alt = 0;
 			random_shuffle( Dominated_alt.begin(), Dominated_alt.end() );
 //			cout<<"NON DOMINATED : "<<pop_size;
 
-			while(pop_size < UB_Population_size and (nb_dominated_alt < 0 ) and pop_size > 0) { // (int)Dominated_alt.size())){
-				OPT_Solution.push_back(Dominated_alt[i]);
-				Population.push_back(Dominated_alt[i]);
+			while( !converge and pop_size < UB_Population_size  and  (Dominated_alt.size() > 0) ) {
+				OPT_Solution.push_back(Dominated_alt[nb_dominated_alt]);
+				Population.push_back(Dominated_alt[nb_dominated_alt]);
 				nb_dominated_alt++;
 				pop_size++;
 			}
+
+			for(int j = pop_size; j < (int)Dominated_alt.size(); j++)
+				delete Dominated_alt[j];
+
 //			cout<<"    DOMINATED : "<<pop_size<<endl;
 
 			front_size = ( UB_Population_size < (int)Population.size() ) ? UB_Population_size : (int)Population.size();     //SAME AS POPULATION SIZE
@@ -476,7 +488,7 @@ list< Alternative * > MainKnapsack::MOLS_Population_Size_FIXE(double starting_ti
 
 	filter_efficient_set();
 
-//	write_solution(filename_instance+".sol");
+	write_solution(filename_instance+".sol");
 //	write_solution(filename_instance+"_"+to_string(UB_Population_size)+".sol");
 
 	vector<Alternative*>().swap(Local_front);
@@ -488,11 +500,196 @@ list< Alternative * > MainKnapsack::MOLS_Population_Size_FIXE(double starting_ti
 
 
 
+#define NUMBER_DEGRADED_SOLUTION 10
+list< Alternative * > MainKnapsack::MOLS_Population_Size_FIXE_DiversificationSimple(double starting_time_sec, int UB_Population_size){
+
+	Alternative* alt;
+	vector< Alternative* > Local_front(0);
+	vector< Alternative* > Dominated_alt(0);
+	int front_size = Population.size();
+
+	int nb_iteration=0;
+
+	//First initialization
+	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p)
+//		Update_Archive(*p,OPT_Solution);
+		OPT_Solution.push_back(*p);
+
+	int step = 0;
+
+	while( Population.size() > 0  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
+		nb_iteration++;
+		front_size--;
+
+		alt = Population.front();
+		Population.pop_front();
+
+//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_"+to_string(step)+".expl",alt);
+
+		vector<Alternative *> current_neighbors = alt->get_neighborhood();
+
+		for(vector< Alternative* >::iterator neighbor = current_neighbors.begin(); neighbor != current_neighbors.end(); ++neighbor){
+			//if neighbor is dominated add to Local_front
+			if( alt->dominates_objective_space(*neighbor) == 1 )
+				Dominated_alt.push_back(*neighbor);
+			else
+				Local_front.push_back(*neighbor);
+		}
+
+		if( front_size == 0 ){
+			int pop_size = 0;
+			bool converge = true;
+			random_shuffle( Local_front.begin(), Local_front.end() );
+			for(vector< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
+				if( pop_size < UB_Population_size ){
+
+					if( Update_Archive(*new_alt, OPT_Solution) ){
+						Population.push_back(*new_alt);
+						pop_size++;
+						converge = false;
+					}
+					else
+						Dominated_alt.push_back(*new_alt);
+				}
+
+				else
+					delete (*new_alt);
+			}
+
+			int nb_dominated_alt = 0;
+			random_shuffle( Dominated_alt.begin(), Dominated_alt.end() );
+//			cout<<"NON DOMINATED : "<<pop_size;
+
+			while( !converge  and pop_size < UB_Population_size and (nb_dominated_alt < NUMBER_DEGRADED_SOLUTION ) and  (Dominated_alt.size() > 0) ) {
+				OPT_Solution.push_back(Dominated_alt[nb_dominated_alt]);
+				Population.push_back(Dominated_alt[nb_dominated_alt]);
+				nb_dominated_alt++;
+				pop_size++;
+			}
+
+			for(int j = pop_size; j < (int)Dominated_alt.size(); j++)
+				delete Dominated_alt[j];
+
+//			cout<<"    DOMINATED : "<<pop_size<<endl;
+
+			front_size = ( UB_Population_size < (int)Population.size() ) ? UB_Population_size : (int)Population.size();     //SAME AS POPULATION SIZE
+			Local_front.clear();
+			Dominated_alt.clear();
+			step++;
+//			cout<<"Population size dn : "<<Population.size()<<endl;
+		}
+
+	}
+
+	cout<<"Number of iteration "<<nb_iteration<<endl;
+
+	filter_efficient_set();
+
+	write_solution(filename_instance+".sol");
+//	write_solution(filename_instance+"_"+to_string(UB_Population_size)+".sol");
+
+	vector<Alternative*>().swap(Local_front);
+	vector<Alternative*>().swap(Dominated_alt);
+
+	return OPT_Solution;
+}
 
 
 
+#define TA 0.5
+list< Alternative * > MainKnapsack::MOLS_Population_Size_FIXE_TA(double starting_time_sec, int UB_Population_size){
 
+	Alternative* alt;
+	vector< Alternative* > Local_front(0);
+	vector< Alternative* > Dominated_alt(0);
+	int front_size = Population.size();
 
+	int nb_iteration=0;
+
+	//First initialization
+	for(list< Alternative* >::iterator p = Population.begin(); p != Population.end(); ++p)
+//		Update_Archive(*p,OPT_Solution);
+		OPT_Solution.push_back(*p);
+
+	int step = 0;
+
+	while( Population.size() > 0  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
+		nb_iteration++;
+		front_size--;
+
+		alt = Population.front();
+		Population.pop_front();
+
+//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_"+to_string(step)+".expl",alt);
+
+		vector<Alternative *> current_neighbors = alt->get_neighborhood();
+
+		for(vector< Alternative* >::iterator neighbor = current_neighbors.begin(); neighbor != current_neighbors.end(); ++neighbor){
+			//if neighbor is dominated add to Local_front
+			if( alt->dominates_objective_space(*neighbor) == 1 )
+				Dominated_alt.push_back(*neighbor);
+			else
+				Local_front.push_back(*neighbor);
+		}
+
+		if( front_size == 0 ){
+			bool converge = true;
+			int pop_size = 0;
+			random_shuffle( Local_front.begin(), Local_front.end() );
+			for(vector< Alternative* >::iterator new_alt = Local_front.begin(); new_alt != Local_front.end(); ++new_alt){
+				if( pop_size < UB_Population_size ){
+
+					if( Update_Archive(*new_alt, OPT_Solution) ){
+						Population.push_back(*new_alt);
+						pop_size++;
+						converge = false;
+					}
+					else
+						Dominated_alt.push_back(*new_alt);
+				}
+
+				else
+					delete (*new_alt);
+			}
+
+			int nb_dominated_alt = 0;
+			random_shuffle( Dominated_alt.begin(), Dominated_alt.end() );
+//			cout<<"NON DOMINATED : "<<pop_size;
+
+			while( !converge and pop_size < UB_Population_size  and  (Dominated_alt.size() > 0) ) {
+
+				OPT_Solution.push_back(Dominated_alt[nb_dominated_alt]);
+				Population.push_back(Dominated_alt[nb_dominated_alt]);
+				nb_dominated_alt++;
+				pop_size++;
+			}
+
+			for(int j = pop_size; j < (int)Dominated_alt.size(); j++)
+				delete Dominated_alt[j];
+
+//			cout<<"    DOMINATED : "<<pop_size<<endl;
+
+			front_size = ( UB_Population_size < (int)Population.size() ) ? UB_Population_size : (int)Population.size();     //SAME AS POPULATION SIZE
+			Local_front.clear();
+			Dominated_alt.clear();
+			step++;
+//			cout<<"Population size dn : "<<Population.size()<<endl;
+		}
+
+	}
+
+	cout<<"Number of iteration "<<nb_iteration<<endl;
+
+	filter_efficient_set();
+
+	write_solution(filename_instance+".sol");
+//	write_solution(filename_instance+"_"+to_string(UB_Population_size)+".sol");
+
+	vector<Alternative*>().swap(Local_front);
+	vector<Alternative*>().swap(Dominated_alt);
+
+	return OPT_Solution;
+}
 
 
 
