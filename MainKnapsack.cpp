@@ -427,7 +427,7 @@ list< Alternative * > MainKnapsack::MOLS_Population_Size_FIXE(double starting_ti
 		alt = Population.front();
 		Population.pop_front();
 
-		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_"+to_string(step)+".expl",alt);
+//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_"+to_string(step)+".expl",alt);
 
 		vector<Alternative *> current_neighbors = alt->get_neighborhood();
 
@@ -451,23 +451,23 @@ list< Alternative * > MainKnapsack::MOLS_Population_Size_FIXE(double starting_ti
 					Dominated_alt.push_back(*new_alt);
 			}
 
-			int i = 0;
+			int nb_dominated_alt = 0;
 			random_shuffle( Dominated_alt.begin(), Dominated_alt.end() );
-			cout<<"NON DOMINATED : "<<pop_size;
+//			cout<<"NON DOMINATED : "<<pop_size;
 
-			while(pop_size < UB_Population_size and (i < 0 ) and pop_size > 0) { // (int)Dominated_alt.size())){
+			while(pop_size < UB_Population_size and (nb_dominated_alt < 0 ) and pop_size > 0) { // (int)Dominated_alt.size())){
 				OPT_Solution.push_back(Dominated_alt[i]);
 				Population.push_back(Dominated_alt[i]);
-				i++;
+				nb_dominated_alt++;
 				pop_size++;
 			}
-			cout<<"    DOMINATED : "<<pop_size<<endl;
+//			cout<<"    DOMINATED : "<<pop_size<<endl;
 
 			front_size = ( UB_Population_size < (int)Population.size() ) ? UB_Population_size : (int)Population.size();     //SAME AS POPULATION SIZE
 			Local_front.clear();
 			Dominated_alt.clear();
 			step++;
-			cout<<"Population size dn : "<<Population.size()<<endl;
+//			cout<<"Population size dn : "<<Population.size()<<endl;
 		}
 
 	}
@@ -477,7 +477,7 @@ list< Alternative * > MainKnapsack::MOLS_Population_Size_FIXE(double starting_ti
 	filter_efficient_set();
 
 //	write_solution(filename_instance+".sol");
-	write_solution(filename_instance+"_"+to_string(UB_Population_size)+".sol");
+//	write_solution(filename_instance+"_"+to_string(UB_Population_size)+".sol");
 
 	vector<Alternative*>().swap(Local_front);
 	vector<Alternative*>().swap(Dominated_alt);

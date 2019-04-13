@@ -230,10 +230,10 @@ Evaluator* main_Knapsack_PopulationSize(string filename_instance, string type_in
 
 	string size_instance = to_string(knaps->get_n_items());
 
-//	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
-//			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+"_POPSIZE_"+to_string(max_size_population)+".eval"
-//			, t2,
-//			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+"_POPSIZE_"+to_string(max_size_population)+".front");
+	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
+			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+"_POPSIZE_"+to_string(max_size_population)+".eval"
+			, t2,
+			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+"_POPSIZE_"+to_string(max_size_population)+".front");
 
 	return NULL;
 }
@@ -260,14 +260,14 @@ void script_PopulationSize(string type_inst, string taille, string WS_DM){
 				eval_ks = main_Knapsack_PopulationSize(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
 			}
 
-//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I__POPSIZE"+taille+"_AVG.eval");
-//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I__POPSIZE"+taille+"_AVG.front");
+			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I__POPSIZE"+taille+"_AVG.eval");
+			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I__POPSIZE"+taille+"_AVG.front");
 
-//			eval_ks->write_objective_OPT_information();
-//			free(eval_ks);
+			eval_ks->write_objective_OPT_information();
+			delete eval_ks;
 		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I__POPSIZE"+taille+"_AVG.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I__POPSIZE"+taille+"_AVG.front",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I__POPSIZE"+taille+"_AVG.eval",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I__POPSIZE"+taille+"_AVG.front",type_inst+to_string(i)+"___");
 
 	}
 
