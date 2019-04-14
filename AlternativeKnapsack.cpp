@@ -7,26 +7,20 @@ using namespace std;
 
 
 
+
 AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct, vector< vector<float > > WS_matrix){
 
-	id_alt = id++;
+	id_alt = Tools::decode_set_items(items,mStruct->get_n_items());
 	mainLSStructure = mStruct;
 	nb_objective = WS_matrix[0].size();
 	local_WS_matrix = WS_matrix;
 
-
-
 	neighborhood.clear();
-	alternatives.resize(mainLSStructure->get_n_items(),0);
 	criteria_values.resize(mainLSStructure->get_p_criteria(), 0);
 	objective_values.resize( nb_objective , 0);
 	weight = 0;
 
-
-
 	for(set<int>::iterator o = items.begin(); o != items.end(); ++o){
-
-		alternatives[*o] = 1;
 
 		weight += mainLSStructure->get_weight_of(*o);
 
@@ -44,10 +38,43 @@ AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct, 
 }
 
 
+AlternativeKnapsack::AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix){
+
+	id_alt = id_alternative;
+	set<int> items;
+	for(int i = 0; i < (int)id_alternative.length(); i++)
+		if(id_alternative[i] == '1')
+			items.insert(i);
+
+	mainLSStructure = mStruct;
+	nb_objective = WS_matrix[0].size();
+	local_WS_matrix = WS_matrix;
+
+	neighborhood.clear();
+	criteria_values.resize(mainLSStructure->get_p_criteria(), 0);
+	objective_values.resize( nb_objective , 0);
+	weight = 0;
+
+	for(set<int>::iterator o = items.begin(); o != items.end(); ++o){
+
+		weight += mainLSStructure->get_weight_of(*o);
+
+		for(int i = 0; i < mainLSStructure->get_p_criteria(); i++){
+			criteria_values[i] += mainLSStructure->get_utility(*o,i);
+		}
+	}
+
+	for(int i = 0; i <nb_objective; i++){
+		for(int j = 0; j < mainLSStructure->get_p_criteria(); j++){
+			objective_values[i] += local_WS_matrix[j][i] * criteria_values[j];
+		}
+	}
+
+}
+
 void AlternativeKnapsack::update_objective_vector(){
 
 	objective_values.clear();
-
 	objective_values.resize(nb_objective, 0);
 
 	for(int i = 0; i < (int)local_WS_matrix[0].size(); i++){
@@ -79,7 +106,6 @@ int AlternativeKnapsack::dominates_objective_space(Alternative* alt){
 	if ( BdomA and !AdomB)
 		return -1;
 
-
 	// AdomB and !BdomA   or   !AdomB and !BdomA
 	return 1;
 }
@@ -87,8 +113,8 @@ int AlternativeKnapsack::dominates_objective_space(Alternative* alt){
 
 int AlternativeKnapsack::dominates_decision_space(Alternative* alt){
 
-	int i = 0;
 	bool AdomB = false, BdomA = false;
+	int i = 0;
 
 	vector< float > crit_alt = alt->get_criteria_values();
 
@@ -122,7 +148,7 @@ void AlternativeKnapsack::enumerate_neighborhood(set<int> & curr_BP, set<int> &i
 
 		weight_neighbor = bp_weight + mainLSStructure->get_weight_of(*elem);
 
-		if ( weight_neighbor > BP_capacity)
+		if ( weight_neighbor > BP_capacity )
 			continue;
 
 		set<int> new_neighbor(curr_BP.begin(),curr_BP.end());
@@ -139,10 +165,11 @@ void AlternativeKnapsack::enumerate_neighborhood(set<int> & curr_BP, set<int> &i
 			new_neighbor.insert(id_object);
 			weight_neighbor += mainLSStructure->get_weight_of(id_object);
 		}
-		AlternativeKnapsack * alt = new AlternativeKnapsack(new_neighbor, mainLSStructure, local_WS_matrix );
+//		AlternativeKnapsack * alt = new AlternativeKnapsack(new_neighbor, mainLSStructure, local_WS_matrix );
 
-		set< int  >().swap(new_neighbor);
-		neighborhood.push_back(alt);
+		string alt = Tools::decode_set_items(new_neighbor,mainLSStructure->get_n_items());
+
+		neighborhood.insert(alt);
 	}
 }
 
@@ -187,13 +214,12 @@ map< float, int, greater <float> > AlternativeKnapsack::generate_ordered_ratio_i
 
 
 
-vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
+set< string > AlternativeKnapsack::get_neighborhood(){
 
 	set< int > In_BP, Out_BP;
 
-
-	for(int i = 0; i < (int)alternatives.size(); i++){
-		if( alternatives[i] == 1)
+	for(int i = 0; i < mainLSStructure->get_n_items(); i++){
+		if( id_alt[i] == '1')
 			In_BP.insert(i);
 		else
 			Out_BP.insert(i);
@@ -205,19 +231,6 @@ vector< Alternative* > AlternativeKnapsack::get_neighborhood(){
 	for(set< int >::iterator in = In_BP.begin(); in != In_BP.end(); ++in){
 
 		ratio_items = generate_ordered_ratio_items(Out_BP);
-
-//
-//		cout<<"____________________________"<<endl;
-//		for(map< float, int, greater <float> >::iterator rt = ratio_items.begin(); rt != ratio_items.end(); ++rt){
-//			cout<<"("<<(*rt).first<<" : "<<(*rt).second<<")"<<"         (";
-//			for(int i = 0; i < mainLSStructure->get_p_criteria(); i++){
-//				cout<<mainLSStructure->get_utility((*rt).second, i)<<" , ";
-//			}
-//			cout<<mainLSStructure->get_weight_of((*rt).second)<<")"<<endl;
-//		}
-//		cout<<"____________________________"<<endl;
-
-
 
 		float new_weight = weight - mainLSStructure->get_weight_of(*in);
 		set< int > in_tmp(In_BP.begin(),In_BP.end());

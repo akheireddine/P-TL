@@ -16,7 +16,6 @@ vector< float > Tools::dist_time_avg(2,0);
 vector< float > Tools::indicator_avg(3,0);
 int Tools::cpt = 0;
 int ITERATION_WS_PLS = 0;
-int Alternative::id = 0;
 
 
 
@@ -27,8 +26,8 @@ Evaluator* main_Knapsack(string filename_instance, string type_instance, string 
 	MainKnapsack * knaps = new MainKnapsack(filename_instance, size_population, pref_filename);
 
 	clock_t t1 = clock();
-	knaps->MOLS(t1/CLOCKS_PER_SEC); 								 //3min
-
+//	knaps->MOLS(t1/CLOCKS_PER_SEC); 								 //3min
+	knaps->MOLS_Population_Size_FIXE(t1/CLOCKS_PER_SEC,800);
 	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
 
 	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
@@ -65,6 +64,7 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 			for(int k = 0; k < 30; k++){
 				//Tools::generate_random_WS("WS_Matrix.csv",2);
 				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
+				delete eval_ks;
 			}
 //			cout<<"______________"<<eval_ks->compute_information_rate()<<endl<<"_______________"<<endl;
 
@@ -73,9 +73,8 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 //			if(i == 0)
 //				Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_Covered_PF.Test2",to_string((eval_ks->get_PFront()).size()));
 
-			eval_ks->write_objective_OPT_information();
+//			eval_ks->write_objective_OPT_information();
 
-			delete eval_ks;
 
 		}
 		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval",type_inst+to_string(i)+"____");
@@ -191,7 +190,6 @@ void script_PLSWS(string type_inst, string taille, string WS_DM){
 
 
 			for(int k = 0; k < 1; k++){
-				Alternative::id = 0;
 				eval_ks = main_Knapsack_PLSWS(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
 			}
 			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_PLSWS"+taille+"_AVG.eval");
@@ -290,12 +288,11 @@ int main(int argc, char** argv){
 	string type_inst = "A";
 	string taille = "100";
 
-//	script_knapsack(type_inst, taille, WS_DM);
+	script_knapsack(type_inst, taille, WS_DM);
 
 //	script_PLSWS(type_inst, taille, WS_DM);
 
-	script_PopulationSize(type_inst,taille,WS_DM);
-
+//	script_PopulationSize(type_inst,taille,WS_DM);
 
 
 	return 1;

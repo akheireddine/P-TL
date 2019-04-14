@@ -29,20 +29,19 @@ protected :
 	vector< vector < float > > WS_matrix;			// matrix A  of aggreation functions
 	int n_objective;
 	int p_criteria;									// Number of criteria
-	list< Alternative* > Population;				// current set of non-dominated alternatives during the solving process
+	list< string > Population;				// current set of non-dominated alternatives during the solving process
 	string filename_instance;					    // instance pathname
 
 public:
 	virtual ~LSStructure(){
-
-		cout<<"trhown here"<<endl;
-		for(list< Alternative* >::iterator i = OPT_Solution.begin(); i != OPT_Solution.end(); ++i){
-			try{
-				delete (*i);
-			}catch(...){
-				cout<<"exceptionhere"<<endl;
-			}
-		}
+//		cout<<"trhown here"<<endl;
+//		for(list< Alternative* >::iterator i = OPT_Solution.begin(); i != OPT_Solution.end(); ++i){
+//			try{
+//				delete (*i);
+//			}catch(...){
+//				cout<<"exceptionhere"<<endl;
+//			}
+//		}
 	};
 
 	virtual void readFilenameInstance(string filename) = 0;
