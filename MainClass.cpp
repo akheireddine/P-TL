@@ -26,8 +26,7 @@ Evaluator* main_Knapsack(string filename_instance, string type_instance, string 
 	MainKnapsack * knaps = new MainKnapsack(filename_instance, size_population, pref_filename);
 
 	clock_t t1 = clock();
-//	knaps->MOLS(t1/CLOCKS_PER_SEC); 								 //3min
-	knaps->MOLS_Population_Size_FIXE(t1/CLOCKS_PER_SEC,800);
+	knaps->MOLS(t1/CLOCKS_PER_SEC); 								 //3min
 	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
 
 	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
@@ -241,13 +240,12 @@ void script_PopulationSize(string type_inst, string taille, string WS_DM){
 
 	Evaluator * eval_ks;
 
-
 	for(int i = 0; i < 10; i++){
 
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 
-		for(int iter = 250; iter <= 450 ; iter += 100){
+		for(int iter = 50; iter <= 450 ; iter += 100){
 			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
 			for(int step = 0; step < 8; step++){
@@ -258,11 +256,11 @@ void script_PopulationSize(string type_inst, string taille, string WS_DM){
 
 				for(int k = 0; k < 10; k++){
 					eval_ks = main_Knapsack_PopulationSize(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
+					delete eval_ks;
 				}
 
 				Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I__POPSIZE"+taille+"_AVG.eval");
 				Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I__POPSIZE"+taille+"_AVG.front");
-				delete eval_ks;
 
 			}
 
@@ -288,11 +286,11 @@ int main(int argc, char** argv){
 	string type_inst = "A";
 	string taille = "100";
 
-	script_knapsack(type_inst, taille, WS_DM);
+//	script_knapsack(type_inst, taille, WS_DM);
 
 //	script_PLSWS(type_inst, taille, WS_DM);
 
-//	script_PopulationSize(type_inst,taille,WS_DM);
+	script_PopulationSize(type_inst,taille,WS_DM);
 
 
 	return 1;
