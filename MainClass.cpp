@@ -16,7 +16,6 @@ vector< float > Tools::dist_time_avg(2,0);
 vector< float > Tools::indicator_avg(3,0);
 int Tools::cpt = 0;
 int ITERATION_WS_PLS = 0;
-int Alternative::id = 0;
 
 
 
@@ -28,20 +27,19 @@ Evaluator* main_Knapsack(string filename_instance, string type_instance, string 
 
 	clock_t t1 = clock();
 	knaps->MOLS(t1/CLOCKS_PER_SEC); 								 //3min
-
 	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
 
 	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
 
 	string size_instance = to_string(knaps->get_n_items());
 
-	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
-			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+".eval"
-			, t2,
-			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+".front");
+//	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
+//			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+".eval"
+//			, t2,
+//			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+".front");
 
 
-	return eval;
+	return NULL;
 }
 
 void script_knapsack(string type_inst, string taille, string WS_DM){
@@ -49,37 +47,33 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 	Evaluator * eval_ks;
 
 
-	for(int i = 0; i < 10 ; i++){
+	for(int i = 0; i < 1 ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 		//string filename_instance = "./Instances_Knapsack/instance_test";
 
 		//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 0; step < 8; step++){
+		for(int step = 0; step < 1; step++){
 			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix.csv");
 
 			Tools::cpt = 0;
 			Tools::clean_up();
 
-			for(int k = 0; k < 30; k++){
+			for(int k = 0; k < 1; k++){
 				//Tools::generate_random_WS("WS_Matrix.csv",2);
 				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
+				delete eval_ks;
 			}
 //			cout<<"______________"<<eval_ks->compute_information_rate()<<endl<<"_______________"<<endl;
 
-			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval");
-			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front");
-//			if(i == 0)
-//				Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_Covered_PF.Test2",to_string((eval_ks->get_PFront()).size()));
+//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval");
+//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front");
 
-			eval_ks->write_objective_OPT_information();
-
-			delete eval_ks;
 
 		}
-		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval",type_inst+to_string(i)+"____");
-		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front",type_inst+to_string(i)+"____");
+//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG.eval",type_inst+to_string(i)+"____");
+//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG.front",type_inst+to_string(i)+"____");
 	}
 }
 
@@ -191,7 +185,6 @@ void script_PLSWS(string type_inst, string taille, string WS_DM){
 
 
 			for(int k = 0; k < 1; k++){
-				Alternative::id = 0;
 				eval_ks = main_Knapsack_PLSWS(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
 			}
 			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_PLSWS"+taille+"_AVG.eval");
@@ -243,13 +236,12 @@ void script_PopulationSize(string type_inst, string taille, string WS_DM){
 
 	Evaluator * eval_ks;
 
-
 	for(int i = 0; i < 10; i++){
 
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 
-		for(int iter = 250; iter <= 450 ; iter += 100){
+		for(int iter = 10; iter <= 220 ; iter += 30){
 			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
 			for(int step = 0; step < 8; step++){
@@ -260,11 +252,11 @@ void script_PopulationSize(string type_inst, string taille, string WS_DM){
 
 				for(int k = 0; k < 10; k++){
 					eval_ks = main_Knapsack_PopulationSize(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
+					delete eval_ks;
 				}
 
 				Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I__POPSIZE"+taille+"_AVG.eval");
 				Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I__POPSIZE"+taille+"_AVG.front");
-				delete eval_ks;
 
 			}
 
@@ -295,7 +287,6 @@ int main(int argc, char** argv){
 //	script_PLSWS(type_inst, taille, WS_DM);
 
 	script_PopulationSize(type_inst,taille,WS_DM);
-
 
 
 	return 1;

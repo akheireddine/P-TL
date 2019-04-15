@@ -21,19 +21,12 @@ protected :
 	float weight;													// total weight of the alternative
 	MainKnapsack* mainLSStructure;									// pointer to the main structure (for information)
 
-
 public:
 
-	//CONSTRUCTOR
+	//CONSTRUCTOR DESTRUCTOR
 	AlternativeKnapsack(set<int> items, MainKnapsack* mStruct, vector< vector< float > > WS_matrix);
-	~AlternativeKnapsack(){
-		for(int i = 0; i < (int)neighborhood.size(); i++){
-			if( dominates_decision_space(neighborhood[i]) == 1 )
-				delete neighborhood[i];
-		}
-		neighborhood.clear();
-		vector<Alternative*>().swap(neighborhood);
-	};
+	AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix);
+	~AlternativeKnapsack(){ 	};
 
 	//GETTERS
 	float get_weight(){ return weight; }
@@ -52,19 +45,19 @@ public:
 	 */
 	int dominates_objective_space(Alternative* alt);
 	int dominates_decision_space(Alternative* alt);
-	vector< Alternative* > get_neighborhood();
+	set< string > get_neighborhood();
 	void update_objective_vector();
 	inline int get_nb_items(){
 		int nb = 0;
-		for(int i = 0; i < (int)alternatives.size(); i++)
-			if( alternatives[i] == 1)
+		for(int i = 0; i < (int)id_alt.length(); i++)
+			if( id_alt[i] == '1')
 				nb++;
 		return nb;
 	};
 
 	inline bool contains_items(Alternative * alt){
-		for(int i = 0; i < (int)alternatives.size(); i++)
-			if((alternatives[i] != alt->get_alternatives()[i])   and  (alt->get_alternatives()[i] == 1) )
+		for(int i = 0; i < (int)id_alt.length(); i++)
+			if((id_alt[i] != alt->get_id_alt()[i])   and  (alt->get_id_alt()[i] == '1') )
 				return false;
 		return true;
 	};

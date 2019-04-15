@@ -7,7 +7,6 @@
 #include <ilcplex/ilocplex.h>
 
 
-
 float Tools::euclidian_distance(vector<float> v1, vector<float> v2){
 	float dist = 0;
 
@@ -51,6 +50,10 @@ vector< float > Tools::decompose_line_to_float_vector(string line){
 		pch = strtok (NULL, " 	,;");
 		i++;
 	}
+
+//	delete [] cline;
+//	delete [] pch;
+
 	return vect;
 }
 
@@ -263,6 +266,13 @@ vector<float> Tools::readWS_DM(string WS_DM_preferences){
 
 
 
+string Tools::decode_set_items(set<int> items, int nb_items){
+	string s ="";
+	for(int i = 0; i < nb_items; i++)
+		s+= (items.find(i) != items.end())?"1":"0";
+
+	return s;
+}
 
 
 

@@ -15,6 +15,7 @@ protected:
 
 	float Backpack_capacity = 0;							// capacity ofthe backpack
 	int n_items;											// number of items
+	map<string, AlternativeKnapsack * > dic_Alternative;
 
 
 public :
@@ -23,7 +24,11 @@ public :
 
 	//constructor
 	MainKnapsack(string filename, int init_population_size , string matrix_filename="PARETO");
-//	~MainKnapsack(){ delete this; };
+	~MainKnapsack(){
+		for(map<string, AlternativeKnapsack* >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it)
+			delete dic_Alternative[(*it).first];
+	};
+
 	//GETTERS
 	int get_n_items(){ return n_items; };
 	float get_weight_of(int i) { return std::get<0>(Items_information[i]); };
@@ -36,7 +41,7 @@ public :
 	//RESOLUTION
 	bool Update_Archive(Alternative* p, list< Alternative* > &set_SOL);
 	bool Update_Archive_Threshold_Accepting(Alternative* p, list< Alternative* > &set_SOL);
-	void update_alternatives(list<Alternative*> &set_Alt);
+	void update_alternatives(list< string > &set_Alt);
 
 	void filter_efficient_set();
 	void filter_efficient_set_decision_space();

@@ -7,7 +7,6 @@
 Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_DM_preferences,
 		string DT_file, float time, string PFI_file){
 
-
 	filename_instance = filename;
 	mainProblem = problemInstance;
 
@@ -31,6 +30,7 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 
 
 	evaluate_Dist_Time(dist_time_file, time);
+
 	evaluate_PF(pf_indicators_file);
 
 
@@ -124,6 +124,7 @@ void Evaluator::readParetoFront(){
 	string file_extension = filename_instance+".eff";
 	ifstream fic(file_extension.c_str());
 	string line;
+	vector< float > vector_pareto_objective, transformed_objective;
 
 	if (!(fic) or file_extension.find(".eff") == std::string::npos){
 		cerr<<"Error occurred paretofront"<<endl;
@@ -137,18 +138,17 @@ void Evaluator::readParetoFront(){
 		if (line.size() == 0)
 			continue;
 
-		vector< float > vector_pareto_objective = Tools::decompose_line_to_float_vector(line);
+		vector_pareto_objective = Tools::decompose_line_to_float_vector(line);
 		PF_Efficient.push_back(vector_pareto_objective);
-		vector< float > transformed_objective = get_objective_values(vector_pareto_objective);
+		transformed_objective = get_objective_values(vector_pareto_objective);
 
 		if( !is_dominated(transformed_objective) )
 			PFront.push_back(vector_pareto_objective);
 
-		vector<float>().swap(transformed_objective);
 	}
 
-
-
+	vector<float>().swap(transformed_objective);
+	vector<float>().swap(vector_pareto_objective);
 }
 
 
@@ -164,6 +164,8 @@ float Evaluator::nearest_alternative(vector< float > & vect_criteria ){
 	ifstream fic((filename_instance+".sol").c_str());
 
 	vector< float > criteria_val(mainProblem->get_p_criteria(),0);
+	vector< float >tmp_criteria_values;
+
 	float min_ratio = -1, tmp_ratio = 1;
 	string line;
 
@@ -174,7 +176,7 @@ float Evaluator::nearest_alternative(vector< float > & vect_criteria ){
 		if(line.size() == 0)
 			continue;
 
-		vector< float >tmp_criteria_values = Tools::decompose_line_to_float_vector(line);
+		tmp_criteria_values = Tools::decompose_line_to_float_vector(line);
 
 		tmp_ratio = Tools::get_ratio(tmp_criteria_values, OPT_Alternative->get_criteria_values(), WS_DM_vector);
 
@@ -271,7 +273,6 @@ void Evaluator::evaluate_Dist_Time(string dist_time_file, float time){
 
 	//Get minimum objective values difference between the best alternative and WS-MOLS front computed
 	float min_mols_ratio = nearest_alternative(vector_criteria);
-
 #ifdef __PRINT__
 	cout<<"Solution found in (efficient) front "<<endl;
 	cout<<"   ratio ( "<<min_mols_ratio<<" )"<<endl;
