@@ -30,7 +30,6 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 
 
 	evaluate_Dist_Time(dist_time_file, time);
-
 	evaluate_PF(pf_indicators_file);
 
 

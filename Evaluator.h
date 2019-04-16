@@ -25,6 +25,7 @@ public:
 	//CONSTRUCTOR
 	Evaluator(string filename, MainKnapsack * problemInstance, string WS_DM_preferences, string DT_file, float time, string PFI_file);
 	~Evaluator(){
+		cout<<"pb"<<endl;
 		delete OPT_Alternative;
 		delete mainProblem;
 	};

@@ -1,6 +1,7 @@
-//T0  size 10
+#T0  size 10
 
 set grid
+set colorsequence default
 set style line 1 lt 2 lw 1.8 pt 1 ps 1
 set style line 2 lt 3 lw 1.8 pt 2 ps 1
 set style line 3 lt 4 lw 1.8 pt 3 ps 1
@@ -19,22 +20,27 @@ set style line 14 lt 14 lw 1.8 pt 7 ps 1 lc rgb 'red'
 
 plot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0.eff" title "OPT front" 
 
-replot for[i=0:12] "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_10_".i.".expl" using 1:2 title "iteration ".i with points ls (i+1) 
+replot for[i=0:2] "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_10_".i."XXXX.expl" using 1:2 title "iteration ".i with points ls (i+1) 
 
-replot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_10.sol" title "final front" with points ls 14
+#replot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_10XXXX.sol" title "final front" with points ls 14
 
 set xlabel "x_1"
 set ylabel "x_2"
 set title "Evolution of the search space with 100 items (random Instances A - T0 ) - Population size : 10"
-replot 
+
+set style line 22 lc rgb "#cc1300" pt 3 ps 4 
+replot "<echo '37652 41042'"   with points ls 22 title "DMs preference"
+
+replot
 set terminal png size 1200,900
-set output "PLOT_A_70_T".j."_CST_130_SIZE.png"
+set output "PLOT_A_100_T0_CST_10_SIZE.png"
 replot  
 
 
-//T0 size 40
+#T0 size 40
 
 set grid
+set colorsequence default
 set style line 1 lt 2 lw 1.8 pt 1 ps 1
 set style line 2 lt 3 lw 1.8 pt 2 ps 1
 set style line 3 lt 4 lw 1.8 pt 3 ps 1
@@ -58,7 +64,10 @@ plot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0.eff" title "OPT front"
 
 replot for[i=0:16] "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_40_".i.".expl" using 1:2 title "iteration ".i with points ls (i+1) 
 
-replot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_40.sol" title "final front" with points ls 18
+#replot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_40.sol" title "final front" with points ls 18
+
+set style line 22 lc rgb "#cc1300" pt 3 ps 4 
+replot "<echo '37652 41042'"   with points ls 22 title "DMs preference"
 
 set xlabel "x_1"
 set ylabel "x_2"
@@ -101,7 +110,7 @@ set ylabel "x_2"
 set title "Evolution of the search space with 100 items (random Instances A - T0 ) - Population size : 70"
 replot 
 set terminal png size 1200,900
-set output "PLOT_A_70_T".j."_CST_70_SIZE.png"
+set output "PLOT_A_100_T0_CST_70_SIZE.png"
 replot  
 
 
@@ -112,6 +121,7 @@ replot
 
 
 set grid
+set colorsequence classic
 set style line 1 lt 2 lw 1.8 pt 1 ps 1
 set style line 2 lt 3 lw 1.8 pt 2 ps 1
 set style line 3 lt 4 lw 1.8 pt 3 ps 1
@@ -133,7 +143,7 @@ set ylabel "x_2"
 set title "Evolution of the search space with 100 items (random Instances A - T0 ) - Population size : 130"
 replot 
 set terminal png size 1200,900
-set output "PLOT_A_100_T".j."_CST_130_SIZE.png"
+set output "PLOT_A_100_T0_CST_130_SIZE.png"
 replot  
 
 
@@ -159,7 +169,10 @@ plot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0.eff" title "OPT front"
 
 replot for[i=0:10] "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_220_".i.".expl" using 1:2 title "iteration ".i with points ls (i+1) 
 
-replot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_220.sol" title "final front" with points ls 12
+#replot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_220.sol" title "final front" with points ls 12
+
+set style line 22 lc rgb "#cc1300" pt 3 ps 4 
+replot "<echo '37652 41042'"   with points ls 22 title "DMs preference"
 
 set xlabel "x_1"
 set ylabel "x_2"
@@ -192,7 +205,11 @@ plot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0.eff" title "OPT front"
 
 replot for[i=0:9] "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_UNSIZED_".i.".expl" using 1:2 title "iteration ".i with points ls (i+1) 
 
-replot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_UNSIZED.sol" title "final front" with points ls 11
+#replot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_UNSIZED.sol" title "final front" with points ls 11
+
+set style line 22 lc rgb "#cc1300" pt 3 ps 4 
+replot "<echo '37652 41042'"   with points ls 22 title "DMs preference"
+
 
 set xlabel "x_1"
 set ylabel "x_2"
