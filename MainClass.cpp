@@ -268,7 +268,7 @@ void script_PLSWS(string type_inst, string taille, string WS_DM){
 
 
 
-Evaluator* main_Knapsack_PopulationSize(string filename_instance, string type_instance, string num_instance,
+Evaluator* main_Knapsack_Cst_PSize(string filename_instance, string type_instance, string num_instance,
 		int size_population, string WS_DM_preferences, int max_size_population){
 
 	string pref_filename = "./WS_Matrix2.csv";
@@ -283,16 +283,16 @@ Evaluator* main_Knapsack_PopulationSize(string filename_instance, string type_in
 
 	string size_instance = to_string(knaps->get_n_items());
 
-//	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
-//			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+"_POPSIZE_"+to_string(max_size_population)+".eval"
-//			, t2,
-//			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+"_POPSIZE_"+to_string(max_size_population)+".front");
+	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
+			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+"_PSize_"+to_string(max_size_population)+".eval"
+			, t2,
+			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+"_PSize_"+to_string(max_size_population)+".front");
 
-	return NULL;
+	return eval;
 }
 
 
-void script_PopulationSize(string type_inst, string taille, string WS_DM){
+void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	Evaluator * eval_ks;
 
@@ -301,28 +301,28 @@ void script_PopulationSize(string type_inst, string taille, string WS_DM){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 
-		for(int iter = 10; iter <= 220 ; iter += 30){
+		for(int iter = 10; iter <= 210 ; iter += 20){
 			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
-			for(int step = 4; step < 5; step++){
+			for(int step = 0; step < 8; step++){
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix2.csv");
 				Tools::cpt = 0;
 				Tools::clean_up();
 
-				for(int k = 0; k < 1; k++){
-					eval_ks = main_Knapsack_PopulationSize(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
+				for(int k = 0; k < 10; k++){
+					eval_ks = main_Knapsack_Cst_PSize(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
 //					eval_ks->write_objective_OPT_information();
 					delete eval_ks;
 				}
 
-//				Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I__POPSIZE"+taille+"_AVG.eval");
-//				Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I__POPSIZE"+taille+"_AVG.front");
+				Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS2.eval");
+				Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS2.front");
 
 			}
 
-//			Tools::separate_results("./Data/DistTime/"+type_inst+"/I__POPSIZE"+taille+"_AVG.eval",type_inst+to_string(i)+"___"+to_string(iter)+"__");
-//			Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I__POPSIZE"+taille+"_AVG.front",type_inst+to_string(i)+"___"+to_string(iter)+"__");
+			Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS2.eval",type_inst+to_string(i)+"___"+to_string(iter)+"__");
+			Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS2.front",type_inst+to_string(i)+"___"+to_string(iter)+"__");
 		}
 	}
 }
@@ -345,11 +345,18 @@ int main(int argc, char** argv){
 
 //	script_knapsack(type_inst, taille, WS_DM);
 
-//	script_PopulationSize(type_inst,taille,WS_DM);
+//	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval"
+//			,type_inst,taille,"MOLS1 - global filtering"," MOLS2 - continous filtering");
 
 
-	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval"
-			,type_inst,taille,"MOLS1 - global filtering"," MOLS2 - continous filtering");
+
+
+	script_Cst_PSize(type_inst,taille,WS_DM);
+
+
+//	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS1.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS2.eval"
+//			,type_inst,taille,"MOLS1 - global filtering"," MOLS2 - continous filtering");
+
 
 
 	return 1;
