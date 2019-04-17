@@ -278,13 +278,14 @@ void Evaluator::evaluate_Dist_Time(string dist_time_file, float time){
 	cout<<"   vector objective ( "<<Tools::print_vector(vector_criteria)<<" )"<<endl;
 #endif
 
-	ofstream fic(dist_time_file,ios::app);
-	//"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+to_string(mainProblem->get_n_items())+".eval", ios::app);
-	fic<<min_mols_ratio<<","<<time<<endl;
-
 	Tools::update_dist_time(min_mols_ratio,time);
 
-	fic.close();
+//	ofstream fic(dist_time_file,ios::app);
+//	//"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+to_string(mainProblem->get_n_items())+".eval", ios::app);
+//	fic<<min_mols_ratio<<","<<time<<endl;
+//
+//
+//	fic.close();
 
 	vector< float >().swap(vector_criteria);
 
@@ -371,12 +372,12 @@ void Evaluator::evaluate_PF(string pf_indicators_file){
 
 	Tools::update_indicators(D1,D2,D3);
 
-	ofstream write_fic(pf_indicators_file,ios::app);
-	//"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+to_string(mainProblem->get_n_items())+".front", ios::app);
-
-	write_fic<<D1<<","<<D2<<","<<D3<<endl;
-
-	write_fic.close();
+//	ofstream write_fic(pf_indicators_file,ios::app);
+//	//"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+to_string(mainProblem->get_n_items())+".front", ios::app);
+//
+//	write_fic<<D1<<","<<D2<<","<<D3<<endl;
+//
+//	write_fic.close();
 
 }
 

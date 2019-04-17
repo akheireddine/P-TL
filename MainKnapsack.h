@@ -40,6 +40,8 @@ public :
 
 	//RESOLUTION
 	bool Update_Archive(Alternative* p, list< Alternative* > &set_SOL);
+	bool Update_Archive(Alternative* p, list< string > &set_SOL);
+
 	bool Update_Archive_Threshold_Accepting(Alternative* p, list< Alternative* > &set_SOL);
 	void update_alternatives(list< string > &set_Alt);
 
@@ -49,11 +51,15 @@ public :
 	void HYBRID_WS_PLS(double starting_time_sec, int steps);
 	void HYBRID_PLS_WS(double starting_time_sec, int steps);
 	list< Alternative * > MOLS(double starting_time_sec,int steps);
-	list< Alternative * > MOLS_Population_Size_FIXE(double starting_time_sec, int UB_Population_size);
-	list< Alternative * > MOLS_Population_Size_FIXE_DiversificationSimple(double starting_time_sec, int UB_Population_size);
-	list< Alternative * > MOLS_Population_Size_FIXE_TA(double starting_time_sec, int UB_Population_size);
+	list< Alternative * > MOLS1_Cst_PSize(double starting_time_sec, int UB_Population_size);
+	list< Alternative * > MOLS2_Cst_PSize(double starting_time_sec, int UB_Population_size);
 
 
+
+	void setInitialPopulation();
+
+	list< Alternative * > MOLS1(double starting_time_sec);
+	list< Alternative * > MOLS2(double starting_time_sec);
 
 	//EVALUATION
 	void save_new_point(string filename, Alternative * alt);

@@ -10,6 +10,7 @@
 
 
 
+extern list<set<int>> init_population;
 
 
 MainKnapsack::MainKnapsack(string filename, int init_population_size , string matrix_filename){
@@ -168,6 +169,18 @@ void MainKnapsack::readWS_Matrix(string filename){
 }
 
 
+
+void MainKnapsack::setInitialPopulation(){
+	Population.clear();
+	string id_alt =Tools::decode_set_items(init_population.front(), n_items);
+	Population.push_back(id_alt);
+	dic_Alternative[id_alt] = new AlternativeKnapsack(init_population.front(), this, WS_matrix);
+
+	init_population.pop_front();
+}
+
+
+
 void MainKnapsack::GenerateInitialPopulation(int size_population){
 
 	float bp = 0;
@@ -200,6 +213,7 @@ void MainKnapsack::GenerateInitialPopulation(int size_population){
 		string id_alt = Tools::decode_set_items(individu, n_items);
 		dic_Alternative[ id_alt ] = new AlternativeKnapsack(individu, this, WS_matrix);;
 
+		init_population.push_back(individu);
 		Population.push_back(id_alt);
 		set<int>().swap(individu);
 	}
@@ -271,7 +285,6 @@ void MainKnapsack::filter_efficient_set(){
 
 	}
 
-	list< Alternative* >().swap(fixed_opt_set);
 }
 
 //Filter the final archive (decision spaec)
@@ -298,7 +311,11 @@ void MainKnapsack::filter_efficient_set_decision_space(){
 		}
 	}
 
-	list< Alternative* >().swap(fixed_opt_set);
+}
+
+
+list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
+	return OPT_Solution;
 }
 
 
@@ -340,14 +357,13 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 			//if neighbor is dominated add to Local_front
 			if( alt->dominates_objective_space(neighbor) == 1 )
 				Dominated_alt.push_back(*id_neighbor);
-
 			else
 				Local_front.push_back(*id_neighbor);
 
 		}
 
 		if( front_size == 0 ){
-			random_shuffle( Local_front.begin(), Local_front.end() );
+//			random_shuffle( Local_front.begin(), Local_front.end() );
 
 			for(vector< string >::iterator id_new_alt = Local_front.begin(); id_new_alt != Local_front.end(); ++id_new_alt){
 
@@ -385,11 +401,9 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 
 	AlternativeKnapsack* alt;
-	vector< string > Local_front(0);
-	vector< string > Dominated_alt(0);
-	int front_size = Population.size();
+	vector< string > Local_front;
+	vector< string > Dominated_alt;
 	int nb_iteration=0;
-	int step = 0;
 
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p)
@@ -398,7 +412,6 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 
 	while( Population.size() > 0  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
-		front_size--;
 
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
@@ -416,34 +429,40 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 				neighbor = dic_Alternative[*id_neighbor];
 			}
 			//if neighbor is dominated add to Local_front
-			if( alt->dominates_objective_space(neighbor) == 1 )
-				Dominated_alt.push_back(*id_neighbor);
+//			if( alt->dominates_objective_space(neighbor) == 1 )
+//				Dominated_alt.push_back(*id_neighbor);
+//			else
+//				Local_front.push_back(*id_neighbor);
 
-			else
-				Local_front.push_back(*id_neighbor);
 
-		}
+			//Prefiltrage
+			if( alt->dominates_objective_space(neighbor) != 1 ){
+				list< string > tmp_LF(Local_front.begin(),Local_front.end());
+				Update_Archive(neighbor,tmp_LF);
+				Local_front.clear();
+				Local_front.resize(tmp_LF.size());
+				copy(tmp_LF.begin(), tmp_LF.end(), Local_front.begin());
 
-		if( front_size == 0 ){
-			random_shuffle( Local_front.begin(), Local_front.end() );
-
-			for(vector< string >::iterator id_new_alt = Local_front.begin(); id_new_alt != Local_front.end(); ++id_new_alt){
-
-				AlternativeKnapsack * new_alt = dic_Alternative[*id_new_alt];
-
-				if( Update_Archive(new_alt, OPT_Solution) ){
-					Population.push_back(*id_new_alt);
-				}
-				else{
-					Dominated_alt.push_back(*id_new_alt);
-				}
 			}
 
-			front_size = (int)Population.size();     //SAME AS POPULATION SIZE
-			Local_front.clear();
-			Dominated_alt.clear();
-			step++;
 		}
+
+
+		for(vector< string >::iterator id_new_alt = Local_front.begin(); id_new_alt != Local_front.end(); ++id_new_alt){
+
+			AlternativeKnapsack * new_alt = dic_Alternative[*id_new_alt];
+
+			if( Update_Archive(new_alt, OPT_Solution) ){
+				Population.push_back(*id_new_alt);
+			}
+			else{
+				Dominated_alt.push_back(*id_new_alt);
+			}
+		}
+
+		Local_front.clear();
+		Dominated_alt.clear();
+
 	}
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
@@ -453,11 +472,7 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 //	write_solution(filename_instance+"_UNSIZED"+".sol");
 	write_solution(filename_instance+".sol");
 
-	vector<string>().swap(Local_front);
-	vector<string>().swap(Dominated_alt);
-
 	return OPT_Solution;
-
 }
 
 
@@ -513,7 +528,7 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec,int steps){
 
 
 
-list< Alternative * > MainKnapsack::MOLS_Population_Size_FIXE(double starting_time_sec, int UB_Population_size){
+list< Alternative * > MainKnapsack::MOLS1_Cst_PSize(double starting_time_sec, int UB_Population_size){
 
 //	AlternativeKnapsack* alt;
 //	vector< string > Local_front;
@@ -621,107 +636,10 @@ list< Alternative * > MainKnapsack::MOLS_Population_Size_FIXE(double starting_ti
 }
 
 
-
-
-#define NUMBER_DEGRADED_SOLUTION 10
-list< Alternative * > MainKnapsack::MOLS_Population_Size_FIXE_DiversificationSimple(double starting_time_sec, int UB_Population_size){
-
-	AlternativeKnapsack* alt;
-	vector< string > Local_front(0);
-	vector< string > Dominated_alt(0);
-	int front_size = Population.size();
-	int nb_iteration=0;
-
-
-	//First initialization
-	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p)
-		OPT_Solution.push_back( dic_Alternative[ *p ] );
-
-	int step = 0;
-
-	while( Population.size() > 0  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
-
-		nb_iteration++;
-		front_size--;
-
-		alt = dic_Alternative[ Population.front() ];
-		Population.pop_front();
-
-		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_"+to_string(step)+"XXXX.expl",alt);
-
-		set< string > current_neighbors = alt->get_neighborhood();
-
-		for(set< string >::iterator id_neighbor = current_neighbors.begin(); id_neighbor != current_neighbors.end(); ++id_neighbor){
-
-			AlternativeKnapsack * neighbor = dic_Alternative[*id_neighbor];
-			//if neighbor is dominated add to Local_front
-			if( alt->dominates_objective_space(neighbor) == 1 )
-				Dominated_alt.push_back(*id_neighbor);
-			else
-				Local_front.push_back(*id_neighbor);
-		}
-
-		if( front_size == 0 ){
-			int pop_size = 0;
-			bool converge = true;
-			random_shuffle( Local_front.begin(), Local_front.end() );
-			for(vector< string >::iterator id_new_alt = Local_front.begin(); id_new_alt != Local_front.end(); ++id_new_alt){
-
-				AlternativeKnapsack * new_alt = dic_Alternative[*id_new_alt];
-
-				if( pop_size < UB_Population_size ){
-
-					if( Update_Archive(new_alt, OPT_Solution) ){
-						Population.push_back(*id_new_alt);
-						pop_size++;
-						converge = false;
-					}
-					else
-						Dominated_alt.push_back(*id_new_alt);
-				}
-
-			}
-
-			int nb_dominated_alt = 0;
-			random_shuffle( Dominated_alt.begin(), Dominated_alt.end() );
-
-//			while( !converge  and pop_size < UB_Population_size and (nb_dominated_alt < NUMBER_DEGRADED_SOLUTION ) and  (Dominated_alt.size() > 0) ) {
-//				OPT_Solution.push_back( dic_Alternative[ Dominated_alt[nb_dominated_alt] ]);
-//				Population.push_back(Dominated_alt[nb_dominated_alt]);
-//				nb_dominated_alt++;
-//				pop_size++;
-//			}
-
-			front_size = ( UB_Population_size < (int)Population.size() ) ? UB_Population_size : (int)Population.size();     //SAME AS POPULATION SIZE
-			Local_front.clear();
-			Dominated_alt.clear();
-			step++;
-		}
-
-	}
-
-	cout<<"Number of iteration "<<nb_iteration<<endl;
-
-	filter_efficient_set();
-
-//	write_solution(filename_instance+".sol");
-	write_solution(filename_instance+"_"+to_string(UB_Population_size)+"XXXX.sol");
-
-	vector<string>().swap(Local_front);
-	vector<string>().swap(Dominated_alt);
-
+list< Alternative * > MainKnapsack::MOLS2_Cst_PSize(double starting_time_sec, int UB_Population_size){
 	return OPT_Solution;
+
 }
-
-
-
-#define TA 0.5
-list< Alternative * > MainKnapsack::MOLS_Population_Size_FIXE_TA(double starting_time_sec, int UB_Population_size){
-	return OPT_Solution;
-}
-
-
-
 
 
 
@@ -824,17 +742,15 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 
 		dom_val = (*alt)->dominates_objective_space(p);
 
-		if(dom_val == 1 or (*alt)->get_id_alt().compare(p->get_id_alt()) == 0)			// alt dominates p or already exists in set_SOL
+		if( (dom_val == 1) or (*alt)->get_id_alt().compare(p->get_id_alt()) == 0)			// alt dominates p or already exists in set_SOL
 			return false;
 
 		else if( dom_val == -1 )   // p dominates alt
 			to_remove.push_back(*alt);
 	}
 
-	for(vector< Alternative* >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm){
+	for(vector< Alternative* >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm)
 		set_SOL.remove(*rm);
-//		dic_Alternative.erase((*rm)->get_id_alt() );
-	}
 
 	set_SOL.push_back(p);
 
@@ -844,6 +760,30 @@ bool MainKnapsack::Update_Archive(Alternative* p, list< Alternative* > &set_SOL)
 
 
 
+bool MainKnapsack::Update_Archive(Alternative* p, list< string > &set_SOL){
+
+	vector< string > to_remove;
+	int dom_val;
+
+	for(list< string >::iterator id_alt = set_SOL.begin(); id_alt != set_SOL.end(); ++id_alt){
+
+		AlternativeKnapsack * alt = dic_Alternative[*id_alt];
+		dom_val = alt->dominates_objective_space(p);
+
+		if( (dom_val == 1) or alt->get_id_alt().compare(p->get_id_alt()) == 0)			// alt dominates p or already exists in set_SOL
+			return false;
+
+		else if( dom_val == -1 )   // p dominates alt
+			to_remove.push_back(*id_alt);
+	}
+
+	for(vector< string >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm)
+		set_SOL.remove(*rm);
+
+	set_SOL.push_back(p->get_id_alt());
+
+	return true;
+}
 
 
 

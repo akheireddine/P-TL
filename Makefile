@@ -33,9 +33,9 @@ CCLNDIRS = -L$(CPLEXLIBDIR) -L$(CONCERTLIBDIR)
 CONCERTINCDIR = $(CONCERTDIR)/include
 CPLEXINCDIR   = $(CPLEXDIR)/include
 
-CCLNFLAGS = -lconcert -lilocplex -lcplex -lm -lpthread -ldl
+CCLNFLAGS = -lconcert -lilocplex -lcplex -lm -lpthread -ldl -lboost_iostreams -lboost_system -lboost_filesystem
 
-CCFLAGS = $(CCOPT) -I$(CPLEXINCDIR) -I$(CONCERTINCDIR)
+CCFLAGS = $(CCOPT) -I$(CPLEXINCDIR) -I$(CONCERTINCDIR) 
 
 #CCFLAGS = $(CCOPT)
 
@@ -54,6 +54,9 @@ all: WS_KNAPSACK
 Tools.o: Tools.cpp
 	$(CCC) $(CCFLAGS) -c Tools.cpp 
 
+Gnuplotter.o: Gnuplotter.cpp
+	$(CCC) $(CCFLAGS) -c Gnuplotter.cpp
+
 AlternativeKnapsack.o: AlternativeKnapsack.cpp 
 	$(CCC) $(CCFLAGS) -o AlternativeKnapsack.o  -c AlternativeKnapsack.cpp 
 	
@@ -63,12 +66,12 @@ MainKnapsack.o: MainKnapsack.cpp Tools.h
 Evaluator.o: Evaluator.cpp
 	$(CCC) $(CCFLAGS) -c Evaluator.cpp 
 
-MainClass.o: MainClass.cpp MainKnapsack.h
+MainClass.o: MainClass.cpp MainKnapsack.h Gnuplotter.h
 	$(CCC) $(CCFLAGS) -o MainClass.o -c MainClass.cpp 
 
 
-WS_KNAPSACK: Tools.o MainKnapsack.o AlternativeKnapsack.o Evaluator.o MainClass.o 
-	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o WS_KNAPSACK Tools.o  MainKnapsack.o AlternativeKnapsack.o  Evaluator.o MainClass.o $(CCLNFLAGS)
+WS_KNAPSACK: Tools.o Gnuplotter.o MainKnapsack.o AlternativeKnapsack.o Evaluator.o MainClass.o 
+	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o WS_KNAPSACK Tools.o Gnuplotter.o  MainKnapsack.o AlternativeKnapsack.o  Evaluator.o MainClass.o $(CCLNFLAGS)
 
 
 clean:
