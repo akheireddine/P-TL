@@ -442,9 +442,6 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 //	write_solution(filename_instance+"_UNSIZED"+".sol");
 	write_solution(filename_instance+".sol");
 
-	vector<string>().swap(Local_front);
-	vector<string>().swap(Dominated_alt);
-
 	return OPT_Solution;
 
 }
@@ -613,7 +610,7 @@ list< Alternative * > MainKnapsack::MOLS1_Cst_PSize(double starting_time_sec, in
 
 	filter_efficient_set_decision_space();
 
-//	write_solution(filename_instance+".sol");
+	write_solution(filename_instance+".sol");
 //	write_solution(filename_instance+"_"+to_string(UB_Population_size)+"XXXX.sol");
 
 	return OPT_Solution;

@@ -46,9 +46,9 @@ void Gnuplotter::Comparison_Plot_DIST_TIME(string filename1, string filename2,st
 	gp<<"set grid\n";
 	gp<<"do for[j=0:9]{\n";
 
-	gp<<"plot \""<<filename1<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 2 w linespoints ls 1 title \""<<filename1<<"\"\n";
+	gp<<"plot \""<<filename1<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 2 w linespoints ls 1 title \""<<t1<<"\"\n";
 
-	gp<<"replot \""<<filename2<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 2 w linespoints ls 2 title \""<<filename2<<"\"\n";
+	gp<<"replot \""<<filename2<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 2 w linespoints ls 2 title \""<<t2<<"\"\n";
 
 	gp<<"set xlabel \"Information rate (%)\"\n";
 	gp<<"set yrange [-0.001:]\n";
@@ -153,10 +153,12 @@ void Gnuplotter::Comparison_Plot_INDICATORS(string filename1, string filename2,s
 
 
 
-
-void Gnuplotter::Comparison_Plot_DIST_TIME_PSize(string filename1, string filename2,string type_inst, string size_inst,string t1, string t2){
+//NO EXTENSION FILENAMES
+void Gnuplotter::Comparison_Plot_DIST_TIME_PSize(string filename1, string filename2,string type_inst, string size_inst,string t1
+		, string t2,int init_size, int steps){
 
 	Gnuplot gp;
+	int size = init_size;
 
 	gp<<"set colorsequence podo\n";
 
@@ -166,49 +168,129 @@ void Gnuplotter::Comparison_Plot_DIST_TIME_PSize(string filename1, string filena
 
 
 	gp<<"set grid\n";
-	gp<<"do for[j=0:9]{\n";
+	gp<<"do for[j=0:10]{\n";
 
-	gp<<"plot \""<<filename1<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 1 w linespoints ls 1 title \""<<t1<<"\"\n";
+	gp<<"plot \""<<filename1<<"_T\".j.\"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 1 w linespoints ls 1 title \""<<t1<<"\"\n";
 
-	gp<<"replot \""<<filename2<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 1 w linespoints ls 2 title \""<<t2<<"\"\n";
+	gp<<"replot \""<<filename2<<"_T\".j.\"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 1 w linespoints ls 2 title \""<<t2<<"\"\n";
 
 	gp<<"set xlabel \"Information rate (%)\"\n";
 	gp<<"set yrange [-0.001:]\n";
 
 	gp<<"set ylabel \"Average gap (%)\"\n";
 
-	gp<<"set title \"Average gap to optimum for "<<size_inst<<" items ("<<type_inst<<"  T\".j.\")  -  Population size : \".size.\" \"\n";
+	size += steps;
+
+	gp<<"set title \"Average gap to optimum for "<<size_inst<<" items ("<<type_inst<<"  T\".j.\")  -  Population size : "<< to_string(size) <<" \"\n";
 	gp<<"replot\n";
 
 
 	gp<<"set terminal pngcairo size 1200,900\n";
-	gp<<"set output \"AVG_"<<type_inst<<"_"<<size_inst<<"_T\".j.\"_S\".size.\".png\"\n";
+	gp<<"set output \"AVG_"<<type_inst<<"_"<<size_inst<<"_T\".j.\"_S"<<to_string(size)<<".png\"\n";
 	gp<<"replot\n";
 	gp<<"}\n";
 
 
 
-
-
+	size = init_size;
 
 	gp<<"set grid\n";
 	gp<<"do for[j=0:9]{\n";
 
-	gp<<"plot \""<<filename1<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 2 w linespoints ls 1 title \""<<filename1<<"\"\n";
+	gp<<"plot \""<<filename1<<"_T\".j.\"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 2 w linespoints ls 1 title \""<<t1<<"\"\n";
 
-	gp<<"replot \""<<filename2<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 2 w linespoints ls 2 title \""<<filename2<<"\"\n";
+	gp<<"replot \""<<filename2<<"_T\".j.\"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 2 w linespoints ls 2 title \""<<t2<<"\"\n";
 
 	gp<<"set xlabel \"Information rate (%)\"\n";
 	gp<<"set yrange [-0.001:]\n";
 
 	gp<<"set ylabel \"Average time execution (second)\"\n";
 
-	gp<<"set title \"Average time execution (second) for "<<size_inst<<" items ("<<type_inst<<"  T\".j.\")  -  Population size : \".size.\" \"\n";
+	size += steps;
+
+
+	gp<<"set title \"Average time execution (second) for "<<size_inst<<" items ("<<type_inst<<"  T\".j.\")  -  Population size : "<< to_string(size) <<" \"\n";
 	gp<<"replot\n";
 	gp<<"set terminal pngcairo size 1200,900\n";
-	gp<<"set output \"TIME"<<type_inst<<"_"<<size_inst<<"_T\".j.\"_S\".size.\".png\"\n";
+	gp<<"set output \"TIME"<<type_inst<<"_"<<size_inst<<"_T\".j.\"_S"<<to_string(size)<<".png\"\n";
 	gp<<"replot\n";
 	gp<<"}\n";
+
+
+}
+
+
+
+
+
+//NO EXTENSION FILENAMES
+void Gnuplotter::AllPlot_DIST_TIME_PSize(string filename, string type_inst, string size_inst,string title,int init_size, int steps){
+
+	Gnuplot gp;
+	int size = init_size;
+
+	gp<<"set colorsequence podo\n";
+
+	gp<<"set style line 1 lt 1 lw 1.8 pt 1 ps 0.8 dt 1\n";
+	gp<<"set style line 2 lt 2 lw 1.8 pt 2 ps 0.8 dt 2\n";
+	gp<<"set style line 3 lt 3 lw 1.8 pt 3 ps 0.8 dt 3\n";
+	gp<<"set style line 4 lt 4 lw 1.8 pt 4 ps 0.8 dt 4\n";
+	gp<<"set style line 5 lt 5 lw 1.8 pt 5 ps 0.8 dt 5\n";
+	gp<<"set style line 6 lt 6 lw 1.8 pt 6 ps 0.8 dt 6\n";
+	gp<<"set style line 7 lt 7 lw 1.8 pt 7 ps 0.8 dt 7\n";
+	gp<<"set style line 8 lt 8 lw 1.8 pt 8 ps 0.8 dt 8\n";
+	gp<<"set style line 9 lt 9 lw 1.8 pt 9 ps 0.8 dt 9\n";
+	gp<<"set style line 10 lt 10 lw 1.8 pt 10 ps 0.8 dt 10\n";
+	gp<<"set style line 11 lt 11 lw 1.8 pt 11 ps 0.8 dt 11\n";
+
+
+	gp<<"set grid\n";
+
+	gp<<"do for[j=1:9]{\n";
+
+	gp<<"plot \""<<filename<<"_T\".j.\".eval\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 1 w linespoints ls (j+1) title \""<<title<<"\"\n";
+
+	gp<<"}\n";
+
+	gp<<"set xlabel \"Information rate (%)\"\n";
+	gp<<"set yrange [-0.001:]\n";
+
+	gp<<"set ylabel \"Average gap (%)\"\n";
+
+	size += steps;
+
+	gp<<"set title \"Average minimum distance from optimal solution using "<<size_inst<<" items ( "<<type_inst<<" )  and  Population size : "<< to_string(size) <<" \"\n";
+//	gp<<"replot\n";
+
+
+	gp<<"set terminal pngcairo size 1200,900\n";
+	gp<<"set output \"AVG_"<<type_inst<<"_"<<size_inst<<"_ALL_PS2.png\"\n";
+	gp<<"replot\n";
+
+
+
+	size = init_size;
+
+	gp<<"set grid\n";
+	gp<<"do for[j=0:9]{\n";
+
+	gp<<"plot \""<<filename<<"_T\".j.\".eval\" eevery ::(8*j + 1*j)::((j+1)*8 + 1*j) using 2 w linespoints ls (j+1) title \""<<title<<"\"\n";
+
+	gp<<"}\n";
+
+	gp<<"set xlabel \"Information rate (%)\"\n";
+	gp<<"set yrange [-0.001:]\n";
+
+	gp<<"set ylabel \"Average time execution (second)\"\n";
+
+	size += steps;
+
+
+	gp<<"set title \"Average time execution (second) using "<<size_inst<<" items ( "<<type_inst<<" )  and  Population size : "<< to_string(size) <<" \"\n";
+	gp<<"replot\n";
+	gp<<"set terminal pngcairo size 1200,900\n";
+	gp<<"set output \"TIME"<<type_inst<<"_"<<size_inst<<"_ALL_PS2.png\"\n";
+	gp<<"replot\n";
 
 
 }
