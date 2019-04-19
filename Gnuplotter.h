@@ -23,6 +23,9 @@ public:
 	static void Comparison_Plot_VARIABLE_WS_NEIGHBORHOOD(string filename1, string filename2, string filename3,
 			string type_inst, string size_inst,string t1, string t2, string t3);
 
+
+	void Plot_SEARCH_EVOLUTION(string filename, string type_inst, string size_inst,string algo,int size);
+
 };
 
 #endif

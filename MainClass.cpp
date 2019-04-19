@@ -283,7 +283,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "C";
+	string type_inst = "A";
 	string taille = "100";
 
 //	script_knapsack(type_inst, taille, WS_DM);
@@ -316,8 +316,8 @@ int main(int argc, char** argv){
 //			,type_inst,taille,"MOLS1 - Global filtering"," MOLS2 - Early filtering",10,20);
 
 //
-//	Gnuplotter::AllPlot_DIST_TIME_PSize("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS1", type_inst, taille ,
-//			"PS1" , 10,  20);
+	Gnuplotter::AllPlot_DIST_TIME_PSize("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS1", type_inst, taille ,
+			"PS1" , 10,  20);
 
 
 	return 1;
