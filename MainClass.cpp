@@ -288,11 +288,11 @@ int main(int argc, char** argv){
 
 //	script_knapsack(type_inst, taille, WS_DM);
 
-//	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval"
-//			,type_inst,taille,"MOLS1 - global filtering"," MOLS2 - continous filtering");
+	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval"
+			,type_inst,taille,"MOLS1 - global update"," MOLS2 - local updates");
 
-	Gnuplotter::Comparison_Plot_INDICATORS("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1.front",
-			"./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front",type_inst,taille,"MOLS1 - global update (fair)"," MOLS2 - local updates (unfair)");
+//	Gnuplotter::Comparison_Plot_INDICATORS("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1.front",
+//			"./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front",type_inst,taille,"MOLS1 - global update (fair)"," MOLS2 - local updates (unfair)");
 
 
 

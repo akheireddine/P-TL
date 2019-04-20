@@ -12,8 +12,8 @@ void Gnuplotter::Comparison_Plot_DIST_TIME(string filename1, string filename2,st
 
 	gp<<"set colorsequence podo\n";
 
-	gp<<"set style line 1 lt 2 lw 1.8 pt 1 ps 0.8 dt 1\n";
-	gp<<"set style line 2 lt 3 lw 1.8 pt 2 ps 0.8 dt 2\n";
+	gp<<"set style line 1 lt 2 lw 1.8 pt 1 ps 0.8 dt 1 lc rgb \"red\"\n";
+	gp<<"set style line 2 lt 3 lw 1.8 pt 2 ps 0.8 dt 2 lc rgb \"blue\"\n";
 
 
 
