@@ -12,7 +12,6 @@
 
 extern list<set<int>> init_population;
 
-
 MainKnapsack::MainKnapsack(string filename, int init_population_size , string matrix_filename){
 
 	filename_instance = filename;
@@ -569,7 +568,7 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+".expl",alt);
+//		save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+".expl",alt);
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -647,7 +646,7 @@ list< Alternative * > MainKnapsack::MOLS1_Cst_PSize(double starting_time_sec, in
 	int front_size = Population.size();
 	int nb_iteration=0;
 	int nb_dominated_alt = 0;
-
+	int step = 0;
 
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p)
@@ -662,7 +661,7 @@ list< Alternative * > MainKnapsack::MOLS1_Cst_PSize(double starting_time_sec, in
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_"+to_string(step)+"XXXX.expl",alt);
+		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_"+to_string(step)+".expl",alt);
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -712,7 +711,7 @@ list< Alternative * > MainKnapsack::MOLS1_Cst_PSize(double starting_time_sec, in
 //				nb_dominated_alt++;
 //				pop_size++;
 //			}
-
+			step++;
 			Local_front.clear();
 			Dominated_alt.clear();
 		}
@@ -723,7 +722,7 @@ list< Alternative * > MainKnapsack::MOLS1_Cst_PSize(double starting_time_sec, in
 	filter_efficient_set_decision_space();
 
 	write_solution(filename_instance+".sol");
-//	write_solution(filename_instance+"_"+to_string(UB_Population_size)+"XXXX.sol");
+//	write_solution(filename_instance+"_"+to_string(UB_Population_size)+".sol");
 
 	return OPT_Solution;
 }
@@ -747,7 +746,8 @@ list< Alternative * > MainKnapsack::MOLS2_Cst_PSize(double starting_time_sec, in
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-//		save_new_point(filename_instance+"_UNSIZED_"+to_string(step)+".expl",alt);
+//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_"+to_string(step)+".expl",alt);
+
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
