@@ -7,6 +7,15 @@
 #include <ilcplex/ilocplex.h>
 
 
+
+void Tools::skip(list< set< int > > &list_skiper, int n){
+	for(int i = 0; i < n ; i++){
+		set<int> val = list_skiper.front();
+		list_skiper.pop_front();
+		list_skiper.push_back(val);
+	}
+}
+
 float Tools::euclidian_distance(vector<float> v1, vector<float> v2){
 	float dist = 0;
 

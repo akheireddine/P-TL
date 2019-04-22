@@ -24,6 +24,8 @@ public :
 
 	//constructor
 	MainKnapsack(string filename, int init_population_size , string matrix_filename="PARETO");
+	MainKnapsack( int population_size_init, string filename, string matrix_filename="PARETO");
+
 	~MainKnapsack(){
 		for(map<string, AlternativeKnapsack* >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it)
 			delete dic_Alternative[(*it).first];
@@ -56,7 +58,6 @@ public :
 
 
 
-	void setInitialPopulation();
 
 	list< Alternative * > MOLS1(double starting_time_sec);
 	list< Alternative * > MOLS2(double starting_time_sec);
@@ -64,6 +65,9 @@ public :
 	//EVALUATION
 	void save_new_point(string filename, Alternative * alt);
 
+
+	//STATIC METHOD
+	static void Generate_random_Population(string filename, int number_of_individu);
 
 
 

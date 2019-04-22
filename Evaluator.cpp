@@ -2,7 +2,7 @@
 
 #include "Evaluator.h"
 #include <ilcplex/ilocplex.h>
-
+#define __PRINT__
 
 Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_DM_preferences,
 		string DT_file, float time, string PFI_file){

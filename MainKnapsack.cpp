@@ -26,11 +26,128 @@ MainKnapsack::MainKnapsack(string filename, int init_population_size , string ma
 }
 
 
+MainKnapsack::MainKnapsack( int population_size_init, string filename, string matrix_filename){
+
+	filename_instance = filename;
+
+	readFilenameInstance(filename_instance);
+
+	readWS_Matrix(matrix_filename);
+
+	for(int i = 0; i < population_size_init ; i++){
+		set<int> individu = init_population.front();
+		string id_alt = Tools::decode_set_items(individu, n_items);
+		dic_Alternative[ id_alt ] = new AlternativeKnapsack(individu, this, WS_matrix);;
+		Population.push_back(id_alt);
+	}
+
+}
+
+
 /**
  * ************************************************* READING PART (INITIALIZATION)  *************************************************
  */
 
 
+void MainKnapsack::Generate_random_Population(string filename, int number_of_individu){
+
+	int n_item;
+	float Backpack_capacity = 0;
+	vector< tuple<float, vector< float> > > Items_information;
+
+	string line;
+	char buff[100];
+	int i = 0;
+	float weight;
+	char *cline, *pch;
+	vector< float > line_value;
+
+	ifstream fic((filename+".dat").c_str());
+
+	//comments
+	getline(fic,line);
+	while( line[0] == 'c' )
+		getline(fic,line);
+
+	//number of items
+	n_item = 0;
+	if( line[0] == 'n')
+		sscanf(line.c_str(),"%s %d",buff,&n_item);
+
+	Items_information.resize(n_item);
+
+	//comments
+	getline(fic,line);
+	while( line[0] == 'c' )
+		getline(fic,line);
+
+	//items information
+	while(line[0] == 'i'){
+
+		line.erase(line.begin());
+		cline = new char[line.length() + 1]; // or
+		std::strcpy(cline, line.c_str());
+
+		line_value.clear();
+		pch = strtok (cline," 	");
+		while (pch != NULL){
+			line_value.push_back(atof(pch));
+			pch = strtok (NULL, " 	");
+		}
+
+		weight = line_value[0];
+
+		line_value.erase(line_value.begin());
+
+		Items_information[i] = make_tuple(weight,line_value);
+
+		getline(fic,line);
+		i++;
+	}
+
+	//comments
+	while( line[0] == 'c' )
+		getline(fic,line);
+
+	//total capacity
+	if( line[0] == 'W' )
+		sscanf(line.c_str(),"%s %f",buff,&Backpack_capacity);
+
+	/************************************* GENERATION *************************************/
+
+	float bp = 0;
+	set<int> individu;
+	vector<int> all_items(n_item);
+	list<int>::iterator iteratour;
+
+	for(int i = 0; i < n_item; i++)
+		all_items.push_back(i);
+
+	for (int i = 0; i < number_of_individu; i++){
+		bp = 0;
+		individu.clear();
+		list<int> items(all_items.begin(), all_items.end());
+
+		while(bp < Backpack_capacity  and (items.size() != 0)  and (rand()*1.0/RAND_MAX) < 0.8){
+			iteratour = items.begin();
+			advance(iteratour, rand()%items.size() );
+
+			int itm = *iteratour;// items[ rand()%items.size() ];
+			items.remove( itm );
+
+			float weight_itm = get<0>(Items_information[itm]);
+
+			if ( (weight_itm + bp) > Backpack_capacity )
+				continue;
+
+			individu.insert(itm);
+			bp += weight_itm;
+		}
+
+		init_population.push_back(individu);
+
+	}
+}
 
 
 
@@ -170,17 +287,6 @@ void MainKnapsack::readWS_Matrix(string filename){
 
 
 
-void MainKnapsack::setInitialPopulation(){
-	Population.clear();
-	string id_alt =Tools::decode_set_items(init_population.front(), n_items);
-	Population.push_back(id_alt);
-	dic_Alternative[id_alt] = new AlternativeKnapsack(init_population.front(), this, WS_matrix);
-
-	init_population.pop_front();
-}
-
-
-
 void MainKnapsack::GenerateInitialPopulation(int size_population){
 
 	float bp = 0;
@@ -212,10 +318,7 @@ void MainKnapsack::GenerateInitialPopulation(int size_population){
 		}
 		string id_alt = Tools::decode_set_items(individu, n_items);
 		dic_Alternative[ id_alt ] = new AlternativeKnapsack(individu, this, WS_matrix);;
-
-		init_population.push_back(individu);
 		Population.push_back(id_alt);
-		set<int>().swap(individu);
 	}
 
 }
@@ -392,7 +495,8 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
-//		save_new_point(filename_instance+"_UNSIZED_"+to_string(step)+".expl",alt);
+
+		save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+".expl",alt);
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -452,6 +556,7 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 	vector< string > Local_front;
 	vector< string > Dominated_alt;
 	int nb_iteration=0;
+	int step = 0, explored = 0;
 
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p)
@@ -463,7 +568,8 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
-//		save_new_point(filename_instance+"_UNSIZED_"+to_string(step)+".expl",alt);
+
+		save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+".expl",alt);
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -506,6 +612,12 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 			else{
 				Dominated_alt.push_back(*id_new_alt);
 			}
+		}
+		explored++;
+
+		if(explored == 30){
+			explored = 0;
+			step++;
 		}
 
 		Local_front.clear();
