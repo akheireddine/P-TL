@@ -24,7 +24,7 @@ public:
 			string type_inst, string size_inst,string t1, string t2, string t3);
 
 
-	static void Plot_SEARCH_EVOLUTION(string filename, string type_inst, string size_inst,string algo, int size, int step, int opt_size, vector<float> opt_points);
+	static void Plot_SEARCH_EVOLUTION(string filename, string type_inst, string size_inst,string algo, int size, int step, int opt_size, string opt_points);
 
 };
 

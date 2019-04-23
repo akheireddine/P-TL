@@ -298,7 +298,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "A";
+	string type_inst = "C";
 	string taille = "100";
 
 //	script_knapsack(type_inst, taille, WS_DM);
@@ -332,9 +332,10 @@ int main(int argc, char** argv){
 //	vector<float> opt_points{78121,76394};   //A-200-T0
 //	vector<float> opt_points{115950, 114016};            //A-300-T0
 //	vector<float> opt_points{31157,35210}; //C-100-T0
-	vector<float> opt_points{39061,40421};  //A-100-T2
+//	vector<float> opt_points{39061,40421};  //A-100-T2
+
 	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-			,"MOLS1", 10, 20, 130 , opt_points);
+			,"MOLS1", 10, 20, 210 , "./DM_preference_point");
 
 
 

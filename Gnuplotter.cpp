@@ -364,18 +364,15 @@ void Gnuplotter::AllPlot_DIST_TIME_PSize(string filename,string filename_variabl
 
 
 
-void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string size_inst,string algo, int size, int step, int opt_size, vector<float> opt_points){
+void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string size_inst,string algo, int size, int step, int opt_size, string opt_points_filename){
 
 	string size_string = to_string(size);
-	string opt_point ="";
 
 //	if( size == -1)
 //		size_string = "VARIABLE";
 
-	for(int i = 0; i < (int)opt_points.size(); i++)
-		opt_point += (i < ((int)opt_points.size() - 1))? to_string((int)opt_points[i])+" " : to_string((int)opt_points[i]) ;
-
 	Gnuplot gp;
+	gp<<"set grid\n";
 	gp<<"set colorsequence default\n";
 	gp<<"set style line 1 lt 1 lw 2 pt 1 ps 0.8 dt 1\n";
 	gp<<"set style line 2 lt 2 lw 2 pt 2 ps 0.8 dt 2\n";
@@ -398,8 +395,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	gp<<"set style line 19 lt 19 lw 2 pt 19 ps 0.8 dt 19    \n";
 	gp<<"set style line 20 lt 20 lw 2 pt 20 ps 0.8 dt 20   \n";
 
-	gp<<"set style line 22 lc rgb '#cc1300' pt 3 ps 5 \n";
-	gp<<"set grid\n";
+	gp<<"set style line 1000 lc rgb '#cc1300' pt 3 ps 5 \n";
 
 	gp<<"set xlabel 'x_1'\n";
 	gp<<"set ylabel 'x_2'\n";
@@ -407,10 +403,12 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	gp<<"unset ytics\n";
 	gp<<"set key left bottom\n";
 	gp<<"j=2\n";
-	gp<<"set terminal pngcairo size 2100,1300\n";
+
+	gp<<"set terminal pngcairo size 2100,1400\n";
 	gp<<"set output \"PLOTTER.png\"\n";
 
-	gp<<"set multiplot layout 3,4 columnsfirst rowsfirst title \" {/:Bold=15 Evolution of the local search using "<<size_inst<<" items ( "<<type_inst<<" - T\".j.\" ) }\"\n";
+
+	gp<<"set multiplot layout 3,2 columnsfirst rowsfirst title \" {/:Bold=15 Evolution of the local search using "<<size_inst<<" items ( "<<type_inst<<" - T\".j.\" ) }\"\n";
 
 
 	if(size == -1 ){
@@ -419,20 +417,22 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 		gp<<"set title 'Evolution of the search space with "<<size_inst<<" items (Instances "<<type_inst<<" - T'.j.' ) - Population size : "<<size_string<<"\n";
 
 		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  for[i=1:20] '"<<filename<<"-'.j.'_"<<size_string<<"_'.i.'.expl' using 1:2 title 'iteration '.i with points ls (i+1) ,"
-				" '-' w p ls 22 title 'DMs preference' \n "<<opt_point<<" \n e  \n";
+				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
 	}
 
 	else {
 		gp<<"size = "<<size_string<<"\n";
-		gp<<"while(size < "<<to_string(opt_size)<<"){\n";
+		gp<<"while(size <= "<<to_string(opt_size)<<"){\n";
+			gp<<"if(size == 10 ){\n unset key}\n";
+			gp<<"else { set key }\n";
 			gp<<"j=2\n";
 			gp<<"set label 1 '{/:Bold=10 Size='.size.'}' at graph 0.05,0.95 font ',8'\n";
 
-
-			gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  for[i=1:20] '"<<filename<<"-'.j.'_'.size.'_'.i.'.expl' using 1:2 title 'iteration '.i with points ls (i+1) "
-					" \n";// '-' w p ls 22 title 'DMs preference' \n "<<opt_point<<" \n e  \n";
+			gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  for[i=1:105] '"<<filename<<"-'.j.'_'.size.'_'.i.'.expl' using 1:2 title 'front '.i with points ls (i+1) "
+					", \""<<opt_points_filename<<"\" with points ls 1000 title \"DMs preference\"\n";
 
 			gp<<"size = size + "<<to_string(step+20)<<"\n";
+
 		gp<<"}\n";
 
 

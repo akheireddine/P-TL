@@ -649,8 +649,10 @@ list< Alternative * > MainKnapsack::MOLS1_Cst_PSize(double starting_time_sec, in
 	int step = 0;
 
 	//First initialization
-	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p)
+	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
+		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_"+to_string(step)+".expl", dic_Alternative[ *p ]);
 		OPT_Solution.push_back( dic_Alternative[ *p ] );
+	}
 
 
 	while( Population.size() > 0  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
@@ -661,7 +663,6 @@ list< Alternative * > MainKnapsack::MOLS1_Cst_PSize(double starting_time_sec, in
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_"+to_string(step)+".expl",alt);
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -695,6 +696,7 @@ list< Alternative * > MainKnapsack::MOLS1_Cst_PSize(double starting_time_sec, in
 					if( Update_Archive(new_alt, OPT_Solution) ){
 						Population.push_back(*id_new_alt);
 						front_size++;
+						save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_"+to_string(step)+".expl", new_alt );
 					}
 					else{
 						Dominated_alt.push_back(*id_new_alt);
