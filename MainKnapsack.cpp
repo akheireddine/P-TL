@@ -4,6 +4,8 @@
 #include "MainKnapsack.h"
 #define TIMEOUT 240
 
+#define N 10
+#define P 0.4
 //#define __PRINT__
 
 
@@ -422,7 +424,6 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 
 
 list< Alternative * > MainKnapsack::MOLS(double starting_time_sec,int steps){
-
 //	Alternative* alt;
 //	list< Alternative* > Local_front(0);
 //
@@ -474,6 +475,74 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec,int steps){
 
 
 
+
+
+
+
+
+
+void MainKnapsack::Limit_number_N(vector< string > dominated_solutions){
+
+	random_shuffle( dominated_solutions.begin(), dominated_solutions.end() );
+
+	for(int i = 0; i < N; i++){
+
+		AlternativeKnapsack* alt = dic_Alternative[dominated_solutions[i]];
+		Population.push_back( alt->get_id_alt());
+		OPT_Solution.push_back(alt);
+	}
+}
+
+
+
+
+void MainKnapsack::Distribution_proba(vector< string > dominated_solutions){
+	random_shuffle( dominated_solutions.begin(), dominated_solutions.end() );
+
+	for(int i = 0; i < (int)dominated_solutions.size(); i++){
+
+		if( rand()*1.0/RAND_MAX < P){
+			AlternativeKnapsack* alt = dic_Alternative[dominated_solutions[i]];
+			Population.push_back( alt->get_id_alt());
+			OPT_Solution.push_back(alt);
+		}
+	}
+
+}
+
+
+
+//void MainKnapsack::Threshold_Accepting_BASIC(vector< string > dominated_solutions){
+//
+//}
+//
+//
+//void MainKnapsack::Threshold_Accepting_AVG(vector< string > dominated_solutions){
+//	vector<float> random_ws = Tools::generate_random_restricted_WS_aggregator(p_criteria, WS_Matrix);
+//
+//	for(int i = 0; i < dominated_solutions.size(); i++){
+//
+//		float aggreg_value = 0;
+//
+//		for(int j = 0; j < OPT_Solution.size(); j++){
+//
+//			aggreg_value += f(random_ws, )
+//
+//		}
+//
+//		if( aggreg_value*1.0 / OPT_Solution.size()  <= Ta){
+//			AlternativeKnapsack* alt = dic_Alternative[dominated_solutions[i]];
+//			Population.push_back( alt->get_id_alt());
+//			OPT_Solution.push_back(alt);
+//		}
+//
+//
+//	}
+
+//}
+
+
+
 list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 
 	AlternativeKnapsack* alt;
@@ -494,8 +563,6 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
-
-		save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+".expl",alt);
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -525,10 +592,23 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 
 				if( Update_Archive(new_alt, OPT_Solution) ){
 					Population.push_back(*id_new_alt);
+//					save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+".expl",new_alt);
 				}
 				else{
 					Dominated_alt.push_back(*id_new_alt);
 				}
+			}
+
+			//GIVE CHANCE TO BAAAAD SOLUTIONS WHEN THERE STILL OPTIMAL ONES TO EXPLORE
+			if(Population.size() > 0 ){
+				Limit_number_N(Dominated_alt);
+
+	//			Distribution_proba(Dominated_alt);
+	//
+	//			Threshold_Accepting_AVG(Dominated_alt);
+	//
+	//			Threshold_Accepting_BASIC(Dominated_alt);
+
 			}
 
 			front_size = (int)Population.size();     //SAME AS POPULATION SIZE
@@ -691,7 +771,7 @@ list< Alternative * > MainKnapsack::MOLS1_Cst_PSize(double starting_time_sec, in
 
 				AlternativeKnapsack * new_alt = dic_Alternative[*id_new_alt];
 
-				if( front_size <= UB_Population_size ){
+				if( front_size < UB_Population_size ){
 
 					if( Update_Archive(new_alt, OPT_Solution) ){
 						Population.push_back(*id_new_alt);
@@ -788,7 +868,7 @@ list< Alternative * > MainKnapsack::MOLS2_Cst_PSize(double starting_time_sec, in
 
 			AlternativeKnapsack * new_alt = dic_Alternative[*id_new_alt];
 
-			if( (int)Population.size() <= UB_Population_size ){
+			if( (int)Population.size() < UB_Population_size ){
 				if( Update_Archive(new_alt, OPT_Solution) ){
 					Population.push_back(*id_new_alt);
 				}

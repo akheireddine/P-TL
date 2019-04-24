@@ -73,22 +73,22 @@ Evaluator* main_Knapsack2(string filename_instance, string type_instance, string
 void script_knapsack(string type_inst, string taille, string WS_DM){
 
 	int K = 1;
-	int N = 1;
+	int N = 9;
 	Evaluator * eval_ks;
 	init_population.clear();
 
 
 	//INIT ALL POPULATION FOR ALL INSTANCES
-	for(int i = 0; i < N; i++){
+	for(int i = 8; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 	}
 
-	for(int i = 0; i < N ; i++){
+	for(int i = 8; i < N ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 		//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 1; step < 2; step++){
+		for(int step = 0; step < 1; step++){
 			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix3.csv");
 
@@ -203,21 +203,21 @@ Evaluator* main_Knapsack_Cst_PSize2(string filename_instance, string type_instan
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	int K = 1;
-	int N = 3;
+	int N = 9;
 	init_population.clear();
 
 	Evaluator * eval_ks;
 
 	//INIT ALL POPULATION FOR ALL INSTANCES
-	for(int i = 2; i < N; i++){
+	for(int i = 8; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 	}
 
 
-	for(int i = 2; i < N; i++){
+	for(int i = 8; i < N; i++){
 
-		for(int iter = 10; iter <= 210 ; iter += 20){
+		for(int iter = 10; iter <= 230 ; iter += 20){
 			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
 			for(int step = 0; step < 1; step++){
@@ -251,7 +251,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 //	for(int i = 2; i < N; i++){
 //
-//		for(int iter = 10; iter <= 210 ; iter += 20){
+//		for(int iter = 10; iter <= 120 ; iter += 10){
 //			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 //			SIZE_POP = iter;
 //			for(int step = 0; step < 1; step++){
@@ -298,8 +298,8 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "C";
-	string taille = "100";
+	string type_inst = "A";
+	string taille = "200";
 
 //	script_knapsack(type_inst, taille, WS_DM);
 
@@ -335,7 +335,7 @@ int main(int argc, char** argv){
 //	vector<float> opt_points{39061,40421};  //A-100-T2
 
 	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-			,"MOLS1", 10, 20, 210 , "./DM_preference_point");
+			,"MOLS1", 10, 20, 130 , "./DM_preference_point");
 
 
 

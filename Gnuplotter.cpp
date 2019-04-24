@@ -368,8 +368,8 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 
 	string size_string = to_string(size);
 
-//	if( size == -1)
-//		size_string = "VARIABLE";
+	if( size == -1)
+		size_string = "VARIABLE";
 
 	Gnuplot gp;
 	gp<<"set grid\n";
@@ -402,38 +402,57 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	gp<<"unset xtics \n";
 	gp<<"unset ytics\n";
 	gp<<"set key left bottom\n";
-	gp<<"j=2\n";
-
-	gp<<"set terminal pngcairo size 2100,1400\n";
-	gp<<"set output \"PLOTTER.png\"\n";
+	gp<<"j=8\n";            /////////////////////////// TOMODIF
 
 
-	gp<<"set multiplot layout 3,2 columnsfirst rowsfirst title \" {/:Bold=15 Evolution of the local search using "<<size_inst<<" items ( "<<type_inst<<" - T\".j.\" ) }\"\n";
+
+
 
 
 	if(size == -1 ){
+		gp<<"set terminal pngcairo size 1500,900\n";
+		gp<<"set output \"PLOTTER.png\"\n";
 		size_string = "VARIABLE";
 
-		gp<<"set title 'Evolution of the search space with "<<size_inst<<" items (Instances "<<type_inst<<" - T'.j.' ) - Population size : "<<size_string<<"\n";
+		gp<<"set title 'Evolution of the search space with "<<size_inst<<" items (Instances "<<type_inst<<" - T'.j.' ) - Variable population size' \n";
 
-		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  for[i=1:20] '"<<filename<<"-'.j.'_"<<size_string<<"_'.i.'.expl' using 1:2 title 'iteration '.i with points ls (i+1) ,"
+		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
+				"for[i=1:105] '"<<filename<<"-'.j.'_VARIABLE_'.i.'.expl' using 1:2 "
+						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_'.i.'.expl ')).')' with points ls (i+1) ,"
 				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
+		gp<<"set grid\n";
+
 	}
 
 	else {
+		gp<<"set terminal pngcairo size 2100,1400\n";
+		gp<<"set output \"PLOTTER.png\"\n";
+		gp<<"set multiplot layout 3,3 columnsfirst rowsfirst title \" {/:Bold=15 Evolution of the local search using "<<size_inst<<" items ( "<<type_inst<<" - T\".j.\" ) }\"\n";
+
 		gp<<"size = "<<size_string<<"\n";
 		gp<<"while(size <= "<<to_string(opt_size)<<"){\n";
-			gp<<"if(size == 10 ){\n unset key}\n";
-			gp<<"else { set key }\n";
-			gp<<"j=2\n";
+//			gp<<"if(size == 10 ){\n unset key}\n";
+//			gp<<"else { set key }\n";
+			gp<<"unset key\n";
 			gp<<"set label 1 '{/:Bold=10 Size='.size.'}' at graph 0.05,0.95 font ',8'\n";
 
-			gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  for[i=1:105] '"<<filename<<"-'.j.'_'.size.'_'.i.'.expl' using 1:2 title 'front '.i with points ls (i+1) "
+			gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
+					"for[i=1:105] '"<<filename<<"-'.j.'_'.size.'_'.i.'.expl' using 1:2 "
+					"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_'.size.'_'.i.'.expl ')).')' with points ls (i+1)"
 					", \""<<opt_points_filename<<"\" with points ls 1000 title \"DMs preference\"\n";
 
-			gp<<"size = size + "<<to_string(step+20)<<"\n";
+			gp<<"size = size + "<<to_string(step)<<"\n";
 
 		gp<<"}\n";
+
+//
+//		gp<<"set label 1 '{/:Bold=10 Variable size}' at graph 0.05,0.95 font ',8'\n";
+//
+//		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
+//				"for[i=1:105] '"<<filename<<"-'.j.'_VARIABLE_'.i.'.expl' using 1:2 "
+//						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_'.i.'.expl ')).')' with points ls (i+1) ,"
+//				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
+		gp<<"set grid\n";
 
 
 

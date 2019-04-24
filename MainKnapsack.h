@@ -62,6 +62,11 @@ public :
 	list< Alternative * > MOLS1(double starting_time_sec);
 	list< Alternative * > MOLS2(double starting_time_sec);
 
+
+	void Limit_number_N(vector< string > dominated_solutions);
+	void Distribution_proba(vector< string > dominated_solutions);
+
+
 	//EVALUATION
 	void save_new_point(string filename, Alternative * alt);
 
