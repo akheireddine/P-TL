@@ -523,13 +523,18 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_in
 	if(size == -1 ){
 		gp<<"set terminal pngcairo size 1500,900\n";
 		gp<<"set output \"INFO.png\"\n";
-		gp<<"set multiplot layout 3,4 columnsfirst rowsfirst  title 'Evolution of the search space with different proportion of information - "<<size_inst<<" items (Instances "<<type_inst<<" - T'.j.' ) - Variable population size'\n";
+		gp<<"set multiplot layout 2,4 columnsfirst rowsfirst  title 'Evolution of the search space with different information rate - "<<size_inst<<" items (Instances "<<type_inst<<" - T'.j.' ) - Variable population size'\n";
 
 		size_string = "VARIABLE";
 		gp<<"unset key\n";
-		gp<<"do for[step=0:8]{\n";
-		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
-				"for[i=1:105] '"<<filename<<"-'.j.'_VARIABLE_'.i.'_'.step.'.expl' using 1:2 "
+		gp<<"do for[step=0:7]{\n";
+			gp<<"label = 0\n";
+			gp<<"if (step==0){ label = 90 }\n if (step == 1){ label = 41}\n if (step == 2 ) { label = 28 }\n if (step == 3) { label = 12}"
+					"\n if ( step == 4 ) { label = 8}\n if (step == 5) { label = 5 }\n if (step == 6) { label=4 }\n";
+			gp<<"set label 1 '{/:Bold=10 '.label.'°}' at graph 0.05,0.95 font ',8'\n";
+
+			gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
+				"for[i=0:105] '"<<filename<<"-'.j.'_VARIABLE_'.i.'_'.step.'.expl' using 1:2 "
 						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_'.i.'_'.step.'.expl ')).')' with points ls (i+1) ,"
 				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
 		gp<<"set grid\n";

@@ -342,7 +342,7 @@ int main(int argc, char** argv){
 
 
 	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-			,"MOLS1", -1, 40, 410 , "./DM_preference_point");
+			,"MOLS1", -1, 10, 410 , "./DM_preference_point");
 
 /*
   *************************************************************************************************************************
