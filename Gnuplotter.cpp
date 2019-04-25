@@ -427,7 +427,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	else {
 		gp<<"set terminal pngcairo size 2100,1400\n";
 		gp<<"set output \"PLOTTER.png\"\n";
-		gp<<"set multiplot layout 3,3 columnsfirst rowsfirst title \" {/:Bold=15 Evolution of the local search using "<<size_inst<<" items ( "<<type_inst<<" - T\".j.\" ) }\"\n";
+		gp<<"set multiplot layout 3,4 columnsfirst rowsfirst title \" {/:Bold=15 Evolution of the local search using "<<size_inst<<" items ( "<<type_inst<<" - T\".j.\" ) }\"\n";
 
 		gp<<"size = "<<size_string<<"\n";
 		gp<<"while(size <= "<<to_string(opt_size)<<"){\n";
@@ -437,7 +437,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 			gp<<"set label 1 '{/:Bold=10 Size='.size.'}' at graph 0.05,0.95 font ',8'\n";
 
 			gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
-					"for[i=1:105] '"<<filename<<"-'.j.'_'.size.'_'.i.'.expl' using 1:2 "
+					"for[i=1:150] '"<<filename<<"-'.j.'_'.size.'_'.i.'.expl' using 1:2 "
 					"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_'.size.'_'.i.'.expl ')).')' with points ls (i+1)"
 					", \""<<opt_points_filename<<"\" with points ls 1000 title \"DMs preference\"\n";
 
@@ -445,13 +445,14 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 
 		gp<<"}\n";
 
-//
-//		gp<<"set label 1 '{/:Bold=10 Variable size}' at graph 0.05,0.95 font ',8'\n";
-//
-//		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
-//				"for[i=1:105] '"<<filename<<"-'.j.'_VARIABLE_'.i.'.expl' using 1:2 "
-//						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_'.i.'.expl ')).')' with points ls (i+1) ,"
-//				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
+
+		gp<<"set label 1 '{/:Bold=10 Variable size}' at graph 0.05,0.95 font ',8'\n";
+
+		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
+				"for[i=1:150] '"<<filename<<"-'.j.'_VARIABLE_'.i.'.expl' using 1:2 "
+						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_'.i.'.expl ')).')' with points ls (i+1) ,"
+				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
+
 		gp<<"set grid\n";
 
 
