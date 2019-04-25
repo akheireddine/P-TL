@@ -18,6 +18,7 @@ vector< float > Tools::dist_time_avg(2,0);
 vector< float > Tools::indicator_avg(3,0);
 int Tools::cpt = 0;
 int ITERATION_WS_PLS = 0;
+int INFO = 0;
 
 list<set<int>> init_population;
 
@@ -88,7 +89,8 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 		//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 0; step < 1; step++){
+		for(int step = 0; step < 8; step++){
+			INFO = step;
 			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix3.csv");
 
@@ -299,7 +301,7 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "200";
+	string taille = "100";
 
 //	script_knapsack(type_inst, taille, WS_DM);
 
@@ -334,12 +336,13 @@ int main(int argc, char** argv){
 //	vector<float> opt_points{31157,35210}; //C-100-T0
 //	vector<float> opt_points{39061,40421};  //A-100-T2
 
-	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-			,"MOLS1", 10, 40, 210 , "./DM_preference_point");
+//	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+//			,"MOLS1", 10, 40, 410 , "./DM_preference_point");
 
 
 
-
+	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+			,"MOLS1", -1, 40, 410 , "./DM_preference_point");
 
 /*
   *************************************************************************************************************************

@@ -475,6 +475,115 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 
 
 
+void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_inst, string size_inst,string algo, int size, int step, int opt_size, string opt_points_filename){
+
+	string size_string = to_string(size);
+
+	if( size == -1)
+		size_string = "VARIABLE";
+
+	Gnuplot gp;
+	gp<<"set grid\n";
+	gp<<"set colorsequence default\n";
+	gp<<"set style line 1 lt 1 lw 2 pt 1 ps 0.8 dt 1\n";
+	gp<<"set style line 2 lt 2 lw 2 pt 2 ps 0.8 dt 2\n";
+	gp<<"set style line 3 lt 3 lw 2 pt 3 ps 0.8 dt 3 lc rgb \"#e62e00\"   \n";
+	gp<<"set style line 4 lt 4 lw 2 pt 4 ps 0.8 dt 4\n";
+	gp<<"set style line 5 lt 5 lw 2 pt 5 ps 0.8 dt 5\n";
+	gp<<"set style line 6 lt 6 lw 2 pt 6 ps 0.8 dt 6\n";
+	gp<<"set style line 7 lt 7 lw 2 pt 7 ps 0.8 dt 7\n";
+	gp<<"set style line 8 lt 8 lw 2 pt 8 ps 0.8 dt 8 lc rgb \"#1a75ff\"   \n";
+	gp<<"set style line 9 lt 9 lw 2 pt 9 ps 0.8 dt 9 lc rgb \"#c27982\"   \n";
+	gp<<"set style line 10 lt 10 lw 2 pt 10 ps 0.8 dt 10 lc rgb \"#993366\"   \n";
+	gp<<"set style line 11 lt 11 lw 2 pt 11 ps 0.8 dt 11 lc rgb \"#86b300\"   \n";
+	gp<<"set style line 12 lt 12 lw 2 pt 12 ps 0.8 dt 12 lc rgb \"#99cc00\"   \n";
+	gp<<"set style line 13 lt 13 lw 2 pt 13 ps 0.8 dt 13 lc rgb \"#996633\"   \n";
+	gp<<"set style line 14 lt 14 lw 2 pt 14 ps 0.8 dt 14 lc rgb \"#ccccff\"   \n";
+	gp<<"set style line 15 lt 15 lw 2 pt 15 ps 0.8 dt 15 lc rgb \"#ff9999\"   \n";
+	gp<<"set style line 16 lt 16 lw 2 pt 16 ps 0.8 dt 16 lc rgb \"#cc6666\"   \n";
+	gp<<"set style line 17 lt 17 lw 2 pt 17 ps 0.8 dt 17   \n";
+	gp<<"set style line 18 lt 18 lw 2 pt 18 ps 0.8 dt 18    \n";
+	gp<<"set style line 19 lt 19 lw 2 pt 19 ps 0.8 dt 19    \n";
+	gp<<"set style line 20 lt 20 lw 2 pt 20 ps 0.8 dt 20   \n";
+
+	gp<<"set style line 1000 lc rgb '#cc1300' pt 3 ps 5 \n";
+
+	gp<<"set xlabel 'x_1'\n";
+	gp<<"set ylabel 'x_2'\n";
+	gp<<"unset xtics \n";
+	gp<<"unset ytics\n";
+	gp<<"set key left bottom\n";
+	gp<<"j=8\n";            /////////////////////////// TOMODIF
+
+
+
+
+
+
+	if(size == -1 ){
+		gp<<"set terminal pngcairo size 1500,900\n";
+		gp<<"set output \"INFO.png\"\n";
+		gp<<"set multiplot layout 3,4 columnsfirst rowsfirst  title 'Evolution of the search space with different proportion of information - "<<size_inst<<" items (Instances "<<type_inst<<" - T'.j.' ) - Variable population size'\n";
+
+		size_string = "VARIABLE";
+		gp<<"unset key\n";
+		gp<<"do for[step=0:8]{\n";
+		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
+				"for[i=1:105] '"<<filename<<"-'.j.'_VARIABLE_'.i.'_'.step.'.expl' using 1:2 "
+						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_'.i.'_'.step.'.expl ')).')' with points ls (i+1) ,"
+				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
+		gp<<"set grid\n";
+
+		gp<<"}\n";
+
+	}
+
+//	else {
+//		gp<<"set terminal pngcairo size 2100,1400\n";
+//		gp<<"set output \"PLOTTER.png\"\n";
+//		gp<<"set multiplot layout 3,4 columnsfirst rowsfirst title \" {/:Bold=15 Evolution of the local search using "<<size_inst<<" items ( "<<type_inst<<" - T\".j.\" ) }\"\n";
+//
+//		gp<<"size = "<<size_string<<"\n";
+//		gp<<"while(size <= "<<to_string(opt_size)<<"){\n";
+////			gp<<"if(size == 10 ){\n unset key}\n";
+////			gp<<"else { set key }\n";
+//			gp<<"unset key\n";
+//			gp<<"set label 1 '{/:Bold=10 Size='.size.'}' at graph 0.05,0.95 font ',8'\n";
+//
+//			gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
+//					"for[i=1:150] '"<<filename<<"-'.j.'_'.size.'_'.i.'.expl' using 1:2 "
+//					"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_'.size.'_'.i.'.expl ')).')' with points ls (i+1)"
+//					", \""<<opt_points_filename<<"\" with points ls 1000 title \"DMs preference\"\n";
+//
+//			gp<<"size = size + "<<to_string(step)<<"\n";
+//
+//		gp<<"}\n";
+//
+//
+//		gp<<"set label 1 '{/:Bold=10 Variable size}' at graph 0.05,0.95 font ',8'\n";
+//
+//		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
+//				"for[i=1:150] '"<<filename<<"-'.j.'_VARIABLE_'.i.'.expl' using 1:2 "
+//						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_'.i.'.expl ')).')' with points ls (i+1) ,"
+//				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
+//
+//		gp<<"set grid\n";
+//
+//
+//
+//	}
+
+
+	//	#replot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_10XXXX.sol" title "final front" with points ls 14
+
+
+
+//		gp<<"set terminal pngcairo size 2000,1400\n";
+//		gp<<"set output \" PLOT.png\"\n";//"<<algo<<"_"<<type_inst<<"_"<<size_inst<<"_"<<size_string<<".png \"\n";
+//		gp<<"unset output\n";
+//	gp<<"}\n";
+
+}
 
 
 

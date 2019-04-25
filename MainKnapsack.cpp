@@ -13,6 +13,8 @@
 
 
 extern list<set<int>> init_population;
+extern int INFO;
+
 
 MainKnapsack::MainKnapsack(string filename, int init_population_size , string matrix_filename){
 
@@ -563,7 +565,7 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 		Population.pop_front();
 
 		if(nb_iteration > 1)
-			save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+".expl",alt);
+			save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+"_"+to_string(INFO)+".expl",alt);
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
