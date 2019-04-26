@@ -364,7 +364,8 @@ void Gnuplotter::AllPlot_DIST_TIME_PSize(string filename,string filename_variabl
 
 
 
-void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string size_inst,string algo, int size, int step, int opt_size, string opt_points_filename){
+void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string size_inst,string algo, int size, int step,
+		int opt_size, string opt_points_filename){
 
 	string size_string = to_string(size);
 
@@ -417,8 +418,8 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 		gp<<"set title 'Evolution of the search space with "<<size_inst<<" items (Instances "<<type_inst<<" - T'.j.' ) - Variable population size' \n";
 
 		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
-				"for[i=1:105] '"<<filename<<"-'.j.'_VARIABLE_'.i.'.expl' using 1:2 "
-						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_'.i.'.expl ')).')' with points ls (i+1) ,"
+				"for[i=1:105] '"<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl' using 1:2 "
+						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl')).')' with points ls (i+1) ,"
 				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
 		gp<<"set grid\n";
 
@@ -437,8 +438,8 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 			gp<<"set label 1 '{/:Bold=10 Size='.size.'}' at graph 0.05,0.95 font ',8'\n";
 
 			gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
-					"for[i=1:150] '"<<filename<<"-'.j.'_'.size.'_'.i.'.expl' using 1:2 "
-					"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_'.size.'_'.i.'.expl ')).')' with points ls (i+1)"
+					"for[i=1:150] '"<<filename<<"-'.j.'_'.size.'_"<<algo<<"_'.i.'.expl' using 1:2 "
+					"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_'.size.'_"<<algo<<"_'.i.'.expl ')).')' with points ls (i+1)"
 					", \""<<opt_points_filename<<"\" with points ls 1000 title \"DMs preference\"\n";
 
 			gp<<"size = size + "<<to_string(step)<<"\n";
@@ -449,8 +450,8 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 		gp<<"set label 1 '{/:Bold=10 Variable size}' at graph 0.05,0.95 font ',8'\n";
 
 		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
-				"for[i=1:150] '"<<filename<<"-'.j.'_VARIABLE_'.i.'.expl' using 1:2 "
-						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_'.i.'.expl ')).')' with points ls (i+1) ,"
+				"for[i=1:105] '"<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl' using 1:2 "
+				"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl')).')' with points ls (i+1) ,"
 				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
 
 		gp<<"set grid\n";

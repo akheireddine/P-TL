@@ -63,7 +63,8 @@ public :
 	list< Alternative * > MOLS2(double starting_time_sec);
 
 
-	void Limit_number_accepting_N(vector< string > dominated_solutions);
+	void Limit_number_accepting_N(vector< string > dominated_solutions, int upper_bound);
+
 	void Distribution_proba(vector< string > dominated_solutions);
 
 
