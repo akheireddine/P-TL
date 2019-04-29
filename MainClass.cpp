@@ -73,8 +73,8 @@ Evaluator* main_Knapsack2(string filename_instance, string type_instance, string
 
 void script_knapsack(string type_inst, string taille, string WS_DM){
 
-	int K = 1;
-	int N = 1;
+	int K = 10;
+	int N = 10;
 	Evaluator * eval_ks;
 	init_population.clear();
 
@@ -102,11 +102,11 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 				delete eval_ks;
 			}
 
-//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_P025.eval");
-//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_P025.front");
+			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.eval");
+			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.front");
 		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_P025.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_P025.front",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.eval",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.front",type_inst+to_string(i)+"___");
 
 		Tools::skip(init_population,K);
 	}
@@ -308,11 +308,19 @@ int main(int argc, char** argv){
 //	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_DIVERSIFICATION_P.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_DIVERSIFICATION_P.eval"
 //			,type_inst,taille,"MOLS1 - Global filtering","MOLS2 - Early filtering");
 
-	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N25.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1.eval"
+	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1.eval"
 			,type_inst,taille,"MOLS1 - diversification","MOLS1 - basic");
 
+//	Gnuplotter::Comparison_Plot_INDICATORS("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N25.front",
+//			"./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1.front",type_inst,taille,"MOLS1 - Global filtering","MOLS2 - Early filtering");
+
+
 //	Gnuplotter::Comparison_Plot_INDICATORS("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1.front",
-//			"./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front",type_inst,taille,"MOLS1 - Global filtering","MOLS2 - Early filtering");
+//			"./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front",type_inst,taille,"MOLS1 - diversification","MOLS1 - basic");
+
+
+
+
 
 //	Gnuplotter::AllPlot_DIST_TIME_PSize("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1.eval", type_inst, taille ,
 //			"MOLS1" , 10,  20);

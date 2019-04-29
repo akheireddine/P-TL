@@ -4,9 +4,9 @@
 #include "MainKnapsack.h"
 #define TIMEOUT 240
 
-#define N 25
-#define P 0.1
-#define Ta 0.01
+#define N 80
+#define P 0.001
+#define Ta 100
 #define DIVERSIFICATION 0.5
 
 //#define __PRINT__
@@ -546,7 +546,7 @@ void MainKnapsack::Threshold_Accepting_AVG(vector< string > dominated_solutions,
 		float aggreg_value = 0;
 
 		for(list< Alternative* >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-			aggreg_value += f(random_ws, alt->get_criteria_values() ) - f(random_ws, (*alt_opt)->get_criteria_values());
+			aggreg_value +=  abs((f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, alt->get_criteria_values() )));
 		}
 
 		float val_key = aggreg_value*1.0 / (int)OPT_Solution.size();
@@ -554,6 +554,7 @@ void MainKnapsack::Threshold_Accepting_AVG(vector< string > dominated_solutions,
 		if(val_key <= Ta)
 			ratio_items[val_key] = alt->get_id_alt();
 	}
+
 
 
 
@@ -571,6 +572,7 @@ void MainKnapsack::Threshold_Accepting_AVG(vector< string > dominated_solutions,
 			break;
 	}
 
+
 }
 
 
@@ -585,7 +587,7 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
-		save_new_point(filename_instance+"_VARIABLE_MOLS1_"+to_string(step)+".expl", dic_Alternative[ *p ] );
+//		save_new_point(filename_instance+"_VARIABLE_MOLS1_"+to_string(step)+".expl", dic_Alternative[ *p ] );
 		OPT_Solution.push_back( dic_Alternative[ *p ] );
 		step++;
 	}
@@ -597,9 +599,9 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		if(nb_iteration > 1)
-//			save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+"_"+to_string(INFO)+".expl",alt);
-			save_new_point(filename_instance+"_VARIABLE_MOLS1_"+to_string(step)+".expl",alt);
+//		if(nb_iteration > 1)
+////			save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+"_"+to_string(INFO)+".expl",alt);
+//			save_new_point(filename_instance+"_VARIABLE_MOLS1_"+to_string(step)+".expl",alt);
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -639,9 +641,9 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 
 			//GIVE CHANCE TO BAAAAD SOLUTIONS WHEN THERE STILL OPTIMAL ONES TO EXPLORE
 			if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < DIVERSIFICATION)  ){
-//				Limit_number_accepting_N(Dominated_alt, -1);
+				Limit_number_accepting_N(Dominated_alt, -1);
 
-				Distribution_proba(Dominated_alt, -1);
+//				Distribution_proba(Dominated_alt, -1);
 //
 //				Threshold_Accepting_AVG(Dominated_alt, -1);
 //
