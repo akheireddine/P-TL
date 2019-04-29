@@ -64,8 +64,8 @@ public :
 
 
 	void Limit_number_accepting_N(vector< string > dominated_solutions, int upper_bound);
-
-	void Distribution_proba(vector< string > dominated_solutions);
+	void Distribution_proba(vector< string > dominated_solutions, int upper_bound);
+	void Threshold_Accepting_AVG(vector< string > dominated_solutions, int upper_bound);
 
 
 	//EVALUATION

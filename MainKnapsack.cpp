@@ -4,8 +4,11 @@
 #include "MainKnapsack.h"
 #define TIMEOUT 240
 
-#define N 10
-#define P 0.4
+#define N 25
+#define P 0.1
+#define Ta 0.01
+#define DIVERSIFICATION 0.5
+
 //#define __PRINT__
 
 
@@ -485,25 +488,29 @@ void MainKnapsack::Limit_number_accepting_N(vector< string > dominated_solutions
 
 	random_shuffle( dominated_solutions.begin(), dominated_solutions.end() );
 	int min_bound = ( upper_bound != -1 )? upper_bound: N;
+	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
+
 	for(int i = 0; i < min_bound; i++){
 		AlternativeKnapsack* alt = dic_Alternative[dominated_solutions[i]];
 		Population.push_back( alt->get_id_alt() );
-		OPT_Solution.push_back(alt);
+//		OPT_Solution.push_back(alt);
 	}
 }
 
 
 
 
-void MainKnapsack::Distribution_proba(vector< string > dominated_solutions){
+void MainKnapsack::Distribution_proba(vector< string > dominated_solutions, int upper_bound){
+
 	random_shuffle( dominated_solutions.begin(), dominated_solutions.end() );
+	int min_bound = (upper_bound != -1 )? upper_bound : (int)dominated_solutions.size();
+	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
 
-	for(int i = 0; i < (int)dominated_solutions.size(); i++){
-
-		if( rand()*1.0/RAND_MAX < P){
+	for(int i = 0; i < min_bound; i++){
+		if( (rand()*1.0/RAND_MAX) < P){
 			AlternativeKnapsack* alt = dic_Alternative[dominated_solutions[i]];
 			Population.push_back( alt->get_id_alt());
-			OPT_Solution.push_back(alt);
+//			OPT_Solution.push_back(alt);
 		}
 	}
 
@@ -516,29 +523,55 @@ void MainKnapsack::Distribution_proba(vector< string > dominated_solutions){
 //}
 //
 //
-//void MainKnapsack::Threshold_Accepting_AVG(vector< string > dominated_solutions){
-//	vector<float> random_ws = Tools::generate_random_restricted_WS_aggregator(p_criteria, WS_Matrix);
-//
-//	for(int i = 0; i < dominated_solutions.size(); i++){
-//
-//		float aggreg_value = 0;
-//
-//		for(int j = 0; j < OPT_Solution.size(); j++){
-//
-//			aggreg_value += f(random_ws, )
-//
-//		}
-//
-//		if( aggreg_value*1.0 / OPT_Solution.size()  <= Ta){
-//			AlternativeKnapsack* alt = dic_Alternative[dominated_solutions[i]];
-//			Population.push_back( alt->get_id_alt());
-//			OPT_Solution.push_back(alt);
-//		}
-//
-//
-//	}
 
-//}
+
+float f(vector<float> ws, vector<float> criteria){
+	float res = 0;
+	for(int i = 0; i < (int)ws.size(); i++)
+		res += ws[i] * criteria[i];
+
+	return res;
+}
+
+void MainKnapsack::Threshold_Accepting_AVG(vector< string > dominated_solutions, int upper_bound){
+
+	map< float, string, less <float> > ratio_items;
+
+	vector<float> random_ws = Tools::generate_random_restricted_WS_aggregator(p_criteria, WS_matrix);
+
+	for(int i = 0; i < (int)dominated_solutions.size(); ++i){
+
+		AlternativeKnapsack* alt = dic_Alternative[dominated_solutions[i]];
+
+		float aggreg_value = 0;
+
+		for(list< Alternative* >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+			aggreg_value += f(random_ws, alt->get_criteria_values() ) - f(random_ws, (*alt_opt)->get_criteria_values());
+		}
+
+		float val_key = aggreg_value*1.0 / (int)OPT_Solution.size();
+
+		if(val_key <= Ta)
+			ratio_items[val_key] = alt->get_id_alt();
+	}
+
+
+
+	int min_bound = (upper_bound != -1)? upper_bound : (int)dominated_solutions.size();
+	int cpt= 0;
+	for(map< float, string, less <float> >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
+
+		if( cpt < min_bound){
+			AlternativeKnapsack* alt = dic_Alternative[(*i).second];
+			Population.push_back( alt->get_id_alt());
+			OPT_Solution.push_back(alt);
+			cpt++;
+		}
+		else
+			break;
+	}
+
+}
 
 
 
@@ -547,8 +580,8 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 	AlternativeKnapsack* alt;
 	vector< string > Local_front(0);
 	vector< string > Dominated_alt(0);
-	int nb_iteration=0;
-	int step = 0, new_pop = 0;
+	int nb_iteration = 0;
+	int step = 0;
 
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
@@ -574,7 +607,8 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 
 			AlternativeKnapsack * neighbor;
 			if( dic_Alternative.find(*id_neighbor) != dic_Alternative.end())
-				neighbor = dic_Alternative[*id_neighbor];
+//				neighbor = dic_Alternative[*id_neighbor];
+				continue;
 			else{
 				dic_Alternative[*id_neighbor] = new AlternativeKnapsack(*id_neighbor, this, WS_matrix);
 				neighbor = dic_Alternative[*id_neighbor];
@@ -588,7 +622,8 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 		}
 
 		if( Population.empty() ){
-//			random_shuffle( Local_front.begin(), Local_front.end() );
+
+			random_shuffle( Local_front.begin(), Local_front.end() );
 
 			for(vector< string >::iterator id_new_alt = Local_front.begin(); id_new_alt != Local_front.end(); ++id_new_alt){
 
@@ -596,7 +631,6 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 
 				if( Update_Archive(new_alt, OPT_Solution) ){
 					Population.push_back(*id_new_alt);
-					new_pop++;
 				}
 				else{
 					Dominated_alt.push_back(*id_new_alt);
@@ -604,25 +638,15 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 			}
 
 			//GIVE CHANCE TO BAAAAD SOLUTIONS WHEN THERE STILL OPTIMAL ONES TO EXPLORE
-			if( !Population.empty() ){
-				int bef_add = (int)Population.size();
-				Limit_number_accepting_N(Dominated_alt, -1);
+			if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < DIVERSIFICATION)  ){
+//				Limit_number_accepting_N(Dominated_alt, -1);
 
-//				Distribution_proba(Dominated_alt, -1);
+				Distribution_proba(Dominated_alt, -1);
 //
 //				Threshold_Accepting_AVG(Dominated_alt, -1);
 //
 //				Threshold_Accepting_BASIC(Dominated_alt, -1);
 
-
-				new_pop += ((int)Population.size() - bef_add);
-
-			}
-
-
-			if( ((int)Population.size() - new_pop ) == 0){
-				new_pop = 0;
-				step++;
 			}
 
 			Local_front.clear();
@@ -652,20 +676,23 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
-		save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+".expl", dic_Alternative[ *p ] );
+//		save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(step)+".expl", dic_Alternative[ *p ] );
 		OPT_Solution.push_back( dic_Alternative[ *p ] );
 		step++;
 	}
 
 
-	while( Population.size() > 0  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
+	while( !Population.empty()  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
+
 
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		if(nb_iteration > 1)
-			save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+".expl",alt);
+//		if(nb_iteration > 1)
+//			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(step)+".expl",alt);
+
+
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -673,16 +700,12 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 
 			AlternativeKnapsack * neighbor;
 			if( dic_Alternative.find(*id_neighbor) != dic_Alternative.end())
-				neighbor = dic_Alternative[*id_neighbor];
+//				neighbor = dic_Alternative[*id_neighbor];
+				continue;
 			else{
 				dic_Alternative[*id_neighbor] = new AlternativeKnapsack(*id_neighbor, this, WS_matrix);
 				neighbor = dic_Alternative[*id_neighbor];
 			}
-			//if neighbor is dominated add to Local_front
-//			if( alt->dominates_objective_space(neighbor) == 1 )
-//				Dominated_alt.push_back(*id_neighbor);
-//			else
-//				Local_front.push_back(*id_neighbor);
 
 
 			//Prefiltrage
