@@ -364,6 +364,7 @@ void Gnuplotter::AllPlot_DIST_TIME_PSize(string filename,string filename_variabl
 void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename,string filename_variable, string type_inst, string size_inst,string algo,int init_size, int steps){
 
 	Gnuplot gp;
+	int N_step = 11;
 	gp<<"set terminal pngcairo size 2400,1100\n";
 	gp<<"set output \"AVG_"<<type_inst<<"_"<<size_inst<<"_"<<algo<<".png\"\n";
 
@@ -384,20 +385,31 @@ void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename,string filename_variabl
 	gp<<"set style line 20 lt 1 lw 3 pt 7 ps 1.5  lc rgb \"red\"   \n";
 
 	gp<<"set grid\n";
+	gp<<"unset key\n";
 
-//	gp<<"set xtics ('90' 0 ,'41' 1 ,'28' 2 ,'12' 3 ,'8' 4 ,'5' 5 ,'4' 6 ,'0' 7)\n";        //TEST2
+	string xtics = "";
+	for(int i = 0; i < N_step ; i++){
+		xtics += "'"+to_string(steps*i+init_size)+"' "+to_string(i);
+//		if( i < N_step - 1 )
+			xtics += ",";
+	}
+
+	xtics += "'No-limit' "+to_string(N_step);
+
+	gp<<"set xtics ("<<xtics<<")\n";
+	gp<<"set xrange [0:"<<to_string(N_step)<<"]\n";
 	gp<<"set xlabel \"Population size\"\n";
-//	gp<<"set yrange [-0.001:]\n";
-
+	gp<<"set yrange [-0.001:]\n";
 	gp<<"set ylabel \"Average gap (%)\"\n";
 
 
 	gp<<"do for[i=0:9] {\n";
-		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
+	gp<<"set parametric\n";
 
-		gp<<"plot  \""<<filename<<"_T\".i.\".eval\" every (8) using 1 w steps ls (i+1) \n,"
-//				"title \" Size_{\".(j*"<<to_string(steps)<<"+"<<to_string(init_size)<<").\"} \" "
-						", \""<<filename_variable<<"\" every (8) using 1 w linespoints ls 20 title 'Variable size'  \n";
+		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
+		gp<<"plot  \""<<filename<<"_T\".i.\".eval\" every (8) using 1 w steps ls (i+1) "
+					", \""<<filename_variable<<"\",t every (8)::(8*i + 1*i)::((i+1)*8 + 1*i) using 1 w linespoints ls 20  \n";
+
 	gp<<"}\n";
 
 

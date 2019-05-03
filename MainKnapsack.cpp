@@ -743,20 +743,20 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 		}
 
 		//GIVE CHANCE TO BAAAAD SOLUTIONS WHEN THERE STILL OPTIMAL ONES TO EXPLORE
-		if( !Population.empty() ){
-			int bef_add = (int)Population.size();
-			Limit_number_accepting_N(Dominated_alt, -1);
-
-//				Distribution_proba(Dominated_alt, -1);
+//		if( !Population.empty() ){
+//			int bef_add = (int)Population.size();
+//			Limit_number_accepting_N(Dominated_alt, -1);
 //
-//				Threshold_Accepting_AVG(Dominated_alt, -1);
+////				Distribution_proba(Dominated_alt, -1);
+////
+////				Threshold_Accepting_AVG(Dominated_alt, -1);
+////
+////				Threshold_Accepting_BASIC(Dominated_alt, -1);
 //
-//				Threshold_Accepting_BASIC(Dominated_alt, -1);
-
-
-			new_pop += ((int)Population.size() - bef_add);
-
-		}
+//
+//			new_pop += ((int)Population.size() - bef_add);
+//
+//		}
 
 		Local_front.clear();
 		Dominated_alt.clear();
