@@ -308,8 +308,8 @@ int main(int argc, char** argv){
 //	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_DIVERSIFICATION_P.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_DIVERSIFICATION_P.eval"
 //			,type_inst,taille,"MOLS1 - Global filtering","MOLS2 - Early filtering");
 
-	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1.eval"
-			,type_inst,taille,"MOLS1 - diversification","MOLS1 - basic");
+//	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1.eval"
+//			,type_inst,taille,"MOLS1 - diversification","MOLS1 - basic");
 
 //	Gnuplotter::Comparison_Plot_INDICATORS("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N25.front",
 //			"./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1.front",type_inst,taille,"MOLS1 - Global filtering","MOLS2 - Early filtering");
@@ -336,6 +336,10 @@ int main(int argc, char** argv){
 //			"./Data/OTHER_MEASUREMENTS/"+type_inst+"/I_"+taille+"_AVG_MOLS1_onceWS.eval"
 //			,type_inst,taille,"varying WS (line 2)","keep same WS (line 1)");
 
+
+
+	Gnuplotter::DIST_TIME_PSize_RESUM_X("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS2","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval",
+			type_inst, taille,"PS2" ,10, 10);
 
 /*
   *************************************************************************************************************************

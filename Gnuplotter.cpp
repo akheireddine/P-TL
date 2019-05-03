@@ -361,7 +361,73 @@ void Gnuplotter::AllPlot_DIST_TIME_PSize(string filename,string filename_variabl
 
 
 
+void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename,string filename_variable, string type_inst, string size_inst,string algo,int init_size, int steps){
 
+	Gnuplot gp;
+	gp<<"set terminal pngcairo size 2400,1100\n";
+	gp<<"set output \"AVG_"<<type_inst<<"_"<<size_inst<<"_"<<algo<<".png\"\n";
+
+	gp<<"set multiplot layout 3,4 columnsfirst rowsfirst title \" {/:Bold=15 Average minimum distance from optimal solution using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
+
+	gp<<"set colorsequence podo\n";
+	gp<<"set style line 1 lt 1 lw 2 pt 1 ps 0.8 \n";
+	gp<<"set style line 2 lt 2 lw 2 pt 2 ps 0.8 \n";
+	gp<<"set style line 3 lt 3 lw 2 pt 3 ps 0.8 lc rgb \"#e62e00\"   \n";
+	gp<<"set style line 4 lt 4 lw 2 pt 4 ps 0.8 \n";
+	gp<<"set style line 5 lt 5 lw 2 pt 5 ps 0.8 lc rgb \"#993366\"   \n";
+	gp<<"set style line 6 lt 6 lw 2 pt 6 ps 0.8 \n";
+	gp<<"set style line 7 lt 7 lw 2 pt 7 ps 0.8 \n";
+	gp<<"set style line 8 lt 8 lw 2 pt 8 ps 0.8  lc rgb \"#1a75ff\"   \n";
+	gp<<"set style line 9 lt 9 lw 2 pt 9 ps 0.8 lc rgb \"#c27982\"   \n";
+	gp<<"set style line 10 lt 10 lw 2 pt 10 ps 0.8 lc rgb \"#993366\"   \n";
+	gp<<"set style line 11 lt 11 lw 2 pt 11 ps 0.8 lc rgb \"#86b300\"   \n";
+	gp<<"set style line 20 lt 1 lw 3 pt 7 ps 1.5  lc rgb \"red\"   \n";
+
+	gp<<"set grid\n";
+
+//	gp<<"set xtics ('90' 0 ,'41' 1 ,'28' 2 ,'12' 3 ,'8' 4 ,'5' 5 ,'4' 6 ,'0' 7)\n";        //TEST2
+	gp<<"set xlabel \"Population size\"\n";
+//	gp<<"set yrange [-0.001:]\n";
+
+	gp<<"set ylabel \"Average gap (%)\"\n";
+
+
+	gp<<"do for[i=0:9] {\n";
+		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
+
+		gp<<"plot  \""<<filename<<"_T\".i.\".eval\" every (8) using 1 w steps ls (i+1) \n,"
+//				"title \" Size_{\".(j*"<<to_string(steps)<<"+"<<to_string(init_size)<<").\"} \" "
+						", \""<<filename_variable<<"\" every (8) using 1 w linespoints ls 20 title 'Variable size'  \n";
+	gp<<"}\n";
+
+
+//	gp<<"plot for[j=0:9] \""<<filename<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 1 w linespoints ls (j+1) "
+//			"title ' T_'.j \n";
+
+//	gp<<"unset multiplot\n";
+//	gp<<"unset output\n";
+//
+//	gp<<"set ylabel \"Average time execution (second)\"\n";
+//
+//	gp<<"set terminal pngcairo size 2400,1100\n";
+//	gp<<"set output \"TIME_"<<type_inst<<"_"<<size_inst<<"_"<<algo<<".png\"\n";
+//
+//	gp<<"set multiplot layout 3,4 columnsfirst rowsfirst title \" {/:Bold=15 Average time execution (second) using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
+//
+//
+//	gp<<"do for[i=0:9] {\n";
+//		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
+//
+//		gp<<"plot for[j=0:10:2] \""<<filename<<"_T\".i.\".eval\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using (log($2)) w linespoints ls (j+1) "
+//			"title \" Size_{\".(j*"<<to_string(steps)<<"+"<<to_string(init_size)<<").\"} \" , "
+//				" \""<<filename_variable<<"\" every ::(8*i + 1*i)::((i+1)*8 + 1*i) using (log($2)) w linespoints ls 20 title 'Variable size'  \n";
+//	gp<<"}\n";
+//
+
+
+//	gp<<"plot for[j=0:9] \""<<filename<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 2 w linespoints ls (j+1) "
+//			"title ' T_'.j \n";
+}
 
 
 void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string size_inst,string algo, int size, int step,
