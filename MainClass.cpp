@@ -49,7 +49,7 @@ Evaluator* main_Knapsack(string filename_instance, string type_instance, string 
 
 Evaluator* main_Knapsack2(string filename_instance, string type_instance, string num_instance, int size_population, string WS_DM_preferences){
 
-	string pref_filename = "./WS_Matrix3.csv";
+	string pref_filename = "./WS_Matrix.csv";
 
 	MainKnapsack * knaps = new MainKnapsack(size_population, filename_instance, pref_filename);
 
@@ -85,39 +85,12 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 	}
 
-	for(int i = 0; i < N ; i++){
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-
-		//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 0; step < 8; step++){
-			INFO = step;
-			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix3.csv");
-
-			Tools::cpt = 0;
-			Tools::clean_up();
-
-			for(int k = 0; k < K; k++){
-				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
-				delete eval_ks;
-			}
-
-			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.eval");
-			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.front");
-		}
-		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.eval",type_inst+to_string(i)+"___");
-		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.front",type_inst+to_string(i)+"___");
-
-		Tools::skip(init_population,K);
-	}
-
-
-//
 //	for(int i = 0; i < N ; i++){
 //		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 //
-//	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//		for(int step = 0; step < 1; step++){
+//		//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//		for(int step = 0; step < 8; step++){
+//			INFO = step;
 //			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 //			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix3.csv");
 //
@@ -125,18 +98,45 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 //			Tools::clean_up();
 //
 //			for(int k = 0; k < K; k++){
-//				eval_ks = main_Knapsack2(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
+//				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
 //				delete eval_ks;
 //			}
 //
-//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_DIVERSIFICATION_P.eval");
-//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_DIVERSIFICATION_P.front");
+//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.eval");
+//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.front");
 //		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_DIVERSIFICATION_P.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_DIVERSIFICATION_P.front",type_inst+to_string(i)+"___");
+//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.eval",type_inst+to_string(i)+"___");
+//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N80.front",type_inst+to_string(i)+"___");
 //
 //		Tools::skip(init_population,K);
 //	}
+
+
+
+	for(int i = 0; i < N ; i++){
+		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+
+	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		for(int step = 0; step < 8; step++){
+			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
+			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix.csv");
+
+			Tools::cpt = 0;
+			Tools::clean_up();
+
+			for(int k = 0; k < K; k++){
+				eval_ks = main_Knapsack2(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
+				delete eval_ks;
+			}
+
+			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_onceWS.eval");
+			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_onceWS.front");
+		}
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_onceWS.eval",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_onceWS.front",type_inst+to_string(i)+"___");
+
+		Tools::skip(init_population,K);
+	}
 
 }
 
@@ -327,9 +327,19 @@ int main(int argc, char** argv){
 //	Gnuplotter::AllPlot_DIST_TIME_PSize("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval", type_inst, taille ,
 //			"MOLS2" , 10,  20);
 
-//	Gnuplotter::Comparison_Plot_VARIABLE_WS_NEIGHBORHOOD("./Data/OTHER_MEASUREMENTS/"+type_inst+"/I_"+taille+"_AVG_MOLS1_random_w.eval",
-//			"./Data/OTHER_MEASUREMENTS/"+type_inst+"/I_"+taille+"_AVG_MOLS1_feasible_w.eval",
-//			"./Data/OTHER_MEASUREMENTS/"+type_inst+"/I_"+taille+"_AVG_MOLS1_opt_w.eval",
+
+
+//	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/OTHER_MEASUREMENTS/"+type_inst+"/I_"+taille+"_AVG_MOLS2_onceWS.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval"
+//			,type_inst,taille,"Fixe WS - line (1)","Changing WS - line (2)");
+
+//	Gnuplotter::Comparison_Plot_VARIABLE_WS_NEIGHBORHOOD("./Data/OTHER_MEASUREMENTS/"+type_inst+"/I_"+taille+"_AVG_MOLS2_random_w.eval",
+//			"./Data/OTHER_MEASUREMENTS/"+type_inst+"/I_"+taille+"_AVG_MOLS2_feasible_w.eval",
+//			"./Data/OTHER_MEASUREMENTS/"+type_inst+"/I_"+taille+"_AVG_MOLS2_opt_w.eval",
+//			type_inst, taille, "Random weights", "Feasible weights", "Optimal weights");
+
+//	Gnuplotter::Comparison_Plot_VARIABLE_WS_NEIGHBORHOOD("./Data/OTHER_MEASUREMENTS/"+type_inst+"/I_"+taille+"_AVG_MOLS2_random_w.front",
+//			"./Data/OTHER_MEASUREMENTS/"+type_inst+"/I_"+taille+"_AVG_MOLS2_feasible_w.front",
+//			"./Data/OTHER_MEASUREMENTS/"+type_inst+"/I_"+taille+"_AVG_MOLS2_opt_w.front",
 //			type_inst, taille, "Random weights", "Feasible weights", "Optimal weights");
 
 //	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS1.eval",
@@ -338,8 +348,8 @@ int main(int argc, char** argv){
 
 
 
-	Gnuplotter::DIST_TIME_PSize_RESUM_X("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS2","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval",
-			type_inst, taille,"PS2" ,10, 10);
+//	Gnuplotter::DIST_TIME_PSize_RESUM_X("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS2","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval",
+//			type_inst, taille,"PS2" ,10, 10);
 
 /*
   *************************************************************************************************************************
