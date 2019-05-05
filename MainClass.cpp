@@ -51,21 +51,21 @@ Evaluator* main_Knapsack(string filename_instance, string type_instance, string 
 
 void script_knapsack(string type_inst, string taille, string WS_DM){
 
-	int K = 1;
-	int N = 2;
+	int K = 10;
+	int N = 5;
 	Evaluator * eval_ks;
 	init_population.clear();
 
 
 	//INIT ALL POPULATION FOR ALL INSTANCES
-	for(int i = 0; i < N; i++){
+	for(int i = 4; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 	}
 
 
 
-	for(int i = 0; i < N ; i++){
+	for(int i = 4; i < N ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -83,11 +83,11 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 				delete eval_ks;
 			}
 
-//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_onceWS.eval");
-//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_onceWS.front");
+			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_D006_N10_.eval");
+			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_D006_N10_.front");
 		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_onceWS.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_onceWS.front",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_D006_N10_.eval",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_D006_N10_.front",type_inst+to_string(i)+"___");
 
 		Tools::skip(init_population,K);
 	}
@@ -199,7 +199,7 @@ int main(int argc, char** argv){
 	string type_inst = "A";
 	string taille = "100";
 
-//	script_knapsack(type_inst, taille, WS_DM);
+	script_knapsack(type_inst, taille, WS_DM);
 
 
 //	Gnuplotter::Comparison_Plot_INDICATORS("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N25.front",
@@ -245,7 +245,7 @@ int main(int argc, char** argv){
 //	vector<float> opt_points{39061,40421};  //A-100-T2
 
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//			,"MOLS2", 1, 10, 101 , "./DM_preference_point");
+//			,"MOLS2", -1, 10, 101 , "./DM_preference_point");
 
 
 

@@ -569,7 +569,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	gp<<"unset xtics \n";
 	gp<<"unset ytics\n";
 	gp<<"set key left bottom\n";
-	gp<<"j=7\n";            /////////////////////////// TOMODIF
+	gp<<"j=0\n";            /////////////////////////// TOMODIF
 
 
 
@@ -676,7 +676,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_in
 	gp<<"unset xtics \n";
 	gp<<"unset ytics\n";
 	gp<<"set key left bottom\n";
-	gp<<"j=1\n";            /////////////////////////// TOMODIF
+	gp<<"j=4\n";            /////////////////////////// TOMODIF
 
 
 

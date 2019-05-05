@@ -4,10 +4,10 @@
 #include "MainKnapsack.h"
 #define TIMEOUT 240
 
-#define N 80
+#define N 5
 #define P 0.001
 #define Ta 100
-#define DIVERSIFICATION 0.5
+#define DIVERSIFICATION 0.06
 
 //#define __PRINT__
 
@@ -702,9 +702,12 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 		for(set< string >::iterator id_neighbor = current_neighbors.begin(); id_neighbor != current_neighbors.end(); ++id_neighbor){
 
 			AlternativeKnapsack * neighbor;
-			if( dic_Alternative.find(*id_neighbor) != dic_Alternative.end())
-//				neighbor = dic_Alternative[*id_neighbor];
+
+			//already explorated
+			if( dic_Alternative.find(*id_neighbor) != dic_Alternative.end()){
 				continue;
+			}
+
 			else{
 				dic_Alternative[*id_neighbor] = new AlternativeKnapsack(*id_neighbor, this, WS_matrix);
 				neighbor = dic_Alternative[*id_neighbor];
@@ -745,20 +748,20 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 		}
 
 		//GIVE CHANCE TO BAAAAD SOLUTIONS WHEN THERE STILL OPTIMAL ONES TO EXPLORE
-//		if( !Population.empty() ){
-//			int bef_add = (int)Population.size();
-//			Limit_number_accepting_N(Dominated_alt, -1);
+		if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < DIVERSIFICATION)  ){
+			int bef_add = (int)Population.size();
+			Limit_number_accepting_N(Dominated_alt, -1);
+
+//				Distribution_proba(Dominated_alt, -1);
 //
-////				Distribution_proba(Dominated_alt, -1);
-////
-////				Threshold_Accepting_AVG(Dominated_alt, -1);
-////
-////				Threshold_Accepting_BASIC(Dominated_alt, -1);
+//				Threshold_Accepting_AVG(Dominated_alt, -1);
 //
-//
-//			new_pop += ((int)Population.size() - bef_add);
-//
-//		}
+//				Threshold_Accepting_BASIC(Dominated_alt, -1);
+
+
+			new_pop += ((int)Population.size() - bef_add);
+
+		}
 
 		Local_front.clear();
 		Dominated_alt.clear();
