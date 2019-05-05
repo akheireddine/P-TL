@@ -363,14 +363,11 @@ void Gnuplotter::AllPlot_DIST_TIME_PSize(string filename,string filename_variabl
 
 
 
-void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename,string filename_variable, string type_inst, string size_inst,string algo,int init_size, int steps){
+void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename, string type_inst, string size_inst,string algo,int init_size, int steps){
 
 	Gnuplot gp;
-	int N_step = 11;
-	gp<<"set terminal pngcairo size 2400,1100\n";
-	gp<<"set output \"AVG_"<<type_inst<<"_"<<size_inst<<"_"<<algo<<".png\"\n";
-
-	gp<<"set multiplot layout 3,4 columnsfirst rowsfirst title \" {/:Bold=15 Average minimum distance from optimal solution using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
+	int N_step = 23;
+	gp<<"set terminal pngcairo size 1900,1400\n";
 
 	gp<<"set colorsequence podo\n";
 	gp<<"set style line 1 lt 1 lw 2 pt 1 ps 0.8 \n";
@@ -391,57 +388,146 @@ void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename,string filename_variabl
 
 	string xtics = "";
 	for(int i = 0; i < N_step ; i++){
+
 		xtics += "'"+to_string(steps*i+init_size)+"' "+to_string(i);
 //		if( i < N_step - 1 )
 			xtics += ",";
+		if( i == 0)
+			init_size -= init_size;
 	}
 
 	xtics += "'No-limit' "+to_string(N_step);
 
-	gp<<"set xtics ("<<xtics<<")\n";
-	gp<<"set xrange [0:"<<to_string(N_step)<<"]\n";
+	gp<<"set xtics ("<<xtics<<") center offset 0,0 rotate by 75 right \n";
+	gp<<"set xrange [0:"<<to_string(N_step+0.5)<<"]\n";
+	gp<<"set xlabel \"Population size\"\n";
+	gp<<"set yrange [-0.002:]\n";
+	gp<<"set ylabel \"Average gap (%)\"\n";
+
+
+	gp<<"set output \"AVG_"<<type_inst<<"_"<<size_inst<<"_"<<algo<<".png\"\n";
+	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 Average minimum distance from optimal solution when varying the size of the population using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
+
+	gp<<"do for[i=0:7] {\n";
+		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
+		gp<<"plot  \""<<filename<<"_T\".i.\".eval\" using 1 w steps ls (i+1) \n";
+	gp<<"}\n";
+
+
+
+	gp<<"unset multiplot\n";
+	gp<<"unset output\n";
+
+	gp<<"set ylabel \"Average time execution (second)\"\n";
+
+	gp<<"set output \"TIME_"<<type_inst<<"_"<<size_inst<<"_"<<algo<<".png\"\n";
+
+	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 Average time execution (second) when varying the size of the population using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
+
+
+	gp<<"do for[i=0:7] {\n";
+		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
+		gp<<"plot  \""<<filename<<"_T\".i.\".eval\" using 2 w steps ls (i+1) \n";
+	gp<<"}\n";
+
+
+
+
+
+}
+
+void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, string size_inst,string algo,int init_size, int steps){
+
+	Gnuplot gp;
+	int N_step = 23;
+	gp<<"set terminal pngcairo size 1900,1400\n";
+
+
+	gp<<"set colorsequence podo\n";
+	gp<<"set style line 1 lt 1 lw 2 pt 1 ps 0.8 \n";
+	gp<<"set style line 2 lt 2 lw 2 pt 2 ps 0.8 \n";
+	gp<<"set style line 3 lt 3 lw 2 pt 3 ps 0.8 lc rgb \"#e62e00\"   \n";
+	gp<<"set style line 4 lt 4 lw 2 pt 4 ps 0.8 \n";
+	gp<<"set style line 5 lt 5 lw 2 pt 5 ps 0.8 lc rgb \"#993366\"   \n";
+	gp<<"set style line 6 lt 6 lw 2 pt 6 ps 0.8 \n";
+	gp<<"set style line 7 lt 7 lw 2 pt 7 ps 0.8 \n";
+	gp<<"set style line 8 lt 8 lw 2 pt 8 ps 0.8  lc rgb \"#1a75ff\"   \n";
+	gp<<"set style line 9 lt 9 lw 2 pt 9 ps 0.8 lc rgb \"#c27982\"   \n";
+	gp<<"set style line 10 lt 10 lw 2 pt 10 ps 0.8 lc rgb \"#993366\"   \n";
+	gp<<"set style line 11 lt 11 lw 2 pt 11 ps 0.8 lc rgb \"#86b300\"   \n";
+	gp<<"set style line 20 lt 1 lw 3 pt 7 ps 1.5  lc rgb \"red\"   \n";
+
+	gp<<"set grid\n";
+	gp<<"unset key\n";
+
+	string xtics = "";
+	for(int i = 0; i < N_step ; i++){
+
+		xtics += "'"+to_string(steps*i+init_size)+"' "+to_string(i);
+//		if( i < N_step - 1 )
+			xtics += ",";
+		if( i == 0)
+			init_size -= init_size;
+	}
+
+	xtics += "'No-limit' "+to_string(N_step);
+
+	gp<<"set xtics ("<<xtics<<") center offset 0,0 rotate by 75 right \n";
+	gp<<"set xrange [0:"<<to_string(N_step+0.5)<<"]\n";
 	gp<<"set xlabel \"Population size\"\n";
 	gp<<"set yrange [-0.001:]\n";
 	gp<<"set ylabel \"Average gap (%)\"\n";
 
 
-	gp<<"do for[i=0:9] {\n";
-	gp<<"set parametric\n";
+
+	gp<<"set output \"D1_"<<type_inst<<"_"<<size_inst<<".png\"\n";
+	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 Average minimum distance from the optimal front (INDICATOR) when varying the size of the population using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
+
+	gp<<"do for[i=0:7] {\n";
 
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
-		gp<<"plot  \""<<filename<<"_T\".i.\".eval\" every (8) using 1 w steps ls (i+1) "
-					", \""<<filename_variable<<"\",t every (8)::(8*i + 1*i)::((i+1)*8 + 1*i) using 1 w linespoints ls 20  \n";
+		gp<<"plot  \""<<filename<<"_T\".i.\".front\" using 1 w steps ls (i+1) \n";
 
 	gp<<"}\n";
 
 
-//	gp<<"plot for[j=0:9] \""<<filename<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 1 w linespoints ls (j+1) "
-//			"title ' T_'.j \n";
-
-//	gp<<"unset multiplot\n";
-//	gp<<"unset output\n";
-//
-//	gp<<"set ylabel \"Average time execution (second)\"\n";
-//
-//	gp<<"set terminal pngcairo size 2400,1100\n";
-//	gp<<"set output \"TIME_"<<type_inst<<"_"<<size_inst<<"_"<<algo<<".png\"\n";
-//
-//	gp<<"set multiplot layout 3,4 columnsfirst rowsfirst title \" {/:Bold=15 Average time execution (second) using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
-//
-//
-//	gp<<"do for[i=0:9] {\n";
-//		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
-//
-//		gp<<"plot for[j=0:10:2] \""<<filename<<"_T\".i.\".eval\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using (log($2)) w linespoints ls (j+1) "
-//			"title \" Size_{\".(j*"<<to_string(steps)<<"+"<<to_string(init_size)<<").\"} \" , "
-//				" \""<<filename_variable<<"\" every ::(8*i + 1*i)::((i+1)*8 + 1*i) using (log($2)) w linespoints ls 20 title 'Variable size'  \n";
-//	gp<<"}\n";
-//
 
 
-//	gp<<"plot for[j=0:9] \""<<filename<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 2 w linespoints ls (j+1) "
-//			"title ' T_'.j \n";
+	gp<<"unset multiplot\n";
+	gp<<"unset output\n";
+
+
+	gp<<"set ylabel \"Average MinMax distance\"\n";
+
+	gp<<"set output \"D2_"<<type_inst<<"_"<<size_inst<<".png\"\n";
+
+	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 MinMax distance from the optimal front (INDICATOR) when varying the size of the population using "<<size_inst<<" items ("<<type_inst<<") }\"\n";
+
+	gp<<"do for[i=0:7] {\n";
+		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
+		gp<<"plot  \""<<filename<<"_T\".i.\".front\" using 2 w steps ls (i+1) \n";
+	gp<<"}\n";
+
+
+
+
+	gp<<"unset multiplot\n";
+	gp<<"unset output\n";
+
+	gp<<"set ylabel \"Proportion of pareto optimal solution (%)\"\n";
+
+	gp<<"set output \"PR_"<<type_inst<<"_"<<size_inst<<".png\"\n";
+
+	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15  Proportion of optimal solution (INDICATOR) when varying the size of the population using "<<size_inst<<" items ("<<type_inst<<")  }\"\n";
+
+	gp<<"do for[i=0:7] {\n";
+		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
+		gp<<"plot  \""<<filename<<"_T\".i.\".front\" using 3 w steps ls (i+1) \n";
+	gp<<"}\n";
+
 }
+
+
 
 
 void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string size_inst,string algo, int size, int step,
@@ -483,8 +569,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	gp<<"unset xtics \n";
 	gp<<"unset ytics\n";
 	gp<<"set key left bottom\n";
-	gp<<"j=0\n";            /////////////////////////// TOMODIF
-
+	gp<<"j=7\n";            /////////////////////////// TOMODIF
 
 
 
@@ -515,7 +600,12 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 //			gp<<"if(size == 10 ){\n unset key}\n";
 //			gp<<"else { set key }\n";
 			gp<<"unset key\n";
-			gp<<"set label 1 '{/:Bold=10 Size='.size.'}' at graph 0.05,0.95 font ',8'\n";
+			gp<<"if( size != 1) {\n";
+				gp<<"set label 1 '{/:Bold=10 Size='.(size"<<"-1"<<").'}' at graph 0.05,0.95 font ',8'\n";
+			gp<<"}\n";
+			gp<<"else {\n";
+				gp<<"set label 1 '{/:Bold=10 Size='.(size).'}' at graph 0.05,0.95 font ',8'\n";
+			gp<<"}\n";
 
 			gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
 					"for[i=1:150] '"<<filename<<"-'.j.'_'.size.'_"<<algo<<"_'.i.'.expl' using 1:2 "
@@ -527,12 +617,12 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 		gp<<"}\n";
 
 //
-//		gp<<"set label 1 '{/:Bold=10 Variable size}' at graph 0.05,0.95 font ',8'\n";
-//
-//		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
-//				"for[i=1:105] '"<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl' using 1:2 "
-//				"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl')).')' with points ls (i+1) ,"
-//				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
+		gp<<"set label 1 '{/:Bold=10 Unlimited size}' at graph 0.05,0.95 font ',8'\n";
+
+		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
+				"for[i=1:105] '"<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl' using 1:2 "
+				"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl')).')' with points ls (i+1) ,"
+				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
 
 		gp<<"set grid\n";
 
@@ -541,14 +631,6 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	}
 
 
-	//	#replot "Instances_Knapsack/Type_A/100_items/2KP100-TA-0_10XXXX.sol" title "final front" with points ls 14
-
-
-
-//		gp<<"set terminal pngcairo size 2000,1400\n";
-//		gp<<"set output \" PLOT.png\"\n";//"<<algo<<"_"<<type_inst<<"_"<<size_inst<<"_"<<size_string<<".png \"\n";
-//		gp<<"unset output\n";
-//	gp<<"}\n";
 
 }
 
@@ -594,7 +676,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_in
 	gp<<"unset xtics \n";
 	gp<<"unset ytics\n";
 	gp<<"set key left bottom\n";
-	gp<<"j=8\n";            /////////////////////////// TOMODIF
+	gp<<"j=1\n";            /////////////////////////// TOMODIF
 
 
 
@@ -670,6 +752,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_in
 //	gp<<"}\n";
 
 }
+
 
 
 
