@@ -13,7 +13,7 @@ void Gnuplotter::Comparison_Plot_DIST_TIME(string filename1, string filename2,st
 	gp<<"set terminal pngcairo size 1400,1200\n";
 	gp<<"set output \"AVG_"<<type_inst<<"_"<<size_inst<<".png\"\n";
 
-	gp<<"set multiplot layout 3,1 columnsfirst rowsfirst title \" {/:Bold=15 Average minium distance from optimal solution for "<<size_inst<<" items (instance "<<type_inst<<")  - Comparison plot }\"\n";
+	gp<<"set multiplot layout 4,3 columnsfirst rowsfirst title \" {/:Bold=15 Average minium distance from optimal solution for "<<size_inst<<" items (instance "<<type_inst<<")  - Comparison plot }\"\n";
 
 	gp<<"set colorsequence podo\n";
 
@@ -48,7 +48,7 @@ void Gnuplotter::Comparison_Plot_DIST_TIME(string filename1, string filename2,st
 	gp<<"set terminal pngcairo size 1400,1200\n";
 	gp<<"set output \"TIME_"<<type_inst<<"_"<<size_inst<<".png\"\n";
 
-	gp<<"set multiplot layout 3,1 columnsfirst rowsfirst title \" {/:Bold=15 Average time execution (second) for "<<size_inst<<" items ( instance "<<type_inst<<" )  - Comparison plot }\"\n";
+	gp<<"set multiplot layout 4,3 columnsfirst rowsfirst title \" {/:Bold=15 Average time execution (second) for "<<size_inst<<" items ( instance "<<type_inst<<" )  - Comparison plot }\"\n";
 
 	gp<<"set xlabel \"Information rate - angle degree (°)  of the covered space \"\n";
 

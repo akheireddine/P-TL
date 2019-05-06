@@ -691,8 +691,8 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		if(nb_iteration > 1)
-			save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+"_"+to_string(INFO)+".expl",alt);
+//		if(nb_iteration > 1)
+//			save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+"_"+to_string(INFO)+".expl",alt);
 //			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(step)+".expl",alt);
 
 

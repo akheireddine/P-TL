@@ -199,11 +199,14 @@ int main(int argc, char** argv){
 	string type_inst = "A";
 	string taille = "100";
 
-	script_knapsack(type_inst, taille, WS_DM);
+//	script_knapsack(type_inst, taille, WS_DM);
 
 
-//	Gnuplotter::Comparison_Plot_INDICATORS("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1_D05_N25.front",
-//			"./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS1.front",type_inst,taille,"MOLS1 - Global filtering","MOLS2 - Early filtering");
+
+	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_D006_N10_.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval"
+				,type_inst,taille,"VARIABILITY","SIMPLE");
+	Gnuplotter::Comparison_Plot_INDICATORS("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_D006_N10_.front",
+			"./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front",type_inst,taille,"VARIABILITY","SIMPLE");
 
 
 
@@ -249,8 +252,8 @@ int main(int argc, char** argv){
 
 
 
-	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-			,"MOLS2", -1, 10, 410 , "./DM_preference_point");
+//	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+//			,"MOLS2", -1, 10, 410 , "./DM_preference_point");
 
 /*
   *************************************************************************************************************************
