@@ -222,7 +222,7 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 	float sum = 0.0, big_max = -1;
 	vector<float> weighted_sum(p_criteria);
 	vector<pair<float, float > > min_max(p_criteria,pair<float,float>());
-	//	srand(time(NULL));
+	//srand(time(NULL));
 
 	for(int i = 0; i < p_criteria ; i++){
 		const auto [minus, maxus] = minmax_element(begin(ws_matrix[i]), end(ws_matrix[i]));
@@ -244,7 +244,7 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 		weighted_sum[i] = wi;
 	}
 
-//	cout<<print_vector(weighted_sum)<<endl;
+	cout<<print_vector(weighted_sum)<<endl;
 	return weighted_sum;
 }
 
