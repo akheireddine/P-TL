@@ -4,13 +4,14 @@
 #include "MainKnapsack.h"
 #define TIMEOUT 240
 
-#define N 5
-#define P 0.001
-#define Ta 100
-#define DIVERSIFICATION 0.06
+#define N 20
+#define P 0.005
+#define DIVERSIFICATION 1
 
 //#define __PRINT__
 
+#define epsilon 0.999
+extern float Ta;
 
 
 
@@ -541,6 +542,7 @@ void MainKnapsack::Threshold_Accepting_AVG(vector< string > dominated_solutions,
 
 	for(int i = 0; i < (int)dominated_solutions.size(); ++i){
 
+
 		AlternativeKnapsack* alt = dic_Alternative[dominated_solutions[i]];
 
 		float aggreg_value = 0;
@@ -550,6 +552,7 @@ void MainKnapsack::Threshold_Accepting_AVG(vector< string > dominated_solutions,
 		}
 
 		float val_key = aggreg_value*1.0 / (int)OPT_Solution.size();
+//		cout<<"Ta : "<<val_key<<endl;
 
 		if(val_key <= Ta)
 			ratio_items[val_key] = alt->get_id_alt();
@@ -565,14 +568,14 @@ void MainKnapsack::Threshold_Accepting_AVG(vector< string > dominated_solutions,
 		if( cpt < min_bound){
 			AlternativeKnapsack* alt = dic_Alternative[(*i).second];
 			Population.push_back( alt->get_id_alt());
-			OPT_Solution.push_back(alt);
+//			OPT_Solution.push_back(alt);
 			cpt++;
 		}
 		else
 			break;
 	}
 
-
+	Ta *= epsilon;
 }
 
 
@@ -640,16 +643,16 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 			}
 
 			//GIVE CHANCE TO BAAAAD SOLUTIONS WHEN THERE STILL OPTIMAL ONES TO EXPLORE
-			if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < DIVERSIFICATION)  ){
-				Limit_number_accepting_N(Dominated_alt, -1);
-
-//				Distribution_proba(Dominated_alt, -1);
+//			if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < DIVERSIFICATION)  ){
+//				Limit_number_accepting_N(Dominated_alt, -1);
 //
-//				Threshold_Accepting_AVG(Dominated_alt, -1);
+////				Distribution_proba(Dominated_alt, -1);
+////
+////				Threshold_Accepting_AVG(Dominated_alt, -1);
+////
+////				Threshold_Accepting_BASIC(Dominated_alt, -1);
 //
-//				Threshold_Accepting_BASIC(Dominated_alt, -1);
-
-			}
+//			}
 
 			Local_front.clear();
 			Dominated_alt.clear();
@@ -671,7 +674,7 @@ list< Alternative * > MainKnapsack::MOLS1(double starting_time_sec){
 list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 
 	AlternativeKnapsack* alt;
-	vector< string > Local_front;
+	list< string > Local_front;
 	vector< string > Dominated_alt;
 	int nb_iteration=0;
 	int step = 0, new_pop = 0;
@@ -687,14 +690,12 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 	while( !Population.empty()  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
 
-
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
 //		if(nb_iteration > 1)
 //			save_new_point(filename_instance+"_VARIABLE_"+to_string(step)+"_"+to_string(INFO)+".expl",alt);
 //			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(step)+".expl",alt);
-
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -713,22 +714,16 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 				neighbor = dic_Alternative[*id_neighbor];
 			}
 
-
 			//Prefiltrage
 			if( alt->dominates_objective_space(neighbor) != 1 ){
-				list< string > tmp_LF(Local_front.begin(),Local_front.end());
-				Update_Archive(neighbor,tmp_LF);
-				Local_front.clear();
-				Local_front.resize(tmp_LF.size());
-				copy(tmp_LF.begin(), tmp_LF.end(), Local_front.begin());
-
+				Update_Archive(neighbor,Local_front);
 			}
 			else
 				Dominated_alt.push_back(*id_neighbor);
 		}
 
 
-		for(vector< string >::iterator id_new_alt = Local_front.begin(); id_new_alt != Local_front.end(); ++id_new_alt){
+		for(list< string >::iterator id_new_alt = Local_front.begin(); id_new_alt != Local_front.end(); ++id_new_alt){
 
 			AlternativeKnapsack * new_alt = dic_Alternative[*id_new_alt];
 
@@ -744,24 +739,23 @@ list< Alternative * > MainKnapsack::MOLS2(double starting_time_sec){
 		if( ((int)Population.size() - new_pop ) == 0){
 			new_pop = 0;
 			step++;
-//			cout<<"SIZE "<<Population.size()<<endl;
 		}
 
 		//GIVE CHANCE TO BAAAAD SOLUTIONS WHEN THERE STILL OPTIMAL ONES TO EXPLORE
-//		if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < DIVERSIFICATION)  ){
-//			int bef_add = (int)Population.size();
+		if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < (DIVERSIFICATION ))  ){
+			int bef_add = (int)Population.size();
 //			Limit_number_accepting_N(Dominated_alt, -1);
+
+//			Distribution_proba(Dominated_alt, -1);
 //
-////				Distribution_proba(Dominated_alt, -1);
-////
-////				Threshold_Accepting_AVG(Dominated_alt, -1);
-////
-////				Threshold_Accepting_BASIC(Dominated_alt, -1);
+			Threshold_Accepting_AVG(Dominated_alt, -1);
 //
-//
-//			new_pop += ((int)Population.size() - bef_add);
-//
-//		}
+//				Threshold_Accepting_BASIC(Dominated_alt, -1);
+
+
+			new_pop += ((int)Population.size() - bef_add);
+
+		}
 
 		Local_front.clear();
 		Dominated_alt.clear();

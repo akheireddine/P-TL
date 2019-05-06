@@ -9,6 +9,7 @@
 #include "AlternativeKnapsack.h"
 
 
+
 class MainKnapsack : public LSStructure{
 
 protected:
