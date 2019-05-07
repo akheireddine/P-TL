@@ -34,14 +34,6 @@ protected :
 
 public:
 	virtual ~LSStructure(){
-//		cout<<"trhown here"<<endl;
-//		for(list< Alternative* >::iterator i = OPT_Solution.begin(); i != OPT_Solution.end(); ++i){
-//			try{
-//				delete (*i);
-//			}catch(...){
-//				cout<<"exceptionhere"<<endl;
-//			}
-//		}
 	};
 
 	virtual void readFilenameInstance(string filename) = 0;

@@ -51,22 +51,23 @@ public :
 	void filter_efficient_set();
 	void filter_efficient_set_decision_space();
 
-	void HYBRID_WS_PLS(double starting_time_sec, int steps);
-	void HYBRID_PLS_WS(double starting_time_sec, int steps);
-	list< Alternative * > MOLS(double starting_time_sec,int steps);
-	list< Alternative * > MOLS1_Cst_PSize(double starting_time_sec, int UB_Population_size);
-	list< Alternative * > MOLS2_Cst_PSize(double starting_time_sec, int UB_Population_size);
+	void HYBRID_WS_PLS(double starting_time_sec, int ITER);
+	void HYBRID_PLS_WS(double starting_time_sec, int ITER);
+
+	list< Alternative * > MOLS(double starting_time_sec,int ITER);
+	list< Alternative * > MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);
 
 
 
 
-	list< Alternative * > MOLS1(double starting_time_sec);
-	list< Alternative * > MOLS2(double starting_time_sec);
+//	list< Alternative * > MOLS1(double starting_time_sec);
+//	list< Alternative * > MOLS1_Cst_PSize(double starting_time_sec, int UB_Population_size);
+
 
 
 	void Limit_number_accepting_N(vector< string > dominated_solutions, int upper_bound);
 	void Distribution_proba(vector< string > dominated_solutions, int upper_bound);
-	void Threshold_Accepting_AVG(vector< string > dominated_solutions, int upper_bound);
+	void Threshold_Accepting_AVG(list< string > dominated_solutions, list< string > population, int upper_bound);
 
 
 	//EVALUATION
