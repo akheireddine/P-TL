@@ -10,7 +10,7 @@
 
 //#define __PRINT__
 
-#define epsilon 0.999
+#define epsilon 0.9999
 extern float Ta;
 
 
@@ -560,9 +560,10 @@ void MainKnapsack::Threshold_Accepting_AVG(vector< string > dominated_solutions,
 
 
 
-
-	int min_bound = (upper_bound != -1)? upper_bound : (int)dominated_solutions.size();
 	int cpt= 0;
+	int min_bound = (upper_bound != -1)? upper_bound : (int)dominated_solutions.size();
+	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
+
 	for(map< float, string, less <float> >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
 
 		if( cpt < min_bound){
@@ -954,6 +955,24 @@ list< Alternative * > MainKnapsack::MOLS2_Cst_PSize(double starting_time_sec, in
 			new_pop = 0;
 //			update=0;
 		}
+
+		int to_add = (UB_Population_size - (int)Population.size()) ;
+		//GIVE CHANCE TO BAAAAD SOLUTIONS WHEN THERE STILL OPTIMAL ONES TO EXPLORE
+		if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < (DIVERSIFICATION )) and (to_add > 0) ){
+			int bef_add = (int)Population.size();
+//			Limit_number_accepting_N(Dominated_alt, rand_to_add);
+
+//			Distribution_proba(Dominated_alt, rand_to_add);
+			int rand_to_add = rand()/to_add ;
+
+			Threshold_Accepting_AVG(Dominated_alt, rand_to_add);
+//
+//			Threshold_Accepting_BASIC(Dominated_alt, rand_to_add);
+
+			new_pop += ((int)Population.size() - bef_add);
+
+		}
+
 
 		Local_front.clear();
 		Dominated_alt.clear();

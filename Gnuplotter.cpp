@@ -569,7 +569,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	gp<<"unset xtics \n";
 	gp<<"unset ytics\n";
 	gp<<"set key left bottom\n";
-	gp<<"j=0\n";            /////////////////////////// TOMODIF
+	gp<<"j=8\n";            /////////////////////////// TOMODIF
 
 
 
@@ -617,14 +617,14 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 		gp<<"}\n";
 
 //
-		gp<<"set label 1 '{/:Bold=10 Unlimited size}' at graph 0.05,0.95 font ',8'\n";
-
-		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
-				"for[i=1:105] '"<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl' using 1:2 "
-				"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl')).')' with points ls (i+1) ,"
-				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
-
-		gp<<"set grid\n";
+//		gp<<"set label 1 '{/:Bold=10 Unlimited size}' at graph 0.05,0.95 font ',8'\n";
+//
+//		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
+//				"for[i=1:105] '"<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl' using 1:2 "
+//				"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl')).')' with points ls (i+1) ,"
+//				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
+//
+//		gp<<"set grid\n";
 
 
 
