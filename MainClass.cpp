@@ -142,7 +142,7 @@ void script_knapsack_WSPLS(string type_inst, string taille, string WS_DM){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 5; step < 6; step++){
+		for(int step = 50; step < 51; step++){
 			cout<<"_________________________________ NB-ITER "<<step<<"___________________________"<<endl;
 
 			Tools::cpt = 0;
@@ -285,7 +285,7 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "100";
+	string taille = "200";
 
 //	script_knapsack(type_inst, taille, WS_DM);
 

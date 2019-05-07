@@ -569,7 +569,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	gp<<"unset xtics \n";
 	gp<<"unset ytics\n";
 	gp<<"set key left bottom\n";
-	gp<<"j=0\n";            /////////////////////////// TOMODIF
+	gp<<"do for[j=0:9] {\n";            /////////////////////////// TOMODIF
 
 
 
@@ -577,7 +577,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 
 	if(size == -1 ){
 		gp<<"set terminal pngcairo size 1500,900\n";
-		gp<<"set output \"PLOTTER.png\"\n";
+		gp<<"set output \"PLOTTER_T\".j.\".png\"\n";
 		size_string = "VARIABLE";
 
 		gp<<"set title 'Evolution of the search space with "<<size_inst<<" items (Instances "<<type_inst<<" - T'.j.' ) - Variable population size' \n";
@@ -592,7 +592,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 
 	else {
 		gp<<"set terminal pngcairo size 2100,1400\n";
-		gp<<"set output \"PLOTTER.png\"\n";
+		gp<<"set output \"PLOTTER_T'.j.'.png\"\n";
 		gp<<"set multiplot layout 3,4 columnsfirst rowsfirst title \" {/:Bold=15 Evolution of the local search using "<<size_inst<<" items ( "<<type_inst<<" - T\".j.\" ) }\"\n";
 
 		gp<<"size = "<<size_string<<"\n";
@@ -616,7 +616,6 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 
 		gp<<"}\n";
 
-//
 //		gp<<"set label 1 '{/:Bold=10 Unlimited size}' at graph 0.05,0.95 font ',8'\n";
 //
 //		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
@@ -626,10 +625,9 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 //
 //		gp<<"set grid\n";
 
-
-
 	}
 
+	gp<<"}\n";
 
 
 }
