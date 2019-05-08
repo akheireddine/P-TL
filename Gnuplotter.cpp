@@ -569,6 +569,8 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	gp<<"unset xtics \n";
 	gp<<"unset ytics\n";
 	gp<<"set key left bottom\n";
+	gp<<"set terminal pngcairo size 2100,1400\n";
+
 	gp<<"do for[j=0:9] {\n";            /////////////////////////// TOMODIF
 
 
@@ -576,7 +578,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 
 
 	if(size == -1 ){
-		gp<<"set terminal pngcairo size 1500,900\n";
+//		gp<<"set terminal pngcairo size 1500,900\n";
 		gp<<"set output \"PLOTTER_T\".j.\".png\"\n";
 		size_string = "VARIABLE";
 
@@ -591,8 +593,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	}
 
 	else {
-		gp<<"set terminal pngcairo size 2100,1400\n";
-		gp<<"set output \"PLOTTER_T'.j.'.png\"\n";
+		gp<<"set output \"PLOTTER_T\".j.\".png\"\n";
 		gp<<"set multiplot layout 3,4 columnsfirst rowsfirst title \" {/:Bold=15 Evolution of the local search using "<<size_inst<<" items ( "<<type_inst<<" - T\".j.\" ) }\"\n";
 
 		gp<<"size = "<<size_string<<"\n";
@@ -624,6 +625,9 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 //				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
 //
 //		gp<<"set grid\n";
+
+		gp<<"unset multiplot\n";
+		gp<<"unset output\n";
 
 	}
 

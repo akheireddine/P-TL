@@ -549,9 +549,9 @@ list< Alternative * > MainKnapsack::MOLS(double starting_time_sec){
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		if(nb_iteration > 1)
-//			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
-			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
+//		if(nb_iteration > 1)
+////			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
+//			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -698,11 +698,11 @@ list< Alternative * > MainKnapsack::MOLS_Cst_PSize(double starting_time_sec, int
 
 		if( Population.empty() ){
 
-			if( ((int)next_Population.size() < UB_Population_size)  and !next_Population.empty() ){
-				Dominated_alt.unique();
-				int to_add = ( UB_Population_size - (int)next_Population.size() ) ;
-				Threshold_Accepting_AVG(Dominated_alt, next_Population, to_add);    //UPDATE POPULATION WITH DOMINATED ONES PLACE NONDOMINATED AT FIRST
-			}
+//			if( ((int)next_Population.size() < UB_Population_size)  and !next_Population.empty() ){
+//				Dominated_alt.unique();
+//				int to_add = ( UB_Population_size - (int)next_Population.size() ) ;
+//				Threshold_Accepting_AVG(Dominated_alt, next_Population, to_add);    //UPDATE POPULATION WITH DOMINATED ONES PLACE NONDOMINATED AT FIRST
+//			}
 			Population = next_Population;
 			step++;
 			Dominated_alt.clear();

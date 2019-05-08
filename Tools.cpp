@@ -224,14 +224,14 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 	vector<pair<float, float > > min_max(p_criteria,pair<float,float>());
 	//srand(time(NULL));
 
-	if(p_criteria == 2){
-		const auto [minus, maxus] = minmax_element(begin(ws_matrix[0]), end(ws_matrix[0]));
-		float wi =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX / (*maxus - *minus ))) + *minus ;
-		weighted_sum[0] = wi ;
-		weighted_sum[1] =  1.0 - wi ;
-	}
-
-	else{
+//	if(p_criteria == 2){
+//		const auto [minus, maxus] = minmax_element(begin(ws_matrix[0]), end(ws_matrix[0]));
+//		float wi =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX / (*maxus - *minus ))) + *minus ;
+//		weighted_sum[0] = wi ;
+//		weighted_sum[1] =  1.0 - wi ;
+//	}
+//
+//	else{
 		for(int i = 0; i < p_criteria ; i++){
 			const auto [minus, maxus] = minmax_element(begin(ws_matrix[i]), end(ws_matrix[i]));
 			min_max[i] = make_pair (*minus,*maxus);
@@ -251,7 +251,7 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 			sum += wi;
 			weighted_sum[i] = wi;
 		}
-	}
+//	}
 
 //	cout<<print_vector(weighted_sum)<<endl;
 	return weighted_sum;
