@@ -8,7 +8,6 @@
 #include "Alternative.h"
 #include "Tools.h"
 
-
 class MainKnapsack;
 
 using namespace std;
@@ -26,6 +25,7 @@ public:
 	//CONSTRUCTOR DESTRUCTOR
 	AlternativeKnapsack(set<int> items, MainKnapsack* mStruct, vector< vector< float > > WS_matrix);
 	AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix);
+	AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix, list< string > Archive);
 	~AlternativeKnapsack(){ 	};
 
 	//GETTERS

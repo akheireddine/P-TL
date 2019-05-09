@@ -569,7 +569,9 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	gp<<"unset xtics \n";
 	gp<<"unset ytics\n";
 	gp<<"set key left bottom\n";
-	gp<<"set terminal pngcairo size 2100,1400\n";
+	gp<<"set terminal pngcairo size 1200,800\n";
+
+//	gp<<"unset key\n";
 
 	gp<<"do for[j=0:9] {\n";            /////////////////////////// TOMODIF
 
@@ -579,13 +581,13 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 
 	if(size == -1 ){
 //		gp<<"set terminal pngcairo size 1500,900\n";
-		gp<<"set output \"PLOTTER_T\".j.\".png\"\n";
+		gp<<"set output \"PLOTTER_"<<type_inst<<"_"<<size_inst<<"_T\".j.\".png\"\n";
 		size_string = "VARIABLE";
 
 		gp<<"set title 'Evolution of the search space with "<<size_inst<<" items (Instances "<<type_inst<<" - T'.j.' ) - Variable population size' \n";
 
 		gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
-				"for[i=1:105] '"<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl' using 1:2 "
+				"for[i=0:105] '"<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl' using 1:2 "
 						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_VARIABLE_"<<algo<<"_'.i.'.expl')).')' with points ls (i+1) ,"
 				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
 		gp<<"set grid\n";
@@ -593,14 +595,13 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	}
 
 	else {
-		gp<<"set output \"PLOTTER_T\".j.\".png\"\n";
+		gp<<"set output \"PLOTTER_"<<type_inst<<"_"<<size_inst<<"_T\".j.\".png\"\n";
 		gp<<"set multiplot layout 3,4 columnsfirst rowsfirst title \" {/:Bold=15 Evolution of the local search using "<<size_inst<<" items ( "<<type_inst<<" - T\".j.\" ) }\"\n";
 
 		gp<<"size = "<<size_string<<"\n";
 		gp<<"while(size <= "<<to_string(opt_size)<<"){\n";
 //			gp<<"if(size == 10 ){\n unset key}\n";
 //			gp<<"else { set key }\n";
-			gp<<"unset key\n";
 			gp<<"if( size != 1) {\n";
 				gp<<"set label 1 '{/:Bold=10 Size='.(size"<<"-1"<<").'}' at graph 0.05,0.95 font ',8'\n";
 			gp<<"}\n";

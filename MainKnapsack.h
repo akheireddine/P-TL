@@ -46,7 +46,7 @@ public :
 	bool Update_Archive(Alternative* p, list< string > &set_SOL);
 
 	bool Update_Archive_Threshold_Accepting(Alternative* p, list< Alternative* > &set_SOL);
-	void update_alternatives(list< string > &set_Alt);
+	void update_alternatives(list< string > &set_Alt, bool Pareto);
 
 	void filter_efficient_set();
 	void filter_efficient_set_decision_space();
@@ -56,6 +56,7 @@ public :
 
 	list< Alternative * > MOLS(double starting_time_sec,int ITER);
 	list< Alternative * > MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);
+	list< Alternative * > MOLS_local_Archive(double starting_time_sec);
 
 
 

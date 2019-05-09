@@ -72,12 +72,48 @@ AlternativeKnapsack::AlternativeKnapsack(string id_alternative, MainKnapsack* mS
 
 }
 
+
+AlternativeKnapsack::AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix, list< string > Archive){
+
+	id_alt = id_alternative;
+	set<int> items;
+	for(int i = 0; i < (int)id_alternative.length(); i++)
+		if(id_alternative[i] == '1')
+			items.insert(i);
+
+	mainLSStructure = mStruct;
+	nb_objective = WS_matrix[0].size();
+	local_WS_matrix = WS_matrix;
+	local_Archive = Archive;
+
+	neighborhood.clear();
+	criteria_values.resize(mainLSStructure->get_p_criteria(), 0);
+	objective_values.resize( nb_objective , 0);
+	weight = 0;
+
+	for(set<int>::iterator o = items.begin(); o != items.end(); ++o){
+
+		weight += mainLSStructure->get_weight_of(*o);
+
+		for(int i = 0; i < mainLSStructure->get_p_criteria(); i++){
+			criteria_values[i] += mainLSStructure->get_utility(*o,i);
+		}
+	}
+
+	for(int i = 0; i <nb_objective; i++){
+		for(int j = 0; j < mainLSStructure->get_p_criteria(); j++){
+			objective_values[i] += local_WS_matrix[j][i] * criteria_values[j];
+		}
+	}
+
+}
+
 void AlternativeKnapsack::update_objective_vector(){
 
 	objective_values.clear();
 	objective_values.resize(nb_objective, 0);
 
-	for(int i = 0; i < (int)local_WS_matrix[0].size(); i++){
+	for(int i = 0; i < nb_objective; i++){
 		for(int j = 0; j < mainLSStructure->get_p_criteria(); j++){
 			objective_values[i] += local_WS_matrix[j][i] * criteria_values[j];
 		}
