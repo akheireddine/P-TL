@@ -52,20 +52,20 @@ Evaluator* main_Knapsack(string filename_instance, string type_instance, string 
 void script_knapsack(string type_inst, string taille, string WS_DM){
 
 	int K = 1;
-	int N = 9;
+	int N = 2;
 	Evaluator * eval_ks;
 	init_population.clear();
 
 
 	//INIT ALL POPULATION FOR ALL INSTANCES
-	for(int i = 8; i < N; i++){
+	for(int i = 1; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 	}
 
 
 
-	for(int i = 8; i < N ; i++){
+	for(int i = 1; i < N ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -213,7 +213,7 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 250; step < 251; step++){
+		for(int step = 3; step < 4; step++){
 			cout<<"_________________________________ NB-ITER "<<step<<"___________________________"<<endl;
 			int information_rate = 0;
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(information_rate),"WS_Matrix3.csv");
@@ -353,9 +353,9 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "200";
+	string taille = "100";
 
-//	script_knapsack(type_inst, taille, WS_DM);
+	script_knapsack(type_inst, taille, WS_DM);
 
 
 //
@@ -447,7 +447,7 @@ int main(int argc, char** argv){
 */
 
 //
-	script_knapsack_PLSWS(type_inst,taille,WS_DM);
+//	script_knapsack_PLSWS(type_inst,taille,WS_DM);
 
 
 	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille

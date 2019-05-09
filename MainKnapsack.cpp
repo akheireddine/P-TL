@@ -969,9 +969,6 @@ list< Alternative * > MainKnapsack::MOLS_local_Archive(double starting_time_sec)
 			STEPS_PLOT++;
 		}
 
-		for(set< string>::iterator it = current_neighbors.begin(); it != current_neighbors.end(); ++it)
-			delete dic_Alternative[(*it)];
-
 		//GIVE CHANCE TO BAAAAD SOLUTIONS WHEN THERE STILL OPTIMAL ONES TO EXPLORE
 //		if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < (DIVERSIFICATION ))  ){
 //			int bef_add = (int)Population.size();
