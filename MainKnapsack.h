@@ -45,7 +45,7 @@ public :
 	bool Update_Archive(Alternative* p, list< Alternative* > &set_SOL);
 	bool Update_Archive(Alternative* p, list< string > &set_SOL);
 
-	bool Update_Archive_Threshold_Accepting(Alternative* p, list< Alternative* > &set_SOL);
+//	bool Update_Archive_Threshold_Accepting(Alternative* p, list< Alternative* > &set_SOL);
 	void update_alternatives(list< string > &set_Alt, bool Pareto);
 
 	void filter_efficient_set();
@@ -66,9 +66,9 @@ public :
 
 
 
-	void Limit_number_accepting_N(vector< string > dominated_solutions, int upper_bound);
-	void Distribution_proba(vector< string > dominated_solutions, int upper_bound);
-	void Threshold_Accepting_AVG(list< string > dominated_solutions, list< string > population, int upper_bound);
+	void Limit_number_accepting_N(list< string > & dominated_solutions, int upper_bound);
+	void Distribution_proba(list< string > & dominated_solutions, int upper_bound);
+	void Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > population, int upper_bound);
 
 
 	//EVALUATION

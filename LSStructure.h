@@ -30,6 +30,7 @@ protected :
 	int n_objective;
 	int p_criteria;									// Number of criteria
 	list< string > Population;				// current set of non-dominated alternatives during the solving process
+	list< Alternative * > OPT_Solution_tmp;
 	string filename_instance;					    // instance pathname
 
 public:
