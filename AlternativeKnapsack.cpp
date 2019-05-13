@@ -73,7 +73,7 @@ AlternativeKnapsack::AlternativeKnapsack(string id_alternative, MainKnapsack* mS
 }
 
 
-AlternativeKnapsack::AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix, list< string > Archive){
+AlternativeKnapsack::AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix, list< shared_ptr< Alternative > > Archive){
 
 	id_alt = id_alternative;
 	set<int> items;
@@ -121,7 +121,7 @@ void AlternativeKnapsack::update_objective_vector(){
 }
 
 
-int AlternativeKnapsack::dominates_objective_space(Alternative* alt){
+int AlternativeKnapsack::dominates_objective_space(shared_ptr< Alternative > alt){
 
 	bool AdomB = false, BdomA = false;
 
@@ -147,7 +147,7 @@ int AlternativeKnapsack::dominates_objective_space(Alternative* alt){
 }
 
 
-int AlternativeKnapsack::dominates_decision_space(Alternative* alt){
+int AlternativeKnapsack::dominates_decision_space(shared_ptr< Alternative > alt){
 
 	bool AdomB = false, BdomA = false;
 	int i = 0;
@@ -219,12 +219,12 @@ map< float, int, greater <float> > AlternativeKnapsack::generate_ordered_ratio_i
 //	vector<float> ws_aggr_utility = Tools::generate_random_WS_aggregator(mainLSStructure->get_p_criteria());
 
 	//EQ TO DM PREFERENCES
-//	vector<float> ws_aggr_utility = Tools::readWS_DM("weighted_DM_preferences.ks");
+	vector<float> ws_aggr_utility = Tools::readWS_DM("weighted_DM_preferences.ks");
 
 
 
 	//IN DOMAIN DEFINITION
-	vector<float> ws_aggr_utility = Tools::generate_random_restricted_WS_aggregator(mainLSStructure->get_p_criteria(), local_WS_matrix);
+//	vector<float> ws_aggr_utility = Tools::generate_random_restricted_WS_aggregator(mainLSStructure->get_p_criteria(), local_WS_matrix);
 //	vector<float> ws_aggr_utility = Tools::generate_random_restricted_WS_aggregator_PL(mainLSStructure->get_p_criteria(), local_WS_matrix);
 
 

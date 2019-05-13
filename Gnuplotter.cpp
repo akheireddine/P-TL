@@ -571,7 +571,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	gp<<"set key left bottom\n";
 	gp<<"set terminal pngcairo size 1200,800\n";
 
-//	gp<<"unset key\n";
+	gp<<"unset key\n";
 
 	gp<<"do for[j=0:9] {\n";            /////////////////////////// TOMODIF
 

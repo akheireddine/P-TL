@@ -13,7 +13,7 @@ private:
 	string pf_indicators_file;
 	list< vector< float > > PFront;                 //covered pareto front
 	string PF_filename;
-	AlternativeKnapsack * OPT_Alternative;
+	shared_ptr<AlternativeKnapsack> OPT_Alternative;
 	vector<vector<float > > PF_Efficient;
 	vector<float > WS_DM_vector;
 
@@ -25,7 +25,7 @@ public:
 	//CONSTRUCTOR
 	Evaluator(string filename, MainKnapsack * problemInstance, string WS_DM_preferences, string DT_file, float time, string PFI_file);
 	~Evaluator(){
-		delete OPT_Alternative;
+		OPT_Alternative.reset();
 		delete mainProblem;
 	};
 
@@ -52,7 +52,7 @@ public:
 
 	//EVALUATION
 	float nearest_alternative(vector< float > & vect_criteria );
-	AlternativeKnapsack* OPT_Alternative_PLNE(vector<float> WS_vector);
+	shared_ptr<AlternativeKnapsack> OPT_Alternative_PLNE(vector<float> WS_vector);
 	void evaluate_Dist_Time(string dist_time_file, float time);
 	void evaluate_PF(string pf_indicators_file);
 	void compute_information_rate_front();

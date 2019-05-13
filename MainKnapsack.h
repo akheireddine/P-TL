@@ -16,7 +16,7 @@ protected:
 
 	float Backpack_capacity = 0;							// capacity ofthe backpack
 	int n_items;											// number of items
-	map<string, AlternativeKnapsack * > dic_Alternative;
+	map<string, shared_ptr< AlternativeKnapsack > > dic_Alternative;
 
 
 public :
@@ -28,8 +28,8 @@ public :
 	MainKnapsack( int population_size_init, string filename, string matrix_filename="PARETO");
 
 	~MainKnapsack(){
-		for(map<string, AlternativeKnapsack* >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it)
-			delete dic_Alternative[(*it).first];
+		for(map<string, shared_ptr< AlternativeKnapsack > > ::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it)
+			dic_Alternative[(*it).first].reset();
 	};
 
 	//GETTERS
@@ -42,8 +42,8 @@ public :
 //	void readInitPopulationFile(string filename);
 
 	//RESOLUTION
-	bool Update_Archive(Alternative* p, list< Alternative* > &set_SOL);
-	bool Update_Archive(Alternative* p, list< string > &set_SOL);
+	bool Update_Archive(shared_ptr< Alternative > p, list< shared_ptr< Alternative > > &set_SOL);
+	bool Update_Archive(shared_ptr< Alternative > p, list< string > &set_SOL);
 
 //	bool Update_Archive_Threshold_Accepting(Alternative* p, list< Alternative* > &set_SOL);
 	void update_alternatives(list< string > &set_Alt, bool Pareto);
@@ -54,9 +54,9 @@ public :
 	void HYBRID_WS_PLS(double starting_time_sec, int ITER);
 	void HYBRID_PLS_WS(double starting_time_sec, int ITER);
 
-	list< Alternative * > MOLS(double starting_time_sec,int ITER);
-	list< Alternative * > MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);
-	list< Alternative * > MOLS_local_Archive(double starting_time_sec);
+	list< shared_ptr< Alternative > > MOLS(double starting_time_sec,int ITER);
+	list< shared_ptr< Alternative > > MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);
+	list< shared_ptr< Alternative > > MOLS_local_Archive(double starting_time_sec);
 
 
 
@@ -72,7 +72,7 @@ public :
 
 
 	//EVALUATION
-	void save_new_point(string filename, Alternative * alt);
+	void save_new_point(string filename, shared_ptr< Alternative > alt);
 
 
 	//STATIC METHOD
@@ -84,7 +84,7 @@ public :
 	//functions to overload
 	void readFilenameInstance(string filename);
 	void readWS_Matrix(string filename);
-	list< Alternative * > MOLS(double starting_time_sec);
+	list< shared_ptr< Alternative > > MOLS(double starting_time_sec);
 	void write_solution(string filename);
 	void GenerateInitialPopulation(int size_population);
 

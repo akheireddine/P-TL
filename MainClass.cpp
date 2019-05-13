@@ -27,7 +27,7 @@ list<set<int>> init_population;
 
 Evaluator* main_Knapsack(string filename_instance, string type_instance, string num_instance, int size_population, string WS_DM_preferences){
 
-	string pref_filename = "./WS_Matrix3.csv";
+	string pref_filename = "./WS_Matrix4.csv";
 
 	MainKnapsack * knaps = new MainKnapsack(size_population, filename_instance, pref_filename);
 
@@ -52,42 +52,42 @@ Evaluator* main_Knapsack(string filename_instance, string type_instance, string 
 void script_knapsack(string type_inst, string taille, string WS_DM){
 
 	int K = 1;
-	int N = 1;
+	int N = 3;
 	Evaluator * eval_ks;
 	init_population.clear();
 
 
 	//INIT ALL POPULATION FOR ALL INSTANCES
-	for(int i = 0; i < N; i++){
+	for(int i = 2; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 	}
 
 
 
-	for(int i = 0; i < N ; i++){
+	for(int i = 2; i < N ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 0; step < 8; step++){
+		for(int step = 5; step < 6; step++){
 			INFO = step;
 			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix3.csv");
+			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix4.csv");
 
 			Tools::cpt = 0;
 			Tools::clean_up();
 
 			for(int k = 0; k < K; k++){
-				Ta = 500;
+				Ta = 6000;
 				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
 				delete eval_ks;
 			}
 
-//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_MODIF.eval");
-//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_MODIF.front");
+			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_opt_w.eval");
+			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_opt_w.front");
 		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_MODIF.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_MODIF.front",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_opt_w.eval",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_opt_w.front",type_inst+to_string(i)+"___");
 
 		Tools::skip(init_population,K);
 	}
@@ -196,24 +196,24 @@ Evaluator* main_Knapsack_PLSWS(string filename_instance, string type_instance, s
 void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 
 	int K = 1;
-	int N = 9;
+	int N = 8;
 	Evaluator * eval_ks;
 	init_population.clear();
 
 
 	//INIT ALL POPULATION FOR ALL INSTANCES
-	for(int i = 8; i < N; i++){
+	for(int i = 7; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 	}
 
 
 
-	for(int i = 8; i < N ; i++){
+	for(int i = 7; i < N ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 3; step < 4; step++){
+		for(int step = 250; step < 251; step++){
 			cout<<"_________________________________ NB-ITER "<<step<<"___________________________"<<endl;
 			int information_rate = 0;
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(information_rate),"WS_Matrix3.csv");
@@ -222,7 +222,6 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 			Tools::clean_up();
 
 			for(int k = 0; k < K; k++){
-				Tools::generate_random_WS("WS_Matrix.csv", 2);
 				Ta = 500;
 				eval_ks = main_Knapsack_PLSWS(filename_instance, type_inst , to_string(i) , 1 , WS_DM, step);
 				delete eval_ks;
@@ -251,12 +250,6 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 
 
 
-
-
-
-
-
-
 //***********************************************************************************************************************************//
 
 
@@ -266,7 +259,7 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 Evaluator* main_Knapsack_Cst_PSize(string filename_instance, string type_instance, string num_instance,
 	int size_population, string WS_DM_preferences, int max_size_population){
 
-	string pref_filename = "./WS_Matrix3.csv";
+	string pref_filename = "./WS_Matrix2.csv";
 
 	MainKnapsack * knaps = new MainKnapsack(size_population,filename_instance,pref_filename);
 
@@ -306,13 +299,13 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	for(int i = 8; i < N; i++){
 
-		for(int iter = 231; iter <= 231 ; iter += 10){
+		for(int iter = 1; iter <= 231 ; iter += 10){
 			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
 			for(int step = 0; step < 1; step++){
 
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix3.csv");
+				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix2.csv");
 
 				Tools::cpt = 0;
 				Tools::clean_up();
@@ -353,7 +346,7 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "100";
+	string taille = "200";
 
 	script_knapsack(type_inst, taille, WS_DM);
 

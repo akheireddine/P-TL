@@ -11,7 +11,7 @@
 #include <string>
 #include <cstring>
 #include <list>
-
+#include <memory>
 
 #include "Alternative.h"
 
@@ -25,12 +25,11 @@ class LSStructure {
 
 protected :
 
-	list< Alternative * > OPT_Solution;              //SAVE OPT FRONT FOUND
+	list< shared_ptr<Alternative> > OPT_Solution;              //SAVE OPT FRONT FOUND
 	vector< vector < float > > WS_matrix;			// matrix A  of aggreation functions
 	int n_objective;
 	int p_criteria;									// Number of criteria
 	list< string > Population;				// current set of non-dominated alternatives during the solving process
-	list< Alternative * > OPT_Solution_tmp;
 	string filename_instance;					    // instance pathname
 
 public:
@@ -39,7 +38,7 @@ public:
 
 	virtual void readFilenameInstance(string filename) = 0;
 	virtual void readWS_Matrix(string filename) = 0;
-	virtual list< Alternative * > MOLS(double starting_time_sec) = 0;
+	virtual list< shared_ptr< Alternative > > MOLS(double starting_time_sec) = 0;
 	virtual void write_solution(string filename) = 0;
 	virtual void GenerateInitialPopulation(int size_population) = 0;
 
@@ -48,7 +47,7 @@ public:
 	int get_n_objective(){ return n_objective; };
 	string get_filename_isntance(){ return filename_instance; };
 	vector< vector< float > > get_WS_matrix(){ return WS_matrix; };
-	list<Alternative* > get_OPT_Solution(){ return OPT_Solution; };
+	list< shared_ptr<Alternative> > get_OPT_Solution(){ return OPT_Solution; };
 
 	inline void change_to_pareto_selection(){
 

@@ -197,7 +197,7 @@ float Evaluator::nearest_alternative(vector< float > & vect_criteria ){
 
 
 //Get optima values of objective with WS aggregator
-AlternativeKnapsack * Evaluator::OPT_Alternative_PLNE(vector<float> WS_vector){
+shared_ptr<AlternativeKnapsack> Evaluator::OPT_Alternative_PLNE(vector<float> WS_vector){
 
 	IloEnv   env;
 	IloModel model(env);
@@ -255,7 +255,7 @@ AlternativeKnapsack * Evaluator::OPT_Alternative_PLNE(vector<float> WS_vector){
 	}
 	env.end();
 
-	AlternativeKnapsack * opt_alt = new AlternativeKnapsack(items, mainProblem, mainProblem->get_WS_matrix());
+	shared_ptr<AlternativeKnapsack> opt_alt = make_shared<AlternativeKnapsack>(items, mainProblem, mainProblem->get_WS_matrix());
 
 
 	set< int >().swap(items);
@@ -301,12 +301,12 @@ void Evaluator::evaluate_Dist_Time(string dist_time_file, float time){
 float Evaluator::PR_D3(){
 
 	int opt_size_front = 0, nb_found = 0;
-	list<Alternative* > OPT_Solution = mainProblem->get_OPT_Solution();
+	list< shared_ptr< Alternative > > OPT_Solution = mainProblem->get_OPT_Solution();
 
-	vector< Alternative* > tmp_opt(OPT_Solution.begin(),OPT_Solution.end());
+	vector< shared_ptr< Alternative > > tmp_opt(OPT_Solution.begin(),OPT_Solution.end());
 
 	for(list< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
-		for(vector< Alternative* >::iterator alt = tmp_opt.begin(); alt != tmp_opt.end(); ++alt){
+		for(vector< shared_ptr< Alternative > >::iterator alt = tmp_opt.begin(); alt != tmp_opt.end(); ++alt){
 			if( Tools::equal_vectors((*alt)->get_criteria_values(),*pareto_sol) ){
 				nb_found += 1;
 				tmp_opt.erase(alt);
@@ -316,7 +316,7 @@ float Evaluator::PR_D3(){
 		opt_size_front++;
 	}
 
-	vector< Alternative* >().swap(tmp_opt);
+	vector< shared_ptr< Alternative > >().swap(tmp_opt);
 
 	return nb_found*100.0/opt_size_front;
 }
@@ -325,12 +325,12 @@ float Evaluator::average_distance_D1(){
 
 	float min_dist = -1;
 	float avg_dist = 0.;
-	list<Alternative* > OPT_Solution = mainProblem->get_OPT_Solution();
+	list< shared_ptr< Alternative > > OPT_Solution = mainProblem->get_OPT_Solution();
 
 	for(list< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
 		min_dist = -1;
 
-		for(list<Alternative*>::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
+		for(list< shared_ptr< Alternative > >::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
 
 			float euclid_dist_tmp = Tools::euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
 			if(euclid_dist_tmp < min_dist  or min_dist == -1)
@@ -345,11 +345,11 @@ float Evaluator::average_distance_D1(){
 float Evaluator::maximum_distance_D2(){
 	float min_dist = -1;
 	float max_dist_PF = 0.;
-	list<Alternative* > OPT_Solution = mainProblem->get_OPT_Solution();
+	list< shared_ptr< Alternative > > OPT_Solution = mainProblem->get_OPT_Solution();
 
 	for(list< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
 		min_dist = -1;
-		for(list<Alternative*>::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
+		for(list< shared_ptr< Alternative > >::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
 			float euclid_dist_tmp = Tools::euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
 			if(euclid_dist_tmp < min_dist  or min_dist == -1)
 				min_dist = euclid_dist_tmp;
@@ -396,7 +396,7 @@ void Evaluator::compute_information_rate_front(){
 	int nb_criteria = mainProblem->get_p_criteria();
 	vector< float > inf_intervalls(nb_criteria,-1);
 	vector< float > sup_intervalls(nb_criteria,-1);
-	vector<AlternativeKnapsack* > lexmaxs(nb_criteria);
+	vector< shared_ptr< AlternativeKnapsack > > lexmaxs(nb_criteria);
 
 	for(int i = 0; i < mainProblem->get_n_objective(); i++){
 
@@ -444,7 +444,7 @@ void Evaluator::compute_information_rate_front(){
 
 	vector< float >().swap(inf_intervalls);
 	vector< float >().swap(sup_intervalls);
-	vector<  AlternativeKnapsack* >().swap(lexmaxs);
+	vector<  shared_ptr< AlternativeKnapsack > >().swap(lexmaxs);
 
 
 }

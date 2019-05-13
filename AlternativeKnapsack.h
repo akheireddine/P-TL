@@ -25,7 +25,7 @@ public:
 	//CONSTRUCTOR DESTRUCTOR
 	AlternativeKnapsack(set<int> items, MainKnapsack* mStruct, vector< vector< float > > WS_matrix);
 	AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix);
-	AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix, list< string > Archive);
+	AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix, list< shared_ptr< Alternative > > Archive);
 	~AlternativeKnapsack(){ 	};
 
 	//GETTERS
@@ -43,8 +43,8 @@ public:
 	 * 0  incomparable
 	 * -1 paramter alt dominates current alternative
 	 */
-	int dominates_objective_space(Alternative* alt);
-	int dominates_decision_space(Alternative* alt);
+	int dominates_objective_space(shared_ptr< Alternative > alt);
+	int dominates_decision_space(shared_ptr< Alternative > alt);
 	set< string > get_neighborhood();
 	void update_objective_vector();
 	inline int get_nb_items(){
@@ -55,7 +55,7 @@ public:
 		return nb;
 	};
 
-	inline bool contains_items(Alternative * alt){
+	inline bool contains_items(shared_ptr< Alternative > alt){
 		for(int i = 0; i < (int)id_alt.length(); i++)
 			if((id_alt[i] != alt->get_id_alt()[i])   and  (alt->get_id_alt()[i] == '1') )
 				return false;
