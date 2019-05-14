@@ -160,7 +160,7 @@ void Gnuplotter::Comparison_Plot_VARIABLE_WS_NEIGHBORHOOD(string filename1, stri
 
 	Gnuplot gp;
 
-	gp<<"set terminal pngcairo size 1400,1200\n";
+	gp<<"set terminal pngcairo size 1900,1400\n";
 	gp<<"set output \"AVG_"<<type_inst<<"_"<<size_inst<<"_3WS.png\"\n";
 	gp<<"set colorsequence podo\n";
 
@@ -177,9 +177,9 @@ void Gnuplotter::Comparison_Plot_VARIABLE_WS_NEIGHBORHOOD(string filename1, stri
 	gp<<"set grid\n";
 
 
-	gp<<"set multiplot layout 3,1 columnsfirst rowsfirst title \" {/:Bold=15 Average minium distance from optimal solution for "<<size_inst<<" items (instance "<<type_inst<<")  - Comparison plot }\"\n";
+	gp<<"set multiplot layout 4,3 columnsfirst rowsfirst title \" {/:Bold=15 Average minium distance from optimal solution for "<<size_inst<<" items (instance "<<type_inst<<")  - Comparison plot }\"\n";
 
-	gp<<"do for[j=1:9:4]{\n";
+	gp<<"do for[j=0:9]{\n";
 		gp<<"set label 1 '{/:Bold=10T'.j.'}' at graph 0.05,0.95 font ',8'\n";
 
 		gp<<"plot \""<<filename1<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 1 w linespoints ls 1 title \""<<t1<<"\" , "
@@ -193,11 +193,11 @@ void Gnuplotter::Comparison_Plot_VARIABLE_WS_NEIGHBORHOOD(string filename1, stri
 
 	gp<<"set output \"TIME_"<<type_inst<<"_"<<size_inst<<"_3WS.png\"\n";
 
-	gp<<"set multiplot layout 3,1 columnsfirst rowsfirst title \" {/:Bold=15 Average time execution (second) for "<<size_inst<<" items ( instance "<<type_inst<<" )  - Comparison plot }\"\n";
+	gp<<"set multiplot layout 4,3 columnsfirst rowsfirst title \" {/:Bold=15 Average time execution (second) for "<<size_inst<<" items ( instance "<<type_inst<<" )  - Comparison plot }\"\n";
 
 	gp<<"set ylabel \"Average time execution (second)\"\n";
 
-	gp<<"do for[j=1:9:4]{\n";
+	gp<<"do for[j=0:9]{\n";
 		gp<<"set label 1 '{/:Bold=10T'.j.'}' at graph 0.05,0.95 font ',8'\n";
 
 		gp<<"plot \""<<filename1<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 2 w linespoints ls 1 title \""<<t1<<"\" , "
@@ -569,7 +569,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION(string filename, string type_inst, string
 	gp<<"unset xtics \n";
 	gp<<"unset ytics\n";
 	gp<<"set key left bottom\n";
-	gp<<"set terminal pngcairo size 1200,800\n";
+	gp<<"set terminal pngcairo size 1900,1400\n";
 
 	gp<<"unset key\n";
 

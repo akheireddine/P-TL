@@ -219,12 +219,12 @@ map< float, int, greater <float> > AlternativeKnapsack::generate_ordered_ratio_i
 //	vector<float> ws_aggr_utility = Tools::generate_random_WS_aggregator(mainLSStructure->get_p_criteria());
 
 	//EQ TO DM PREFERENCES
-	vector<float> ws_aggr_utility = Tools::readWS_DM("weighted_DM_preferences.ks");
+//	vector<float> ws_aggr_utility = Tools::readWS_DM("weighted_DM_preferences.ks");
 
 
 
 	//IN DOMAIN DEFINITION
-//	vector<float> ws_aggr_utility = Tools::generate_random_restricted_WS_aggregator(mainLSStructure->get_p_criteria(), local_WS_matrix);
+	vector<float> ws_aggr_utility = Tools::generate_random_restricted_WS_aggregator(mainLSStructure->get_p_criteria(), local_WS_matrix);
 //	vector<float> ws_aggr_utility = Tools::generate_random_restricted_WS_aggregator_PL(mainLSStructure->get_p_criteria(), local_WS_matrix);
 
 
