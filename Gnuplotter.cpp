@@ -176,10 +176,11 @@ void Gnuplotter::Comparison_Plot_VARIABLE_WS_NEIGHBORHOOD(string filename1, stri
 
 	gp<<"set grid\n";
 
-
+	gp<<"select = \"0 1 2 3 4 5 6 7 8 9\"\n";
 	gp<<"set multiplot layout 4,3 columnsfirst rowsfirst title \" {/:Bold=15 Average minium distance from optimal solution for "<<size_inst<<" items (instance "<<type_inst<<")  - Comparison plot }\"\n";
 
-	gp<<"do for[j=0:9]{\n";
+	gp<<"do for[j in select]{\n";
+
 		gp<<"set label 1 '{/:Bold=10T'.j.'}' at graph 0.05,0.95 font ',8'\n";
 
 		gp<<"plot \""<<filename1<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 1 w linespoints ls 1 title \""<<t1<<"\" , "
@@ -197,7 +198,7 @@ void Gnuplotter::Comparison_Plot_VARIABLE_WS_NEIGHBORHOOD(string filename1, stri
 
 	gp<<"set ylabel \"Average time execution (second)\"\n";
 
-	gp<<"do for[j=0:9]{\n";
+	gp<<"do for[j in select]{\n";
 		gp<<"set label 1 '{/:Bold=10T'.j.'}' at graph 0.05,0.95 font ',8'\n";
 
 		gp<<"plot \""<<filename1<<"\" every ::(8*j + 1*j)::((j+1)*8 + 1*j) using 2 w linespoints ls 1 title \""<<t1<<"\" , "
@@ -679,7 +680,12 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_in
 	gp<<"unset xtics \n";
 	gp<<"unset ytics\n";
 	gp<<"set key left bottom\n";
-	gp<<"j=0\n";            /////////////////////////// TOMODIF
+
+
+	gp<<"set terminal pngcairo size 1500,900\n";
+
+
+	gp<<"do for[j=0:9]{\n";
 
 
 
@@ -687,8 +693,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_in
 
 
 	if(size == -1 ){
-		gp<<"set terminal pngcairo size 1500,900\n";
-		gp<<"set output \"INFO.png\"\n";
+		gp<<"set output \"INFO_"<<type_inst<<"_"<<size_inst<<"_T\".j.\".png\"\n";
 		gp<<"set multiplot layout 2,4 columnsfirst rowsfirst  title 'Evolution of the search space with different information rate - "<<size_inst<<" items (Instances "<<type_inst<<" - T'.j.' ) - Variable population size'\n";
 
 		size_string = "VARIABLE";
@@ -711,7 +716,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_in
 
 //	else {
 //		gp<<"set terminal pngcairo size 2100,1400\n";
-//		gp<<"set output \"PLOTTER.png\"\n";
+//		gp<<"set output \"INFO_"<<type_inst<<"_"<<size_inst<<"_T\".j.\".png\"\n";
 //		gp<<"set multiplot layout 3,4 columnsfirst rowsfirst title \" {/:Bold=15 Evolution of the local search using "<<size_inst<<" items ( "<<type_inst<<" - T\".j.\" ) }\"\n";
 //
 //		gp<<"size = "<<size_string<<"\n";
@@ -753,6 +758,12 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_in
 //		gp<<"set output \" PLOT.png\"\n";//"<<algo<<"_"<<type_inst<<"_"<<size_inst<<"_"<<size_string<<".png \"\n";
 //		gp<<"unset output\n";
 //	gp<<"}\n";
+
+		gp<<"unset multiplot\n";
+		gp<<"unset output\n";
+
+	gp<<"}\n";
+
 
 }
 

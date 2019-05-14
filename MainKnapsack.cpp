@@ -489,9 +489,10 @@ float f(vector<float> ws, vector<float> criteria){
 	return res;
 }
 
-void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > population, int upper_bound){
+void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound){
 
 	map< float, string, less <float> > ratio_items;
+
 
 	vector<float> random_ws = Tools::generate_random_restricted_WS_aggregator(p_criteria, WS_matrix);
 
@@ -502,10 +503,10 @@ void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions,
 		float aggreg_value = 0;
 
 		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-			aggreg_value +=  abs((f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() )));
+			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
 		}
 
-		float val_key = ( aggreg_value*1.0 / (int)OPT_Solution.size() );
+		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
 //		cout<<"Ta : "<<val_key<<endl;
 
 		if(val_key <= Ta)
@@ -517,7 +518,6 @@ void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions,
 	int cpt= 0;
 	int min_bound = (upper_bound != -1)? upper_bound : (int)dominated_solutions.size();
 	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
-
 	for(map< float, string, less <float> >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
 
 		if( cpt < min_bound){
@@ -564,9 +564,9 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 		Population.pop_front();
 
 
-//		if(nb_iteration > 1)
-////			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
-//			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
+		if(nb_iteration > 1)
+//			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
+			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -624,11 +624,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 ////
 //
 //			Threshold_Accepting_AVG(Dominated_alt,Population, -1);
-//
-//			if( ((int)Population.size() - bef_add) != 0)
-//				cout<<"after : "<<((int)Population.size() - bef_add)<<endl;
-////				Threshold_Accepting_BASIC(Dominated_alt, -1);
-//
 //
 //			new_pop += ((int)Population.size() - bef_add);
 //
@@ -1044,9 +1039,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_local_Archive(double starti
 
 	}
 
-	cout<<"done i tink"<<endl;
 	filter_efficient_set_decision_space();
-	cout<<"done ??"<<endl;
 
 	write_solution(filename_instance+".sol");
 

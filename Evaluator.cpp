@@ -140,7 +140,7 @@ void Evaluator::readParetoFront(){
 		vector_pareto_objective = Tools::decompose_line_to_float_vector(line);
 		PF_Efficient.push_back(vector_pareto_objective);
 
-		transformed_objective = get_objective_values(*it);
+		transformed_objective = get_objective_values(vector_pareto_objective);
 
 		if( !is_dominated(transformed_objective) )
 			PFront.push_back(vector_pareto_objective);
