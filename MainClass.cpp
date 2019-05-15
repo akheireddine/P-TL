@@ -12,12 +12,11 @@
 using namespace std;
 
 float Ta = 500;
-
+float Temperature = 1500;
 
 vector< float > Tools::dist_time_avg(2,0);
 vector< float > Tools::indicator_avg(3,0);
 int Tools::cpt = 0;
-int ITERATION_WS_PLS = 0;
 int INFO = 0;
 
 list<set<int>> init_population;
@@ -52,24 +51,24 @@ Evaluator* main_Knapsack(string filename_instance, string type_instance, string 
 void script_knapsack(string type_inst, string taille, string WS_DM){
 
 	int K = 1;
-	int N = 8;
+	int N = 9;
 	Evaluator * eval_ks;
 	init_population.clear();
 
 
 	//INIT ALL POPULATION FOR ALL INSTANCES
-	for(int i = 7; i < N; i++){
+	for(int i = 8; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 	}
 
 
 
-	for(int i = 7; i < N ; i++){
+	for(int i = 8; i < N ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 0; step < 1; step++){
+		for(int step = 0; step < 8; step++){
 			INFO = step;
 			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix12.csv");
@@ -79,6 +78,7 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 
 			for(int k = 0; k < K; k++){
 				Ta = 500;
+				Temperature = 1500;
 				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
 				delete eval_ks;
 			}
@@ -285,8 +285,8 @@ Evaluator* main_Knapsack_Cst_PSize(string filename_instance, string type_instanc
 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 1;
-	int N = 9;
+	int K = 10;
+	int N = 10;
 	init_population.clear();
 
 	Evaluator * eval_ks;
@@ -297,12 +297,12 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 	}
 
-	for(int i = 8; i < N; i++){
+	for(int i = 0; i < N; i++){
 
 		for(int iter = 1; iter <= 231 ; iter += 10){
 			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
-			for(int step = 0; step < 1; step++){
+			for(int step = 1; step < 2; step++){
 
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_Matrix1.csv");
@@ -318,8 +318,8 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 					delete eval_ks;
 				}
 
-//				Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS_T"+to_string(i)+".eval");
-//				Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS_T"+to_string(i)+".front");
+				Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS_T"+to_string(i)+"_"+to_string(step)+".eval");
+				Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS_T"+to_string(i)+"_"+to_string(step)+".front");
 
 			}
 //			Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS_T"+to_string(i)+".eval",type_inst+to_string(i)+"___"+to_string(iter));
@@ -401,13 +401,13 @@ int main(int argc, char** argv){
 
 
 
-//	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//			,"MOLS2", -1, 10, 410 , "./DM_preference_point");
+	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+			,"MOLS2", -1, 10, 410 , "./DM_preference_point");
 
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM);
+//	script_Cst_PSize(type_inst,taille,WS_DM);
 //
 //
 //

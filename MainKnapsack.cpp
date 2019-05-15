@@ -14,6 +14,7 @@
 
 #define alpha 0.9999
 extern float Ta;
+extern float Temperature;
 
 
 
@@ -491,7 +492,7 @@ float f(vector<float> ws, vector<float> criteria){
 
 void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound){
 
-	map< float, string, less <float> > ratio_items;
+	map< float, string > ratio_items;
 
 
 	vector<float> random_ws = Tools::generate_random_restricted_WS_aggregator(p_criteria, WS_matrix);
@@ -518,7 +519,7 @@ void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions,
 	int cpt= 0;
 	int min_bound = (upper_bound != -1)? upper_bound : (int)dominated_solutions.size();
 	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
-	for(map< float, string, less <float> >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
+	for(map< float, string >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
 
 		if( cpt < min_bound){
 			shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[(*i).second];
@@ -536,6 +537,53 @@ void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions,
 
 
 
+void MainKnapsack::Simulated_Annealing(list< string > & dominated_solutions, list< string > & population, int upper_bound){
+
+	map< float, string > ratio_items;
+
+
+	vector<float> random_ws = Tools::generate_random_restricted_WS_aggregator(p_criteria, WS_matrix);
+
+	for(list< string >::iterator  i = dominated_solutions.begin(); i != dominated_solutions.end(); ++i){
+
+		shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[*i];
+
+		float aggreg_value = 0;
+
+		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+		}
+
+		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
+//		cout<<"Ta : "<<val_key<<endl;
+
+		ratio_items[val_key] = p_alt->get_id_alt();
+	}
+
+
+
+	int cpt= 0;
+	int min_bound = (upper_bound != -1)? upper_bound : (int)dominated_solutions.size();
+	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
+
+	for(map< float, string >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
+
+		if( cpt < min_bound){
+			shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[(*i).second];
+
+			if( (rand()*1.0/RAND_MAX) < exp(-(*i).first / Temperature)  ){
+				population.push_back( p_alt->get_id_alt());
+				dominated_solutions.remove((*i).second);
+				cpt++;
+			}
+		}
+		else
+			break;
+	}
+
+	Temperature *= alpha;
+
+}
 
 
 
@@ -546,6 +594,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 	list< string > Dominated_alt;
 	int nb_iteration=0;
 	int new_pop = 0;
+	int n_dominate = 0;
 
 	//First initialization NO FILTERING
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
@@ -565,8 +614,8 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 
 
 		if(nb_iteration > 1)
-//			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
-			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
+			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
+//			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -600,6 +649,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 			if( Update_Archive(new_alt, OPT_Solution) ){
 				Population.push_back(*id_new_alt);
 				new_pop++;
+				n_dominate++;
 			}
 			else{
 				Dominated_alt.push_back(*id_new_alt);
@@ -616,6 +666,23 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 
 
 		//GIVE CHANCE TO BAAAAD SOLUTIONS WHEN THERE STILL OPTIMAL ONES TO EXPLORE
+
+
+//		if(  ((rand()*1.0/RAND_MAX) <  1.0 - n_dominate*1.0/((int)Dominated_alt.size()+n_dominate)  )  ){
+//			int bef_add = (int)Population.size();
+//
+//			Limit_number_accepting_N(Dominated_alt,-1);
+//
+//			new_pop += ((int)Population.size() - bef_add);
+//			n_dominate = 0;
+//
+//		}
+
+
+		Simulated_Annealing(Dominated_alt, Population, -1);
+
+
+
 //		if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < (DIVERSIFICATION ))  ){
 //			int bef_add = (int)Population.size();
 ////			Limit_number_accepting_N(Dominated_alt, -1);

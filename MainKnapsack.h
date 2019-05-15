@@ -69,6 +69,7 @@ public :
 	void Limit_number_accepting_N(list< string > & dominated_solutions, int upper_bound);
 	void Distribution_proba(list< string > & dominated_solutions, int upper_bound);
 	void Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound);
+	void Simulated_Annealing(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 
 
 	//EVALUATION

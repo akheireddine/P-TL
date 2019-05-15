@@ -397,6 +397,10 @@ void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename, string type_inst, stri
 			init_size -= init_size;
 	}
 
+	gp<<"step = 1\n"; ///:INFORMATION RATE
+
+
+
 	xtics += "'No-limit' "+to_string(N_step);
 
 	gp<<"set xtics ("<<xtics<<") center offset 0,0 rotate by 75 right \n";
@@ -409,9 +413,10 @@ void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename, string type_inst, stri
 	gp<<"set output \"AVG_"<<type_inst<<"_"<<size_inst<<"_"<<algo<<".png\"\n";
 	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 Average minimum distance from optimal solution when varying the size of the population using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
 
-	gp<<"do for[i=0:7] {\n";
+	gp<<"do for[i=2:9] {\n";
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
-		gp<<"plot  \""<<filename<<"_T\".i.\".eval\" using 1 w steps ls (i+1) \n";
+		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".eval\" using 1 w steps ls (i+1) \n";
+
 	gp<<"}\n";
 
 
@@ -426,9 +431,10 @@ void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename, string type_inst, stri
 	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 Average time execution (second) when varying the size of the population using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
 
 
-	gp<<"do for[i=0:7] {\n";
+	gp<<"do for[i=2:9] {\n";
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
-		gp<<"plot  \""<<filename<<"_T\".i.\".eval\" using 2 w steps ls (i+1) \n";
+		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".eval\" using 2 w steps ls (i+1) \n";
+
 	gp<<"}\n";
 
 
@@ -473,6 +479,9 @@ void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, str
 
 	xtics += "'No-limit' "+to_string(N_step);
 
+
+	gp<<"step = 1\n"; ///:INFORMATION RATE
+
 	gp<<"set xtics ("<<xtics<<") center offset 0,0 rotate by 75 right \n";
 	gp<<"set xrange [0:"<<to_string(N_step+0.5)<<"]\n";
 	gp<<"set xlabel \"Population size\"\n";
@@ -484,10 +493,10 @@ void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, str
 	gp<<"set output \"D1_"<<type_inst<<"_"<<size_inst<<".png\"\n";
 	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 Average minimum distance from the optimal front (INDICATOR) when varying the size of the population using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
 
-	gp<<"do for[i=0:7] {\n";
+	gp<<"do for[i=2:9] {\n";
 
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
-		gp<<"plot  \""<<filename<<"_T\".i.\".front\" using 1 w steps ls (i+1) \n";
+		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".front\" using 1 w steps ls (i+1) \n";
 
 	gp<<"}\n";
 
@@ -504,9 +513,10 @@ void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, str
 
 	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 MinMax distance from the optimal front (INDICATOR) when varying the size of the population using "<<size_inst<<" items ("<<type_inst<<") }\"\n";
 
-	gp<<"do for[i=0:7] {\n";
+	gp<<"do for[i=2:9] {\n";
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
-		gp<<"plot  \""<<filename<<"_T\".i.\".front\" using 2 w steps ls (i+1) \n";
+		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".front\" using 2 w steps ls (i+1) \n";
+
 	gp<<"}\n";
 
 
@@ -521,9 +531,10 @@ void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, str
 
 	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15  Proportion of optimal solution (INDICATOR) when varying the size of the population using "<<size_inst<<" items ("<<type_inst<<")  }\"\n";
 
-	gp<<"do for[i=0:7] {\n";
+	gp<<"do for[i=2:9] {\n";
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
-		gp<<"plot  \""<<filename<<"_T\".i.\".front\" using 3 w steps ls (i+1) \n";
+		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".front\" using 3 w steps ls (i+1) \n";
+
 	gp<<"}\n";
 
 }
@@ -685,7 +696,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_in
 	gp<<"set terminal pngcairo size 1500,900\n";
 
 
-	gp<<"do for[j=0:9]{\n";
+	gp<<"do for[j=8:9]{\n";
 
 
 
