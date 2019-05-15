@@ -12,7 +12,7 @@
 
 //#define __PRINT__
 
-#define alpha 0.9999
+#define alpha 0.999
 extern float Ta;
 extern float Temperature;
 
@@ -571,24 +571,86 @@ void MainKnapsack::Simulated_Annealing(list< string > & dominated_solutions, lis
 		if( cpt < min_bound){
 			shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[(*i).second];
 
-			if( (rand()*1.0/RAND_MAX) < exp(-(*i).first / Temperature)  ){
+			if( (rand()*1.0/RAND_MAX) <   exp(-(*i).first / Temperature)  ){
 				population.push_back( p_alt->get_id_alt());
 				dominated_solutions.remove((*i).second);
 				cpt++;
+
 			}
 		}
 		else
 			break;
+		Temperature *= alpha;
+
 	}
 
-	Temperature *= alpha;
 
 }
 
 
 
-list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
+void MainKnapsack::Learning_Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound){
 
+	map< float, string, less<float> > ratio_items;
+
+	vector<float> random_ws = Tools::generate_random_restricted_WS_aggregator(p_criteria, WS_matrix);
+
+	for(list< string >::iterator  i = dominated_solutions.begin(); i != dominated_solutions.end(); ++i){
+
+		shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[*i];
+
+		float aggreg_value = 0;
+
+		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+		}
+
+		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
+//		cout<<"Ta : "<<val_key<<endl;
+
+//		if(val_key <= Ta   or   Ta == -1)
+		ratio_items[val_key] = p_alt->get_id_alt();
+	}
+
+	//LEARNING
+	float Ta_tmp = 0.0;
+	for(map< float, string >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
+		Ta_tmp += (*i).first;
+	}
+	Ta_tmp /= ratio_items.size();
+
+	if( (Ta_tmp < Ta*alpha)  or (Ta == -1)){
+		Ta = Ta_tmp ;
+	}
+	else
+		Ta *= alpha;
+
+//	map< float, string, less<float>  >::iterator minus = ratio_items.begin();
+//	if()
+
+	int cpt= 0;
+	int min_bound = (upper_bound != -1)? upper_bound : (int)dominated_solutions.size();
+	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
+	for(map< float, string >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
+
+		if( (cpt < min_bound)    and   ((*i).first <= Ta)   ){
+			shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[(*i).second];
+			population.push_back( p_alt->get_id_alt());
+			dominated_solutions.remove((*i).second);
+			cpt++;
+		}
+		else
+			break;
+	}
+
+//	if( cpt < min_bound and rand)
+//		Ta *= 1.05;
+}
+
+
+
+list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
+	STEPS_PLOT = 0;
 	shared_ptr< AlternativeKnapsack > alt;
 	list< string > Local_front;
 	list< string > Dominated_alt;
@@ -613,8 +675,8 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 		Population.pop_front();
 
 
-		if(nb_iteration > 1)
-			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
+//		if(nb_iteration > 1)
+//			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
 //			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
 
 
@@ -679,22 +741,24 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 //		}
 
 
-		Simulated_Annealing(Dominated_alt, Population, -1);
+//		Simulated_Annealing(Dominated_alt, Population, -1);
 
 
 
-//		if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < (DIVERSIFICATION ))  ){
-//			int bef_add = (int)Population.size();
-////			Limit_number_accepting_N(Dominated_alt, -1);
+		if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < (DIVERSIFICATION ))  ){
+			int bef_add = (int)Population.size();
+//			Limit_number_accepting_N(Dominated_alt, -1);
+
+//			Distribution_proba(Dominated_alt, -1);
 //
-////			Distribution_proba(Dominated_alt, -1);
-////
-//
+
 //			Threshold_Accepting_AVG(Dominated_alt,Population, -1);
-//
-//			new_pop += ((int)Population.size() - bef_add);
-//
-//		}
+
+			Learning_Threshold_Accepting_AVG(Dominated_alt,Population, -1);
+
+			new_pop += ((int)Population.size() - bef_add);
+
+		}
 
 		for(list< string >::iterator it = Dominated_alt.begin(); it != Dominated_alt.end(); ++it){
 			dic_Alternative[(*it)].reset();

@@ -70,7 +70,7 @@ public :
 	void Distribution_proba(list< string > & dominated_solutions, int upper_bound);
 	void Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 	void Simulated_Annealing(list< string > & dominated_solutions, list< string > & population, int upper_bound);
-
+	void Learning_Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 
 	//EVALUATION
 	void save_new_point(string filename, shared_ptr< Alternative > alt);
