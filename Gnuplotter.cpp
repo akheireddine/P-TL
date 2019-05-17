@@ -367,12 +367,12 @@ void Gnuplotter::AllPlot_DIST_TIME_PSize(string filename,string filename_variabl
 void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename, string type_inst, string size_inst,string algo,int init_size, int steps){
 
 	Gnuplot gp;
-	int N_step = 23;
+	int N_step = 21;
 	gp<<"set terminal pngcairo size 1900,1400\n";
 
 	gp<<"set colorsequence podo\n";
-	gp<<"set style line 1 lt 1 lw 2 pt 1 ps 0.8 \n";
-	gp<<"set style line 2 lt 2 lw 2 pt 2 ps 0.8 \n";
+	gp<<"set style line 1 lt 1 lw 2 pt 1 ps 0.8 lc rgb 'red' \n";
+	gp<<"set style line 2 lt 2 lw 2 pt 2 ps 0.8 lc rgb 'blue' \n";
 	gp<<"set style line 3 lt 3 lw 2 pt 3 ps 0.8 lc rgb \"#e62e00\"   \n";
 	gp<<"set style line 4 lt 4 lw 2 pt 4 ps 0.8 \n";
 	gp<<"set style line 5 lt 5 lw 2 pt 5 ps 0.8 lc rgb \"#993366\"   \n";
@@ -385,7 +385,8 @@ void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename, string type_inst, stri
 	gp<<"set style line 20 lt 1 lw 3 pt 7 ps 1.5  lc rgb \"red\"   \n";
 
 	gp<<"set grid\n";
-	gp<<"unset key\n";
+//	gp<<"unset key\n";
+	gp<<"set key right bottom\n";
 
 	string xtics = "";
 	for(int i = 0; i < N_step ; i++){
@@ -399,7 +400,7 @@ void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename, string type_inst, stri
 
 	gp<<"step = 0\n"; ///:INFORMATION RATE
 
-
+	string filename2 = "./Data/DistTime/A/AVG_PS/I_100_AVG_PS";
 
 	xtics += "'No-limit' "+to_string(N_step);
 
@@ -413,9 +414,10 @@ void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename, string type_inst, stri
 	gp<<"set output \"AVG_"<<type_inst<<"_"<<size_inst<<"_"<<algo<<".png\"\n";
 	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 Average minimum distance from optimal solution when varying the size of the population using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
 
-	gp<<"do for[i=0:9] {\n";
+	gp<<"do for[i=0:7] {\n";
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
-		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".eval\" using 1 w steps ls (i+1) \n";
+		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".eval\" using 1 w steps ls (1) title 'Diversification LTA',"
+				" \""<<filename2<<"_T\".i.\"_\".step.\".eval\" using 1 w steps ls (2) title 'No Diversification\n";
 
 	gp<<"}\n";
 
@@ -431,9 +433,11 @@ void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename, string type_inst, stri
 	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 Average time execution (second) when varying the size of the population using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
 
 
-	gp<<"do for[i=0:9] {\n";
+	gp<<"do for[i=0:7] {\n";
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
-		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".eval\" using 2 w steps ls (i+1) \n";
+		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".eval\" using 2 w steps ls (1) title 'Diversification LTA',"
+				" \""<<filename2<<"_T\".i.\"_\".step.\".eval\" using 2 w steps ls (2) title 'No Diversification\n";
+
 
 	gp<<"}\n";
 
@@ -446,13 +450,13 @@ void Gnuplotter::DIST_TIME_PSize_RESUM_X(string filename, string type_inst, stri
 void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, string size_inst,string algo,int init_size, int steps){
 
 	Gnuplot gp;
-	int N_step = 23;
+	int N_step = 21;
 	gp<<"set terminal pngcairo size 1900,1400\n";
 
 
 	gp<<"set colorsequence podo\n";
-	gp<<"set style line 1 lt 1 lw 2 pt 1 ps 0.8 \n";
-	gp<<"set style line 2 lt 2 lw 2 pt 2 ps 0.8 \n";
+	gp<<"set style line 1 lt 1 lw 2 pt 1 ps 0.8 lc rgb 'red' \n";
+	gp<<"set style line 2 lt 2 lw 2 pt 2 ps 0.8 lc rgb 'blue' \n";
 	gp<<"set style line 3 lt 3 lw 2 pt 3 ps 0.8 lc rgb \"#e62e00\"   \n";
 	gp<<"set style line 4 lt 4 lw 2 pt 4 ps 0.8 \n";
 	gp<<"set style line 5 lt 5 lw 2 pt 5 ps 0.8 lc rgb \"#993366\"   \n";
@@ -465,7 +469,8 @@ void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, str
 	gp<<"set style line 20 lt 1 lw 3 pt 7 ps 1.5  lc rgb \"red\"   \n";
 
 	gp<<"set grid\n";
-	gp<<"unset key\n";
+//	gp<<"unset key\n";
+	gp<<"set key right bottom\n";
 
 	string xtics = "";
 	for(int i = 0; i < N_step ; i++){
@@ -479,6 +484,7 @@ void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, str
 
 	xtics += "'No-limit' "+to_string(N_step);
 
+	string filename2 = "./Data/ParetoFront/A/AVG_PS/I_100_AVG_PS";
 
 	gp<<"step = 0\n"; ///:INFORMATION RATE
 
@@ -493,10 +499,11 @@ void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, str
 	gp<<"set output \"D1_"<<type_inst<<"_"<<size_inst<<".png\"\n";
 	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 Average minimum distance from the optimal front (INDICATOR) when varying the size of the population using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
 
-	gp<<"do for[i=0:9] {\n";
+	gp<<"do for[i=0:7] {\n";
 
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
-		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".front\" using 1 w steps ls (i+1) \n";
+		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".front\" using 1 w steps ls (1) title 'Diversification LTA',"
+				" \""<<filename2<<"_T\".i.\"_\".step.\".front\" using 1 w steps ls (2) title 'No Diversification\n";
 
 	gp<<"}\n";
 
@@ -511,11 +518,12 @@ void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, str
 
 	gp<<"set output \"D2_"<<type_inst<<"_"<<size_inst<<".png\"\n";
 
-	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 MinMax distance from the optimal front (INDICATOR) when varying the size of the population using "<<size_inst<<" items ("<<type_inst<<") }\"\n";
+	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 MaxMin distance from the optimal front (INDICATOR) when varying the size of the population using "<<size_inst<<" items ("<<type_inst<<") }\"\n";
 
-	gp<<"do for[i=0:9] {\n";
+	gp<<"do for[i=0:7] {\n";
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
-		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".front\" using 2 w steps ls (i+1) \n";
+		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".front\" using 2 w steps ls (1) title 'Diversification LTA',"
+				" \""<<filename2<<"_T\".i.\"_\".step.\".front\" using 2 w steps ls (2) title 'No Diversification\n";
 
 	gp<<"}\n";
 
@@ -531,9 +539,10 @@ void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, str
 
 	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15  Proportion of optimal solution (INDICATOR) when varying the size of the population using "<<size_inst<<" items ("<<type_inst<<")  }\"\n";
 
-	gp<<"do for[i=0:9] {\n";
+	gp<<"do for[i=0:7] {\n";
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
-		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".front\" using 3 w steps ls (i+1) \n";
+		gp<<"plot  \""<<filename<<"_T\".i.\"_\".step.\".front\" using 3 w steps ls (1) title 'Diversification LTA',"
+				" \""<<filename2<<"_T\".i.\"_\".step.\".front\" using 3 w steps ls (2) title 'No Diversification\n";
 
 	gp<<"}\n";
 

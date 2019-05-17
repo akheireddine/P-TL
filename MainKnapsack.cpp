@@ -162,6 +162,7 @@ void MainKnapsack::Generate_random_Population(string filename, int number_of_ind
 
 
 void MainKnapsack::readFilenameInstance(string filename){
+	cout<<filename<<endl;
 
 	string line;
 	char buff[100];
@@ -182,6 +183,7 @@ void MainKnapsack::readFilenameInstance(string filename){
 	if( line[0] == 'n')
 		sscanf(line.c_str(),"%s %d",buff,&n_items);
 
+	cout<<n_items<<endl;
 	Items_information.resize(n_items);
 
 	//comments
@@ -219,6 +221,7 @@ void MainKnapsack::readFilenameInstance(string filename){
 	//number of criteria
 	p_criteria = 0;
 	p_criteria = line_value.size();
+	cout<<p_criteria<<endl;
 
 	//comments
 	while( line[0] == 'c' )
@@ -228,6 +231,10 @@ void MainKnapsack::readFilenameInstance(string filename){
 	//total capacity
 	if( line[0] == 'W' )
 		sscanf(line.c_str(),"%s %f",buff,&Backpack_capacity);
+
+
+	cout<<Backpack_capacity<<endl;
+
 #ifdef __PRINT__
 	cout<<"Information sur l'instance : "<<endl;
 	cout<<"   Instance de taille ("<<to_string(n_items)<<")"<<endl;
@@ -240,6 +247,7 @@ void MainKnapsack::readFilenameInstance(string filename){
 
 
 void MainKnapsack::readWS_Matrix(string filename){
+	cout<<filename<<endl;
 
 	char *cline, *pch;
 	int i;

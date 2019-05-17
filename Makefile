@@ -54,6 +54,9 @@ all: WS_KNAPSACK
 Tools.o: Tools.cpp
 	$(CCC) $(CCFLAGS) -c Tools.cpp 
 
+Instance_Generator.o: Instance_Generator.cpp
+	$(CCC) $(CCFLAGS) -c Instance_Generator.cpp 
+	
 Gnuplotter.o: Gnuplotter.cpp
 	$(CCC) $(CCFLAGS) -c Gnuplotter.cpp
 
@@ -70,8 +73,8 @@ MainClass.o: MainClass.cpp MainKnapsack.h Gnuplotter.h
 	$(CCC) $(CCFLAGS) -o MainClass.o -c MainClass.cpp 
 
 
-WS_KNAPSACK: Tools.o Gnuplotter.o MainKnapsack.o AlternativeKnapsack.o Evaluator.o MainClass.o 
-	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o WS_KNAPSACK Tools.o Gnuplotter.o  MainKnapsack.o AlternativeKnapsack.o  Evaluator.o MainClass.o $(CCLNFLAGS)
+WS_KNAPSACK: Tools.o Instance_Generator.o Gnuplotter.o MainKnapsack.o AlternativeKnapsack.o Evaluator.o MainClass.o 
+	$(CCC) $(CCFLAGS) $(CCLNDIRS) -o WS_KNAPSACK Tools.o Instance_Generator.o Gnuplotter.o  MainKnapsack.o AlternativeKnapsack.o  Evaluator.o MainClass.o $(CCLNFLAGS)
 
 
 clean:

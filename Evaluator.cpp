@@ -337,7 +337,7 @@ float Evaluator::average_distance_D1(){
 		avg_dist += min_dist;
 	}
 
-	return avg_dist/ PFront.size();
+	return avg_dist/PFront.size();
 }
 
 float Evaluator::maximum_distance_D2(){
