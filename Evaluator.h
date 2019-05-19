@@ -45,7 +45,7 @@ public:
 
 	//INTERN OPERATIONS
 	vector<float> get_objective_values(vector<float> v_src);
-	bool is_dominated(vector<float> v);
+	bool in_search_space(vector<float> v,vector<float> minus, vector<float> maxus);
 
 
 
@@ -55,6 +55,10 @@ public:
 	shared_ptr<AlternativeKnapsack> OPT_Alternative_PLNE(vector<float> WS_vector);
 	void evaluate_Dist_Time(string dist_time_file, float time);
 	void evaluate_PF(string pf_indicators_file);
+	void evaluate_standard_deviation_from_OPT_point(string std_deviation_file);
+
+
+
 	void compute_information_rate_front();
 	float compute_information_rate();
 

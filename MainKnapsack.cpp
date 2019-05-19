@@ -46,8 +46,10 @@ MainKnapsack::MainKnapsack( int population_size_init, string filename, string ma
 
 	for(int i = 0; i < population_size_init ; i++){
 		set<int> individu = init_population.front();
+		init_population.pop_front();
 		string id_alt = Tools::decode_set_items(individu, n_items);
 		Population.push_back(id_alt);
+		init_population.push_back(individu);
 	}
 
 }
@@ -162,7 +164,6 @@ void MainKnapsack::Generate_random_Population(string filename, int number_of_ind
 
 
 void MainKnapsack::readFilenameInstance(string filename){
-	cout<<filename<<endl;
 
 	string line;
 	char buff[100];
@@ -183,7 +184,6 @@ void MainKnapsack::readFilenameInstance(string filename){
 	if( line[0] == 'n')
 		sscanf(line.c_str(),"%s %d",buff,&n_items);
 
-	cout<<n_items<<endl;
 	Items_information.resize(n_items);
 
 	//comments
@@ -221,7 +221,6 @@ void MainKnapsack::readFilenameInstance(string filename){
 	//number of criteria
 	p_criteria = 0;
 	p_criteria = line_value.size();
-	cout<<p_criteria<<endl;
 
 	//comments
 	while( line[0] == 'c' )
@@ -233,7 +232,6 @@ void MainKnapsack::readFilenameInstance(string filename){
 		sscanf(line.c_str(),"%s %f",buff,&Backpack_capacity);
 
 
-	cout<<Backpack_capacity<<endl;
 
 #ifdef __PRINT__
 	cout<<"Information sur l'instance : "<<endl;
@@ -247,7 +245,6 @@ void MainKnapsack::readFilenameInstance(string filename){
 
 
 void MainKnapsack::readWS_Matrix(string filename){
-	cout<<filename<<endl;
 
 	char *cline, *pch;
 	int i;
@@ -405,6 +402,7 @@ void MainKnapsack::filter_efficient_set(){
 //Filter the final archive (decision spaec)
 void MainKnapsack::filter_efficient_set_decision_space(){
 
+	cout<<"before : "<<OPT_Solution.size()<<endl;
 	vector< shared_ptr< Alternative > > to_rm;
 	for(list< shared_ptr< Alternative > >::iterator el1 = OPT_Solution.begin(); el1 != OPT_Solution.end(); ++el1){
 		for(list< shared_ptr< Alternative > >::iterator el2 = OPT_Solution.begin(); el2 != OPT_Solution.end(); ++el2){
@@ -423,6 +421,8 @@ void MainKnapsack::filter_efficient_set_decision_space(){
 
 	for(int i = 0; i < (int)to_rm.size(); i++)
 		OPT_Solution.remove(to_rm[i]);
+	cout<<"after : "<<OPT_Solution.size()<<endl;
+
 
 }
 
@@ -682,7 +682,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 	list< string > Dominated_alt;
 	int nb_iteration=0;
 	int new_pop = 0;
-	int n_dominate = 0;
 
 	//First initialization NO FILTERING
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
@@ -701,9 +700,9 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 		Population.pop_front();
 
 
-		if(nb_iteration > 1)
-//			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
-			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
+//		if(nb_iteration > 1)
+////			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
+//			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -737,7 +736,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 			if( Update_Archive(new_alt, OPT_Solution) ){
 				Population.push_back(*id_new_alt);
 				new_pop++;
-				n_dominate++;
 			}
 			else{
 				Dominated_alt.push_back(*id_new_alt);
@@ -745,7 +743,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 		}
 
 		if( ((int)Population.size() - new_pop ) == 0){
-//			cout<<new_pop<<endl;
 			new_pop = 0;
 			STEPS_PLOT++;
 		}
@@ -796,7 +793,8 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
 
-	filter_efficient_set_decision_space();
+
+//	filter_efficient_set_decision_space();
 
 	write_solution(filename_instance+".sol");
 
@@ -831,8 +829,8 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		if(nb_iteration > 1)
-			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+".expl",alt);
+//		if(nb_iteration > 1)
+//			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+".expl",alt);
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -877,11 +875,11 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 		if( Population.empty() ){
 
-			if( ((int)next_Population.size() < UB_Population_size)  and !next_Population.empty() ){
-				int to_add = ( UB_Population_size - (int)next_Population.size() ) ;
-//				Threshold_Accepting_AVG(Dominated_alt, next_Population, to_add);
-				Learning_Threshold_Accepting_AVG(Dominated_alt, next_Population, to_add);
-			}
+//			if( ((int)next_Population.size() < UB_Population_size)  and !next_Population.empty() ){
+//				int to_add = ( UB_Population_size - (int)next_Population.size() ) ;
+////				Threshold_Accepting_AVG(Dominated_alt, next_Population, to_add);
+//				Learning_Threshold_Accepting_AVG(Dominated_alt, next_Population, to_add);
+//			}
 
 			for(list< string >::iterator it = next_Population.begin(); it != next_Population.end(); ++it)
 				if( dic_Alternative[*it].use_count() != 0)
@@ -902,7 +900,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
 
-	filter_efficient_set_decision_space();
+//	filter_efficient_set_decision_space();
 
 	write_solution(filename_instance+".sol");
 
@@ -1024,7 +1022,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec,in
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
 
-	filter_efficient_set_decision_space();
+//	filter_efficient_set_decision_space();
 
 	write_solution(filename_instance+".sol");
 
@@ -1196,7 +1194,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_local_Archive(double starti
 
 	}
 
-	filter_efficient_set_decision_space();
+//	filter_efficient_set_decision_space();
 
 	write_solution(filename_instance+".sol");
 

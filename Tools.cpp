@@ -4,6 +4,7 @@
 #include "Tools.h"
 #include <iostream>
 #include <algorithm>
+#include <numeric>
 #include <ilcplex/ilocplex.h>
 
 
@@ -163,7 +164,7 @@ void Tools::update_dist_time(float dist_min,float time){
 	Tools::dist_time_avg[0] += dist_min*100;
 	Tools::dist_time_avg[1] += time;
 
-	Tools::cpt++;
+	Tools::cpt_count++;
 }
 
 void Tools::update_indicators(float D1, float D2, float D3){
@@ -172,12 +173,33 @@ void Tools::update_indicators(float D1, float D2, float D3){
 	Tools::indicator_avg[2] += D3;
 }
 
+void Tools::add_dist_to_OPT(float ratio){
+
+	ratios_dist_to_OPT.push_back(ratio);
+}
+
+
+void Tools::save_std_deviation(string filename){
+	ofstream fic_write(filename.c_str(), ios::app);
+
+	float avg_ratio = accumulate(ratios_dist_to_OPT.begin(), ratios_dist_to_OPT.end(), 0) / ratios_dist_to_OPT.size() * 1.0;
+
+	float val = 1.0/ratios_dist_to_OPT.size();
+
+	for(int i = 0; i < (int)ratios_dist_to_OPT.size(); i++)
+		val += ( ratios_dist_to_OPT[i] - avg_ratio ) * ( ratios_dist_to_OPT[i] - avg_ratio );
+
+	fic_write<<sqrt(val)<<endl;
+	fic_write.close();
+
+	Tools::ratios_dist_to_OPT.clear();
+}
 
 void Tools::save_average_dist_time(string filename){
 
 	ofstream fic_write(filename.c_str(), ios::app);
 	for(int i = 0; i < (int)Tools::dist_time_avg.size(); i++){
-		Tools::dist_time_avg[i] = Tools::dist_time_avg[i]*1.0/cpt;
+		Tools::dist_time_avg[i] = Tools::dist_time_avg[i]*1.0/cpt_count;
 		fic_write<<Tools::dist_time_avg[i]<<" ";
 	}
 	fic_write<<endl;
@@ -190,7 +212,7 @@ void Tools::save_average_indicator(string filename){
 
 	ofstream fic_write(filename.c_str(), ios::app);
 	for(int i = 0; i < (int)indicator_avg.size(); i++){
-		Tools::indicator_avg[i] = Tools::indicator_avg[i]*1.0/cpt;
+		Tools::indicator_avg[i] = Tools::indicator_avg[i]*1.0/cpt_count;
 		fic_write<<Tools::indicator_avg[i]<<" ";
 	}
 	fic_write<<endl;

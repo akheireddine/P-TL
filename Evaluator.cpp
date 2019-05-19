@@ -17,6 +17,8 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 
 	readParetoFront();
 
+
+
 #ifdef __PRINT__
 	cout<<"----------------------- EVALUATION ----------------------"<<endl;
 #endif
@@ -30,6 +32,7 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 
 
 	evaluate_Dist_Time(dist_time_file, time);
+	evaluate_standard_deviation_from_OPT_point(dist_time_file);
 	evaluate_PF(pf_indicators_file);
 
 
@@ -73,47 +76,29 @@ void Evaluator::write_objective_OPT_information(){
 
 }
 
-vector<float> Evaluator::get_objective_values(vector<float> v_src){
+//vector<float> Evaluator::get_objective_values(vector<float> v_src){
+//
+//	vector<float> v_dest(v_src.size(),0);
+//
+//	vector<vector<float > > ws_mat = mainProblem->get_WS_matrix();
+//
+//	for(int i = 0; i < mainProblem->get_n_objective(); i++){
+//		for(int j = 0; j < mainProblem->get_p_criteria(); j++)
+//			v_dest[i] += v_src[j] * ws_mat[j][i];
+//	}
+//
+//	return v_dest;
+//}
 
-	vector<float> v_dest(v_src.size(),0);
+bool Evaluator::in_search_space(vector<float> v,vector<float> minus, vector<float> maxus){
 
-	vector<vector<float > > ws_mat = mainProblem->get_WS_matrix();
 
-	for(int i = 0; i < mainProblem->get_n_objective(); i++){
-		for(int j = 0; j < mainProblem->get_p_criteria(); j++)
-			v_dest[i] += v_src[j] * ws_mat[j][i];
-	}
+	for(int j = 0; j < mainProblem->get_p_criteria(); j++)
+		if( (v[j] < minus[j] )  or (v[j] > maxus[j]) )
+				return false;
 
-	return v_dest;
-}
+	return true;
 
-bool Evaluator::is_dominated(vector<float> v){
-
-	list< vector<float > > cp_PF(PFront.begin(), PFront.end());
-
-	for(list< vector<float > >::iterator k = cp_PF.begin(); k != cp_PF.end(); ++k){
-
-		bool dominated = false, dominates = false;
-		vector<float > pf_alt = *k ;
-
-		for(int i = 0; i < (int)pf_alt.size(); i++){
-
-			if( v[i] < pf_alt[i] )									// MAXIMIZATION DES OBJECTIFS ! ! !
-				dominated = true;
-
-			else if ( v[i] > pf_alt[i] )
-				dominates = true;
-		}
-
-		if ( dominated and !dominates)
-			return true;
-		else if ( !dominated and dominates )
-			PFront.remove(*k);
-	}
-
-	list<vector<float>>().swap(cp_PF);
-
-	return false;
 }
 
 
@@ -140,9 +125,38 @@ void Evaluator::readParetoFront(){
 		vector_pareto_objective = Tools::decompose_line_to_float_vector(line);
 		PF_Efficient.push_back(vector_pareto_objective);
 
-		transformed_objective = get_objective_values(vector_pareto_objective);
 
-		if( !is_dominated(transformed_objective) )
+		vector<vector<float > > ws_mat = mainProblem->get_WS_matrix();
+
+		vector< float > minus(mainProblem->get_p_criteria(), -1);
+		vector< float > maxus(mainProblem->get_p_criteria(), -1);
+
+
+		for(int i = 0; i < mainProblem->get_n_objective(); i++){
+			vector< float > obj, extrem_solution;
+
+			for(int j = 0; j < mainProblem->get_p_criteria(); j++){
+				obj.push_back(ws_mat[j][i]);
+			}
+
+			extrem_solution = OPT_Alternative_PLNE(obj)->get_criteria_values() ;
+
+			for(int j = 0; j < mainProblem->get_p_criteria(); j++){
+				if( minus[j] == -1    or   extrem_solution[j] < minus[j] )
+					minus[j] = extrem_solution[j];
+
+				if(maxus[j] == -1     or   maxus[j] < extrem_solution[j])
+					maxus[j] = extrem_solution[j];
+			}
+
+		}
+
+
+
+
+
+		if( in_search_space(vector_pareto_objective,minus, maxus) )
+//		if( !is_dominated(transformed_objective) )
 			PFront.push_back(vector_pareto_objective);
 	}
 
@@ -281,14 +295,36 @@ void Evaluator::evaluate_Dist_Time(string dist_time_file, float time){
 //	ofstream fic(dist_time_file,ios::app);
 //	//"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+to_string(mainProblem->get_n_items())+".eval", ios::app);
 //	fic<<min_mols_ratio<<","<<time<<endl;
-//
-//
-//	fic.close();
-
-	vector< float >().swap(vector_criteria);
 
 }
 
+
+void Evaluator::evaluate_standard_deviation_from_OPT_point(string std_deviation_file){
+
+	ifstream fic((filename_instance+".sol").c_str());
+
+	vector< float >tmp_criteria_values;
+
+	float tmp_ratio = 1.;
+	string line;
+
+	while(!fic.eof()){
+
+		getline(fic,line);
+
+		if(line.size() == 0)
+			continue;
+
+		tmp_criteria_values = Tools::decompose_line_to_float_vector(line);
+
+		tmp_ratio = Tools::get_ratio(tmp_criteria_values, OPT_Alternative->get_criteria_values(), WS_DM_vector);
+
+		Tools::add_dist_to_OPT(tmp_ratio);
+
+	}
+
+	fic.close();
+}
 
 
 

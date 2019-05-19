@@ -26,7 +26,9 @@ public:
 
 	static vector< float > dist_time_avg;
 	static vector< float > indicator_avg;
-	static int cpt;
+	static int cpt_count;
+	static vector< float > ratios_dist_to_OPT;
+
 
 	static inline void clean_up(){ 	dist_time_avg.clear();dist_time_avg.resize(2,0); indicator_avg.clear(); indicator_avg.resize(3,0); };
 	static float euclidian_distance(vector<float> v1, vector<float> v2);
@@ -48,6 +50,10 @@ public:
 	static string decode_set_items(set<int> items, int nb_items);
 
 	static void skip(list< set< int > > & list_skiper, int n);
+
+
+	static void add_dist_to_OPT(float ratio);
+	static void save_std_deviation(string filename);
 
 
 //	static void save_information_in(string filename, string smthing);
