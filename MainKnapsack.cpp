@@ -436,7 +436,7 @@ float f(vector<float> ws, vector<float> criteria){
 
 void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound){
 
-	map< float, string > ratio_items;
+	map< float, string, less<float> > ratio_items;
 
 
 	vector<float> random_ws = Tools::generate_random_restricted_WS_aggregator(p_criteria, WS_matrix);
@@ -445,22 +445,20 @@ void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions,
 
 		shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[*i];
 
-		float aggreg_value = 0;
-
-		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
-		}
-
-		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
+		float aggreg_value = -1;
 
 //		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-//			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
-//			if(aggreg_value == -1   or  (val < aggreg_value)  )
-//				aggreg_value =  val;
+//			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
 //		}
-//		float val_key = aggreg_value;
+//
+//		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
 
-
+		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+			if(aggreg_value == -1   or  (val < aggreg_value)  )
+				aggreg_value =  val;
+		}
+		float val_key = aggreg_value;
 
 		if(val_key <= Ta)
 			ratio_items[val_key] = p_alt->get_id_alt();
@@ -471,7 +469,7 @@ void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions,
 	int cpt= 0;
 	int min_bound = (upper_bound != -1)? upper_bound : (int)dominated_solutions.size();
 	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
-	for(map< float, string >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
+	for(map< float, string, less<float> >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
 
 		if( cpt < min_bound){
 			shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[(*i).second];
@@ -482,6 +480,7 @@ void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions,
 		else
 			break;
 	}
+
 	Ta *= alpha;
 }
 
@@ -713,19 +712,19 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 
 
 
-//		if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < (DIVERSIFICATION ))  ){
-//			int bef_add = (int)Population.size();
-////			Limit_number_accepting_N(Dominated_alt, -1);
+		if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < (DIVERSIFICATION ))  ){
+			int bef_add = (int)Population.size();
+//			Limit_number_accepting_N(Dominated_alt, -1);
+
+//			Distribution_proba(Dominated_alt, -1);
 //
-////			Distribution_proba(Dominated_alt, -1);
-////
-//
-////			Threshold_Accepting_AVG(Dominated_alt,Population, -1);
-//
+
+			Threshold_Accepting_AVG(Dominated_alt,Population, -1);
+
 //			Learning_Threshold_Accepting_AVG(Dominated_alt,Population, -1);
-//
-//			new_pop += ((int)Population.size() - bef_add);
-//		}
+
+			new_pop += ((int)Population.size() - bef_add);
+		}
 
 		for(list< string >::iterator it = Dominated_alt.begin(); it != Dominated_alt.end(); ++it){
 			if( find(Population.begin(), Population.end(), *it) == Population.end())

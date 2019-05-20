@@ -705,7 +705,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_in
 	gp<<"set terminal pngcairo size 1500,900\n";
 
 
-	gp<<"do for[j=0:9]{\n";
+	gp<<"do for[j=4:4]{\n";
 
 
 
