@@ -36,10 +36,10 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 	evaluate_PF(pf_indicators_file);
 
 
+
 #ifdef __PRINT__
 	cout<<"----------------------- END EVALUATION ----------------------"<<endl<<endl;
 #endif
-
 
 
 }

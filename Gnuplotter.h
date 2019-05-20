@@ -30,6 +30,8 @@ public:
 	static void Plot_SEARCH_EVOLUTION(string filename, string type_inst, string size_inst,string algo, int size, int step, int opt_size, string opt_points);
 	static void Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_inst, string size_inst,string algo, int size, int step, int opt_size, string opt_points_filename);
 
+	static void Plot_SEARCH_EVOLUTION_WITH_INFO_PSize(string filename, string type_inst, string size_inst,string algo, int size, int step, int opt_size, string opt_points_filename);
+
 };
 
 #endif

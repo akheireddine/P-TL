@@ -48,8 +48,6 @@ public :
 //	bool Update_Archive_Threshold_Accepting(Alternative* p, list< Alternative* > &set_SOL);
 	void update_alternatives(list< string > &set_Alt, bool Pareto);
 
-	void filter_efficient_set();
-	void filter_efficient_set_decision_space();
 
 	void HYBRID_WS_PLS(double starting_time_sec, int ITER);
 	void HYBRID_PLS_WS(double starting_time_sec, int ITER);

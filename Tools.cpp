@@ -184,6 +184,15 @@ void Tools::save_std_deviation(string filename){
 
 	float avg_ratio = accumulate(ratios_dist_to_OPT.begin(), ratios_dist_to_OPT.end(), 0) / ratios_dist_to_OPT.size() * 1.0;
 
+	if(ratios_dist_to_OPT.size() == 0){
+		fic_write<<"-nan"<<endl;
+		fic_write.close();
+		Tools::ratios_dist_to_OPT.clear();
+		return;
+	}
+
+
+
 	float val = 1.0/ratios_dist_to_OPT.size();
 
 	for(int i = 0; i < (int)ratios_dist_to_OPT.size(); i++)
