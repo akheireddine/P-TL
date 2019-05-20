@@ -72,7 +72,7 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 			Tools::clean_up();
 
 			for(int k = 0; k < K; k++){
-				Ta = 500;
+				Ta = -1;
 				Temperature = 1500;
 				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
 				delete eval_ks;
@@ -163,7 +163,10 @@ Evaluator* main_Knapsack_PLSWS(string filename_instance, string type_instance, s
 	MainKnapsack * knaps = new MainKnapsack(size_population, filename_instance, pref_filename);
 
 	clock_t t1 = clock();
-	knaps->HYBRID_PLS_WS(t1/CLOCKS_PER_SEC,iter);
+//	knaps->HYBRID_PLS_WS(t1/CLOCKS_PER_SEC,iter);
+
+	knaps->SWITCH_PLS_WS(t1/CLOCKS_PER_SEC,iter, 50);
+
 	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
 
 	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
@@ -189,11 +192,10 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 
 	for(int i = 7; i < N ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		init_population.clear();
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 
 	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 250; step < 251; step++){
+		for(int step = 150; step < 151; step++){
 			cout<<"_________________________________ NB-ITER "<<step<<"___________________________"<<endl;
 			int information_rate = 0;
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(information_rate),"WS_Matrix3.csv");
@@ -237,7 +239,7 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 Evaluator* main_Knapsack_Cst_PSize(string filename_instance, string type_instance, string num_instance,
 	int size_population, string WS_DM_preferences, int max_size_population){
 
-	string pref_filename = "./WS_MatrixC.csv";
+	string pref_filename = "./WS_MatrixAT.csv";
 
 	MainKnapsack * knaps = new MainKnapsack(size_population,filename_instance,pref_filename);
 
@@ -286,7 +288,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 			for(int step = 0; step < 8; step++){
 				INFO = step;
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixC.csv");
+				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixAT.csv");
 
 
 				Tools::cpt_count = 0;
@@ -300,8 +302,8 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 					delete eval_ks;
 				}
 
-				Tools::save_std_deviation("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS"+to_string(i)+".eval");
-				Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS"+to_string(i)+".front");
+				Tools::save_std_deviation("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS_LTA"+to_string(i)+".eval");
+				Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS_LTA"+to_string(i)+".front");
 
 
 				if(j == 0 ){
@@ -314,17 +316,17 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 						delete eval_ks;
 					}
 
-					Tools::save_std_deviation("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval");
-					Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front");
+					Tools::save_std_deviation("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_LTA.eval");
+					Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_LTA.front");
                 }
 
 			}
-			Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS"+to_string(i)+".eval",type_inst+to_string(i)+"___"+to_string(iter));
-			Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS"+to_string(i)+".front",type_inst+to_string(i)+"___"+to_string(iter));
+			Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS_LTA"+to_string(i)+".eval",type_inst+to_string(i)+"___"+to_string(iter));
+			Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS_LTA"+to_string(i)+".front",type_inst+to_string(i)+"___"+to_string(iter));
 
 		}
-		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval",type_inst+to_string(i)+"___");
-		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_LTA.eval",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_LTA.front",type_inst+to_string(i)+"___");
 
 	}
 
@@ -344,12 +346,12 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "100";
+	string taille = "200";
 
 //	script_knapsack(type_inst, taille, WS_DM);
 
-	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-		,"MOLS2", -1 , 10, 410 , "./DM_preference_point");
+//	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+//		,"MOLS2", -1 , 10, 410 , "./DM_preference_point");
 //
 //	Gnuplotter::Comparison_Plot_DIST_TIME("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_DIVERS_LTA.eval","./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval"
 //				,type_inst,taille,"DIVERSIFICATION LT_A","NO DIVERSIFICATION");
@@ -443,8 +445,8 @@ int main(int argc, char** argv){
 //	script_knapsack_PLSWS(type_inst,taille,WS_DM);
 
 
-//	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//			,"MOLS2", -1, 10, 111 , "./DM_preference_point");
+	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+			,"MOLS2", -1, 10, 111 , "./DM_preference_point");
 
 
 //	Instance_Generator::random_instances(101,2,"Instances_Knapsack/Type_A/"+taille+"_items", 3);
