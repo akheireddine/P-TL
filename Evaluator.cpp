@@ -10,12 +10,15 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 	filename_instance = filename;
 	mainProblem = problemInstance;
 
+	cout<<"time1"<<endl;
 	dist_time_file = DT_file;
 	pf_indicators_file = PFI_file;
 
 	WS_DM_vector = Tools::readWS_DM(WS_DM_preferences);
+	cout<<"time2"<<endl;
 
 	readParetoFront();
+	cout<<"time3"<<endl;
 
 
 
@@ -30,10 +33,20 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 	cout<<"    "<< Tools::print_vector(OPT_Alternative->get_criteria_values())<<endl;
 #endif
 
+	cout<<"time4"<<endl;
 
 	evaluate_Dist_Time(dist_time_file, time);
+
+	cout<<"time5"<<endl;
+
 	evaluate_standard_deviation_from_OPT_point(dist_time_file);
+
+	cout<<"time6"<<endl;
+
 	evaluate_PF(pf_indicators_file);
+
+	cout<<"time7"<<endl;
+
 
 
 
@@ -116,6 +129,35 @@ void Evaluator::readParetoFront(){
 
 	PFront.clear();
 	PF_Efficient.clear();
+
+
+
+	vector<vector<float > > ws_mat = mainProblem->get_WS_matrix();
+
+	vector< float > minus(mainProblem->get_p_criteria(), -1);
+	vector< float > maxus(mainProblem->get_p_criteria(), -1);
+
+
+	for(int i = 0; i < mainProblem->get_n_objective(); i++){
+		vector< float > obj, extrem_solution;
+
+		for(int j = 0; j < mainProblem->get_p_criteria(); j++){
+			obj.push_back(ws_mat[j][i]);
+		}
+
+		extrem_solution = OPT_Alternative_PLNE(obj)->get_criteria_values() ;
+
+		for(int j = 0; j < mainProblem->get_p_criteria(); j++){
+			if( minus[j] == -1    or   extrem_solution[j] < minus[j] )
+				minus[j] = extrem_solution[j];
+
+			if(maxus[j] == -1     or   maxus[j] < extrem_solution[j])
+				maxus[j] = extrem_solution[j];
+		}
+
+	}
+
+
 	while(!fic.eof()){
 
 		getline(fic,line);
@@ -124,36 +166,6 @@ void Evaluator::readParetoFront(){
 
 		vector_pareto_objective = Tools::decompose_line_to_float_vector(line);
 		PF_Efficient.push_back(vector_pareto_objective);
-
-
-		vector<vector<float > > ws_mat = mainProblem->get_WS_matrix();
-
-		vector< float > minus(mainProblem->get_p_criteria(), -1);
-		vector< float > maxus(mainProblem->get_p_criteria(), -1);
-
-
-		for(int i = 0; i < mainProblem->get_n_objective(); i++){
-			vector< float > obj, extrem_solution;
-
-			for(int j = 0; j < mainProblem->get_p_criteria(); j++){
-				obj.push_back(ws_mat[j][i]);
-			}
-
-			extrem_solution = OPT_Alternative_PLNE(obj)->get_criteria_values() ;
-
-			for(int j = 0; j < mainProblem->get_p_criteria(); j++){
-				if( minus[j] == -1    or   extrem_solution[j] < minus[j] )
-					minus[j] = extrem_solution[j];
-
-				if(maxus[j] == -1     or   maxus[j] < extrem_solution[j])
-					maxus[j] = extrem_solution[j];
-			}
-
-		}
-
-
-
-
 
 		if( in_search_space(vector_pareto_objective,minus, maxus) )
 //		if( !is_dominated(transformed_objective) )

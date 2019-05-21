@@ -712,19 +712,19 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 
 
 
-		if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < (DIVERSIFICATION ))  ){
-			int bef_add = (int)Population.size();
-//			Limit_number_accepting_N(Dominated_alt, -1);
-
-//			Distribution_proba(Dominated_alt, -1);
+//		if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < (DIVERSIFICATION ))  ){
+//			int bef_add = (int)Population.size();
+////			Limit_number_accepting_N(Dominated_alt, -1);
 //
-
-			Threshold_Accepting_AVG(Dominated_alt,Population, -1);
-
-//			Learning_Threshold_Accepting_AVG(Dominated_alt,Population, -1);
-
-			new_pop += ((int)Population.size() - bef_add);
-		}
+////			Distribution_proba(Dominated_alt, -1);
+////
+//
+//			Threshold_Accepting_AVG(Dominated_alt,Population, -1);
+//
+////			Learning_Threshold_Accepting_AVG(Dominated_alt,Population, -1);
+//
+//			new_pop += ((int)Population.size() - bef_add);
+//		}
 
 		for(list< string >::iterator it = Dominated_alt.begin(); it != Dominated_alt.end(); ++it){
 			if( find(Population.begin(), Population.end(), *it) == Population.end())
