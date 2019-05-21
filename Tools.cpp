@@ -21,7 +21,7 @@ float Tools::euclidian_distance(vector<float> v1, vector<float> v2){
 	float dist = 0;
 
 	for(int i = 0; i < (int)v1.size(); i++)
-		dist += (v1[i] - v2[i]) * (v1[i] - v2[i]);
+		dist += ((v1[i] - v2[i]) * (v1[i] - v2[i]));
 
 	dist = sqrt(dist);
 

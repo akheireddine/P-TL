@@ -51,6 +51,8 @@ public :
 
 	void HYBRID_WS_PLS(double starting_time_sec, int ITER);
 	void HYBRID_PLS_WS(double starting_time_sec, int ITER);
+	void SWITCH_PLS_WS(double starting_time_sec, int ITER_PLS, int ITER_WS);
+
 
 	list< shared_ptr< Alternative > > MOLS(double starting_time_sec,int ITER);
 	list< shared_ptr< Alternative > > MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);

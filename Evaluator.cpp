@@ -10,15 +10,12 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 	filename_instance = filename;
 	mainProblem = problemInstance;
 
-	cout<<"time1"<<endl;
 	dist_time_file = DT_file;
 	pf_indicators_file = PFI_file;
 
 	WS_DM_vector = Tools::readWS_DM(WS_DM_preferences);
-	cout<<"time2"<<endl;
 
 	readParetoFront();
-	cout<<"time3"<<endl;
 
 
 
@@ -33,19 +30,11 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 	cout<<"    "<< Tools::print_vector(OPT_Alternative->get_criteria_values())<<endl;
 #endif
 
-	cout<<"time4"<<endl;
-
 	evaluate_Dist_Time(dist_time_file, time);
-
-	cout<<"time5"<<endl;
 
 	evaluate_standard_deviation_from_OPT_point(dist_time_file);
 
-	cout<<"time6"<<endl;
-
 	evaluate_PF(pf_indicators_file);
-
-	cout<<"time7"<<endl;
 
 
 
@@ -387,6 +376,7 @@ float Evaluator::average_distance_D1(){
 
 	return avg_dist/PFront.size();
 }
+
 
 float Evaluator::maximum_distance_D2(){
 	float min_dist = -1;
