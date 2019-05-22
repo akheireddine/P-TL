@@ -4,7 +4,8 @@
 #include <random>
 
 #include "MainKnapsack.h"
-#define TIMEOUT 240
+#define TIMEOUT 480  //8min
+
 
 #define N 20
 #define P 0.005
@@ -635,8 +636,8 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 		Population.pop_front();
 
 
-		if(nb_iteration > 1)
-			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
+//		if(nb_iteration > 1)
+//			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
 //			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
 
 
@@ -691,7 +692,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 //			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
 //				save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
 //			}
-
+			cout<<new_pop<<endl;
 			new_pop = 0;
 			STEPS_PLOT++;
 		}
@@ -777,8 +778,8 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		if(nb_iteration > 1)
-			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
+//		if(nb_iteration > 1)
+//			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -868,7 +869,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 		Local_front.clear();
 
-		cout<<"Archive : "<<OPT_Solution.size()<<endl;
+//		cout<<"Archive : "<<OPT_Solution.size()<<endl;
 	}
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
