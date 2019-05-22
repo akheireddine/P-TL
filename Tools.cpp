@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <numeric>
 #include <ilcplex/ilocplex.h>
+#include <cstdlib>      // std::rand, std::srand
 
 
 
@@ -261,7 +262,9 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 	float sum = 0.0, big_max = -1;
 	vector<float> weighted_sum(p_criteria);
 	vector<pair<float, float > > min_max(p_criteria,pair<float,float>());
-	//srand(time(NULL));
+	srand ( rand() );
+
+
 
 	if(p_criteria == 2){
 		const auto [minus, maxus] = minmax_element(begin(ws_matrix[0]), end(ws_matrix[0]));

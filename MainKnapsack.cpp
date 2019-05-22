@@ -131,24 +131,26 @@ void MainKnapsack::Generate_random_Population(string filename, int number_of_ind
 
 	float bp = 0;
 	set<int> individu;
-	vector<int> all_items(n_item);
+	vector<int> all_items;
 	list<int>::iterator iteratour;
 
 	for(int i = 0; i < n_item; i++)
 		all_items.push_back(i);
 
+
+
 	for (int i = 0; i < number_of_individu; i++){
 		individu.clear();
 
+		srand ( rand() );
+		random_shuffle( all_items.begin(), all_items.end()  );
+
 		bp = 0;
-		list<int> items(all_items.begin(), all_items.end());
+		int cpt = 0;
+		while(bp < Backpack_capacity and  cpt < (int)all_items.size()){
 
-		while(bp < Backpack_capacity  and (items.size() != 0)  ){//and (rand()*1.0/RAND_MAX) < 0.8){
-			iteratour = items.begin();
-			advance(iteratour, rand()%items.size() );
-
-			int itm = *iteratour;// items[ rand()%items.size() ];
-			items.remove( itm );
+			int itm = all_items[cpt];
+			cpt++;
 
 			float weight_itm = get<0>(Items_information[itm]);
 
@@ -159,6 +161,28 @@ void MainKnapsack::Generate_random_Population(string filename, int number_of_ind
 			bp += weight_itm;
 		}
 
+//		bp = 0;
+//		list<int> items(all_items.begin(), all_items.end());
+//
+//
+//		while(bp < Backpack_capacity  and (items.size() != 0)  ){//and (rand()*1.0/RAND_MAX) < 0.8){
+//			iteratour = items.begin();
+//			advance(iteratour, rand()%items.size() );
+//
+//			int itm = *iteratour;// items[ rand()%items.size() ];
+//			items.remove( itm );
+//
+//			float weight_itm = get<0>(Items_information[itm]);
+//
+//			if ( (weight_itm + bp) > Backpack_capacity )
+//				continue;
+//
+//			individu.insert(itm);
+//			bp += weight_itm;
+//		}
+//		for(set<int>::iterator it = individu.begin(); it != individu.end(); ++it)
+//			cout<<*it<<"  ";
+//		cout<<endl<<endl;
 		init_population.push_back(individu);
 
 	}
@@ -376,20 +400,28 @@ void MainKnapsack::save_new_point(string filename, shared_ptr< Alternative > alt
 
 
 
-void MainKnapsack::Limit_number_accepting_N(list< string > & dominated_solutions, int upper_bound){
+void MainKnapsack::Random_Selection(list< string > & dominated_solutions, int upper_bound){
 
-//	unsigned seed = chrono::system_clock::now().time_since_epoch().count();
-//	shuffle( dominated_solutions.begin(), dominated_solutions.end() , default_random_engine(seed));
+	vector<string> shuffle_DA (dominated_solutions.begin(), dominated_solutions.end());
+	srand ( rand() );
+	random_shuffle( shuffle_DA.begin(), shuffle_DA.end()  );
+	dominated_solutions.clear();
+	dominated_solutions.assign(shuffle_DA.begin(), shuffle_DA.end());
+
 
 	set< string > to_rm;
-	int min_bound = ( upper_bound != -1 )? upper_bound: N;
+	int min_bound = ( upper_bound != -1 )? upper_bound: dominated_solutions.size();
 	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
 
-	for(int i = 0; i < min_bound; i++){
-		string alt_name = *(next(dominated_solutions.begin() , i));
-		shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[ alt_name ];
-		Population.push_back( p_alt->get_id_alt() );
-		to_rm.insert(alt_name);
+	int cpt = 0;
+	for(list< string >::iterator it = dominated_solutions.begin(); it != dominated_solutions.end(); ++it){
+		if( cpt < min_bound){
+			cpt++;
+			string alt_name = *it;
+			shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[ alt_name ];
+			Population.push_back( p_alt->get_id_alt() );
+			to_rm.insert(alt_name);
+		}
 	}
 
 
@@ -611,6 +643,14 @@ void MainKnapsack::Learning_Threshold_Accepting_AVG(list< string > & dominated_s
 
 
 
+
+
+
+
+
+
+
+
 list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 	STEPS_PLOT = 0;
 	shared_ptr< AlternativeKnapsack > alt;
@@ -636,8 +676,8 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 		Population.pop_front();
 
 
-//		if(nb_iteration > 1)
-//			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
+		if(nb_iteration > 1)
+			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
 //			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
 
 
@@ -670,7 +710,8 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 		}
 
 		vector<string> shuffle_LF (Local_front.begin(), Local_front.end());
-		random_shuffle( shuffle_LF.begin(), shuffle_LF.end() );
+		srand ( rand());
+		random_shuffle( shuffle_LF.begin(), shuffle_LF.end()  );
 		Local_front.clear();
 		Local_front.assign(shuffle_LF.begin(), shuffle_LF.end());
 
@@ -692,7 +733,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 //			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
 //				save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
 //			}
-			cout<<new_pop<<endl;
+//			cout<<new_pop<<endl;
 			new_pop = 0;
 			STEPS_PLOT++;
 		}
@@ -717,24 +758,23 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 //		Simulated_Annealing(Dominated_alt, Population, -1);
 
 
-
 //		if( !Population.empty() and  ((rand()*1.0/RAND_MAX) < (DIVERSIFICATION ))  ){
 //			int bef_add = (int)Population.size();
-////			Limit_number_accepting_N(Dominated_alt, -1);
+//			Random_Selection(Dominated_alt, -1);
 //
 ////			Distribution_proba(Dominated_alt, -1);
 ////
 //
-//			Threshold_Accepting_AVG(Dominated_alt,Population, -1);
+////			Threshold_Accepting_AVG(Dominated_alt,Population, -1);
 //
 ////			Learning_Threshold_Accepting_AVG(Dominated_alt,Population, -1);
 //
 //			new_pop += ((int)Population.size() - bef_add);
 //		}
 
-		for(list< string >::iterator it = Dominated_alt.begin(); it != Dominated_alt.end(); ++it){
-			if( find(Population.begin(), Population.end(), *it) == Population.end())
-				dic_Alternative[(*it)].reset();
+		for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
+			if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 )
+				(*it).second.reset();
 		}
 
 		Local_front.clear();
@@ -767,7 +807,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
 		dic_Alternative[ *p ] = make_shared< AlternativeKnapsack >( *p, this, WS_matrix );
 		OPT_Solution.push_back( dic_Alternative[ *p ] );
-
 //		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",dic_Alternative[ *p ]);
 	}
 	step++;
@@ -787,13 +826,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 		for(set< string >::iterator id_neighbor = current_neighbors.begin(); id_neighbor != current_neighbors.end(); ++id_neighbor){
 
 			shared_ptr< AlternativeKnapsack > neighbor;
-//			if( dic_Alternative.find(*id_neighbor) != dic_Alternative.end() ) {
-//				continue;
-//			}
-//			else {
-//				dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, alt->get_local_WS_matrix());
-//				neighbor = dic_Alternative[*id_neighbor];
-//			}
 
 			if ( dic_Alternative.find(*id_neighbor) == dic_Alternative.end()  or dic_Alternative[*id_neighbor].use_count() == 0){
 				dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, WS_matrix);
@@ -838,7 +870,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 			}
 		}
 
-
 		if( Population.empty() ){
 
 //			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
@@ -853,14 +884,15 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 //			if( ((int)Population.size() < UB_Population_size)  and !Population.empty() ){
 //				int to_add = ( UB_Population_size - (int)Population.size() ) ;
 ////				Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
-//				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
+////				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
+//				Random_Selection(Dominated_alt, to_add);
 //			}
 
 			step++;
 
-			for(list< string >::iterator it = Dominated_alt.begin(); it != Dominated_alt.end(); ++it){
-				if( find(Population.begin(), Population.end(), *it) == Population.end())
-					dic_Alternative[(*it)].reset();
+			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
+				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 )
+					(*it).second.reset();
 			}
 
 			Dominated_alt.clear();
@@ -869,7 +901,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 		Local_front.clear();
 
-//		cout<<"Archive : "<<OPT_Solution.size()<<endl;
 	}
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
@@ -1012,6 +1043,9 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec,in
 			if( find(Population.begin(), Population.end(), *it) == Population.end())
 				dic_Alternative[(*it)].reset();
 		}
+
+
+
 
 		Local_front.clear();
 		Dominated_alt.clear();
@@ -1292,11 +1326,13 @@ bool MainKnapsack::Update_Archive(shared_ptr< Alternative > p, list< shared_ptr<
 	}
 
 	for(vector< shared_ptr< Alternative > >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm){
-		set_SOL.remove(*rm);
 		//could be a solution in the Population and we want to explore it
-		if( find(Population.begin(), Population.end(), (*rm)->get_id_alt()) == Population.end()){
-			dic_Alternative[(*rm)->get_id_alt()].reset();
-		}
+//		if( find(Population.begin(), Population.end(), (*rm)->get_id_alt()) == Population.end()){
+			(*rm).reset();
+//		}
+
+		set_SOL.remove(*rm);
+
 	}
 	set_SOL.push_back(p);
 

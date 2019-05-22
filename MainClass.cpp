@@ -28,7 +28,7 @@ list<set<int>> init_population;
 
 Evaluator* main_Knapsack(string filename_instance, string type_instance, string num_instance, int size_population, string WS_DM_preferences){
 
-	string pref_filename = "./WS_MatrixC.csv";
+	string pref_filename = "./WS_MatrixA.csv";
 
 	MainKnapsack * knaps = new MainKnapsack(size_population, filename_instance, pref_filename);
 
@@ -54,7 +54,7 @@ Evaluator* main_Knapsack(string filename_instance, string type_instance, string 
 void script_knapsack(string type_inst, string taille, string WS_DM){
 
 	int K = 1;
-	int N = 10;
+	int N = 1;
 	Evaluator * eval_ks;
 
 
@@ -63,10 +63,10 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 
 //!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 0; step < 1; step++){
+		for(int step = 0; step < 8; step++){
 			INFO = step;
 			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixZ.csv");
+			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixA.csv");
 
 			Tools::cpt_count = 0;
 			Tools::clean_up();
@@ -239,7 +239,7 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 Evaluator* main_Knapsack_Cst_PSize(string filename_instance, string type_instance, string num_instance,
 	int size_population, string WS_DM_preferences, int max_size_population){
 
-	string pref_filename = "./WS_MatrixD.csv";
+	string pref_filename = "./WS_MatrixF.csv";
 
 	MainKnapsack * knaps = new MainKnapsack(size_population,filename_instance,pref_filename);
 
@@ -266,7 +266,7 @@ Evaluator* main_Knapsack_Cst_PSize(string filename_instance, string type_instanc
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	int K = 10;
-	int N = 10;
+	int N = 6;
 	int iter;
 
 	Evaluator * eval_ks;
@@ -277,7 +277,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	vector<int> sizer = {500,1500};  //D
 
-	for(int i = 0; i < N; i++){
+	for(int i = 1; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 
@@ -291,7 +291,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 			for(int step = 0; step < 8; step++){
 				INFO = step;
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixD.csv");
+				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixF.csv");
 
 
 				Tools::cpt_count = 0;
@@ -408,9 +408,9 @@ int main(int argc, char** argv){
   *************************************************************************************************************************
 */
 	script_Cst_PSize(type_inst,taille,WS_DM);
-//
+
 //	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//		,"MOLS2", 200 , 10, 410 , "./DM_preference_point");
+//		,"MOLS2", 10 , 10, 410 , "./DM_preference_point");
 
 
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
