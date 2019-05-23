@@ -69,7 +69,6 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixA.csv");
 
 			Tools::cpt_count = 0;
-			Tools::clean_up();
 
 			for(int k = 0; k < K; k++){
 				Ta = -1;
@@ -133,7 +132,6 @@ void script_knapsack_WSPLS(string type_inst, string taille, string WS_DM){
 			cout<<"_________________________________ NB-ITER "<<step<<"___________________________"<<endl;
 
 			Tools::cpt_count = 0;
-			Tools::clean_up();
 
 			for(int k = 0; k < K; k++){
 				Tools::generate_random_WS("WS_Matrix.csv", 2);
@@ -201,7 +199,6 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(information_rate),"WS_Matrix3.csv");
 
 			Tools::cpt_count = 0;
-			Tools::clean_up();
 
 			for(int k = 0; k < K; k++){
 				Ta = 500;
@@ -239,7 +236,7 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 Evaluator* main_Knapsack_Cst_PSize(string filename_instance, string type_instance, string num_instance,
 	int size_population, string WS_DM_preferences, int max_size_population){
 
-	string pref_filename = "./WS_MatrixF.csv";
+	string pref_filename = "./WS_MatrixA.csv";
 
 	MainKnapsack * knaps = new MainKnapsack(size_population,filename_instance,pref_filename);
 
@@ -266,18 +263,18 @@ Evaluator* main_Knapsack_Cst_PSize(string filename_instance, string type_instanc
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	int K = 10;
-	int N = 6;
+	int N = 1;
 	int iter;
 
 	Evaluator * eval_ks;
 
-//	vector<int> sizer = {10,50,150,200}; //A
+	vector<int> sizer = {10,50,150,200}; //A
 
-//	vector<int> sizer = {600,1200};  //C
+//	vector<int> sizer = {10,200,600,1200};  //C
 
-	vector<int> sizer = {500,1500};  //D
+//	vector<int> sizer = {500,1500};  //D
 
-	for(int i = 1; i < N; i++){
+	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 
@@ -288,20 +285,18 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
-			for(int step = 0; step < 8; step++){
+			for(int step = 1; step < 8; step++){
 				INFO = step;
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixF.csv");
+				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixA.csv");
 
 
 				Tools::cpt_count = 0;
-				Tools::clean_up();
 
 
 				for(int k = 0; k < K; k++){
 					Ta = -1;
 					eval_ks = main_Knapsack_Cst_PSize(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
-
 					delete eval_ks;
 				}
 
@@ -311,7 +306,6 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 //				if(j == 0 ){
 //					Tools::cpt_count = 0;
-//					Tools::clean_up();
 //
 //					for(int k = 0; k < K; k++){
 //						Ta = -1;
@@ -319,8 +313,8 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 //						delete eval_ks;
 //					}
 //
-//					Tools::save_std_deviation("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval");
-//					Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front");
+//					Tools::save_std_deviation("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_D.eval");
+//					Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_D.front");
 //                }
 
 			}
@@ -328,8 +322,8 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 			Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS"+to_string(i)+".front",type_inst+to_string(i)+"___"+to_string(iter));
 
 		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front",type_inst+to_string(i)+"___");
+//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_D.eval",type_inst+to_string(i)+"___");
+//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_D.front",type_inst+to_string(i)+"___");
 
 	}
 
@@ -348,7 +342,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "D";
+	string type_inst = "A";
 	string taille = "100";
 
 //	script_knapsack(type_inst, taille, WS_DM);
@@ -409,8 +403,8 @@ int main(int argc, char** argv){
 */
 	script_Cst_PSize(type_inst,taille,WS_DM);
 
-//	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//		,"MOLS2", 10 , 10, 410 , "./DM_preference_point");
+	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+		,"MOLS2", 200 , 10, 410 , "./DM_preference_point");
 
 
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
@@ -534,7 +528,6 @@ int main(int argc, char** argv){
 //			cout<<"============================================   "<<iter<<" STEPS   ============================================"<<endl;
 //			ITERATION_WS_PLS = iter;
 //			Tools::cpt_count = 0;
-//			Tools::clean_up();
 //
 //			for(int k = 0; k < 10; k++){
 //				Tools::generate_random_WS("WS_Matrix.csv",2);
@@ -594,7 +587,6 @@ int main(int argc, char** argv){
 //		for(int iter = 10; iter <= 11 ; iter+= 50 ){
 //			cout<<"============================================   "<<iter<<" STEPS   ============================================"<<endl;
 //			Tools::cpt_count = 0;
-//			Tools::clean_up();
 //			ITERATION_WS_PLS = iter;
 //
 //

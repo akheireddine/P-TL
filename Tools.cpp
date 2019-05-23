@@ -166,12 +166,18 @@ void Tools::update_dist_time(float dist_min,float time){
 	Tools::dist_time_avg[1] += time;
 
 	Tools::cpt_count++;
+
+
 }
 
 void Tools::update_indicators(float D1, float D2, float D3){
+//	cout<<"BEF D1 : "<<Tools::indicator_avg[0]<<endl;
+
 	Tools::indicator_avg[0] += D1;
 	Tools::indicator_avg[1] += D2;
 	Tools::indicator_avg[2] += D3;
+
+
 }
 
 void Tools::add_dist_to_OPT(float ratio){
@@ -191,7 +197,6 @@ void Tools::save_std_deviation(string filename){
 		Tools::ratios_dist_to_OPT.clear();
 		return;
 	}
-
 
 
 	float val = 1.0/ratios_dist_to_OPT.size();
@@ -216,18 +221,26 @@ void Tools::save_average_dist_time(string filename){
 	fic_write.close();
 
 	Tools::dist_time_avg.clear();
+	Tools::dist_time_avg.resize(2,0);
+
 }
 
 void Tools::save_average_indicator(string filename){
 
 	ofstream fic_write(filename.c_str(), ios::app);
+
 	for(int i = 0; i < (int)indicator_avg.size(); i++){
 		Tools::indicator_avg[i] = Tools::indicator_avg[i]*1.0/cpt_count;
 		fic_write<<Tools::indicator_avg[i]<<" ";
 	}
 	fic_write<<endl;
 	fic_write.close();
+
+
 	Tools::indicator_avg.clear();
+	Tools::indicator_avg.resize(3,0);
+
+
 
 }
 
@@ -400,9 +413,3 @@ string Tools::decode_set_items(set<int> items, int nb_items){
 
 
 
-
-//void Tools::save_information_in(string filename, string smthing){
-//	ofstream fic_write(filename.c_str(), ios::app);
-//	fic<<smthing<<endl;
-//	fic.close();
-//}

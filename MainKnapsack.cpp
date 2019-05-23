@@ -1,7 +1,8 @@
 
 #include <set>
-#include <chrono>
 #include <random>
+
+
 
 #include "MainKnapsack.h"
 #define TIMEOUT 480  //8min
@@ -142,8 +143,9 @@ void MainKnapsack::Generate_random_Population(string filename, int number_of_ind
 	for (int i = 0; i < number_of_individu; i++){
 		individu.clear();
 
-		srand ( rand() );
-		random_shuffle( all_items.begin(), all_items.end()  );
+	    std::random_device rd;
+	    std::mt19937 g(rd());
+	    shuffle( all_items.begin(), all_items.end(), g);
 
 		bp = 0;
 		int cpt = 0;
@@ -161,25 +163,6 @@ void MainKnapsack::Generate_random_Population(string filename, int number_of_ind
 			bp += weight_itm;
 		}
 
-//		bp = 0;
-//		list<int> items(all_items.begin(), all_items.end());
-//
-//
-//		while(bp < Backpack_capacity  and (items.size() != 0)  ){//and (rand()*1.0/RAND_MAX) < 0.8){
-//			iteratour = items.begin();
-//			advance(iteratour, rand()%items.size() );
-//
-//			int itm = *iteratour;// items[ rand()%items.size() ];
-//			items.remove( itm );
-//
-//			float weight_itm = get<0>(Items_information[itm]);
-//
-//			if ( (weight_itm + bp) > Backpack_capacity )
-//				continue;
-//
-//			individu.insert(itm);
-//			bp += weight_itm;
-//		}
 //		for(set<int>::iterator it = individu.begin(); it != individu.end(); ++it)
 //			cout<<*it<<"  ";
 //		cout<<endl<<endl;
@@ -402,9 +385,12 @@ void MainKnapsack::save_new_point(string filename, shared_ptr< Alternative > alt
 
 void MainKnapsack::Random_Selection(list< string > & dominated_solutions, int upper_bound){
 
+	random_device rd;
+	mt19937 g(rd());
+
 	vector<string> shuffle_DA (dominated_solutions.begin(), dominated_solutions.end());
-	srand ( rand() );
-	random_shuffle( shuffle_DA.begin(), shuffle_DA.end()  );
+	shuffle(shuffle_DA.begin(), shuffle_DA.end(), g);
+
 	dominated_solutions.clear();
 	dominated_solutions.assign(shuffle_DA.begin(), shuffle_DA.end());
 
@@ -647,7 +633,13 @@ void MainKnapsack::Learning_Threshold_Accepting_AVG(list< string > & dominated_s
 
 
 
+bool MainKnapsack::Stop_Condition(int tentative_improvment){
 
+	return !Population.empty();
+
+//	return (tentative_improvment > 0) or !Population.empty();
+
+}
 
 
 
@@ -669,15 +661,15 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 
 	STEPS_PLOT++;
 
-	while( !Population.empty()  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
+	while( Stop_Condition()  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
 
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
 
-		if(nb_iteration > 1)
-			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
+//		if(nb_iteration > 1)
+//			save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
 //			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
 
 
@@ -709,9 +701,12 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 				Dominated_alt.push_back(*id_neighbor);
 		}
 
+		random_device rd;
+		mt19937 g(rd());
+
 		vector<string> shuffle_LF (Local_front.begin(), Local_front.end());
-		srand ( rand());
-		random_shuffle( shuffle_LF.begin(), shuffle_LF.end()  );
+		shuffle(shuffle_LF.begin(), shuffle_LF.end(), g);
+
 		Local_front.clear();
 		Local_front.assign(shuffle_LF.begin(), shuffle_LF.end());
 
@@ -803,22 +798,23 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 	list< string > next_Population;
 	int nb_iteration = 0, step = 0;
 
+	int limit_no_improvment = 2;
+
+
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
 		dic_Alternative[ *p ] = make_shared< AlternativeKnapsack >( *p, this, WS_matrix );
 		OPT_Solution.push_back( dic_Alternative[ *p ] );
-//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",dic_Alternative[ *p ]);
 	}
-	step++;
 
-	while( Population.size() > 0  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
+
+	while( Stop_Condition(limit_no_improvment)  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
 
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-//		if(nb_iteration > 1)
-//			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
+		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -843,18 +839,24 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 		}
 
+		random_device rd;
+		mt19937 g(rd());
 
 		vector<string> shuffle_LF (Local_front.begin(), Local_front.end());
-		random_shuffle( shuffle_LF.begin(), shuffle_LF.end() );
+		shuffle(shuffle_LF.begin(), shuffle_LF.end(), g);
 
 		Local_front.clear();
 		Local_front.assign(shuffle_LF.begin(), shuffle_LF.end());
 
+
+
 		for(list< string >::iterator id_new_alt = Local_front.begin(); id_new_alt != Local_front.end(); ++id_new_alt){
+
 
 			shared_ptr< AlternativeKnapsack > new_alt = dic_Alternative[*id_new_alt];
 
 			list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
+
 
 			if( Update_Archive(new_alt, local_OPT_Sol) ){
 				if( (int)next_Population.size() < UB_Population_size ){
@@ -868,7 +870,10 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 			else {
 				Dominated_alt.push_back(*id_new_alt);        // CANT HANDLE MORE THAN UB_POPULATION
 			}
+
+			local_OPT_Sol.clear();
 		}
+
 
 		if( Population.empty() ){
 
@@ -876,12 +881,20 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 //				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
 //			}
 
+
+
 			for(list< string >::iterator it = next_Population.begin(); it != next_Population.end(); ++it)
 				if( dic_Alternative[*it].use_count() != 0)  //could be dominated by a solution in a different Local front list
 					Population.push_back(*it);
 
 
-//			if( ((int)Population.size() < UB_Population_size)  and !Population.empty() ){
+			if( Population.empty() )
+				limit_no_improvment--;
+			else
+				limit_no_improvment =  2;
+
+
+//			if( ((int)Population.size() < UB_Population_size)  and Stop_Condition(limit_no_improvment) ){
 //				int to_add = ( UB_Population_size - (int)Population.size() ) ;
 ////				Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
 ////				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
@@ -1327,13 +1340,11 @@ bool MainKnapsack::Update_Archive(shared_ptr< Alternative > p, list< shared_ptr<
 
 	for(vector< shared_ptr< Alternative > >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm){
 		//could be a solution in the Population and we want to explore it
-//		if( find(Population.begin(), Population.end(), (*rm)->get_id_alt()) == Population.end()){
-			(*rm).reset();
-//		}
-
 		set_SOL.remove(*rm);
+		(*rm).reset();
 
 	}
+
 	set_SOL.push_back(p);
 
 	return true;

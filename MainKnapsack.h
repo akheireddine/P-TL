@@ -59,10 +59,9 @@ public :
 	list< shared_ptr< Alternative > > MOLS_local_Archive(double starting_time_sec);
 
 
+	bool Stop_Condition(int tentative_improvment = 0);
 
 
-//	list< Alternative * > MOLS1(double starting_time_sec);
-//	list< Alternative * > MOLS1_Cst_PSize(double starting_time_sec, int UB_Population_size);
 
 
 

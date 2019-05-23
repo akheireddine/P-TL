@@ -30,7 +30,6 @@ public:
 	static vector< float > ratios_dist_to_OPT;
 
 
-	static inline void clean_up(){ 	dist_time_avg.clear();dist_time_avg.resize(2,0); indicator_avg.clear(); indicator_avg.resize(3,0); };
 	static float euclidian_distance(vector<float> v1, vector<float> v2);
 	static float get_ratio(vector<float> v, vector<float> v_opt, vector<float> weights);
 	static bool equal_vectors(vector<float> v1, vector<float> v2);

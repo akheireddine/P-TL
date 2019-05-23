@@ -180,6 +180,7 @@ void AlternativeKnapsack::enumerate_neighborhood(set<int> & curr_BP, set<int> &i
 	float weight_neighbor, BP_capacity = mainLSStructure->get_capacity();
 	int id_object;
 
+
 	for(set<int>::iterator elem = item_OUT.begin(); elem != item_OUT.end(); ++elem){
 
 		weight_neighbor = bp_weight + mainLSStructure->get_weight_of(*elem);

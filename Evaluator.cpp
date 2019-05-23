@@ -2,13 +2,15 @@
 
 #include "Evaluator.h"
 #include <ilcplex/ilocplex.h>
-#define __PRINT__
+//#define __PRINT__
 
+//int info = 0;
 Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_DM_preferences,
 		string DT_file, float time, string PFI_file){
 
 	filename_instance = filename;
 	mainProblem = problemInstance;
+
 
 	dist_time_file = DT_file;
 	pf_indicators_file = PFI_file;
@@ -17,6 +19,14 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 
 	readParetoFront();
 
+//	cout<<"PFront : "<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
+//
+//	ofstream fic("PFront_"+to_string(info));
+//	for(auto t : PFront){
+//		fic<<Tools::print_vector(t)<<endl;
+//	}
+//	fic.close();
+//	info++;
 
 
 #ifdef __PRINT__
@@ -78,19 +88,7 @@ void Evaluator::write_objective_OPT_information(){
 
 }
 
-//vector<float> Evaluator::get_objective_values(vector<float> v_src){
-//
-//	vector<float> v_dest(v_src.size(),0);
-//
-//	vector<vector<float > > ws_mat = mainProblem->get_WS_matrix();
-//
-//	for(int i = 0; i < mainProblem->get_n_objective(); i++){
-//		for(int j = 0; j < mainProblem->get_p_criteria(); j++)
-//			v_dest[i] += v_src[j] * ws_mat[j][i];
-//	}
-//
-//	return v_dest;
-//}
+
 
 bool Evaluator::in_search_space(vector<float> v,vector<float> minus, vector<float> maxus){
 
@@ -360,7 +358,18 @@ float Evaluator::average_distance_D1(){
 
 	float min_dist = -1;
 	float avg_dist = 0.;
+
 	list< shared_ptr< Alternative > > OPT_Solution = mainProblem->get_OPT_Solution();
+
+//	cout<<"============================================="<<endl;
+//	for(auto t : OPT_Solution){
+//		cout<<Tools::print_vector(t->get_objective_values())<<endl;
+//	}
+//
+//
+//	cout<<"PFront : "<<PFront.size()<<"    OPT SOL found  : "<<OPT_Solution.size()<<endl;
+
+//	cout<<"avg_dist  : "<<avg_dist<<endl;
 
 	for(list< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
 		min_dist = -1;
@@ -371,8 +380,12 @@ float Evaluator::average_distance_D1(){
 			if(euclid_dist_tmp < min_dist  or min_dist == -1)
 				min_dist = euclid_dist_tmp;
 		}
+
 		avg_dist += min_dist;
+
 	}
+//	cout<<"avg_dist  : "<<avg_dist<<endl;
+//	cout<<"============================================="<<endl;
 
 	return avg_dist/PFront.size();
 }
