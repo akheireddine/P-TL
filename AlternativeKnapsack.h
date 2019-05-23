@@ -32,7 +32,7 @@ public:
 	float get_weight(){ return weight; }
 
 	//ALGORITHMS
-	void enumerate_neighborhood(set<int> & curr_BP, set<int> &item_OUT, float bp_weight, map< float, int, greater <float> > ratio_items);
+	void enumerate_neighborhood(set<int> curr_BP, float bp_weight, map< float, int, greater <float> > ratio_items);
 	map< float, int, greater <float> > generate_ordered_ratio_items(set<int> set_items);
 
 

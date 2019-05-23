@@ -175,28 +175,29 @@ int AlternativeKnapsack::dominates_decision_space(shared_ptr< Alternative > alt)
 }
 
 
-void AlternativeKnapsack::enumerate_neighborhood(set<int> & curr_BP, set<int> &item_OUT, float bp_weight, map< float, int, greater <float> > ratio_items){
+void AlternativeKnapsack::enumerate_neighborhood(set<int> curr_BP,  float bp_weight, map< float, int, greater <float> > ratio_items){
 
-	float weight_neighbor, BP_capacity = mainLSStructure->get_capacity();
+	float weight_neighbor = bp_weight ;
+	float BP_capacity = mainLSStructure->get_capacity();
 	int id_object;
 
 
-	for(set<int>::iterator elem = item_OUT.begin(); elem != item_OUT.end(); ++elem){
-
-		weight_neighbor = bp_weight + mainLSStructure->get_weight_of(*elem);
-
-		if ( weight_neighbor > BP_capacity )
-			continue;
-
+//	for(set<int>::iterator elem = item_OUT.begin(); elem != item_OUT.end(); ++elem){
+//
+//		weight_neighbor = bp_weight + mainLSStructure->get_weight_of(*elem);
+//
+//		if ( weight_neighbor > BP_capacity )
+//			continue;
+//
 		set<int> new_neighbor(curr_BP.begin(),curr_BP.end());
-
-		new_neighbor.insert(*elem);
+//
+//		new_neighbor.insert(*elem);
 
 		for(map<float,int, greater <float> >::iterator best_ratio = ratio_items.begin(); best_ratio != ratio_items.end(); ++best_ratio){
 
 			id_object = (*best_ratio).second;
 
-			if( (id_object == *elem) or ((weight_neighbor + mainLSStructure->get_weight_of(id_object)) > BP_capacity))
+			if( ((weight_neighbor + mainLSStructure->get_weight_of(id_object)) > BP_capacity)) //(id_object == *elem) or */
 				continue;
 
 			new_neighbor.insert(id_object);
@@ -207,7 +208,7 @@ void AlternativeKnapsack::enumerate_neighborhood(set<int> & curr_BP, set<int> &i
 		string alt = Tools::decode_set_items(new_neighbor,mainLSStructure->get_n_items());
 
 		neighborhood.insert(alt);
-	}
+//	}
 }
 
 
@@ -242,7 +243,7 @@ map< float, int, greater <float> > AlternativeKnapsack::generate_ordered_ratio_i
 		for(int j = 0; j < (int)ws_aggr_utility.size(); j++)
 			aggregate_func_val_item += ws_aggr_utility[j] * mainLSStructure->get_utility(*i,j);
 
-		float val_key = aggregate_func_val_item / mainLSStructure->get_weight_of(*i);
+		float val_key = aggregate_func_val_item / mainLSStructure->get_weight_of(*i)*1.0;
 		ratio_items[val_key] = *i;
 	}
 
@@ -265,22 +266,24 @@ set< string > AlternativeKnapsack::get_neighborhood(){
 
 	map< float, int, greater <float> > ratio_items;
 
-	for(set< int >::iterator in = In_BP.begin(); in != In_BP.end(); ++in){
+	for(int z = 0 ; z < 10; z++){
+		for(set< int >::iterator in = In_BP.begin(); in != In_BP.end(); ++in){
 
-		ratio_items = generate_ordered_ratio_items(Out_BP);
+			ratio_items = generate_ordered_ratio_items(Out_BP);
 
-		float new_weight = weight - mainLSStructure->get_weight_of(*in);
-		set< int > in_tmp(In_BP.begin(),In_BP.end());
+			float new_weight = weight - mainLSStructure->get_weight_of(*in);
+			set< int > in_tmp(In_BP.begin(),In_BP.end());
 
-		in_tmp.erase(*in);
-		enumerate_neighborhood(in_tmp,Out_BP, new_weight, ratio_items);
+			in_tmp.erase(*in);
+			enumerate_neighborhood(in_tmp, new_weight, ratio_items);
 
+		}
 	}
 
 
 	if(In_BP.size() == 0){
 		ratio_items = generate_ordered_ratio_items(Out_BP);
-		enumerate_neighborhood(In_BP,Out_BP, weight, ratio_items);
+		enumerate_neighborhood(In_BP, weight, ratio_items);
 	}
 
 

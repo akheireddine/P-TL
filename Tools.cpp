@@ -275,8 +275,7 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 	float sum = 0.0, big_max = -1;
 	vector<float> weighted_sum(p_criteria);
 	vector<pair<float, float > > min_max(p_criteria,pair<float,float>());
-	srand ( rand() );
-
+	srand( rand() );
 
 
 	if(p_criteria == 2){

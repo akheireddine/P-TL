@@ -814,7 +814,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
+//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -852,7 +852,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 		for(list< string >::iterator id_new_alt = Local_front.begin(); id_new_alt != Local_front.end(); ++id_new_alt){
 
-
 			shared_ptr< AlternativeKnapsack > new_alt = dic_Alternative[*id_new_alt];
 
 			list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
@@ -877,9 +876,9 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 		if( Population.empty() ){
 
-//			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
-//				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
-//			}
+			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
+				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
+			}
 
 
 
@@ -1056,9 +1055,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec,in
 			if( find(Population.begin(), Population.end(), *it) == Population.end())
 				dic_Alternative[(*it)].reset();
 		}
-
-
-
 
 		Local_front.clear();
 		Dominated_alt.clear();
@@ -1326,13 +1322,14 @@ bool MainKnapsack::Update_Archive(shared_ptr< Alternative > p, list< shared_ptr<
 	vector< shared_ptr< Alternative > > to_remove;
 	int dom_val;
 
+
 	for(list< shared_ptr< Alternative > >::iterator alt = set_SOL.begin(); alt != set_SOL.end(); ++alt){
 
 		dom_val = (*alt)->dominates_objective_space(p);
 
-		if( (dom_val == 1) or (*alt)->get_id_alt().compare(p->get_id_alt()) == 0){			// alt dominates p or already exists in set_SOL
+
+		if( (dom_val == 1) or (*alt)->get_id_alt().compare(p->get_id_alt()) == 0)			// alt dominates p or already exists in set_SOL
 			return false;
-		}
 
 		else if( dom_val == -1 )   // p dominates alt
 			to_remove.push_back(*alt);
@@ -1357,17 +1354,22 @@ bool MainKnapsack::Update_Archive(shared_ptr< Alternative > p, list< string > &s
 	vector< string > to_remove;
 	int dom_val;
 
+
 	for(list< string >::iterator id_alt = set_SOL.begin(); id_alt != set_SOL.end(); ++id_alt){
 
 		shared_ptr< AlternativeKnapsack > alt = dic_Alternative[*id_alt];
 		dom_val = alt->dominates_objective_space(p);
 
-		if( (dom_val == 1) or alt->get_id_alt().compare(p->get_id_alt()) == 0)			// alt dominates p or already exists in set_SOL
+		if( (dom_val == 1) or alt->get_id_alt().compare(p->get_id_alt()) == 0){			// alt dominates p or already exists in set_SOL
 			return false;
+		}
 
-		else if( dom_val == -1 )   // p dominates alt
+		else if( dom_val == -1 ){   // p dominates alt
 			to_remove.push_back(*id_alt);
+		}
 	}
+
+
 
 	for(vector< string >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm){
 		set_SOL.remove(*rm);

@@ -262,7 +262,7 @@ Evaluator* main_Knapsack_Cst_PSize(string filename_instance, string type_instanc
 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 10;
+	int K = 15;
 	int N = 1;
 	int iter;
 
@@ -285,7 +285,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
-			for(int step = 1; step < 8; step++){
+			for(int step = 4; step < 8; step++){
 				INFO = step;
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixA.csv");
@@ -404,7 +404,7 @@ int main(int argc, char** argv){
 	script_Cst_PSize(type_inst,taille,WS_DM);
 
 	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-		,"MOLS2", 200 , 10, 410 , "./DM_preference_point");
+		,"MOLS2", 10 , 10, 410 , "./DM_preference_point");
 
 
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
