@@ -705,7 +705,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_in
 	gp<<"set terminal pngcairo size 1500,900\n";
 
 
-	gp<<"do for[j=0:0]{\n";
+	gp<<"do for[j=1:1]{\n";
 
 
 
@@ -717,7 +717,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO(string filename, string type_in
 		gp<<"set multiplot layout 2,4 columnsfirst rowsfirst  title 'Evolution of the search space with different information rate - "<<size_inst<<" items (Instances "<<type_inst<<" - T'.j.' ) - Variable population size'\n";
 
 		size_string = "VARIABLE";
-		gp<<"unset key\n";
+//		gp<<"unset key\n";
 		gp<<"do for[step=0:7]{\n";
 			gp<<"label = 0\n";
 			gp<<"if (step==0){ label = 90 }\n if (step == 1){ label = 41}\n if (step == 2 ) { label = 28 }\n if (step == 3) { label = 12}"
@@ -832,7 +832,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize(string filename, string t
 	gp<<"set terminal pngcairo size 1500,900\n";
 
 
-	gp<<"do for[j=0:0]{\n";
+	gp<<"do for[j=1:1]{\n";
 
 	gp<<"ub = "<<to_string(size)<<"\n";
 
@@ -843,7 +843,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize(string filename, string t
 		gp<<"set multiplot layout 2,4 columnsfirst rowsfirst  title 'Evolution of the search space with different information rate - "<<size_inst<<" items (Instances "<<type_inst<<" - T'.j.' ) - Variable population size'\n";
 
 		size_string = "VARIABLE";
-		gp<<"unset key\n";
+		//gp<<"unset key\n";
 		gp<<"do for[step=0:7]{\n";
 			gp<<"label = 0\n";
 			gp<<"if (step==0){ label = 90 }\n if (step == 1){ label = 41}\n if (step == 2 ) { label = 28 }\n if (step == 3) { label = 12}"

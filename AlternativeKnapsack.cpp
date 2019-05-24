@@ -191,7 +191,7 @@ void AlternativeKnapsack::enumerate_neighborhood(set<int> curr_BP, set<int> item
 //
 		set<int> new_neighbor(curr_BP.begin(),curr_BP.end());
 //
-//		new_neighbor.insert(*elem);
+		new_neighbor.insert(*elem);
 
 		for(map<float,int, greater <float> >::iterator best_ratio = ratio_items.begin(); best_ratio != ratio_items.end(); ++best_ratio){
 
@@ -267,7 +267,7 @@ set< string > AlternativeKnapsack::get_neighborhood(){
 
 	map< float, int, greater <float> > ratio_items;
 
-	for(int z = 0 ; z < 20; z++){
+//	for(int z = 0 ; z < 10; z++){
 		for(set< int >::iterator in = In_BP.begin(); in != In_BP.end(); ++in){
 
 			ratio_items = generate_ordered_ratio_items(Out_BP);
@@ -279,7 +279,7 @@ set< string > AlternativeKnapsack::get_neighborhood(){
 			enumerate_neighborhood(in_tmp, Out_BP, new_weight, ratio_items);
 
 		}
-	}
+//	}
 
 
 	if(In_BP.size() == 0){
