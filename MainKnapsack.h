@@ -45,6 +45,11 @@ public :
 	bool Update_Archive(shared_ptr< Alternative > p, list< shared_ptr< Alternative > > &set_SOL);
 	bool Update_Archive(shared_ptr< Alternative > p, list< string > &set_SOL);
 
+
+	bool Update_Archive(shared_ptr< Alternative > p, list< shared_ptr< Alternative > > &set_SOL, list<string> & population);
+
+
+
 //	bool Update_Archive_Threshold_Accepting(Alternative* p, list< Alternative* > &set_SOL);
 	void update_alternatives(list< string > &set_Alt, bool Pareto);
 

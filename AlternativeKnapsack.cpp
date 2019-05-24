@@ -175,19 +175,19 @@ int AlternativeKnapsack::dominates_decision_space(shared_ptr< Alternative > alt)
 }
 
 
-void AlternativeKnapsack::enumerate_neighborhood(set<int> curr_BP,  float bp_weight, map< float, int, greater <float> > ratio_items){
+void AlternativeKnapsack::enumerate_neighborhood(set<int> curr_BP, set<int> item_OUT,  float bp_weight, map< float, int, greater <float> > ratio_items){
 
 	float weight_neighbor = bp_weight ;
 	float BP_capacity = mainLSStructure->get_capacity();
 	int id_object;
 
 
-//	for(set<int>::iterator elem = item_OUT.begin(); elem != item_OUT.end(); ++elem){
-//
-//		weight_neighbor = bp_weight + mainLSStructure->get_weight_of(*elem);
-//
-//		if ( weight_neighbor > BP_capacity )
-//			continue;
+	for(set<int>::iterator elem = item_OUT.begin(); elem != item_OUT.end(); ++elem){
+
+		weight_neighbor = bp_weight + mainLSStructure->get_weight_of(*elem);
+
+		if ( weight_neighbor > BP_capacity )
+			continue;
 //
 		set<int> new_neighbor(curr_BP.begin(),curr_BP.end());
 //
@@ -208,7 +208,8 @@ void AlternativeKnapsack::enumerate_neighborhood(set<int> curr_BP,  float bp_wei
 		string alt = Tools::decode_set_items(new_neighbor,mainLSStructure->get_n_items());
 
 		neighborhood.insert(alt);
-//	}
+	}
+
 }
 
 
@@ -275,7 +276,7 @@ set< string > AlternativeKnapsack::get_neighborhood(){
 			set< int > in_tmp(In_BP.begin(),In_BP.end());
 
 			in_tmp.erase(*in);
-			enumerate_neighborhood(in_tmp, new_weight, ratio_items);
+			enumerate_neighborhood(in_tmp, Out_BP, new_weight, ratio_items);
 
 		}
 	}
@@ -283,11 +284,10 @@ set< string > AlternativeKnapsack::get_neighborhood(){
 
 	if(In_BP.size() == 0){
 		ratio_items = generate_ordered_ratio_items(Out_BP);
-		enumerate_neighborhood(In_BP, weight, ratio_items);
+		enumerate_neighborhood(In_BP, Out_BP, weight, ratio_items);
 	}
 
 
-	map< float, int, greater <float> >().swap(ratio_items);
 
 	return neighborhood;
 }

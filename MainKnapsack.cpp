@@ -52,6 +52,10 @@ MainKnapsack::MainKnapsack( int population_size_init, string filename, string ma
 		string id_alt = Tools::decode_set_items(individu, n_items);
 		Population.push_back(id_alt);
 		init_population.push_back(individu);
+
+//		for(set<int>::iterator it = individu.begin(); it != individu.end(); ++it)
+//			cout<<*it<<"  ";
+//		cout<<endl<<endl;
 	}
 
 }
@@ -725,7 +729,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 
 		if( ((int)Population.size() - new_pop ) == 0){
 //			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
-//				save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
+//				save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",*it);
 //			}
 //			cout<<new_pop<<endl;
 			new_pop = 0;
@@ -813,7 +817,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
+//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -822,12 +826,14 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 			shared_ptr< AlternativeKnapsack > neighbor;
 
+
 			if ( dic_Alternative.find(*id_neighbor) == dic_Alternative.end()  or dic_Alternative[*id_neighbor].use_count() == 0){
 				dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, WS_matrix);
 			}
 
 			neighbor = dic_Alternative[*id_neighbor];
 
+			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NEIGHBORS_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",neighbor);
 
 			//Prefiltrage
 			if( alt->dominates_objective_space(neighbor) != 1 ){
@@ -855,9 +861,11 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 			list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
 
+			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
 
-			if( Update_Archive(new_alt, local_OPT_Sol) ){
-				if( (int)next_Population.size() < UB_Population_size ){
+			if( Update_Archive(new_alt, local_OPT_Sol, next_Population) ){
+
+				if( (int)next_Population.size() <= UB_Population_size ){
 					next_Population.push_back(*id_new_alt);
 					OPT_Solution = local_OPT_Sol;
 				}
@@ -873,12 +881,14 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 		}
 
 
+
+
+
 		if( Population.empty() ){
 
-//			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
-//				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_MOLS2_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
-//			}
-
+			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
+				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_FRONT_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
+			}
 
 
 			for(list< string >::iterator it = next_Population.begin(); it != next_Population.end(); ++it)
@@ -935,7 +945,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec,int ITER){
 
-	STEPS_PLOT = 0;
 	shared_ptr< AlternativeKnapsack > alt;
 	list< string > Local_front;
 	list< string > Dominated_alt;
@@ -950,7 +959,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec,in
 ////		save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl", dic_Alternative[ *p ] );
 //	}
 
-	STEPS_PLOT++;
+//	STEPS_PLOT++;
 
 	while( Stop_Condition()  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT )   and ( nb_iteration < ITER ) ){
 		nb_iteration++;
@@ -960,7 +969,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec,in
 
 
 //		save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
-		save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
+//		save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -1015,10 +1024,10 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec,in
 		}
 
 		if( ((int)Population.size() - new_pop ) == 0){
-//			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
-////				save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
-//				save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
-//			}
+			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
+//				save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",*it);
+				save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",*it);
+			}
 //			cout<<new_pop<<endl;
 			new_pop = 0;
 			STEPS_PLOT++;
@@ -1130,6 +1139,8 @@ void MainKnapsack::HYBRID_PLS_WS(double starting_time_sec, int ITER){
 void MainKnapsack::SWITCH_PLS_WS(double starting_time_sec, int ITER_PLS, int ITER_WS){
 
 
+	STEPS_PLOT = 0;
+
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
 		dic_Alternative[ *p ] = make_shared< AlternativeKnapsack >( *p, this, WS_matrix);
 		OPT_Solution.push_back( dic_Alternative[ *p ] );
@@ -1144,15 +1155,31 @@ void MainKnapsack::SWITCH_PLS_WS(double starting_time_sec, int ITER_PLS, int ITE
 
 		MOLS(starting_time_sec,ITER_PLS);
 
+		cout<<"PLS : "<<OPT_Solution.size()<<endl;
+
+		if(!Population.empty()){
+			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
+//				save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",alt);
+				save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",*it);
+			}
+		}
+
+		STEPS_PLOT++;
+
 //		MUST CLEAN DICT ALTERNATIVE AND KEEP OPT SOLUTION
-//		for(list< shared_ptr<Alternative> >::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); ++alt)
-//			Population.push_back((*alt)->get_id_alt());
+		for(list< shared_ptr<Alternative> >::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); ++alt)
+			if( find(Population.begin(), Population.end() , (*alt)->get_id_alt()) == Population.end())
+				Population.push_back((*alt)->get_id_alt());
+
+		OPT_Solution.clear();
 
 		//WS
 		update_alternatives(Population,false);
-		MOLS(starting_time_sec,ITER_WS);
+		MOLS(starting_time_sec,Population.size() + ITER_WS);
 
-		cout<<OPT_Solution.size()<<" WS "<<endl;
+		if(ITER_WS > 2)
+			ITER_WS -= 1;
+		cout<<"WS : "<<OPT_Solution.size()<<endl;
 
 	}
 
@@ -1392,6 +1419,37 @@ bool MainKnapsack::Update_Archive(shared_ptr< Alternative > p, list< string > &s
 
 
 
+
+
+bool MainKnapsack::Update_Archive(shared_ptr< Alternative > p, list< shared_ptr< Alternative > > &set_SOL, list<string> &population){
+
+	vector< shared_ptr< Alternative > > to_remove;
+	int dom_val;
+
+
+	for(list< shared_ptr< Alternative > >::iterator alt = set_SOL.begin(); alt != set_SOL.end(); ++alt){
+
+		dom_val = (*alt)->dominates_objective_space(p);
+
+
+		if( (dom_val == 1) or (*alt)->get_id_alt().compare(p->get_id_alt()) == 0)			// alt dominates p or already exists in set_SOL
+			return false;
+
+		else if( dom_val == -1 )   // p dominates alt
+			to_remove.push_back(*alt);
+	}
+
+	for(vector< shared_ptr< Alternative > >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm){
+		//could be a solution in the Population and we want to explore it
+		population.remove((*rm)->get_id_alt());
+		set_SOL.remove(*rm);
+		(*rm).reset();
+	}
+
+	set_SOL.push_back(p);
+
+	return true;
+}
 
 
 

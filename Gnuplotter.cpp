@@ -839,7 +839,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize(string filename, string t
 
 
 	if(size != -1 ){
-		gp<<"set output \"INFO_"<<type_inst<<"_"<<size_inst<<"_T\".j.\".png\"\n";
+		gp<<"set output \"INFO_"<<type_inst<<"_"<<size_inst<<"_T\".j.\"_"<<algo<<"_\".ub.\".png\"\n";
 		gp<<"set multiplot layout 2,4 columnsfirst rowsfirst  title 'Evolution of the search space with different information rate - "<<size_inst<<" items (Instances "<<type_inst<<" - T'.j.' ) - Variable population size'\n";
 
 		size_string = "VARIABLE";
@@ -851,8 +851,8 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize(string filename, string t
 			gp<<"set label 1 '{/:Bold=10 '.label.'°}' at graph 0.05,0.95 font ',8'\n";
 
 			gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
-				"for[i=1:105] '"<<filename<<"-'.j.'_'.ub.'_MOLS2_'.i.'_INFO_'.step.'.expl' using 1:2 "
-						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_'.ub.'_MOLS2_'.i.'_INFO_'.step.'.expl' )).')' with points ls (i+1) ,"
+				"for[i=1:105] '"<<filename<<"-'.j.'_'.ub.'_"<<algo<<"_'.i.'_INFO_'.step.'.expl' using 1:2 "
+						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_'.ub.'_"<<algo<<"_'.i.'_INFO_'.step.'.expl' )).')' with points ls (i+1) ,"
 				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
 		gp<<"set grid\n";
 
