@@ -1,7 +1,7 @@
 #ifndef __TOOLS__
 #define __TOOLS__
 
-
+#include "MainClass.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -13,6 +13,9 @@
 #include <set>
 #include <list>
 #pragma once
+
+
+extern int GRAIN;
 
 
 using namespace std;

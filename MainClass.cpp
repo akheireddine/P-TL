@@ -1,27 +1,8 @@
 
-#include "MainKnapsack.h"
-#include <time.h>
-#include "Tools.h"
-#include "Evaluator.h"
-#include "Gnuplotter.h"
-#include "Instance_Generator.h"
-
-
-//#define __PRINT__
+#include "MainClass.h"
 
 
 using namespace std;
-
-float Ta = 500;
-float Temperature = 1500;
-
-vector< float > Tools::dist_time_avg(2,0);
-vector< float > Tools::indicator_avg(3,0);
-vector< float > Tools:: ratios_dist_to_OPT;
-int Tools::cpt_count = 0;
-int INFO = 0;
-
-list<set<int>> init_population;
 
 
 
@@ -270,6 +251,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	vector<int> sizer = {1,2,4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
 
+
 //	vector<int> sizer = {1,2,5,10,20,60,100,140,200,300};  //C
 
 //	vector<int> sizer = {1,5,10,30,60,100,150,200,250,350};  //D
@@ -278,6 +260,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 
+		GRAIN = rand();
 
 		for(int j = 0 ; j <(int)sizer.size() ; j++){
 			iter = sizer[j];
