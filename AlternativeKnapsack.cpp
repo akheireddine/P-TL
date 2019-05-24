@@ -266,7 +266,7 @@ set< string > AlternativeKnapsack::get_neighborhood(){
 
 	map< float, int, greater <float> > ratio_items;
 
-	for(int z = 0 ; z < 10; z++){
+	for(int z = 0 ; z < 20; z++){
 		for(set< int >::iterator in = In_BP.begin(); in != In_BP.end(); ++in){
 
 			ratio_items = generate_ordered_ratio_items(Out_BP);
