@@ -1,8 +1,6 @@
 #ifndef __TOOLS__
 #define __TOOLS__
 
-#include "MainClass.h"
-
 #include <math.h>
 #include <stdio.h>
 #include <cstring>
@@ -15,7 +13,6 @@
 #pragma once
 
 
-extern int GRAIN;
 
 
 using namespace std;

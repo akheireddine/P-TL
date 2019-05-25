@@ -8,6 +8,8 @@
 #include <ilcplex/ilocplex.h>
 #include <cstdlib>      // std::rand, std::srand
 
+extern int GRAIN;
+
 
 
 void Tools::skip(list< set< int > > &list_skiper, int n){
@@ -277,18 +279,22 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 	vector<pair<float, float > > min_max(p_criteria,pair<float,float>());
 	srand( GRAIN );
 
-
 	if(p_criteria == 2){
-		const auto [minus, maxus] = minmax_element(begin(ws_matrix[0]), end(ws_matrix[0]));
-		float wi =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX / (*maxus - *minus ))) + *minus ;
+//		const auto [minus, maxus] = minmax_element(begin(ws_matrix[0]), end(ws_matrix[0]));
+		float minus = *(min_element(ws_matrix[0].begin(), ws_matrix[0].end()) );
+		float maxus = *(max_element(ws_matrix[0].begin(), ws_matrix[0].end()) );
+
+		float wi =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX / (maxus - minus ))) + minus ;
 		weighted_sum[0] = wi ;
 		weighted_sum[1] =  1.0 - wi ;
 	}
 
 	else{
 		for(int i = 0; i < p_criteria ; i++){
-			const auto [minus, maxus] = minmax_element(begin(ws_matrix[i]), end(ws_matrix[i]));
-			min_max[i] = make_pair (*minus,*maxus);
+			float minus = *(min_element(ws_matrix[0].begin(), ws_matrix[0].end()) );
+			float maxus = *(max_element(ws_matrix[0].begin(), ws_matrix[0].end()) );
+
+			min_max[i] = make_pair (minus, maxus);
 		}
 
 		for(int i =0; i < p_criteria ; i++){

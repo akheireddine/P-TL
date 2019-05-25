@@ -1,6 +1,6 @@
 
 #include "MainClass.h"
-
+#include <time.h>
 
 using namespace std;
 
@@ -9,7 +9,7 @@ using namespace std;
 
 Evaluator* main_Knapsack(string filename_instance, string type_instance, string num_instance, int size_population, string WS_DM_preferences){
 
-	string pref_filename = "./WS_MatrixA.csv";
+	string pref_filename = "./WS_MatrixD.csv";
 
 	MainKnapsack * knaps = new MainKnapsack(size_population, filename_instance, pref_filename);
 
@@ -243,15 +243,16 @@ Evaluator* main_Knapsack_Cst_PSize(string filename_instance, string type_instanc
 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 30;
-	int N = 10;
+	int K = 15;
+	int N = 1;
 	int iter;
+	vector<int> graines;
 
 	Evaluator * eval_ks;
 
 	vector<int> sizer = {1,2,4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
 
-
+	srand(time(NULL));
 //	vector<int> sizer = {1,2,5,10,20,60,100,140,200,300};  //C
 
 //	vector<int> sizer = {1,5,10,30,60,100,150,200,250,350};  //D
@@ -260,14 +261,18 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		MainKnapsack::Generate_random_Population(filename_instance, K);
 
-		GRAIN = rand();
+		graines.clear();
+		for(int k = 0; k < K; k++){
+			graines.push_back( rand());
+		}
+
 
 		for(int j = 0 ; j <(int)sizer.size() ; j++){
 			iter = sizer[j];
 
 			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
-			for(int step = 0; step < 3; step++){
+			for(int step = 0; step < 8; step++){
 				INFO = step;
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixD.csv");
@@ -277,6 +282,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 
 				for(int k = 0; k < K; k++){
+					GRAIN = graines[k];
 					Ta = -1;
 					eval_ks = main_Knapsack_Cst_PSize(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
 					delete eval_ks;
@@ -286,26 +292,28 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 				Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS"+to_string(i)+".front");
 
 
-//				if(j == 0 ){
-//					Tools::cpt_count = 0;
-//
-//					for(int k = 0; k < K; k++){
-//						Ta = -1;
-//						eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
-//						delete eval_ks;
-//					}
-//
-//					Tools::save_std_deviation("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_DIVERS.eval");
-//					Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_DIVERS.front");
-//                }
+				if(j == 0 ){
+					Tools::cpt_count = 0;
+
+					for(int k = 0; k < K; k++){
+						GRAIN = graines[k];
+						Ta = -1;
+						eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
+						delete eval_ks;
+					}
+					cout<<"-----------------------------------"<<endl;
+
+					Tools::save_std_deviation("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval");
+					Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front");
+                }
 
 			}
 			Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS"+to_string(i)+".eval",type_inst+to_string(i)+"___"+to_string(iter));
 			Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS"+to_string(i)+".front",type_inst+to_string(i)+"___"+to_string(iter));
 
 		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_DIVERS.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_DIVERS.front",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2_DIVERS.eval",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2_DIVERS.front",type_inst+to_string(i)+"___");
 
 	}
 

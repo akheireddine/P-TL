@@ -681,13 +681,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 		for(set< string >::iterator id_neighbor = current_neighbors.begin(); id_neighbor != current_neighbors.end(); ++id_neighbor){
 
 			shared_ptr< AlternativeKnapsack > neighbor;
-//			if( dic_Alternative.find(*id_neighbor) != dic_Alternative.end() ) {
-//				continue;
-//			}
-//			else {
-//				dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, alt->get_local_WS_matrix());
-//				neighbor = dic_Alternative[*id_neighbor];
-//			}
 
 			if ( dic_Alternative.find(*id_neighbor) == dic_Alternative.end()  or dic_Alternative[*id_neighbor].use_count() == 0){
 				dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, alt->get_local_WS_matrix());
@@ -722,7 +715,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 //			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
 //				save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",*it);
 //			}
-			cout<<new_pop<<endl;
+//			cout<<new_pop<<endl;
 			new_pop = 0;
 			STEPS_PLOT++;
 		}
@@ -968,13 +961,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec,in
 		for(set< string >::iterator id_neighbor = current_neighbors.begin(); id_neighbor != current_neighbors.end(); ++id_neighbor){
 
 			shared_ptr< AlternativeKnapsack > neighbor;
-//			if( dic_Alternative.find(*id_neighbor) != dic_Alternative.end() ) {
-//				continue;
-//			}
-//			else {
-//				dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, alt->get_local_WS_matrix());
-//				neighbor = dic_Alternative[*id_neighbor];
-//			}
+
 
 			if ( dic_Alternative.find(*id_neighbor) == dic_Alternative.end()  or dic_Alternative[*id_neighbor].use_count() == 0){
 				dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, alt->get_local_WS_matrix());
@@ -1015,10 +1002,10 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec,in
 		}
 
 		if( ((int)Population.size() - new_pop ) == 0){
-			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
-//				save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",*it);
-				save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",*it);
-			}
+//			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
+////				save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",*it);
+//				save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",*it);
+//			}
 //			cout<<new_pop<<endl;
 			new_pop = 0;
 			STEPS_PLOT++;
