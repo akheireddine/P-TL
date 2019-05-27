@@ -9,7 +9,7 @@ using namespace std;
 
 Evaluator* main_Knapsack(string filename_instance, string type_instance, string num_instance, int size_population, string WS_DM_preferences){
 
-	string pref_filename = "./WS_MatrixCC.csv";
+	string pref_filename = "./WS_MatrixD.csv";
 
 	MainKnapsack * knaps = new MainKnapsack(size_population, filename_instance, pref_filename);
 
@@ -217,7 +217,7 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 Evaluator* main_Knapsack_Cst_PSize(string filename_instance, string type_instance, string num_instance,
 	int size_population, string WS_DM_preferences, int max_size_population){
 
-	string pref_filename = "./WS_MatrixCC.csv";
+	string pref_filename = "./WS_MatrixD.csv";
 
 	MainKnapsack * knaps = new MainKnapsack(size_population,filename_instance,pref_filename);
 
@@ -254,9 +254,9 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 //	vector<int> sizer = {1,2,4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
 
-	vector<int> sizer = {1,2,4,6,10,15,20,60,100,140,200,300};  //C
+//	vector<int> sizer = {1,2,4,6,10,15,20,60,100,140,200,300};  //C
 
-//	vector<int> sizer = {1,5,10,30,60,100,150,200,250,350};  //D
+	vector<int> sizer = {1,2,5,8,10,30,60,100,150,200,250,350};  //D
 
 	for(int i = 1; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
@@ -273,10 +273,10 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
-			for(int step = 0; step < 4; step++){
+			for(int step = 0; step < 5; step++){
 				INFO = step;
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixCC.csv");
+				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixD.csv");
 
 
 				Tools::cpt_count = 0;
@@ -332,7 +332,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "C";
+	string type_inst = "D";
 	string taille = "100";
 
 //	script_knapsack(type_inst, taille, WS_DM);
@@ -418,7 +418,7 @@ int main(int argc, char** argv){
 //
 //	Gnuplotter::DIST_TIME_PSize_RESUM_X("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS_LTA", type_inst, taille,"PS" ,1, 10);
 //
-//	Gnuplotter::INDICATORS_PSize_RESUM_X("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS_LTA", type_inst, taille,"PS" ,1, 10);
+	Gnuplotter::INDICATORS_PSize_RESUM_X("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS", type_inst, taille,"PS" ,1, 10);
 
 
 
