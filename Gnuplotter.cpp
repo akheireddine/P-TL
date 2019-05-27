@@ -486,15 +486,15 @@ void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, str
 
 	string filename2 = "./Data/ParetoFront/A/AVG_PS/I_100_AVG_PS";
 
-//	string xtics = "'1' 0,'2' 1,'4' 2,'6' 3,'8' 4,'10' 5,'15' 6,'20' 7,'40' 8,'60' 9,'80' 10,'100' 11,'200' 12,'No-limit' 13";//A
+	string xtics = "'1' 0,'2' 1,'4' 2,'6' 3,'8' 4,'10' 5,'15' 6,'20' 7,'40' 8,'60' 9,'80' 10,'100' 11,'200' 12,'No-limit' 13";//A
 
 //	string xtics = "'1' 0,'2' 1,'4' 2,'6' 3,'10' 4,'15' 5,'20' 6,'60' 7,'100' 8,'140' 9,'200' 10,'300' 11,'No-limit' 12";//C
 
 
-	string xtics = "'1' 0,'2' 1,'5' 2,'8' 3,'10' 4,'30' 5,'60' 6,'100' 7,'150' 8,'300' 9,'250' 10,'350' 11,'No-limit' 12";//D
+//	string xtics = "'1' 0,'2' 1,'5' 2,'8' 3,'10' 4,'30' 5,'60' 6,'100' 7,'150' 8,'300' 9,'250' 10,'350' 11,'No-limit' 12";//D
 
 
-	gp<<"j = 0\n"; ///:INFORMATION RATE
+	gp<<"j = 1\n"; ///:INFORMATION RATE
 
 	gp<<"set xtics ("<<xtics<<") center offset 0,0 rotate by 75 right \n";
 	gp<<"set xrange [0:12]\n";
@@ -505,9 +505,9 @@ void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, str
 
 
 	gp<<"set output \"D1_"<<type_inst<<"_"<<size_inst<<".png\"\n";
-	gp<<"set multiplot layout 3,2 columnsfirst rowsfirst title \" {/:Bold=15 Average minimum distance from the optimal front (INDICATOR) when varying the size of the population using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
+	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 Average minimum distance from the optimal front (INDICATOR) when varying the size of the population using "<<size_inst<<" items ( "<<type_inst<<" ) }\"\n";
 
-	gp<<"do for[i=1:7] {\n";
+	gp<<"do for[i=0:7] {\n";
 
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
 		gp<<"plot  \""<<filename<<"\".i.\"_\".j.\".front\" using 1 w steps ls (i+1) title ' ' \n";
@@ -526,9 +526,9 @@ void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, str
 
 	gp<<"set output \"D2_"<<type_inst<<"_"<<size_inst<<".png\"\n";
 
-	gp<<"set multiplot layout 3,2 columnsfirst rowsfirst title \" {/:Bold=15 MaxMin distance from the optimal front (INDICATOR) when varying the size of the population using "<<size_inst<<" items ("<<type_inst<<") }\"\n";
+	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15 MaxMin distance from the optimal front (INDICATOR) when varying the size of the population using "<<size_inst<<" items ("<<type_inst<<") }\"\n";
 
-	gp<<"do for[i=1:7] {\n";
+	gp<<"do for[i=0:7] {\n";
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
 		gp<<"plot  \""<<filename<<"\".i.\"_\".j.\".front\" using 2 w steps ls (i+1) title ' ' \n";
 //				" \""<<filename2<<"_T\".i.\"_\".j.\".front\" using 2 w steps ls (2) title 'No Diversification\n";
@@ -545,9 +545,9 @@ void Gnuplotter::INDICATORS_PSize_RESUM_X(string filename, string type_inst, str
 
 	gp<<"set output \"PR_"<<type_inst<<"_"<<size_inst<<".png\"\n";
 
-	gp<<"set multiplot layout 3,2 columnsfirst rowsfirst title \" {/:Bold=15  Proportion of optimal solution (INDICATOR) when varying the size of the population using "<<size_inst<<" items ("<<type_inst<<")  }\"\n";
+	gp<<"set multiplot layout 4,2 columnsfirst rowsfirst title \" {/:Bold=15  Proportion of optimal solution (INDICATOR) when varying the size of the population using "<<size_inst<<" items ("<<type_inst<<")  }\"\n";
 
-	gp<<"do for[i=1:7] {\n";
+	gp<<"do for[i=0:7] {\n";
 		gp<<"set label 1 '{/:Bold=10 T'.i.'}' at graph 0.05,0.95 font ',8'\n";
 		gp<<"plot  \""<<filename<<"\".i.\"_\".j.\".front\" using 3 w steps ls (i+1) title ' ' \n";
 //				" \""<<filename2<<"_T\".i.\"_\".j.\".front\" using 3 w steps ls (2) title 'No Diversification\n";
@@ -840,7 +840,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize(string filename, string t
 	gp<<"set terminal pngcairo size 1500,900\n";
 
 
-	gp<<"do for[j=0:0]{\n";
+	gp<<"do for[j=4:4]{\n";
 
 	gp<<"ub = "<<to_string(size)<<"\n";
 

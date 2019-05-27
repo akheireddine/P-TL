@@ -236,7 +236,7 @@ map< float, int, greater <float> > AlternativeKnapsack::generate_ordered_ratio_i
 
 //	cout<<"______________"<<endl;
 //	cout<<Tools::print_vector(ws_aggr_utility)<<endl;
-//	cout<<"______________"<<endl;
+//	cout<<"______________="<<endl;
 	for(set<int>::iterator i = set_items.begin(); i != set_items.end(); ++i){
 
 		float aggregate_func_val_item = 0;
