@@ -9,7 +9,7 @@ using namespace std;
 
 Evaluator* main_Knapsack(string filename_instance, string type_instance, string num_instance, int size_population, string WS_DM_preferences){
 
-	string pref_filename = "./WS_MatrixA.csv";
+	string pref_filename = "./WS_MatrixB.csv";
 
 	MainKnapsack * knaps = new MainKnapsack(size_population, filename_instance, pref_filename);
 
@@ -285,7 +285,6 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 				for(int k = 0; k < K; k++){
 					GRAIN = graines[k];
 					srand( GRAIN );
-					cout<<"GRAINE : "<<GRAIN<<endl;
 					Ta =  500;
 					eval_ks = main_Knapsack_Cst_PSize(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
 					delete eval_ks;
@@ -402,8 +401,8 @@ int main(int argc, char** argv){
 			,"FRONT", t , 10, 410 , "./DM_preference_point");
 		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 			,"POPULATION", t , 10, 410 , "./DM_preference_point");
-//		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//			,"NON_DOMINATED_LOCALLY", t , 10, 410 , "./DM_preference_point");
+		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+			,"NON_DOMINATED_LOCALLY", t , 10, 410 , "./DM_preference_point");
 
 //		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //			,"NEIGHBORS", t , 10, 410 , "./DM_preference_point");
