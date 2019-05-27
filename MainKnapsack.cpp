@@ -651,9 +651,9 @@ void MainKnapsack::Learning_Threshold_Accepting_AVG(list< string > & dominated_s
 
 bool MainKnapsack::Stop_Condition(int tentative_improvment){
 
-//	return !Population.empty();
+	return !Population.empty();
 
-	return (tentative_improvment > 0) or !Population.empty();
+//	return (tentative_improvment > 0) or !Population.empty();
 
 }
 
@@ -898,12 +898,12 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 				limit_no_improvment =  2;
 
 
-			if( ((int)Population.size() < UB_Population_size)  and Stop_Condition(limit_no_improvment) ){
-				int to_add = ( UB_Population_size - (int)Population.size() ) ;
-//				Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
-//				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
-				Random_Selection(Dominated_alt, to_add);
-			}
+//			if( ((int)Population.size() < UB_Population_size)  and Stop_Condition(limit_no_improvment) ){
+//				int to_add = ( UB_Population_size - (int)Population.size() ) ;
+////				Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
+////				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
+//				Random_Selection(Dominated_alt, to_add);
+//			}
 
 			step++;
 

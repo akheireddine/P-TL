@@ -285,6 +285,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 				for(int k = 0; k < K; k++){
 					GRAIN = graines[k];
 					srand( GRAIN );
+					cout<<"GRAINE : "<<GRAIN<<endl;
 					Ta =  500;
 					eval_ks = main_Knapsack_Cst_PSize(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
 					delete eval_ks;
