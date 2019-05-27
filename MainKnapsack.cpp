@@ -468,22 +468,28 @@ void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions,
 
 		shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[*i];
 
+		//		//AVERAGE TA
 		float aggreg_value = -1;
-
-//		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-//			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
-//		}
-//
-//		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
-
 		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
-			if(aggreg_value == -1   or  (val < aggreg_value)  )
-				aggreg_value =  val;
+			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
 		}
-		float val_key = aggreg_value;
 
-		if(val_key <= Ta)
+		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
+
+
+				//MIN TA
+		//		float aggreg_value = 0;
+		//		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+		//			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+		//			if(aggreg_value == -1   or  (val < aggreg_value)  )
+		//				aggreg_value =  val;
+		//		}
+		//		float val_key = aggreg_value;
+
+
+
+
+//		if(val_key <= Ta)
 			ratio_items[val_key] = p_alt->get_id_alt();
 	}
 
@@ -571,22 +577,28 @@ void MainKnapsack::Learning_Threshold_Accepting_AVG(list< string > & dominated_s
 
 		shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[*i];
 
-		float aggreg_value = -1;
 
 //		//AVERAGE TA
-//		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-//			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
-//		}
-//
-//		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
+		float aggreg_value = -1;
+		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+		}
+
+		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
+
+
 
 		//MIN TA
-		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
-			if(aggreg_value == -1   or  (val < aggreg_value)  )
-				aggreg_value =  val;
-		}
-		float val_key = aggreg_value;
+//		float aggreg_value = 0;
+//		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+//			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+//			if(aggreg_value == -1   or  (val < aggreg_value)  )
+//				aggreg_value =  val;
+//		}
+//		float val_key = aggreg_value;
+
+
+
 
 //		cout<<"   key : "<<val_key<<endl;
 
@@ -614,14 +626,14 @@ void MainKnapsack::Learning_Threshold_Accepting_AVG(list< string > & dominated_s
 	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
 	for(map< float, string, less<float> >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
 
-		if( (cpt < min_bound)    and   ((*i).first <= Ta)   ){
+		if( (cpt < min_bound)    ){//and   ((*i).first <= Ta)   ){
 			shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[(*i).second];
 			population.push_back( p_alt->get_id_alt());
 			dominated_solutions.remove((*i).second);
 			cpt++;
 		}
-		else
-			break;
+//		else
+//			break;
 	}
 
 //	if(cpt == 0 )
@@ -849,7 +861,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 			if( Update_Archive(new_alt, local_OPT_Sol, next_Population) ){
 
-				if( (int)next_Population.size() <= UB_Population_size ){
+				if( (int)next_Population.size() < UB_Population_size ){
 					next_Population.push_back(*id_new_alt);
 					OPT_Solution = local_OPT_Sol;
 				}
@@ -888,9 +900,9 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 //			if( ((int)Population.size() < UB_Population_size)  and Stop_Condition(limit_no_improvment) ){
 //				int to_add = ( UB_Population_size - (int)Population.size() ) ;
-////				Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
+//				Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
 ////				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
-//				Random_Selection(Dominated_alt, to_add);
+////				Random_Selection(Dominated_alt, to_add);
 //			}
 
 			step++;
@@ -899,6 +911,9 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 )
 					(*it).second.reset();
 			}
+
+
+//			cout<<"Population size : "<<Population.size()<<endl;
 
 			Dominated_alt.clear();
 			next_Population.clear();
