@@ -8,8 +8,6 @@
 #include <ilcplex/ilocplex.h>
 #include <cstdlib>      // std::rand, std::srand
 
-extern int GRAIN;
-
 
 
 void Tools::skip(list< set< int > > &list_skiper, int n){
@@ -283,7 +281,9 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 		float minus = *(min_element(ws_matrix[0].begin(), ws_matrix[0].end()) );
 		float maxus = *(max_element(ws_matrix[0].begin(), ws_matrix[0].end()) );
 
-		float wi =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX / (maxus - minus ))) + minus ;
+		int rando = rand();
+
+		float wi =  static_cast <float> (rando)*1.0 /( static_cast <float> (RAND_MAX / (maxus - minus ))) + minus ;
 		weighted_sum[0] = wi ;
 		weighted_sum[1] =  1.0 - wi ;
 	}

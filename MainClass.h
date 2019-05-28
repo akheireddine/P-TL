@@ -29,3 +29,7 @@ int INFO = 0;
 list<set<int>> init_population;
 
 int GRAIN;
+
+
+
+map<string, list<string> > common_neighbors;

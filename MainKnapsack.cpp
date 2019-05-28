@@ -18,7 +18,8 @@
 extern float Ta;
 extern float Temperature;
 
-
+extern int GRAIN;
+extern map<string, list<string> > common_neighbors;
 
 
 extern list<set<int>> init_population;
@@ -815,33 +816,51 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
 
+		set< string > current_neighbors;
 
-		set< string > current_neighbors = alt->get_neighborhood();
+		if( common_neighbors.find( alt->get_id_alt( ) ) != common_neighbors.end() ){
+			Local_front = common_neighbors[alt->get_id_alt()];
 
-		for(set< string >::iterator id_neighbor = current_neighbors.begin(); id_neighbor != current_neighbors.end(); ++id_neighbor){
+			for(list< string >::iterator id_neighbor = Local_front.begin(); id_neighbor != Local_front.end(); ++id_neighbor){
 
-			shared_ptr< AlternativeKnapsack > neighbor;
+				shared_ptr< AlternativeKnapsack > neighbor;
+
+				if ( dic_Alternative.find(*id_neighbor) == dic_Alternative.end()  or dic_Alternative[*id_neighbor].use_count() == 0){
+					dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, WS_matrix);
+				}
+			}
+		}
+		else{
+			current_neighbors = alt->get_neighborhood();
+
+			for(set< string >::iterator id_neighbor = current_neighbors.begin(); id_neighbor != current_neighbors.end(); ++id_neighbor){
+
+				shared_ptr< AlternativeKnapsack > neighbor;
 
 
-			if ( dic_Alternative.find(*id_neighbor) == dic_Alternative.end()  or dic_Alternative[*id_neighbor].use_count() == 0){
-				dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, WS_matrix);
+				if ( dic_Alternative.find(*id_neighbor) == dic_Alternative.end()  or dic_Alternative[*id_neighbor].use_count() == 0){
+					dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, WS_matrix);
+				}
+
+				neighbor = dic_Alternative[*id_neighbor];
+
+	//			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NEIGHBORS_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",neighbor);
+
+				//Prefiltrage
+				if( alt->dominates_objective_space(neighbor) != 1 ){
+					Update_Archive(neighbor,Local_front);
+				}
+				else
+					Dominated_alt.push_back(*id_neighbor);
+
 			}
 
-			neighbor = dic_Alternative[*id_neighbor];
-
-//			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NEIGHBORS_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",neighbor);
-
-			//Prefiltrage
-			if( alt->dominates_objective_space(neighbor) != 1 ){
-				Update_Archive(neighbor,Local_front);
-			}
-			else
-				Dominated_alt.push_back(*id_neighbor);
-
+			common_neighbors[alt->get_id_alt()] = Local_front;
 		}
 
 		random_device rd;
-		mt19937 g(rd());
+//		mt19937 g(rd());
+		mt19937 g(GRAIN);
 
 		vector<string> shuffle_LF (Local_front.begin(), Local_front.end());
 		shuffle(shuffle_LF.begin(), shuffle_LF.end(), g);
