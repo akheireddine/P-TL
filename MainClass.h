@@ -32,4 +32,4 @@ int GRAIN;
 
 
 
-map<string, list<string> > common_neighbors;
+map<string, set<string> > common_neighbors;

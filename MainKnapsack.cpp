@@ -19,7 +19,7 @@ extern float Ta;
 extern float Temperature;
 
 extern int GRAIN;
-extern map<string, list<string> > common_neighbors;
+extern map<string, set<string> > common_neighbors;
 
 
 extern list<set<int>> init_population;
@@ -691,6 +691,14 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
+		if( common_neighbors.find( alt->get_id_alt( ) ) != common_neighbors.end() )
+			current_neighbors = common_neighbors[alt->get_id_alt()];
+
+		else{
+			current_neighbors = alt->get_neighborhood();
+			common_neighbors[alt->get_id_alt()] = current_neighbors;
+		}
+
 		for(set< string >::iterator id_neighbor = current_neighbors.begin(); id_neighbor != current_neighbors.end(); ++id_neighbor){
 
 			shared_ptr< AlternativeKnapsack > neighbor;
@@ -767,10 +775,10 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 //			new_pop += ((int)Population.size() - bef_add);
 //		}
 
-//		for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
-//			if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 )
-//				(*it).second.reset();
-//		}
+		for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
+			if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 )
+				(*it).second.reset();
+		}
 
 		Local_front.clear();
 		Dominated_alt.clear();
@@ -814,52 +822,42 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
+//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
 
 		set< string > current_neighbors;
 
-		if( common_neighbors.find( alt->get_id_alt( ) ) != common_neighbors.end() ){
-			Local_front = common_neighbors[alt->get_id_alt()];
+		if( common_neighbors.find( alt->get_id_alt( ) ) != common_neighbors.end() )
+			current_neighbors = common_neighbors[alt->get_id_alt()];
 
-			for(list< string >::iterator id_neighbor = Local_front.begin(); id_neighbor != Local_front.end(); ++id_neighbor){
-
-				shared_ptr< AlternativeKnapsack > neighbor;
-
-				if ( dic_Alternative.find(*id_neighbor) == dic_Alternative.end()  or dic_Alternative[*id_neighbor].use_count() == 0){
-					dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, WS_matrix);
-				}
-			}
-		}
 		else{
 			current_neighbors = alt->get_neighborhood();
-
-			for(set< string >::iterator id_neighbor = current_neighbors.begin(); id_neighbor != current_neighbors.end(); ++id_neighbor){
-
-				shared_ptr< AlternativeKnapsack > neighbor;
-
-
-				if ( dic_Alternative.find(*id_neighbor) == dic_Alternative.end()  or dic_Alternative[*id_neighbor].use_count() == 0){
-					dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, WS_matrix);
-				}
-
-				neighbor = dic_Alternative[*id_neighbor];
-
-	//			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NEIGHBORS_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",neighbor);
-
-				//Prefiltrage
-				if( alt->dominates_objective_space(neighbor) != 1 ){
-					Update_Archive(neighbor,Local_front);
-				}
-				else
-					Dominated_alt.push_back(*id_neighbor);
-
-			}
-
-			common_neighbors[alt->get_id_alt()] = Local_front;
+			common_neighbors[alt->get_id_alt()] = current_neighbors;
 		}
 
+		for(set< string >::iterator id_neighbor = current_neighbors.begin(); id_neighbor != current_neighbors.end(); ++id_neighbor){
+
+			shared_ptr< AlternativeKnapsack > neighbor;
+
+
+			if ( dic_Alternative.find(*id_neighbor) == dic_Alternative.end()  or dic_Alternative[*id_neighbor].use_count() == 0){
+				dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, WS_matrix);
+			}
+
+			neighbor = dic_Alternative[*id_neighbor];
+
+//			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NEIGHBORS_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",neighbor);
+
+			//Prefiltrage
+			if( alt->dominates_objective_space(neighbor) != 1 ){
+				Update_Archive(neighbor,Local_front);
+			}
+			else
+				Dominated_alt.push_back(*id_neighbor);
+
+		}
+
+
 		random_device rd;
-//		mt19937 g(rd());
 		mt19937 g(GRAIN);
 
 		vector<string> shuffle_LF (Local_front.begin(), Local_front.end());
@@ -876,7 +874,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 			list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
 
-			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
+//			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
 
 			if( Update_Archive(new_alt, local_OPT_Sol, next_Population) ){
 
@@ -901,9 +899,9 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 		if( Population.empty() ){
 
-			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
-				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_FRONT_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
-			}
+//			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
+//				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_FRONT_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
+//			}
 
 
 			for(list< string >::iterator it = next_Population.begin(); it != next_Population.end(); ++it)

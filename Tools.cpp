@@ -204,7 +204,15 @@ void Tools::save_std_deviation(string filename){
 	for(int i = 0; i < (int)ratios_dist_to_OPT.size(); i++)
 		val += ( ratios_dist_to_OPT[i] - avg_ratio ) * ( ratios_dist_to_OPT[i] - avg_ratio );
 
-	fic_write<<sqrt(val)<<endl;
+	fic_write<<sqrt(val)<<"  ";
+
+
+	for(int i = 0; i < (int)Tools::dist_time_avg.size(); i++){
+		Tools::dist_time_avg[i] = Tools::dist_time_avg[i]*1.0/cpt_count;
+		fic_write<<Tools::dist_time_avg[i]<<"  ";
+	}
+	fic_write<<endl;
+
 	fic_write.close();
 
 	Tools::ratios_dist_to_OPT.clear();
