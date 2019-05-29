@@ -261,8 +261,8 @@ Evaluator* main_Knapsack_Cst_PSize(string filename_instance, string type_instanc
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	int K = 1;
-	int N = 4;
-	int I = 2;
+	int N = 2;
+	int I = 8;
 	int iter;
 	vector<int> graines;
 
