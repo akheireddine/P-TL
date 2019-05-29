@@ -184,20 +184,20 @@ void AlternativeKnapsack::enumerate_neighborhood(set<int> curr_BP, set<int> item
 
 	for(set<int>::iterator elem = item_OUT.begin(); elem != item_OUT.end(); ++elem){
 
-		weight_neighbor = bp_weight + mainLSStructure->get_weight_of(*elem);
+		weight_neighbor = bp_weight;
 
-		if ( weight_neighbor > BP_capacity )
-			continue;
-//
 		set<int> new_neighbor(curr_BP.begin(),curr_BP.end());
-//
-		new_neighbor.insert(*elem);
+
+		if ( weight_neighbor + mainLSStructure->get_weight_of(*elem) <= BP_capacity ){
+			weight_neighbor += mainLSStructure->get_weight_of(*elem);
+			new_neighbor.insert(*elem);
+		}
 
 		for(map<float,int, greater <float> >::iterator best_ratio = ratio_items.begin(); best_ratio != ratio_items.end(); ++best_ratio){
 
 			id_object = (*best_ratio).second;
 
-			if( ((weight_neighbor + mainLSStructure->get_weight_of(id_object)) > BP_capacity)) //(id_object == *elem) or */
+			if( (id_object == *elem) or ((weight_neighbor + mainLSStructure->get_weight_of(id_object)) > BP_capacity))
 				continue;
 
 			new_neighbor.insert(id_object);
