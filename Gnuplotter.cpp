@@ -840,7 +840,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize(string filename, string t
 	gp<<"set terminal pngcairo size 1500,900\n";
 
 
-	gp<<"do for[j=0:0]{\n";
+	gp<<"do for[j=1:1]{\n";
 
 	gp<<"ub = "<<to_string(size)<<"\n";
 
