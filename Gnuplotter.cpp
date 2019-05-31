@@ -840,7 +840,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize(string filename, string t
 	gp<<"set terminal pngcairo size 1500,900\n";
 
 
-	gp<<"do for[j=1:1]{\n";
+	gp<<"do for[j=0:0]{\n";
 
 	gp<<"ub = "<<to_string(size)<<"\n";
 
@@ -859,7 +859,7 @@ void Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize(string filename, string t
 			gp<<"set label 1 '{/:Bold=10 '.label.'°}' at graph 0.05,0.95 font ',8'\n";
 
 			gp<<"plot '"<<filename<<"-'.j.'.eff' title 'OPT front' ,  "
-				"for[i=1:105] '"<<filename<<"-'.j.'_'.ub.'_"<<algo<<"_'.i.'_INFO_'.step.'.expl' using 1:2 "
+				"for[i=1:80] '"<<filename<<"-'.j.'_'.ub.'_"<<algo<<"_'.i.'_INFO_'.step.'.expl' using 1:2 "
 						"title 'front '.i.'  (size '.(system('wc -l < "<<filename<<"-'.j.'_'.ub.'_"<<algo<<"_'.i.'_INFO_'.step.'.expl' )).')' with points ls (i+1) ,"
 				" \""<<opt_points_filename<<"\" with points ls 1000 title 'DMs preference' \n";
 		gp<<"set grid\n";

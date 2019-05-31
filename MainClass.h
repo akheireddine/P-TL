@@ -33,3 +33,6 @@ int GRAIN;
 
 
 map<string, set<string> > common_neighbors;
+
+
+Evaluator * eval_ks;

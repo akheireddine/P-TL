@@ -5,14 +5,12 @@
 //#define __PRINT__
 
 //int info = 0;
-Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_DM_preferences,
-		string DT_file, float time, string PFI_file){
+Evaluator::Evaluator(string filename, string WS_DM_preferences, string SDT_file, string PFI_file){
 
 	filename_instance = filename;
-	mainProblem = problemInstance;
 
 
-	dist_time_file = DT_file;
+	dist_time_file = SDT_file;
 	pf_indicators_file = PFI_file;
 
 	WS_DM_vector = Tools::readWS_DM(WS_DM_preferences);
@@ -40,11 +38,11 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 	cout<<"    "<< Tools::print_vector(OPT_Alternative->get_criteria_values())<<endl;
 #endif
 
-	evaluate_Dist_Time(dist_time_file, time);
+//	evaluate_Dist_Time(dist_time_file, time);
 
-	evaluate_standard_deviation_from_OPT_point(dist_time_file);
+//	evaluate_standard_deviation_from_OPT_point(dist_time_file);
 
-	evaluate_PF(pf_indicators_file);
+//	evaluate_PF(pf_indicators_file);
 
 
 
@@ -59,41 +57,10 @@ Evaluator::Evaluator(string filename, MainKnapsack * problemInstance, string WS_
 
 
 
-
-void Evaluator::write_coeff_functions(string filename){
-
-	ofstream fic(filename.c_str(), ios::app);
-
-	fic<<endl<<"Optimal solution :"<<endl;
-	fic<<"("; for(int i = 0; i < mainProblem->get_p_criteria(); i++) fic<< OPT_Alternative->get_criteria(i) <<", "; fic<<")"<<endl;
-	fic<<endl<<"Matrice des objectives & Optimal solution:"<<endl;
-
-	for(int i = 0; i < mainProblem->get_p_criteria(); i++){
-		fic<<"   ";
-		for(int j = 0; j < mainProblem->get_n_objective(); j++)
-			fic<<to_string(mainProblem->get_WS_matrix()[i][j])<< " ";
-		fic<<endl;
-	}
-	fic<<endl;
-
-	fic.close();
-
-}
-
-
-void Evaluator::write_objective_OPT_information(){
-
-	write_coeff_functions(dist_time_file);
-	write_coeff_functions(pf_indicators_file);
-
-}
-
-
-
 bool Evaluator::in_search_space(vector<float> v,vector<float> minus, vector<float> maxus){
 
 
-	for(int j = 0; j < mainProblem->get_p_criteria(); j++)
+	for(int j = 0; j < p_criteria; j++)
 		if( (v[j] < minus[j] )  or (v[j] > maxus[j]) )
 				return false;
 
@@ -118,23 +85,20 @@ void Evaluator::readParetoFront(){
 	PF_Efficient.clear();
 
 
-
-	vector<vector<float > > ws_mat = mainProblem->get_WS_matrix();
-
-	vector< float > minus(mainProblem->get_p_criteria(), -1);
-	vector< float > maxus(mainProblem->get_p_criteria(), -1);
+	vector< float > minus(p_criteria, -1);
+	vector< float > maxus(p_criteria, -1);
 
 
-	for(int i = 0; i < mainProblem->get_n_objective(); i++){
+	for(int i = 0; i < n_objective; i++){
 		vector< float > obj, extrem_solution;
 
-		for(int j = 0; j < mainProblem->get_p_criteria(); j++){
-			obj.push_back(ws_mat[j][i]);
+		for(int j = 0; j < p_criteria; j++){
+			obj.push_back(WS_matrix[j][i]);
 		}
 
 		extrem_solution = OPT_Alternative_PLNE(obj)->get_criteria_values() ;
 
-		for(int j = 0; j < mainProblem->get_p_criteria(); j++){
+		for(int j = 0; j < p_criteria; j++){
 			if( minus[j] == -1    or   extrem_solution[j] < minus[j] )
 				minus[j] = extrem_solution[j];
 
@@ -162,6 +126,131 @@ void Evaluator::readParetoFront(){
 }
 
 
+
+
+
+void MainKnapsack::readFilenameInstance(string filename){
+
+	string line;
+	char buff[100];
+	int i = 0;
+	float weight;
+	char *cline, *pch;
+	vector< float > line_value;
+
+	ifstream fic((filename+".dat").c_str());
+
+	//comments
+	getline(fic,line);
+	while( line[0] == 'c' )
+		getline(fic,line);
+
+	//number of items
+	n_items = 0;
+	if( line[0] == 'n')
+		sscanf(line.c_str(),"%s %d",buff,&n_items);
+
+	Items_information.resize(n_items);
+
+	//comments
+	getline(fic,line);
+	while( line[0] == 'c' )
+		getline(fic,line);
+
+	//items information
+
+
+	while(line[0] == 'i'){
+
+		line.erase(line.begin());
+		cline = new char[line.length() + 1]; // or
+		std::strcpy(cline, line.c_str());
+
+		line_value.clear();
+		pch = strtok (cline," 	");
+		while (pch != NULL){
+			line_value.push_back(atof(pch));
+			pch = strtok (NULL, " 	");
+		}
+
+		weight = line_value[0];
+
+		line_value.erase(line_value.begin());
+
+		Items_information[i] = make_tuple(weight,line_value);
+
+
+		getline(fic,line);
+		i++;
+	}
+
+	//number of criteria
+	p_criteria = 0;
+	p_criteria = line_value.size();
+
+	//comments
+	while( line[0] == 'c' )
+		getline(fic,line);
+
+
+	//total capacity
+	if( line[0] == 'W' )
+		sscanf(line.c_str(),"%s %f",buff,&Backpack_capacity);
+
+
+
+#ifdef __PRINT__
+	cout<<"Information sur l'instance : "<<endl;
+	cout<<"   Instance de taille ("<<to_string(n_items)<<")"<<endl;
+	cout<<"   Capacité du sac-à-dos ("<<to_string(Backpack_capacity)<<")"<<endl;
+	cout<<"   Nombre de criètres ("<<to_string(p_criteria)<<")"<<endl;
+#endif
+	fic.close();
+
+}
+
+
+void Evaluator::readWS_matrix(string filename){
+
+	char *cline, *pch;
+	int i;
+	WS_matrix.clear();
+	WS_matrix.resize(0);
+
+	ifstream fic(filename.c_str());
+	string line;
+	i = 0;
+
+	if (!(fic) or filename.find(".csv") == std::string::npos){
+		cerr<<"Error occurred readWS_Matrix EVALUATOR"<<endl;
+	}
+
+//	WS_matrix.resize(p_criteria,vector< float >());
+
+	while( !fic.eof() and i < p_criteria){
+
+		getline(fic,line);
+
+		cline = new char[line.length() + 1]; // or
+		std::strcpy(cline, line.c_str());
+
+		pch = strtok (cline," 	,;");
+
+		vector< float > ws_line;
+
+		while (pch != NULL){
+			ws_line.push_back(atof(pch));
+			pch = strtok (NULL, " 	,;");
+		}
+		i++;
+		WS_matrix.push_back(ws_line);
+	}
+
+	p_criteria = WS_matrix.size();
+	n_objective = WS_matrix[0].size();
+}
+
+
 /**
  * ************************************************* EVALUATION PART *************************************************
  */
@@ -173,7 +262,7 @@ float Evaluator::nearest_alternative(vector< float > & vect_criteria ){
 
 	ifstream fic((filename_instance+".sol").c_str());
 
-	vector< float > criteria_val(mainProblem->get_p_criteria(),0);
+	vector< float > criteria_val(p_criteria,0);
 	vector< float >tmp_criteria_values;
 
 	float min_ratio = -1, tmp_ratio = 1;
@@ -210,13 +299,14 @@ float Evaluator::nearest_alternative(vector< float > & vect_criteria ){
 //Get optima values of objective with WS aggregator
 shared_ptr<AlternativeKnapsack> Evaluator::OPT_Alternative_PLNE(vector<float> WS_vector){
 
+	int n_item = Items_information.size();
 	IloEnv   env;
 	IloModel model(env);
-	vector<IloNumVar > x(mainProblem->get_n_items());
+	vector<IloNumVar > x( n_item );
 	IloRangeArray Constraints(env);
 
 	//VARIABLES
-	for(int i = 0; i < mainProblem->get_n_items(); i++){
+	for(int i = 0; i < n_item; i++){
 		x[i] = IloNumVar(env, 0.0, 1.0, ILOINT);
 		ostringstream varname;
 		varname.str("");
@@ -227,20 +317,20 @@ shared_ptr<AlternativeKnapsack> Evaluator::OPT_Alternative_PLNE(vector<float> WS
 	//CONSTRAINTS
 	IloExpr c1(env);
 
-	for(int j = 0; j < mainProblem->get_n_items() ; j++)
-		c1 += x[j] * mainProblem->get_weight_of(j);
+	for(int j = 0; j < n_item ; j++)
+		c1 += x[j] * get_weight_of(j);
 
-	Constraints.add(c1 <= mainProblem->get_capacity() );
+	Constraints.add(c1 <= Backpack_capacity );
 
 	model.add(Constraints);
 
 	//OBJECTIVE
 	IloObjective obj=IloAdd(model, IloMaximize(env));
 
-	for(int i = 0; i < mainProblem->get_n_items(); i++){
+	for(int i = 0; i < n_item; i++){
 		float coeff = 0.;
-		for(int j = 0; j < mainProblem->get_p_criteria() ; j++)
-			  coeff += mainProblem->get_utility(i,j) * WS_vector[j];
+		for(int j = 0; j < p_criteria() ; j++)
+			  coeff += get_utility(i,j) * WS_vector[j];
 
 		obj.setLinearCoef(x[i], coeff);
 	}
@@ -260,23 +350,21 @@ shared_ptr<AlternativeKnapsack> Evaluator::OPT_Alternative_PLNE(vector<float> WS
 
 	//GET SOLUTION
 	set< int > items;
-	for(int i = 0; i < mainProblem->get_n_items(); i++){
+	for(int i = 0; i < n_item; i++){
 		if( cplex.getValue(x[i]) > 0)
 			items.insert(i);
 	}
 	env.end();
 
-	shared_ptr<AlternativeKnapsack> opt_alt = make_shared<AlternativeKnapsack>(items, mainProblem, mainProblem->get_WS_matrix());
+	shared_ptr<AlternativeKnapsack> opt_alt = make_shared<AlternativeKnapsack>(items, mainProblem, WS_matrix);
 
-
-	set< int >().swap(items);
 
 	return opt_alt;
 }
 
 
 //Evaluation the quality of PLS and WS-PLS solutions to DMs real preferences
-void Evaluator::evaluate_Dist_Time(string dist_time_file, float time){
+float Evaluator::evaluate_Dist_ratio(){
 
 	string line;
 	vector<float> vector_criteria;
@@ -289,22 +377,20 @@ void Evaluator::evaluate_Dist_Time(string dist_time_file, float time){
 	cout<<"   vector objective ( "<<Tools::print_vector(vector_criteria)<<" )"<<endl;
 #endif
 
-	Tools::update_dist_time(min_mols_ratio,time);
-
-//	ofstream fic(dist_time_file,ios::app);
-//	//"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+to_string(mainProblem->get_n_items())+".eval", ios::app);
-//	fic<<min_mols_ratio<<","<<time<<endl;
+	return min_mols_ratio;
 
 }
 
 
-void Evaluator::evaluate_standard_deviation_from_OPT_point(string std_deviation_file){
+vector< float > Evaluator::evaluate_standard_deviation_from_OPT_point(){
 
 	ifstream fic((filename_instance+".sol").c_str());
 
-	vector< float >tmp_criteria_values;
+	vector< float > tmp_criteria_values;
 
 	float tmp_ratio = 1.;
+	vector< float > st_deviation;
+
 	string line;
 
 	while(!fic.eof()){
@@ -318,11 +404,13 @@ void Evaluator::evaluate_standard_deviation_from_OPT_point(string std_deviation_
 
 		tmp_ratio = Tools::get_ratio(tmp_criteria_values, OPT_Alternative->get_criteria_values(), WS_DM_vector);
 
-		Tools::add_dist_to_OPT(tmp_ratio);
+		st_deviation.push_back(tmp_ratio);
 
 	}
 
 	fic.close();
+
+	return st_deviation
 }
 
 
@@ -331,10 +419,9 @@ void Evaluator::evaluate_standard_deviation_from_OPT_point(string std_deviation_
  * ************************************************* PF MEASUREMENT PART *************************************************
  */
 
-float Evaluator::PR_D3(){
+float Evaluator::PR_D3(list< shared_ptr< Alternative > > OPT_Solution){
 
 	int opt_size_front = 0, nb_found = 0;
-	list< shared_ptr< Alternative > > OPT_Solution = mainProblem->get_OPT_Solution();
 
 	vector< shared_ptr< Alternative > > tmp_opt(OPT_Solution.begin(),OPT_Solution.end());
 
@@ -354,12 +441,11 @@ float Evaluator::PR_D3(){
 	return nb_found*100.0/opt_size_front;
 }
 
-float Evaluator::average_distance_D1(){
+float Evaluator::average_distance_D1(list< shared_ptr< Alternative > > OPT_Solution){
 
 	float min_dist = -1;
 	float avg_dist = 0.;
 
-	list< shared_ptr< Alternative > > OPT_Solution = mainProblem->get_OPT_Solution();
 
 //	cout<<"============================================="<<endl;
 //	for(auto t : OPT_Solution){
@@ -391,10 +477,9 @@ float Evaluator::average_distance_D1(){
 }
 
 
-float Evaluator::maximum_distance_D2(){
+float Evaluator::maximum_distance_D2(list< shared_ptr< Alternative > > OPT_Solution){
 	float min_dist = -1;
 	float max_dist_PF = 0.;
-	list< shared_ptr< Alternative > > OPT_Solution = mainProblem->get_OPT_Solution();
 
 	for(list< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
 		min_dist = -1;
@@ -411,25 +496,33 @@ float Evaluator::maximum_distance_D2(){
 	return max_dist_PF;
 }
 
-void Evaluator::evaluate_PF(string pf_indicators_file){
+void Evaluator::evaluate_PF(shared_ptr< MainKnapsack > knaps, float time_cpu){
 
-	float D1 = average_distance_D1();
+	time += time_cpu;
 
-	float D2 = maximum_distance_D2();
+	dist += evaluate_Dist_ratio();
 
-	float D3 = PR_D3();
+	vector<float> tmp_std = evaluate_standard_deviation_from_OPT_point();
 
-	Tools::update_indicators(D1,D2,D3);
+//	merge(tmp_std.begin(),tmp_std.end(),std.begin(),std.end(),std.begin());
 
-//	ofstream write_fic(pf_indicators_file,ios::app);
-//	//"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+to_string(mainProblem->get_n_items())+".front", ios::app);
-//
-//	write_fic<<D1<<","<<D2<<","<<D3<<endl;
-//
-//	write_fic.close();
+	D1 += average_distance_D1(knaps->get_OPT_Solution());
+
+	D2 += maximum_distance_D2(knaps->get_OPT_Solution());
+
+	D3 += PR_D3(knaps->get_OPT_Solution());
+
+	cpt++;
 
 }
 
+
+
+void Evaluator::save_PF_evaluation(){
+
+
+
+}
 
 
 
@@ -442,14 +535,14 @@ void Evaluator::evaluate_PF(string pf_indicators_file){
 
 void Evaluator::compute_information_rate_front(){
 
-	int nb_criteria = mainProblem->get_p_criteria();
+	int nb_criteria = p_criteria;
 	vector< float > inf_intervalls(nb_criteria,-1);
 	vector< float > sup_intervalls(nb_criteria,-1);
 	vector< shared_ptr< AlternativeKnapsack > > lexmaxs(nb_criteria);
 
-	for(int i = 0; i < mainProblem->get_n_objective(); i++){
+	for(int i = 0; i < n_objective; i++){
 
-		lexmaxs[i] = OPT_Alternative_PLNE(mainProblem->get_WS_matrix()[i]);
+		lexmaxs[i] = OPT_Alternative_PLNE(WS_matrix[i]);
 
 		cout<<Tools::print_vector(lexmaxs[i]->get_criteria_values())<<endl;
 
@@ -506,11 +599,11 @@ void Evaluator::compute_information_rate_front(){
 float Evaluator::compute_information_rate(){
 
 
-	vector<vector<float > > matrix = mainProblem->get_WS_matrix();
+	vector<vector<float > > matrix = WS_matrix;
 	float uv = 0, u_norme = 0, v_norme = 0;
 	//compute angle
 
-	if(mainProblem->get_p_criteria() == 2){
+	if(p_criteria == 2){
 
 		for(int i = 0; i < 2 ; i++){
 			uv += matrix[i][0] * matrix[i][1] ;
@@ -525,18 +618,18 @@ float Evaluator::compute_information_rate(){
 	}
 
 	//compute volume
-	if(mainProblem->get_p_criteria() == 3){
-		vector< vector<float > > matrix = mainProblem->get_WS_matrix();
+	if(p_criteria == 3){
+		vector< vector<float > > matrix = WS_matrix;
 		vector<float> lengths(3,0);
 		float maxus, minus;
 
 		for(int i = 0; i < 3; i++){
 			maxus = -1, minus = -1;
-			for(int j = 0; j < mainProblem->get_n_objective(); j++){
-				if( matrix[i][j] < minus   or minus == -1 )
-					minus = matrix[i][j];
-				if( matrix[i][j] > maxus or maxus == -1)
-					maxus = matrix[i][j];
+			for(int j = 0; j < n_objective; j++){
+				if( WS_matrix[i][j] < minus   or minus == -1 )
+					minus = WS_matrix[i][j];
+				if( WS_matrix[i][j] > maxus or maxus == -1)
+					maxus = WS_matrix[i][j];
 			}
 
 			lengths[i] = abs(maxus - minus);
@@ -555,3 +648,49 @@ return -1;
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//void Evaluator::write_coeff_functions(string filename){
+//
+//	ofstream fic(filename.c_str(), ios::app);
+//
+//	fic<<endl<<"Optimal solution :"<<endl;
+//	fic<<"("; for(int i = 0; i < mainProblem->get_p_criteria(); i++) fic<< OPT_Alternative->get_criteria(i) <<", "; fic<<")"<<endl;
+//	fic<<endl<<"Matrice des objectives & Optimal solution:"<<endl;
+//
+//	for(int i = 0; i < mainProblem->get_p_criteria(); i++){
+//		fic<<"   ";
+//		for(int j = 0; j < mainProblem->get_n_objective(); j++)
+//			fic<<to_string(mainProblem->get_WS_matrix()[i][j])<< " ";
+//		fic<<endl;
+//	}
+//	fic<<endl;
+//
+//	fic.close();
+//
+//}
+//
+//
+//void Evaluator::write_objective_OPT_information(){
+//
+//	write_coeff_functions(dist_time_file);
+//	write_coeff_functions(pf_indicators_file);
+//
+//}
