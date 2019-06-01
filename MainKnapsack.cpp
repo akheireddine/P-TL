@@ -19,37 +19,26 @@ int STEPS_PLOT = 0;
 
 
 
-MainKnapsack::MainKnapsack(string filename, int init_population_size , string matrix_filename){
+MainKnapsack::MainKnapsack( shared_ptr< Evaluator > evaluator, int population_size_init, string filename, bool generate_population){
 
 	filename_instance = filename;
 
-	readFilenameInstance(filename_instance);
+	initializeInformation(evaluator);
 
-	readWS_Matrix(matrix_filename);
+	if( generate_population )
+		GenerateInitialPopulation(population_size_init);
+	else{
+		for(int i = 0; i < population_size_init ; i++){
+			set<int> individu = init_population.front();
+			init_population.pop_front();
+			string id_alt = Tools::decode_set_items(individu, n_items);
+			Population.push_back(id_alt);
+			init_population.push_back(individu);
 
-	GenerateInitialPopulation(init_population_size);
-
-}
-
-
-MainKnapsack::MainKnapsack( int population_size_init, string filename, string matrix_filename){
-
-	filename_instance = filename;
-
-	readFilenameInstance(filename_instance);
-
-	readWS_Matrix(matrix_filename);
-
-	for(int i = 0; i < population_size_init ; i++){
-		set<int> individu = init_population.front();
-		init_population.pop_front();
-		string id_alt = Tools::decode_set_items(individu, n_items);
-		Population.push_back(id_alt);
-		init_population.push_back(individu);
-
-//		for(set<int>::iterator it = individu.begin(); it != individu.end(); ++it)
-//			cout<<*it<<"  ";
-//		cout<<endl<<endl;
+	//		for(set<int>::iterator it = individu.begin(); it != individu.end(); ++it)
+	//			cout<<*it<<"  ";
+	//		cout<<endl<<endl;
+		}
 	}
 
 }
@@ -60,82 +49,44 @@ MainKnapsack::MainKnapsack( int population_size_init, string filename, string ma
  */
 
 
-void MainKnapsack::Generate_random_Population(string filename, int number_of_individu){
+void MainKnapsack::initializeInformation(shared_ptr< Evaluator > evaluator){
+
+
+	Items_information = evaluator->Items_information;
+
+	WS_matrix = evaluator->get_WS_matrix();
+
+	n_items = Items_information.size();
+
+	n_objective = WS_matrix[0].size();
+
+	p_criteria = WS_matrix.size();
+
+	Backpack_capacity = evaluator->get_capacity();
+
+}
+
+
+void MainKnapsack::Generate_random_Population(shared_ptr< Evaluator > evaluator, int number_of_individu){
 
 	init_population.clear();
 
-	int n_item;
-	float Backpack_capacity = 0;
-	vector< tuple<float, vector< float> > > Items_information;
+	vector< tuple<float, vector< float> > > Items_information = evaluator->Items_information;
 
-	string line;
-	char buff[100];
-	int i = 0;
-	float weight;
-	char *cline, *pch;
-	vector< float > line_value;
+	int n_item =  Items_information.size();
 
-	ifstream fic((filename+".dat").c_str());
+	float Backpack_capacity = evaluator->get_capacity();
 
-	//comments
-	getline(fic,line);
-	while( line[0] == 'c' )
-		getline(fic,line);
 
-	//number of items
-	n_item = 0;
-	if( line[0] == 'n')
-		sscanf(line.c_str(),"%s %d",buff,&n_item);
-
-	Items_information.resize(n_item);
-
-	//comments
-	getline(fic,line);
-	while( line[0] == 'c' )
-		getline(fic,line);
-
-	//items information
-	while(line[0] == 'i'){
-
-		line.erase(line.begin());
-		cline = new char[line.length() + 1]; // or
-		std::strcpy(cline, line.c_str());
-
-		line_value.clear();
-		pch = strtok (cline," 	");
-		while (pch != NULL){
-			line_value.push_back(atof(pch));
-			pch = strtok (NULL, " 	");
-		}
-
-		weight = line_value[0];
-
-		line_value.erase(line_value.begin());
-
-		Items_information[i] = make_tuple(weight,line_value);
-
-		getline(fic,line);
-		i++;
-	}
-
-	//comments
-	while( line[0] == 'c' )
-		getline(fic,line);
-
-	//total capacity
-	if( line[0] == 'W' )
-		sscanf(line.c_str(),"%s %f",buff,&Backpack_capacity);
 
 	/************************************* GENERATION *************************************/
 
 	float bp = 0;
 	set<int> individu;
 	vector<int> all_items;
-	list<int>::iterator iteratour;
 
 	for(int i = 0; i < n_item; i++)
 		all_items.push_back(i);
-
 
 
 	for (int i = 0; i < number_of_individu; i++){
@@ -168,142 +119,6 @@ void MainKnapsack::Generate_random_Population(string filename, int number_of_ind
 
 	}
 }
-
-
-
-
-void MainKnapsack::readFilenameInstance(string filename){
-
-	string line;
-	char buff[100];
-	int i = 0;
-	float weight;
-	char *cline, *pch;
-	vector< float > line_value;
-
-	ifstream fic((filename+".dat").c_str());
-
-	//comments
-	getline(fic,line);
-	while( line[0] == 'c' )
-		getline(fic,line);
-
-	//number of items
-	n_items = 0;
-	if( line[0] == 'n')
-		sscanf(line.c_str(),"%s %d",buff,&n_items);
-
-	Items_information.resize(n_items);
-
-	//comments
-	getline(fic,line);
-	while( line[0] == 'c' )
-		getline(fic,line);
-
-	//items information
-
-
-	while(line[0] == 'i'){
-
-		line.erase(line.begin());
-		cline = new char[line.length() + 1]; // or
-		std::strcpy(cline, line.c_str());
-
-		line_value.clear();
-		pch = strtok (cline," 	");
-		while (pch != NULL){
-			line_value.push_back(atof(pch));
-			pch = strtok (NULL, " 	");
-		}
-
-		weight = line_value[0];
-
-		line_value.erase(line_value.begin());
-
-		Items_information[i] = make_tuple(weight,line_value);
-
-
-		getline(fic,line);
-		i++;
-	}
-
-	//number of criteria
-	p_criteria = 0;
-	p_criteria = line_value.size();
-
-	//comments
-	while( line[0] == 'c' )
-		getline(fic,line);
-
-
-	//total capacity
-	if( line[0] == 'W' )
-		sscanf(line.c_str(),"%s %f",buff,&Backpack_capacity);
-
-
-
-#ifdef __PRINT__
-	cout<<"Information sur l'instance : "<<endl;
-	cout<<"   Instance de taille ("<<to_string(n_items)<<")"<<endl;
-	cout<<"   Capacité du sac-à-dos ("<<to_string(Backpack_capacity)<<")"<<endl;
-	cout<<"   Nombre de criètres ("<<to_string(p_criteria)<<")"<<endl;
-#endif
-	fic.close();
-
-}
-
-
-void MainKnapsack::readWS_Matrix(string filename){
-
-	char *cline, *pch;
-	int i;
-	WS_matrix.clear();
-	WS_matrix.resize(0);
-
-	if(filename.find("PARETO") != std::string::npos)
-		change_to_pareto_selection();
-
-	else {
-		ifstream fic(filename.c_str());
-		string line;
-		i = 0;
-
-		if (!(fic) or filename.find(".csv") == std::string::npos){
-			cerr<<"Error occurred readWS_Matrix"<<endl;
-		}
-
-		WS_matrix.resize(p_criteria,vector< float >());
-
-		while( !fic.eof() and i < p_criteria){
-			WS_matrix[i].clear();
-			getline(fic,line);
-
-			cline = new char[line.length() + 1]; // or
-			std::strcpy(cline, line.c_str());
-
-			pch = strtok (cline," 	,;");
-			while (pch != NULL){
-				WS_matrix[i].push_back(atof(pch));
-				pch = strtok (NULL, " 	,;");
-			}
-			i++;
-		}
-	}
-
-	n_objective = WS_matrix[0].size();
-
-#ifdef __PRINT__
-	cout<<"   Matrice des objectives :"<<endl;
-	for(int i = 0; i < p_criteria; i++){
-		cout<<"   ";
-		for(int j = 0; j < n_objective; j++)
-			cout<<WS_matrix[i][j]<< " ";
-		cout<<endl;
-	}
-#endif
-
-}
-
 
 
 void MainKnapsack::GenerateInitialPopulation(int size_population){
@@ -341,8 +156,6 @@ void MainKnapsack::GenerateInitialPopulation(int size_population){
 	}
 
 }
-
-
 
 void MainKnapsack::write_solution(string filename){
 
@@ -383,7 +196,7 @@ void MainKnapsack::save_new_point(string filename, shared_ptr< Alternative > alt
 
 void MainKnapsack::Random_Selection(list< string > & dominated_solutions, int upper_bound){
 
-	mt19937 g(GRAIN);
+	mt19937 g(rand());
 
 	vector<string> shuffle_DA (dominated_solutions.begin(), dominated_solutions.end());
 	shuffle(shuffle_DA.begin(), shuffle_DA.end(), g);
@@ -416,28 +229,28 @@ void MainKnapsack::Random_Selection(list< string > & dominated_solutions, int up
 
 
 
-void MainKnapsack::Distribution_proba(list< string > & dominated_solutions, int upper_bound){
-//	unsigned seed = chrono::system_clock::now().time_since_epoch().count();
-//	shuffle( dominated_solutions.begin(), dominated_solutions.end() , default_random_engine(seed));
-
-	set< string > to_rm;
-	int min_bound = (upper_bound != -1 )? upper_bound : (int)dominated_solutions.size();
-	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
-
-	for(int i = 0; i < min_bound; i++){
-		if( (rand()*1.0/RAND_MAX) < P){
-			string alt_name = *(next(dominated_solutions.begin() , i));
-			shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[ alt_name ];
-			Population.push_back( p_alt->get_id_alt() );
-			to_rm.insert(alt_name);
-		}
-	}
-
-	for(set< string >::iterator it = to_rm.begin(); to_rm.end() != it ; ++it){
-		dominated_solutions.remove(*it);
-	}
-
-}
+//void MainKnapsack::Distribution_proba(list< string > & dominated_solutions, int upper_bound){
+////	unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+////	shuffle( dominated_solutions.begin(), dominated_solutions.end() , default_random_engine(seed));
+//
+//	set< string > to_rm;
+//	int min_bound = (upper_bound != -1 )? upper_bound : (int)dominated_solutions.size();
+//	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
+//
+//	for(int i = 0; i < min_bound; i++){
+//		if( (rand()*1.0/RAND_MAX) < P){
+//			string alt_name = *(next(dominated_solutions.begin() , i));
+//			shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[ alt_name ];
+//			Population.push_back( p_alt->get_id_alt() );
+//			to_rm.insert(alt_name);
+//		}
+//	}
+//
+//	for(set< string >::iterator it = to_rm.begin(); to_rm.end() != it ; ++it){
+//		dominated_solutions.remove(*it);
+//	}
+//
+//}
 
 
 
@@ -462,22 +275,22 @@ void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions,
 		shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[*i];
 
 		//		//AVERAGE TA
+//		float aggreg_value = -1;
+//		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+//			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+//		}
+//
+//		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
+
+
+		//MIN TA
 		float aggreg_value = -1;
 		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+			if(aggreg_value == -1   or  (val < aggreg_value)  )
+				aggreg_value =  val;
 		}
-
-		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
-
-
-				//MIN TA
-		//		float aggreg_value = 0;
-		//		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-		//			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
-		//			if(aggreg_value == -1   or  (val < aggreg_value)  )
-		//				aggreg_value =  val;
-		//		}
-		//		float val_key = aggreg_value;
+		float val_key = aggreg_value;
 
 
 
@@ -509,54 +322,54 @@ void MainKnapsack::Threshold_Accepting_AVG(list< string > & dominated_solutions,
 
 
 
-void MainKnapsack::Simulated_Annealing(list< string > & dominated_solutions, list< string > & population, int upper_bound){
-
-	map< float, string, less<float> > ratio_items;
-
-
-	vector<float> random_ws = Tools::generate_random_restricted_WS_aggregator(p_criteria, WS_matrix);
-
-	for(list< string >::iterator  i = dominated_solutions.begin(); i != dominated_solutions.end(); ++i){
-
-		shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[*i];
-
-		float aggreg_value = 0;
-
-		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
-		}
-
-		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
-
-		ratio_items[val_key] = p_alt->get_id_alt();
-	}
-
-
-
-	int cpt= 0;
-	int min_bound = (upper_bound != -1)? upper_bound : (int)dominated_solutions.size();
-	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
-
-	for(map< float, string, less<float> >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
-
-		if( cpt < min_bound){
-			shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[(*i).second];
-
-			if( (rand()*1.0/RAND_MAX) <   exp(-(*i).first / Temperature)  ){
-				population.push_back( p_alt->get_id_alt());
-				dominated_solutions.remove((*i).second);
-				cpt++;
-
-			}
-		}
-		else
-			break;
-		Temperature *= alpha;
-
-	}
-
-
-}
+//void MainKnapsack::Simulated_Annealing(list< string > & dominated_solutions, list< string > & population, int upper_bound){
+//
+//	map< float, string, less<float> > ratio_items;
+//
+//
+//	vector<float> random_ws = Tools::generate_random_restricted_WS_aggregator(p_criteria, WS_matrix);
+//
+//	for(list< string >::iterator  i = dominated_solutions.begin(); i != dominated_solutions.end(); ++i){
+//
+//		shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[*i];
+//
+//		float aggreg_value = 0;
+//
+//		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+//			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+//		}
+//
+//		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
+//
+//		ratio_items[val_key] = p_alt->get_id_alt();
+//	}
+//
+//
+//
+//	int cpt= 0;
+//	int min_bound = (upper_bound != -1)? upper_bound : (int)dominated_solutions.size();
+//	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
+//
+//	for(map< float, string, less<float> >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
+//
+//		if( cpt < min_bound){
+//			shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[(*i).second];
+//
+//			if( (rand()*1.0/RAND_MAX) <   exp(-(*i).first / Temperature)  ){
+//				population.push_back( p_alt->get_id_alt());
+//				dominated_solutions.remove((*i).second);
+//				cpt++;
+//
+//			}
+//		}
+//		else
+//			break;
+//		Temperature *= alpha;
+//
+//	}
+//
+//
+//}
 
 
 
@@ -642,11 +455,6 @@ void MainKnapsack::Learning_Threshold_Accepting_AVG(list< string > & dominated_s
 
 
 
-bool MainKnapsack::Stop_Condition(int tentative_improvment){
-
-	return (tentative_improvment > 0) or !Population.empty();
-
-}
 
 
 
@@ -804,6 +612,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 	}
 
 
+
 	while( !Population.empty() and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
 
@@ -846,7 +655,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 
 		random_device rd;
-		mt19937 g(GRAIN);
+		mt19937 g( rand() );
 
 		vector<string> shuffle_LF (Local_front.begin(), Local_front.end());
 		shuffle(shuffle_LF.begin(), shuffle_LF.end(), g);
@@ -946,13 +755,13 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(d
 	}
 
 
-	while( Stop_Condition(limit_no_improvment)  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
+	while( ( (limit_no_improvment > 0) or !Population.empty() )  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
 
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_LTAMIN_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
+		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_TAMIN_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
 
 
 
@@ -991,7 +800,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(d
 
 
 		random_device rd;
-		mt19937 g(GRAIN);
+		mt19937 g( rand() );
 
 		vector<string> shuffle_LF (Local_front.begin(), Local_front.end());
 		shuffle(shuffle_LF.begin(), shuffle_LF.end(), g);
@@ -1007,7 +816,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(d
 
 			list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
 
-			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_LTAMIN_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
+			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_TAMIN_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
 
 			if( Update_Archive(new_alt, local_OPT_Sol, next_Population) ){
 
@@ -1033,7 +842,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(d
 		if( Population.empty() ){
 
 			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
-				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_FRONT_LTAMIN_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
+				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_FRONT_TAMIN_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
 			}
 
 
@@ -1048,10 +857,10 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(d
 				limit_no_improvment =  2;
 
 
-			if( ((int)Population.size() < UB_Population_size)  and Stop_Condition(limit_no_improvment) ){
+			if( ((int)Population.size() < UB_Population_size)  and   ( (limit_no_improvment > 0) or !Population.empty() ) ){
 				int to_add = ( UB_Population_size - (int)Population.size() ) ;
-//				Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
-				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
+				Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
+//				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
 //				Random_Selection(Dominated_alt, to_add);
 			}
 
@@ -1061,7 +870,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(d
 				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 )
 					(*it).second.reset();
 			}
-
 
 //			cout<<"Population size : "<<Population.size()<<endl;
 
@@ -1104,7 +912,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec,in
 
 //	STEPS_PLOT++;
 
-	while( Stop_Condition()  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT )   and ( nb_iteration < ITER ) ){
+	while( !Population.empty()  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT )   and ( nb_iteration < ITER ) ){
 		nb_iteration++;
 
 		alt = dic_Alternative[ Population.front() ];

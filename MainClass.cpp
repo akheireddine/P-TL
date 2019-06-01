@@ -6,280 +6,52 @@ using namespace std;
 
 
 
-Evaluator* main_Knapsack(string filename_instance, string type_instance, string num_instance, int size_population, string WS_DM_preferences){
+void main_Knapsack(string filename_instance, int size_population){
 
-	string pref_filename = "./WS_MatrixC.csv";
 
-	MainKnapsack * knaps = new MainKnapsack(size_population, filename_instance, pref_filename);
+	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
 
 	clock_t t1 = clock();
 
 	knaps->MOLS(t1/CLOCKS_PER_SEC); 								 //3min
-	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
 
-	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
+	float time_cpu = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
 
-	string size_instance = to_string(knaps->get_n_items());
+	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
 
-	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
-			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+".eval"
-			, t2,
-			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+".front");
+	eval_ks->evaluate_PF( knaps, time_cpu);
 
+	delete knaps;
 
-	return eval;
 }
+
+
 
 
 void script_knapsack(string type_inst, string taille, string WS_DM){
 
 	int K = 1;
 	int N = 1;
-	Evaluator * eval_ks;
-	vector<int> graines;
-	vector< map< string, set<string> > > common_neighbors_replication(K, map<string, set<string> >());
+	int I = 1;
 
-	srand(time(NULL));
-
-	for(int i = 0; i < N ; i++){
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		MainKnapsack::Generate_random_Population(filename_instance, K);
-
-		graines.clear();
-			for(int k = 0; k < K; k++){
-				graines.push_back( rand());
-			}
-
-
-
-//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 0; step < 8; step++){
-			INFO = step;
-			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixA.csv");
-
-			Tools::cpt_count = 0;
-
-			for(int k = 0; k < K; k++){
-				common_neighbors = common_neighbors_replication[k];
-				GRAIN = graines[k];
-				srand( GRAIN );
-				Ta = -1;
-				Temperature = 1500;
-				eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
-				delete eval_ks;
-				common_neighbors_replication[k] = common_neighbors;
-			}
-//
-//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval");
-//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front");
-		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front",type_inst+to_string(i)+"___");
-
-	}
-
-}
-
-
-
-//***********************************************************************************************************************************//
-
-
-Evaluator* main_Knapsack_WSPLS(string filename_instance, string type_instance, string num_instance, int size_population, string WS_DM_preferences,int iter){
-
-	string pref_filename = "./WS_Matrix.csv";
-
-	MainKnapsack * knaps = new MainKnapsack(size_population, filename_instance, pref_filename);
-
-	clock_t t1 = clock();
-	knaps->HYBRID_WS_PLS(t1/CLOCKS_PER_SEC,iter);
-	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
-
-	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
-
-	string size_instance = to_string(knaps->get_n_items());
-
-	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
-			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+".eval"
-			, t2,
-			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+".front");
-
-	return eval;
-}
-
-
-void script_knapsack_WSPLS(string type_inst, string taille, string WS_DM){
-
-	int K = 1;
-	int N = 9;
-	Evaluator * eval_ks;
-
-
-	for(int i = 8; i < N ; i++){
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		init_population.clear();
-		MainKnapsack::Generate_random_Population(filename_instance, K);
-
-	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 500; step < 501; step++){
-			cout<<"_________________________________ NB-ITER "<<step<<"___________________________"<<endl;
-
-			Tools::cpt_count = 0;
-
-			for(int k = 0; k < K; k++){
-				Tools::generate_random_WS("WS_Matrix.csv", 2);
-				Ta = 500;
-				eval_ks = main_Knapsack_WSPLS(filename_instance, type_inst , to_string(i) , 1 , WS_DM, step);
-				delete eval_ks;
-			}
-
-//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_Ta_500.eval");
-//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_Ta_500.front");
-		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_Ta_500.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_Ta_500.front",type_inst+to_string(i)+"___");
-
-	}
-
-}
-
-
-
-//***********************************************************************************************************************************//
-
-Evaluator* main_Knapsack_PLSWS(string filename_instance, string type_instance, string num_instance, int size_population, string WS_DM_preferences,int iter){
-
-	string pref_filename = "./WS_Matrix3.csv";
-
-	MainKnapsack * knaps = new MainKnapsack(size_population, filename_instance, pref_filename);
-
-	clock_t t1 = clock();
-//	knaps->HYBRID_PLS_WS(t1/CLOCKS_PER_SEC,iter);
-
-	knaps->SWITCH_PLS_WS(t1/CLOCKS_PER_SEC,iter, 10);
-
-	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
-
-	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
-
-	string size_instance = to_string(knaps->get_n_items());
-
-	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
-			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+".eval"
-			, t2,
-			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+".front");
-
-	return eval;
-}
-
-
-void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
-
-	int K = 1;
-	int N = 1;
-	Evaluator * eval_ks;
-
-
-
-	for(int i = 0; i < N ; i++){
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		MainKnapsack::Generate_random_Population(filename_instance, K);
-
-	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 50; step < 51; step++){
-			cout<<"_________________________________ NB-ITER "<<step<<"___________________________"<<endl;
-			int information_rate = 0;
-			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(information_rate),"WS_Matrix3.csv");
-
-			Tools::cpt_count = 0;
-
-			for(int k = 0; k < K; k++){
-				Ta = 500;
-				eval_ks = main_Knapsack_PLSWS(filename_instance, type_inst , to_string(i) , 1 , WS_DM, step);
-				delete eval_ks;
-			}
-
-//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_Ta_500.eval");
-//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_Ta_500.front");
-		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_Ta_500.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_Ta_500.front",type_inst+to_string(i)+"___");
-	}
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-//***********************************************************************************************************************************//
-
-
-
-
-
-Evaluator* main_Knapsack_Cst_PSize(string filename_instance, string type_instance, string num_instance,
-	int size_population, string WS_DM_preferences, int max_size_population){
-
-	string pref_filename = "./WS_MatrixC.csv";
-
-	MainKnapsack * knaps = new MainKnapsack(size_population,filename_instance,pref_filename);
-
-
-	clock_t t1 = clock();
-
-	knaps->MOLS_Cst_PSize(t1/CLOCKS_PER_SEC,max_size_population);
-
-
-//	knaps->MOLS_Cst_PSize_Diversification(t1/CLOCKS_PER_SEC,max_size_population);
-
-	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
-
-	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
-
-	string size_instance = to_string(knaps->get_n_items());
-
-	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
-			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+"_PSize_"+to_string(max_size_population)+".eval"
-			, t2,
-			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+"_PSize_"+to_string(max_size_population)+".front");
-
-	return eval;
-}
-
-
-
-
-void script_Cst_PSize(string type_inst, string taille, string WS_DM){
-
-	int K = 31;
-	int N = 5;
-	int I = 4;
 	int iter;
 	vector<int> graines;
 
-	Evaluator * eval_ks;
-
+	string WS_matrix_file = "WS_MatrixA.csv";
+	string prefix = "_AVG_MOLS2";
 	srand(time(NULL));
 
-//	vector<int> sizer = {2,8,14,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
 
-	vector<int> sizer = {2,8,10,20,60,80,100,200};  //C
 
-//	vector<int> sizer = {1,2,5,8,10,30,60,100,150,200,250,350};  //D
-
-	for(int i = 1; i < N; i++){
+	for(int i = 0; i < N ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		MainKnapsack::Generate_random_Population(filename_instance, K);
+
+		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,
+				"./Data/DistTime/"+type_inst+"/I_"+taille+prefix+to_string(i)+".eval",
+				"./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+to_string(i)+".front");
+
+
+		MainKnapsack::Generate_random_Population(eval_ks, K);
 
 		vector< map< string, set<string> > > common_neighbors_replication(K, map<string, set<string> >());
 
@@ -290,31 +62,273 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 		}
 
 
-//		for(int step = 0; step < I; step++){
-//				INFO = step;
-//				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-//				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixA.csv");
-//
-//				Tools::cpt_count = 0;
-//
-//				for(int k = 0; k < 2; k++){
-//					common_neighbors = common_neighbors_replication[k];
-//					GRAIN = graines[k];
-//					srand( GRAIN );
-//					Ta = -1;
-//					Temperature = 1500;
-//					eval_ks = main_Knapsack(filename_instance, type_inst , to_string(i) , 1 , WS_DM);
-//					delete eval_ks;
-//					common_neighbors_replication[k] = common_neighbors;
-//				}
-//
-//				Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval");
-//				Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front");
-//			}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_MOLS2.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_MOLS2.front",type_inst+to_string(i)+"___");
+//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		for(int step = 0; step < I; step++){
+
+			INFO = step;
+			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
+			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),WS_matrix_file);
+
+			eval_ks->readWS_matrix(WS_matrix_file);
+			eval_ks->update_covered_PFront();
 
 
+			for(int k = 0; k < K; k++){
+				common_neighbors = common_neighbors_replication[k];
+				GRAIN = graines[k];
+				srand( GRAIN );
+				Ta = -1;
+				Temperature = 1500;
+				main_Knapsack(filename_instance, 1);
+				common_neighbors_replication[k] = common_neighbors;
+			}
+			eval_ks->save_PF_evaluation();
+		}
+
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+prefix+to_string(i)+".eval",type_inst+to_string(i)+"___"+to_string(iter));
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+to_string(i)+".front",type_inst+to_string(i)+"___"+to_string(iter));
+
+//		delete eval_ks;
+	}
+
+}
+
+
+
+//***********************************************************************************************************************************//
+
+
+void main_Knapsack_WSPLS(string filename_instance, int size_population, int iter){
+
+
+	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
+
+	clock_t t1 = clock();
+
+	knaps->HYBRID_WS_PLS(t1/CLOCKS_PER_SEC,iter);
+
+	float time_cpu = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
+
+	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
+
+	eval_ks->evaluate_PF( knaps, time_cpu);
+
+	delete knaps;
+}
+
+
+void script_knapsack_WSPLS(string type_inst, string taille, string WS_DM){
+
+	int K = 1;
+	int N = 1;
+	int I = 1;
+
+	int iter;
+	vector<int> graines;
+
+	string WS_matrix_file = "WS_MatrixA.csv";
+	string prefix = "_AVG_Ta_500";
+	srand(time(NULL));
+
+
+	for(int i = 0; i < N ; i++){
+		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+		Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(I), WS_matrix_file);
+
+		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,
+						"./Data/DistTime/"+type_inst+"/I_"+taille+prefix+to_string(i)+".eval",
+						"./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+to_string(i)+".front");
+
+
+		MainKnapsack::Generate_random_Population(eval_ks, K);
+
+		vector< map< string, set<string> > > common_neighbors_replication(K, map<string, set<string> >());
+
+	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		for(int step = 500; step < 501; step++){
+			cout<<"_________________________________ NB-ITER "<<step<<"___________________________"<<endl;
+			eval_ks->readWS_matrix(WS_matrix_file);      //A VOIR PB
+			eval_ks->update_covered_PFront();
+
+
+			for(int k = 0; k < K; k++){
+				Tools::generate_random_WS(WS_matrix_file, 2);   // NOT SYNCHRO AVEC EVAL
+				common_neighbors = common_neighbors_replication[k];
+				GRAIN = graines[k];
+				srand( GRAIN );
+				Ta = -1;
+				Temperature = 1500;
+				main_Knapsack_WSPLS(filename_instance, 1, step);
+				common_neighbors_replication[k] = common_neighbors;
+			}
+
+			eval_ks->save_PF_evaluation();
+		}
+
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+prefix+to_string(i)+".eval",type_inst+to_string(i)+"___"+to_string(iter));
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+to_string(i)+".front",type_inst+to_string(i)+"___"+to_string(iter));
+
+//		delete eval_ks;
+	}
+
+}
+
+
+
+//***********************************************************************************************************************************//
+
+void main_Knapsack_PLSWS(string filename_instance, int size_population, int iter){
+
+
+	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
+
+	clock_t t1 = clock();
+//	knaps->HYBRID_PLS_WS(t1/CLOCKS_PER_SEC,iter);
+
+	knaps->SWITCH_PLS_WS(t1/CLOCKS_PER_SEC,iter, 10);
+
+	float time_cpu = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
+
+	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
+
+	eval_ks->evaluate_PF( knaps, time_cpu);
+
+	delete knaps;
+}
+
+
+
+void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
+
+	int K = 1;
+	int N = 1;
+	int I = 1;
+
+	vector<int> graines;
+
+	string WS_matrix_file = "WS_MatrixA.csv";
+	string prefix = "_AVG_Ta_500";
+	srand(time(NULL));
+
+
+
+	for(int i = 0; i < N ; i++){
+		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+		Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(I), WS_matrix_file);
+
+		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,
+						"./Data/DistTime/"+type_inst+"/I_"+taille+prefix+to_string(i)+".eval",
+						"./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+to_string(i)+".front");
+
+		vector< map< string, set<string> > > common_neighbors_replication(K, map<string, set<string> >());
+
+
+		MainKnapsack::Generate_random_Population(eval_ks, K);
+
+
+	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		for(int step = 50; step < 51; step++){
+			cout<<"_________________________________ NB-ITER "<<step<<"___________________________"<<endl;
+			eval_ks->readWS_matrix(WS_matrix_file);
+			eval_ks->update_covered_PFront();
+
+			for(int k = 0; k < K; k++){
+				common_neighbors = common_neighbors_replication[k];
+				GRAIN = graines[k];
+				srand( GRAIN );
+				Ta = -1;
+				Temperature = 1500;
+				main_Knapsack_PLSWS(filename_instance, 1, step);
+				common_neighbors_replication[k] = common_neighbors;
+			}
+			eval_ks->save_PF_evaluation();
+		}
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_Ta_500.eval",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_Ta_500.front",type_inst+to_string(i)+"___");
+
+//		delete eval_ks;
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//***********************************************************************************************************************************//
+
+
+
+
+
+void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int max_size_population ) {
+
+	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
+
+
+	clock_t t1 = clock();
+
+	knaps->MOLS_Cst_PSize(t1/CLOCKS_PER_SEC,max_size_population);
+
+//	knaps->MOLS_Cst_PSize_Diversification(t1/CLOCKS_PER_SEC,max_size_population);
+
+	float time_cpu = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
+
+
+	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
+
+	eval_ks->evaluate_PF( knaps, time_cpu);
+
+	delete knaps;
+}
+
+
+
+
+void script_Cst_PSize(string type_inst, string taille, string WS_DM){
+
+	int K = 30;
+	int N = 7;
+	int I = 4;
+
+	int iter;
+	vector<int> graines;
+
+	string WS_matrix_file = "WS_MatrixC.csv";
+	string prefix = "_AVG_PS";
+	srand(time(NULL));
+
+//	vector<int> sizer = {2,8,14,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
+
+	vector<int> sizer = {2,8,10,20,60,80,100,200};  //C
+
+//	vector<int> sizer = {1,2,5,8,10,30,60,100,150,200,250,350};  //D
+
+
+	for(int i = 3; i < N; i++){
+		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+
+		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,
+				"./Data/DistTime/"+type_inst+"/I_"+taille+prefix+to_string(i)+".eval",
+				"./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+to_string(i)+".front");
+
+		MainKnapsack::Generate_random_Population(eval_ks, K);
+
+		vector< map< string, set<string> > > common_neighbors_replication(K, map<string, set<string> >());
+
+
+		graines.clear();
+		for(int k = 0; k < K; k++){
+			graines.push_back( rand());
+		}
 
 
 		for(int j = (int)sizer.size() - 1 ; j >= 0 ; j--){
@@ -328,29 +342,30 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 				INFO = step;
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 
-				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),"WS_MatrixC.csv");
+				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),WS_matrix_file);
 
-				Tools::cpt_count = 0;
+				eval_ks->readWS_matrix(WS_matrix_file);
+
+				eval_ks->update_covered_PFront();
+
 
 				for(int k = 0; k < K; k++){
 					common_neighbors = common_neighbors_replication[k];
 					GRAIN = graines[k];
 					srand( GRAIN );
-					Ta =  -1;
-					eval_ks = main_Knapsack_Cst_PSize(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
-					delete eval_ks;
+					Ta =  500;
+					main_Knapsack_Cst_PSize(filename_instance, 1, iter);
 					common_neighbors_replication[k] = common_neighbors;
 				}
 
-				Tools::save_std_deviation("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS"+to_string(i)+".eval");
-				Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS"+to_string(i)+".front");
-
+				eval_ks->save_PF_evaluation();
 			}
-			Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+"_AVG_PS"+to_string(i)+".eval",type_inst+to_string(i)+"___"+to_string(iter));
-			Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+"_AVG_PS"+to_string(i)+".front",type_inst+to_string(i)+"___"+to_string(iter));
-
+			Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+prefix+to_string(i)+".eval",type_inst+to_string(i)+"___"+to_string(iter));
+			Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+to_string(i)+".front",type_inst+to_string(i)+"___"+to_string(iter));
 		}
 
+//		delete eval_ks;
+		eval_ks.reset();
 	}
 
 }
@@ -432,14 +447,13 @@ int main(int argc, char** argv){
 ////
 //	for(auto t : sizer){
 //		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//			,"FRONT_RS", t , 10, 410 , "./DM_preference_point");
+//			,"FRONT", t , 10, 410 , "./DM_preference_point");
 //		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//			,"POPULATION_RS", t , 10, 410 , "./DM_preference_point");
+//			,"POPULATION", t , 10, 410 , "./DM_preference_point");
 //		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//			,"NON_DOMINATED_LOCALLY_RS", t , 10, 410 , "./DM_preference_point");
-//
-////		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-////			,"NEIGHBORS", t , 10, 410 , "./DM_preference_point");
+//			,"NON_DOMINATED_LOCALLY", t , 10, 410 , "./DM_preference_point");
+//		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+//			,"NEIGHBORS", t , 10, 410 , "./DM_preference_point");
 //	}
 
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille

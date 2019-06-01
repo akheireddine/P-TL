@@ -15,6 +15,11 @@
 
 #include "Alternative.h"
 
+class Evaluator;
+
+#include "Evaluator.h"
+
+
 
 using namespace std;
 
@@ -36,10 +41,8 @@ public:
 	virtual ~LSStructure(){
 	};
 
-	virtual void readFilenameInstance(string filename) = 0;
-	virtual void readWS_Matrix(string filename) = 0;
+	void initializeInformation(shared_ptr< Evaluator > evaluator);
 	virtual list< shared_ptr< Alternative > > MOLS(double starting_time_sec) = 0;
-	virtual void write_solution(string filename) = 0;
 	virtual void GenerateInitialPopulation(int size_population) = 0;
 
 	//GETTERS

@@ -4,10 +4,10 @@
 
 
 
+class MainKnapsack;
 
 #include "LSStructure.h"
 #include "AlternativeKnapsack.h"
-
 
 
 
@@ -37,12 +37,11 @@ protected:
 
 
 public :
-	//information about each item : (key:weight : value:utility list for each criteria)
-	vector< tuple<float, vector< float> > > Items_information;
+
+	vector< tuple<float, vector< float> > > Items_information;		//information about each item : (key:weight : value:utility list for each criteria)
 
 	//constructor
-	MainKnapsack(string filename, int init_population_size , string matrix_filename="PARETO");
-	MainKnapsack( int population_size_init, string filename, string matrix_filename="PARETO");
+	MainKnapsack( shared_ptr< Evaluator > evaluator, int population_size_init, string filename, bool generate_population=false);
 
 	~MainKnapsack(){
 		for(map<string, shared_ptr< AlternativeKnapsack > > ::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it)
@@ -82,33 +81,28 @@ public :
 	list< shared_ptr< Alternative > > MOLS_Cst_PSize_Diversification(double starting_time_sec, int UB_Population_size);
 
 
-	bool Stop_Condition(int tentative_improvment = 0);
-
-
-
 
 
 	void Random_Selection(list< string > & dominated_solutions, int upper_bound);
-	void Distribution_proba(list< string > & dominated_solutions, int upper_bound);
+//	void Distribution_proba(list< string > & dominated_solutions, int upper_bound);
 	void Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound);
-	void Simulated_Annealing(list< string > & dominated_solutions, list< string > & population, int upper_bound);
+//	void Simulated_Annealing(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 	void Learning_Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 
 	//EVALUATION
 	void save_new_point(string filename, shared_ptr< Alternative > alt);
-
+	void write_solution(string filename);
 
 	//STATIC METHOD
-	static void Generate_random_Population(string filename, int number_of_individu);
+	static void Generate_random_Population(shared_ptr< Evaluator > evaluator, int number_of_individu);
+
 
 
 
 
 	//functions to overload
-	void readFilenameInstance(string filename);
-	void readWS_Matrix(string filename);
+	void initializeInformation(shared_ptr< Evaluator > evaluator);
 	list< shared_ptr< Alternative > > MOLS(double starting_time_sec);
-	void write_solution(string filename);
 	void GenerateInitialPopulation(int size_population);
 
 

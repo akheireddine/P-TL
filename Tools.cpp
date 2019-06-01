@@ -10,14 +10,6 @@
 
 
 
-void Tools::skip(list< set< int > > &list_skiper, int n){
-	for(int i = 0; i < n ; i++){
-		set<int> val = list_skiper.front();
-		list_skiper.pop_front();
-		list_skiper.push_back(val);
-	}
-}
-
 float Tools::euclidian_distance(vector<float> v1, vector<float> v2){
 	float dist = 0;
 
@@ -62,9 +54,6 @@ vector< float > Tools::decompose_line_to_float_vector(string line){
 		i++;
 	}
 
-//	delete [] cline;
-//	delete [] pch;
-
 	return vect;
 }
 
@@ -74,6 +63,69 @@ string Tools::print_vector(vector<float> v){
 		str += to_string(v[i]) + " ";
 
 	return str;
+}
+
+
+
+
+
+
+
+//void Tools::save_std_deviation(string filename){
+//	ofstream fic_write(filename.c_str(), ios::app);
+//
+//	float avg_ratio = accumulate(ratios_dist_to_OPT.begin(), ratios_dist_to_OPT.end(), 0) / ratios_dist_to_OPT.size() * 1.0;
+//
+//	if(ratios_dist_to_OPT.size() == 0){
+//		fic_write<<"-nan"<<endl;
+//		fic_write.close();
+//		Tools::ratios_dist_to_OPT.clear();
+//		return;
+//	}
+//
+//
+//	float val = 1.0/ratios_dist_to_OPT.size();
+//
+//	for(int i = 0; i < (int)ratios_dist_to_OPT.size(); i++)
+//		val += ( ratios_dist_to_OPT[i] - avg_ratio ) * ( ratios_dist_to_OPT[i] - avg_ratio );
+//
+//	fic_write<<sqrt(val)<<"  ";
+//
+//
+//	for(int i = 0; i < (int)Tools::dist_time_avg.size(); i++){
+//		Tools::dist_time_avg[i] = Tools::dist_time_avg[i]*1.0/cpt_count;
+//		fic_write<<Tools::dist_time_avg[i]<<"  ";
+//	}
+//	fic_write<<endl;
+//
+//	fic_write.close();
+//
+//	Tools::ratios_dist_to_OPT.clear();
+//}
+
+
+
+void Tools::separate_results(string filename, string separator){
+	ofstream fic_write(filename.c_str(), ios::app);
+	fic_write<<separator<<endl;
+	fic_write.close();
+}
+
+void Tools::copy_into(string src_filename, string dest_filename){
+
+	ifstream src(src_filename.c_str());
+	ofstream dest(dest_filename.c_str());
+
+	string line;
+
+	while(!src.eof()){
+
+		getline(src,line);
+		dest<<line<<endl;
+	}
+
+	src.close();
+	dest.close();
 }
 
 
@@ -108,6 +160,7 @@ vector<float> Tools::generate_random_WS_aggregator(int n_w){
 }
 
 
+
 void Tools::generate_random_WS(string filename, int nb_criteria){
 
 	vector<float > weighted_sum = generate_random_WS_aggregator(nb_criteria);
@@ -121,162 +174,6 @@ void Tools::generate_random_WS(string filename, int nb_criteria){
 	fic.close();
 
 }
-
-
-
-void Tools::compute_average_column_files(string filename, int nb_column){
-
-	vector< float > avg_columns(nb_column,0);
-	int cpt = 0;
-	ifstream fic(filename.c_str());
-	string line;
-
-	while(!fic.eof()){
-
-		getline(fic,line);
-		if (line.size() == 0)
-			continue;
-
-		vector< float > vect_line = decompose_line_to_float_vector(line);
-
-		for(int i = 0; i < nb_column; i++)
-			avg_columns[i] += vect_line[i];
-
-		cpt++;
-	}
-
-	fic.close();
-
-
-
-	ofstream fic_write(filename.c_str(), ios::app);
-	fic_write<<"________________________"<<endl;
-	for(int i = 0; i < nb_column; i++){
-		avg_columns[i] = avg_columns[i]*1.0/cpt;
-		fic_write<<to_string(avg_columns[i])<<" ";
-	}
-
-	fic_write<<endl;
-
-	fic_write.close();
-}
-
-void Tools::update_dist_time(float dist_min,float time){
-	Tools::dist_time_avg[0] += dist_min*100;
-	Tools::dist_time_avg[1] += time;
-
-	Tools::cpt_count++;
-
-
-}
-
-void Tools::update_indicators(float D1, float D2, float D3){
-//	cout<<"BEF D1 : "<<Tools::indicator_avg[0]<<endl;
-
-	Tools::indicator_avg[0] += D1;
-	Tools::indicator_avg[1] += D2;
-	Tools::indicator_avg[2] += D3;
-
-
-}
-
-void Tools::add_dist_to_OPT(float ratio){
-
-	ratios_dist_to_OPT.push_back(ratio);
-}
-
-
-void Tools::save_std_deviation(string filename){
-	ofstream fic_write(filename.c_str(), ios::app);
-
-	float avg_ratio = accumulate(ratios_dist_to_OPT.begin(), ratios_dist_to_OPT.end(), 0) / ratios_dist_to_OPT.size() * 1.0;
-
-	if(ratios_dist_to_OPT.size() == 0){
-		fic_write<<"-nan"<<endl;
-		fic_write.close();
-		Tools::ratios_dist_to_OPT.clear();
-		return;
-	}
-
-
-	float val = 1.0/ratios_dist_to_OPT.size();
-
-	for(int i = 0; i < (int)ratios_dist_to_OPT.size(); i++)
-		val += ( ratios_dist_to_OPT[i] - avg_ratio ) * ( ratios_dist_to_OPT[i] - avg_ratio );
-
-	fic_write<<sqrt(val)<<"  ";
-
-
-	for(int i = 0; i < (int)Tools::dist_time_avg.size(); i++){
-		Tools::dist_time_avg[i] = Tools::dist_time_avg[i]*1.0/cpt_count;
-		fic_write<<Tools::dist_time_avg[i]<<"  ";
-	}
-	fic_write<<endl;
-
-	fic_write.close();
-
-	Tools::ratios_dist_to_OPT.clear();
-}
-
-void Tools::save_average_dist_time(string filename){
-
-	ofstream fic_write(filename.c_str(), ios::app);
-	for(int i = 0; i < (int)Tools::dist_time_avg.size(); i++){
-		Tools::dist_time_avg[i] = Tools::dist_time_avg[i]*1.0/cpt_count;
-		fic_write<<Tools::dist_time_avg[i]<<" ";
-	}
-	fic_write<<endl;
-	fic_write.close();
-
-	Tools::dist_time_avg.clear();
-	Tools::dist_time_avg.resize(2,0);
-
-}
-
-void Tools::save_average_indicator(string filename){
-
-	ofstream fic_write(filename.c_str(), ios::app);
-
-	for(int i = 0; i < (int)indicator_avg.size(); i++){
-		Tools::indicator_avg[i] = Tools::indicator_avg[i]*1.0/cpt_count;
-		fic_write<<Tools::indicator_avg[i]<<" ";
-	}
-	fic_write<<endl;
-	fic_write.close();
-
-
-	Tools::indicator_avg.clear();
-	Tools::indicator_avg.resize(3,0);
-
-
-
-}
-
-
-void Tools::separate_results(string filename, string separator){
-	ofstream fic_write(filename.c_str(), ios::app);
-	fic_write<<separator<<endl;
-	fic_write.close();
-}
-
-void Tools::copy_into(string src_filename, string dest_filename){
-
-	ifstream src(src_filename.c_str());
-	ofstream dest(dest_filename.c_str());
-
-	string line;
-
-	while(!src.eof()){
-
-		getline(src,line);
-		dest<<line<<endl;
-	}
-
-	src.close();
-	dest.close();
-}
-
-
 
 
 vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, vector< vector< float > > ws_matrix){
@@ -419,6 +316,78 @@ string Tools::decode_set_items(set<int> items, int nb_items){
 ////	cout<<"----------------------"<<endl<<"WEIGHTED SUM PL ["<<print_vector(weighted_sum)<<"]"<<endl<<"----------------------"<<endl;
 //
 //	return weighted_sum;
+//
+//
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+//void Tools::update_dist_time(float dist_min,float time){
+//	Tools::dist_time_avg[0] += dist_min*100;
+//	Tools::dist_time_avg[1] += time;
+//
+//	Tools::cpt_count++;
+//
+//
+//}
+//
+//void Tools::update_indicators(float D1, float D2, float D3){
+////	cout<<"BEF D1 : "<<Tools::indicator_avg[0]<<endl;
+//
+//	Tools::indicator_avg[0] += D1;
+//	Tools::indicator_avg[1] += D2;
+//	Tools::indicator_avg[2] += D3;
+//
+//
+//}
+//
+//void Tools::add_dist_to_OPT(float ratio){
+//
+//	ratios_dist_to_OPT.push_back(ratio);
+//}
+
+
+
+
+//void Tools::save_average_dist_time(string filename){
+//
+//	ofstream fic_write(filename.c_str(), ios::app);
+//	for(int i = 0; i < (int)Tools::dist_time_avg.size(); i++){
+//		Tools::dist_time_avg[i] = Tools::dist_time_avg[i]*1.0/cpt_count;
+//		fic_write<<Tools::dist_time_avg[i]<<" ";
+//	}
+//	fic_write<<endl;
+//	fic_write.close();
+//
+//	Tools::dist_time_avg.clear();
+//	Tools::dist_time_avg.resize(2,0);
+//
+//}
+
+//void Tools::save_average_indicator(string filename){
+//
+//	ofstream fic_write(filename.c_str(), ios::app);
+//
+//	for(int i = 0; i < (int)indicator_avg.size(); i++){
+//		Tools::indicator_avg[i] = Tools::indicator_avg[i]*1.0/cpt_count;
+//		fic_write<<Tools::indicator_avg[i]<<" ";
+//	}
+//	fic_write<<endl;
+//	fic_write.close();
+//
+//
+//	Tools::indicator_avg.clear();
+//	Tools::indicator_avg.resize(3,0);
+//
 //
 //
 //}

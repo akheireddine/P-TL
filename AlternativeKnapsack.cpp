@@ -8,7 +8,7 @@ using namespace std;
 
 
 
-AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct, vector< vector<float > > WS_matrix){
+AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack * mStruct, vector< vector<float > > WS_matrix){
 
 	id_alt = Tools::decode_set_items(items,mStruct->get_n_items());
 	mainLSStructure = mStruct;
@@ -38,7 +38,7 @@ AlternativeKnapsack::AlternativeKnapsack(set<int> items, MainKnapsack* mStruct, 
 }
 
 
-AlternativeKnapsack::AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix){
+AlternativeKnapsack::AlternativeKnapsack(string id_alternative, MainKnapsack * mStruct, vector< vector<float > > WS_matrix){
 
 	id_alt = id_alternative;
 	set<int> items;
@@ -73,7 +73,11 @@ AlternativeKnapsack::AlternativeKnapsack(string id_alternative, MainKnapsack* mS
 }
 
 
-AlternativeKnapsack::AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix, list< shared_ptr< Alternative > > Archive){
+
+
+
+//LOCAL WS and ARCHIVE
+AlternativeKnapsack::AlternativeKnapsack(string id_alternative, MainKnapsack * mStruct, vector< vector<float > > WS_matrix, list< shared_ptr< Alternative > > Archive){
 
 	id_alt = id_alternative;
 	set<int> items;
