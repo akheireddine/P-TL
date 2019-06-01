@@ -5,26 +5,19 @@
 
 
 #include "MainKnapsack.h"
-#define TIMEOUT 480  //8min
 
 
+#define TIMEOUT 600  //10min
 #define N 20
 #define P 0.005
 #define DIVERSIFICATION 1
+#define alpha 0.999
 
 //#define __PRINT__
 
-#define alpha 0.999
-extern float Ta;
-extern float Temperature;
-
-extern int GRAIN;
-extern map<string, set<string> > common_neighbors;
-
-
-extern list<set<int>> init_population;
-extern int INFO;
 int STEPS_PLOT = 0;
+
+
 
 MainKnapsack::MainKnapsack(string filename, int init_population_size , string matrix_filename){
 
@@ -390,8 +383,7 @@ void MainKnapsack::save_new_point(string filename, shared_ptr< Alternative > alt
 
 void MainKnapsack::Random_Selection(list< string > & dominated_solutions, int upper_bound){
 
-	random_device rd;
-	mt19937 g(rd());
+	mt19937 g(GRAIN);
 
 	vector<string> shuffle_DA (dominated_solutions.begin(), dominated_solutions.end());
 	shuffle(shuffle_DA.begin(), shuffle_DA.end(), g);
@@ -580,23 +572,23 @@ void MainKnapsack::Learning_Threshold_Accepting_AVG(list< string > & dominated_s
 
 
 //		//AVERAGE TA
-		float aggreg_value = -1;
-		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
-		}
-
-		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
+//		float aggreg_value = -1;
+//		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+//			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+//		}
+//
+//		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
 
 
 
 		//MIN TA
-//		float aggreg_value = 0;
-//		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-//			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
-//			if(aggreg_value == -1   or  (val < aggreg_value)  )
-//				aggreg_value =  val;
-//		}
-//		float val_key = aggreg_value;
+		float aggreg_value = -1;
+		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+			if(aggreg_value == -1   or  (val < aggreg_value)  )
+				aggreg_value =  val;
+		}
+		float val_key = aggreg_value;
 
 
 
@@ -652,9 +644,7 @@ void MainKnapsack::Learning_Threshold_Accepting_AVG(list< string > & dominated_s
 
 bool MainKnapsack::Stop_Condition(int tentative_improvment){
 
-	return !Population.empty();
-
-//	return (tentative_improvment > 0) or !Population.empty();
+	return (tentative_improvment > 0) or !Population.empty();
 
 }
 
@@ -678,7 +668,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 
 	STEPS_PLOT++;
 
-	while( Stop_Condition()  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
+	while( !Population.empty()  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
 
 		alt = dic_Alternative[ Population.front() ];
@@ -689,7 +679,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 //			save_new_point(filename_instance+"_VARIABLE_MOLS2_"+to_string(STEPS_PLOT)+".expl",alt);
 
 
-		set< string > current_neighbors = alt->get_neighborhood();
+		set< string > current_neighbors;//  = alt->get_neighborhood();
 
 		if( common_neighbors.find( alt->get_id_alt( ) ) != common_neighbors.end() )
 			current_neighbors = common_neighbors[alt->get_id_alt()];
@@ -806,8 +796,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 	list< string > next_Population;
 	int nb_iteration = 0, step = 0;
 
-	int limit_no_improvment = 2;
-
 
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
@@ -816,7 +804,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 	}
 
 
-	while( Stop_Condition(limit_no_improvment)  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
+	while( !Population.empty() and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
 
 		alt = dic_Alternative[ Population.front() ];
@@ -909,19 +897,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 					Population.push_back(*it);
 
 
-			if( Population.empty() )
-				limit_no_improvment--;
-			else
-				limit_no_improvment =  2;
-
-
-//			if( ((int)Population.size() < UB_Population_size)  and Stop_Condition(limit_no_improvment) ){
-//				int to_add = ( UB_Population_size - (int)Population.size() ) ;
-////				Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
-////				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
-//				Random_Selection(Dominated_alt, to_add);
-//			}
-
 			step++;
 
 			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
@@ -952,7 +927,159 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 
 
+list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(double starting_time_sec, int UB_Population_size){
 
+
+	shared_ptr< AlternativeKnapsack > alt;
+	list< string > Local_front;
+	list< string > Dominated_alt;
+	list< string > next_Population;
+	int nb_iteration = 0, step = 0;
+
+	int limit_no_improvment = 2;
+
+
+	//First initialization
+	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
+		dic_Alternative[ *p ] = make_shared< AlternativeKnapsack >( *p, this, WS_matrix );
+		OPT_Solution.push_back( dic_Alternative[ *p ] );
+	}
+
+
+	while( Stop_Condition(limit_no_improvment)  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
+		nb_iteration++;
+
+		alt = dic_Alternative[ Population.front() ];
+		Population.pop_front();
+
+		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_LTAMIN_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
+
+
+
+
+		set< string > current_neighbors;// = alt->get_neighborhood();
+
+		if( common_neighbors.find( alt->get_id_alt( ) ) != common_neighbors.end() )
+			current_neighbors = common_neighbors[alt->get_id_alt()];
+
+		else{
+			current_neighbors = alt->get_neighborhood();
+			common_neighbors[alt->get_id_alt()] = current_neighbors;
+		}
+
+		for(set< string >::iterator id_neighbor = current_neighbors.begin(); id_neighbor != current_neighbors.end(); ++id_neighbor){
+
+			shared_ptr< AlternativeKnapsack > neighbor;
+
+
+			if ( dic_Alternative.find(*id_neighbor) == dic_Alternative.end()  or dic_Alternative[*id_neighbor].use_count() == 0){
+				dic_Alternative[*id_neighbor] = make_shared< AlternativeKnapsack >( *id_neighbor, this, WS_matrix);
+			}
+
+			neighbor = dic_Alternative[*id_neighbor];
+
+//			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NEIGHBORS_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",neighbor);
+
+			//Prefiltrage
+			if( alt->dominates_objective_space(neighbor) != 1 ){
+				Update_Archive(neighbor,Local_front);
+			}
+			else
+				Dominated_alt.push_back(*id_neighbor);
+
+		}
+
+
+		random_device rd;
+		mt19937 g(GRAIN);
+
+		vector<string> shuffle_LF (Local_front.begin(), Local_front.end());
+		shuffle(shuffle_LF.begin(), shuffle_LF.end(), g);
+
+		Local_front.clear();
+		Local_front.assign(shuffle_LF.begin(), shuffle_LF.end());
+
+
+
+		for(list< string >::iterator id_new_alt = Local_front.begin(); id_new_alt != Local_front.end(); ++id_new_alt){
+
+			shared_ptr< AlternativeKnapsack > new_alt = dic_Alternative[*id_new_alt];
+
+			list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
+
+			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_LTAMIN_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
+
+			if( Update_Archive(new_alt, local_OPT_Sol, next_Population) ){
+
+				if( (int)next_Population.size() < UB_Population_size ){
+					next_Population.push_back(*id_new_alt);
+					OPT_Solution = local_OPT_Sol;
+				}
+				else{
+					Dominated_alt.push_back(*id_new_alt);
+				}
+			}
+			else {
+				Dominated_alt.push_back(*id_new_alt);        // CANT HANDLE MORE THAN UB_POPULATION
+			}
+
+			local_OPT_Sol.clear();
+		}
+
+
+
+
+
+		if( Population.empty() ){
+
+			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
+				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_FRONT_LTAMIN_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
+			}
+
+
+			for(list< string >::iterator it = next_Population.begin(); it != next_Population.end(); ++it)
+				if( dic_Alternative[*it].use_count() != 0)  //could be dominated by a solution in a different Local front list
+					Population.push_back(*it);
+
+
+			if( Population.empty() )
+				limit_no_improvment--;
+			else
+				limit_no_improvment =  2;
+
+
+			if( ((int)Population.size() < UB_Population_size)  and Stop_Condition(limit_no_improvment) ){
+				int to_add = ( UB_Population_size - (int)Population.size() ) ;
+//				Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
+				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
+//				Random_Selection(Dominated_alt, to_add);
+			}
+
+			step++;
+
+			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
+				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 )
+					(*it).second.reset();
+			}
+
+
+//			cout<<"Population size : "<<Population.size()<<endl;
+
+			Dominated_alt.clear();
+			next_Population.clear();
+		}
+
+		Local_front.clear();
+
+	}
+
+	cout<<"Number of iteration "<<nb_iteration<<endl;
+
+	write_solution(filename_instance+".sol");
+
+	return OPT_Solution;
+
+}
 
 
 

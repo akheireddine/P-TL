@@ -10,6 +10,23 @@
 
 
 
+
+extern float Ta;
+extern float Temperature;
+
+extern int GRAIN;
+extern map<string, set<string> > common_neighbors;
+
+
+extern list<set<int>> init_population;
+extern int INFO;
+
+
+
+
+
+
+
 class MainKnapsack : public LSStructure{
 
 protected:
@@ -62,6 +79,7 @@ public :
 	list< shared_ptr< Alternative > > MOLS(double starting_time_sec,int ITER);
 	list< shared_ptr< Alternative > > MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);
 	list< shared_ptr< Alternative > > MOLS_local_Archive(double starting_time_sec);
+	list< shared_ptr< Alternative > > MOLS_Cst_PSize_Diversification(double starting_time_sec, int UB_Population_size);
 
 
 	bool Stop_Condition(int tentative_improvment = 0);
