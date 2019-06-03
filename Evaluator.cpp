@@ -535,9 +535,9 @@ void Evaluator::evaluate_PF(MainKnapsack * knaps, float time_cpu){
 
 	K_replication++;
 
-	cout<<"time : "<<time<<endl;
-	cout<<Tools::print_vector(Point_indicators)<<endl;
-	cout<<Tools::print_vector(PF_indicators)<<endl;
+//	cout<<"time : "<<time<<endl;
+//	cout<<Tools::print_vector(Point_indicators)<<endl;
+//	cout<<Tools::print_vector(PF_indicators)<<endl;
 
 }
 
@@ -567,7 +567,7 @@ void Evaluator::save_PF_evaluation(){
 	fic2_write<<endl;
 	fic2_write.close();
 
-	cout<<"K = "<<K_replication<<endl;
+//	cout<<"K = "<<K_replication<<endl;
 
 
 	//REINITIALIZE PARAMETERS

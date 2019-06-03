@@ -18,15 +18,16 @@ class AlternativeKnapsack : public Alternative{
 
 protected :
 	float weight;													// total weight of the alternative
-	MainKnapsack* mainLSStructure;									// pointer to the main structure (for information)
+	MainKnapsack * mainLSStructure;									// pointer to the main structure (for information)
 
 public:
 
 	//CONSTRUCTOR DESTRUCTOR
-	AlternativeKnapsack(set<int> items, MainKnapsack* mStruct, vector< vector< float > > WS_matrix);
-	AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix);
-	AlternativeKnapsack(string id_alternative, MainKnapsack* mStruct, vector< vector<float > > WS_matrix, list< shared_ptr< Alternative > > Archive);
-	~AlternativeKnapsack(){ 	};
+	AlternativeKnapsack(set<int> items, MainKnapsack * mStruct, vector< vector< float > > WS_matrix);
+	AlternativeKnapsack(string id_alternative, MainKnapsack * mStruct, vector< vector<float > > WS_matrix);
+	AlternativeKnapsack(string id_alternative, MainKnapsack * mStruct, vector< vector<float > > WS_matrix, list< shared_ptr< Alternative > > Archive);
+	~AlternativeKnapsack(){  };
+//	if(mainLSStructure.use_count() > 1){ mainLSStructure.reset(); }
 
 	//GETTERS
 	float get_weight(){ return weight; }

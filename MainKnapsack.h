@@ -44,8 +44,17 @@ public :
 	MainKnapsack( shared_ptr< Evaluator > evaluator, int population_size_init, string filename, bool generate_population=false);
 
 	~MainKnapsack(){
-		for(map<string, shared_ptr< AlternativeKnapsack > > ::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it)
+
+		for(map<string, shared_ptr< AlternativeKnapsack > > ::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
 			dic_Alternative[(*it).first].reset();
+			dic_Alternative.erase((*it).first);
+		}
+
+		for(vector< tuple<float, vector< float> > >::iterator i = Items_information.begin(); i != Items_information.end(); ++i){
+			get<1>(*i).shrink_to_fit();
+		}
+		Items_information.shrink_to_fit();
+
 	};
 
 	//GETTERS

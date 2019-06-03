@@ -8,7 +8,6 @@ using namespace std;
 
 void main_Knapsack(string filename_instance, int size_population){
 
-
 	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
 
 	clock_t t1 = clock();
@@ -32,9 +31,8 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 
 	int K = 1;
 	int N = 1;
-	int I = 1;
+	int I = 8;
 
-	int iter;
 	vector<int> graines;
 
 	string WS_matrix_file = "WS_MatrixA.csv";
@@ -47,13 +45,13 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,
-				"./Data/DistTime/"+type_inst+"/I_"+taille+prefix+to_string(i)+".eval",
-				"./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+to_string(i)+".front");
+				"./Data/DistTime/"+type_inst+"/I_"+taille+prefix+".eval",
+				"./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+".front");
 
 
 		MainKnapsack::Generate_random_Population(eval_ks, K);
 
-		vector< map< string, set<string> > > common_neighbors_replication(K, map<string, set<string> >());
+//		vector< map< string, set<string> > > common_neighbors_replication(K, map<string, set<string> >());
 
 
 		graines.clear();
@@ -63,7 +61,7 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 
 
 //!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 0; step < I; step++){
+		for(int step = 1; step < I; step++){
 
 			INFO = step;
 			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
@@ -74,21 +72,21 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 
 
 			for(int k = 0; k < K; k++){
-				common_neighbors = common_neighbors_replication[k];
+//				common_neighbors = common_neighbors_replication[k];
 				GRAIN = graines[k];
 				srand( GRAIN );
 				Ta = -1;
 				Temperature = 1500;
 				main_Knapsack(filename_instance, 1);
-				common_neighbors_replication[k] = common_neighbors;
+//				common_neighbors_replication[k] = common_neighbors;
 			}
 			eval_ks->save_PF_evaluation();
 		}
 
-		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+prefix+to_string(i)+".eval",type_inst+to_string(i)+"___"+to_string(iter));
-		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+to_string(i)+".front",type_inst+to_string(i)+"___"+to_string(iter));
+		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+prefix+".eval",type_inst+to_string(i)+"___");
+		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+".front",type_inst+to_string(i)+"___");
 
-//		delete eval_ks;
+		eval_ks.reset();
 	}
 
 }
@@ -99,7 +97,6 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 
 
 void main_Knapsack_WSPLS(string filename_instance, int size_population, int iter){
-
 
 	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
 
@@ -114,6 +111,7 @@ void main_Knapsack_WSPLS(string filename_instance, int size_population, int iter
 	eval_ks->evaluate_PF( knaps, time_cpu);
 
 	delete knaps;
+
 }
 
 
@@ -179,7 +177,6 @@ void script_knapsack_WSPLS(string type_inst, string taille, string WS_DM){
 
 void main_Knapsack_PLSWS(string filename_instance, int size_population, int iter){
 
-
 	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
 
 	clock_t t1 = clock();
@@ -194,6 +191,8 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, int iter
 	eval_ks->evaluate_PF( knaps, time_cpu);
 
 	delete knaps;
+
+
 }
 
 
@@ -273,12 +272,11 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
 
-
 	clock_t t1 = clock();
 
-	knaps->MOLS_Cst_PSize(t1/CLOCKS_PER_SEC,max_size_population);
+//	knaps->MOLS_Cst_PSize(t1/CLOCKS_PER_SEC,max_size_population);
 
-//	knaps->MOLS_Cst_PSize_Diversification(t1/CLOCKS_PER_SEC,max_size_population);
+	knaps->MOLS_Cst_PSize_Diversification(t1/CLOCKS_PER_SEC,max_size_population);
 
 	float time_cpu = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
 
@@ -295,25 +293,25 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 30;
-	int N = 7;
-	int I = 4;
+	int K = 15;
+	int N = 5;
+	int I = 8;
 
 	int iter;
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixC.csv";
-	string prefix = "_AVG_PS";
+	string WS_matrix_file = "WS_MatrixA.csv";
+	string prefix = "_AVG_PS_RS";
 	srand(time(NULL));
 
-//	vector<int> sizer = {2,8,14,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
+	vector<int> sizer = {2,8,14,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
 
-	vector<int> sizer = {2,8,10,20,60,80,100,200};  //C
+//	vector<int> sizer = {2,8,10,20,60,80,100,200};  //C
 
-//	vector<int> sizer = {1,2,5,8,10,30,60,100,150,200,250,350};  //D
+//	vector<int> sizer = {2,8,20,40,60,100,250};  //D
 
 
-	for(int i = 3; i < N; i++){
+	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,
@@ -322,7 +320,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 		MainKnapsack::Generate_random_Population(eval_ks, K);
 
-		vector< map< string, set<string> > > common_neighbors_replication(K, map<string, set<string> >());
+//		vector< map< string, set<string> > > common_neighbors_replication(K, map<string, set<string> >());
 
 
 		graines.clear();
@@ -337,7 +335,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
-			for(int step = 0; step < I; step++){
+			for(int step = 1; step < I; step++){
 
 				INFO = step;
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
@@ -350,12 +348,12 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 
 				for(int k = 0; k < K; k++){
-					common_neighbors = common_neighbors_replication[k];
+//					common_neighbors = common_neighbors_replication[k];
 					GRAIN = graines[k];
 					srand( GRAIN );
 					Ta =  500;
 					main_Knapsack_Cst_PSize(filename_instance, 1, iter);
-					common_neighbors_replication[k] = common_neighbors;
+//					common_neighbors_replication[k] = common_neighbors;
 				}
 
 				eval_ks->save_PF_evaluation();
@@ -363,8 +361,6 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 			Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+prefix+to_string(i)+".eval",type_inst+to_string(i)+"___"+to_string(iter));
 			Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+to_string(i)+".front",type_inst+to_string(i)+"___"+to_string(iter));
 		}
-
-//		delete eval_ks;
 		eval_ks.reset();
 	}
 
@@ -382,7 +378,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "C";
+	string type_inst = "A";
 	string taille = "100";
 
 //	script_knapsack(type_inst, taille, WS_DM);
@@ -443,18 +439,18 @@ int main(int argc, char** argv){
 */
 	script_Cst_PSize(type_inst,taille,WS_DM);
 //
-//	vector<int> sizer = {2,8,14,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
-////
-//	for(auto t : sizer){
-//		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//			,"FRONT", t , 10, 410 , "./DM_preference_point");
-//		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//			,"POPULATION", t , 10, 410 , "./DM_preference_point");
+	vector<int> sizer = {2,8,14,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
+//
+	for(auto t : sizer){
+		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+			,"FRONT_RS", t , 10, 410 , "./DM_preference_point");
+		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+			,"POPULATION_RS", t , 10, 410 , "./DM_preference_point");
 //		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //			,"NON_DOMINATED_LOCALLY", t , 10, 410 , "./DM_preference_point");
 //		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //			,"NEIGHBORS", t , 10, 410 , "./DM_preference_point");
-//	}
+	}
 
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //			,"MOLS2", 1, 20, 201 , "./DM_preference_point");

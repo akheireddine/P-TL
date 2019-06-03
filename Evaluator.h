@@ -40,7 +40,33 @@ public:
 //	Evaluator(string filename, string WS_matrix_file, string WS_DM_preferences, string DT_file, float time, string PFI_file);
 	Evaluator(string filename, string WS_DM_preferences, string SDT_file, string PFI_file);
 	~Evaluator(){
-//		OPT_Alternative.reset();
+
+		for(list< vector< float > >::iterator i = PFront.begin(); i != PFront.end(); ++i){
+			(*i).clear();
+			(*i).shrink_to_fit();
+		}
+
+		PFront.resize(0);
+
+		for(int i = 0; i < (int) PF_Efficient.size(); i++)
+			PF_Efficient.shrink_to_fit();
+		PF_Efficient.shrink_to_fit();
+
+		OPT_Alternative.shrink_to_fit();
+
+
+		for(vector< tuple<float, vector< float> > >::iterator i = Items_information.begin(); i != Items_information.end(); ++i){
+			get<1>(*i).shrink_to_fit();
+		}
+		Items_information.shrink_to_fit();
+
+		for(int i = 0; i < (int) WS_matrix.size(); i++){
+			WS_matrix[i].clear();
+			WS_matrix[i].shrink_to_fit();
+		}
+		WS_matrix.clear();
+		WS_matrix.shrink_to_fit();
+
 	};
 
 	//GETTERS

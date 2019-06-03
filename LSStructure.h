@@ -39,6 +39,22 @@ protected :
 
 public:
 	virtual ~LSStructure(){
+		for(int i = 0; i < (int) WS_matrix.size(); i++){
+			WS_matrix[i].clear();
+			WS_matrix[i].shrink_to_fit();
+		}
+		WS_matrix.clear();
+		WS_matrix.shrink_to_fit();
+
+		for(list< shared_ptr< Alternative > > ::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
+			(*it).reset();
+		}
+
+		OPT_Solution.clear();
+		OPT_Solution.resize(0);
+
+		Population.clear();
+		Population.resize(0);
 	};
 
 	void initializeInformation(shared_ptr< Evaluator > evaluator);

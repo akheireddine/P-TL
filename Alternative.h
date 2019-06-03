@@ -28,6 +28,20 @@ protected:
 public:
 
 	virtual ~Alternative(){
+		neighborhood.clear();
+
+		for(int i = 0; i < (int) local_WS_matrix.size(); i++){
+			local_WS_matrix[i].clear();
+			local_WS_matrix[i].shrink_to_fit();
+		}
+		local_WS_matrix.clear();
+		local_WS_matrix.shrink_to_fit();
+
+		for(list< shared_ptr< Alternative > > ::iterator it = local_Archive.begin(); it != local_Archive.end(); ++it){
+			(*it).reset();
+		}
+
+		local_Archive.resize(0);
 	};
 
 	//GETTERS
