@@ -29,9 +29,9 @@ void main_Knapsack(string filename_instance, int size_population){
 
 void script_knapsack(string type_inst, string taille, string WS_DM){
 
-	int K = 1;
-	int N = 1;
-	int I = 8;
+	int K = 15;
+	int N = 6;
+	int I = 4;
 
 	vector<int> graines;
 
@@ -61,7 +61,7 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 
 
 //!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 1; step < I; step++){
+		for(int step = 0; step < I; step++){
 
 			INFO = step;
 			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
@@ -276,7 +276,9 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 //	knaps->MOLS_Cst_PSize(t1/CLOCKS_PER_SEC,max_size_population);
 
-	knaps->MOLS_Cst_PSize_Diversification(t1/CLOCKS_PER_SEC,max_size_population);
+//	knaps->MOLS_Cst_PSize_Diversification(t1/CLOCKS_PER_SEC,max_size_population);
+
+	knaps->MOLS_Cst_PSize_FAIR(t1/CLOCKS_PER_SEC,max_size_population);
 
 	float time_cpu = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
 
@@ -293,15 +295,15 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 15;
-	int N = 5;
+	int K = 1;
+	int N = 1;
 	int I = 8;
 
 	int iter;
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixA.csv";
-	string prefix = "_AVG_PS_RS";
+	string WS_matrix_file = "WS_MatrixT.csv";
+	string prefix = "_AVG_PS_LTA_min";
 	srand(time(NULL));
 
 	vector<int> sizer = {2,8,14,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
@@ -335,7 +337,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
-			for(int step = 1; step < I; step++){
+			for(int step = 0; step < I; step++){
 
 				INFO = step;
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
@@ -356,10 +358,10 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 //					common_neighbors_replication[k] = common_neighbors;
 				}
 
-				eval_ks->save_PF_evaluation();
+//				eval_ks->save_PF_evaluation();
 			}
-			Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+prefix+to_string(i)+".eval",type_inst+to_string(i)+"___"+to_string(iter));
-			Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+to_string(i)+".front",type_inst+to_string(i)+"___"+to_string(iter));
+//			Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+prefix+to_string(i)+".eval",type_inst+to_string(i)+"___"+to_string(iter));
+//			Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+to_string(i)+".front",type_inst+to_string(i)+"___"+to_string(iter));
 		}
 		eval_ks.reset();
 	}
@@ -443,11 +445,11 @@ int main(int argc, char** argv){
 //
 	for(auto t : sizer){
 		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-			,"FRONT_RS", t , 10, 410 , "./DM_preference_point");
+			,"FRONT", t , 10, 410 , "./DM_preference_point");
 		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-			,"POPULATION_RS", t , 10, 410 , "./DM_preference_point");
-//		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//			,"NON_DOMINATED_LOCALLY", t , 10, 410 , "./DM_preference_point");
+			,"POPULATION", t , 10, 410 , "./DM_preference_point");
+		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+			,"NON_DOMINATED_LOCALLY", t , 10, 410 , "./DM_preference_point");
 //		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //			,"NEIGHBORS", t , 10, 410 , "./DM_preference_point");
 	}
