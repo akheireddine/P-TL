@@ -1008,8 +1008,8 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(d
 			if( ((int)Population.size() < UB_Population_size)  and   ( (limit_no_improvment > 0) or !Population.empty() ) ){
 				int to_add = ( UB_Population_size - (int)Population.size() ) ;
 //				Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
-				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
-//				Random_Selection(Dominated_alt, to_add);
+//				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
+				Random_Selection(Dominated_alt, to_add);
 			}
 
 			step++;

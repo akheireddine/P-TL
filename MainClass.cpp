@@ -295,25 +295,25 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 20;
+	int K = 15;
 	int N = 5;
 	int I = 4;
 
 	int iter;
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixD.csv";
-	string prefix = "_AVG_PS";
+	string WS_matrix_file = "WS_MatrixA.csv";
+	string prefix = "_AVG_PS_RS";
 	srand(time(NULL));
 
-//	vector<int> sizer = {2,8,14,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
+	vector<int> sizer = {2,8,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
 
 //	vector<int> sizer = {2,8,10,20,60,80,100,200};  //C
 
-	vector<int> sizer = {2,8,20,60,100,200};  //D
+//	vector<int> sizer = {2,8,20,60,100,200};  //D
 
 
-	for(int i = 0; i < N; i++){
+	for(int i = 1; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,
@@ -380,10 +380,10 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "D";
+	string type_inst = "A";
 	string taille = "100";
 
-//	script_knapsack(type_inst, taille, WS_DM);
+	script_knapsack(type_inst, taille, WS_DM);
 //
 //	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //		,"MOLS2", -1 , 10, 410 , "./DM_preference_point");
@@ -439,7 +439,7 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM);
+//	script_Cst_PSize(type_inst,taille,WS_DM);
 //
 //	vector<int> sizer = {2,8,14,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
 ////
