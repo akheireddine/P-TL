@@ -86,9 +86,9 @@ public :
 
 	list< shared_ptr< Alternative > > MOLS(double starting_time_sec,int ITER);
 	list< shared_ptr< Alternative > > MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);
-	list< shared_ptr< Alternative > > MOLS1_Cst_PSize(double starting_time_sec, int UB_Population_size);
 	list< shared_ptr< Alternative > > MOLS_local_Archive(double starting_time_sec);
 	list< shared_ptr< Alternative > > MOLS_Cst_PSize_Diversification(double starting_time_sec, int UB_Population_size);
+	list< shared_ptr< Alternative > > MOLS1_Cst_PSize_Diversification(double starting_time_sec, int UB_Population_size);
 	list< shared_ptr< Alternative > > MOLS_Cst_PSize_FAIR(double starting_time_sec, int UB_Population_size);
 
 

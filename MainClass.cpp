@@ -29,19 +29,19 @@ void main_Knapsack(string filename_instance, int size_population){
 
 void script_knapsack(string type_inst, string taille, string WS_DM){
 
-	int K = 15;
-	int N = 3;
-	int I = 4;
+	int K = 1;
+	int N = 10;
+	int I = 1;
 
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixA.csv";
+	string WS_matrix_file = "WS_MatrixAA.csv";
 	string prefix = "_AVG_MOLS2";
 	srand(time(NULL));
 
 
 
-	for(int i = 0; i < N ; i++){
+	for(int i = 1; i < N ; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,
@@ -80,12 +80,12 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 				main_Knapsack(filename_instance, 1);
 //				common_neighbors_replication[k] = common_neighbors;
 			}
-			eval_ks->save_PF_evaluation();
+//			eval_ks->save_PF_evaluation();
 		}
 
-		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+prefix+".eval",type_inst+to_string(i)+"___");
-		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+".front",type_inst+to_string(i)+"___");
-
+//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_"+taille+prefix+".eval",type_inst+to_string(i)+"___");
+//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+".front",type_inst+to_string(i)+"___");
+//
 		eval_ks.reset();
 	}
 
@@ -274,11 +274,14 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 	clock_t t1 = clock();
 
-//	knaps->MOLS_Cst_PSize(t1/CLOCKS_PER_SEC,max_size_population);
+	knaps->MOLS_Cst_PSize(t1/CLOCKS_PER_SEC,max_size_population);
 
-	knaps->MOLS_Cst_PSize_Diversification(t1/CLOCKS_PER_SEC,max_size_population);
+//	knaps->MOLS_Cst_PSize_Diversification(t1/CLOCKS_PER_SEC,max_size_population);
+
+//	knaps->MOLS1_Cst_PSize_Diversification(t1/CLOCKS_PER_SEC,max_size_population);
 
 //	knaps->MOLS_Cst_PSize_FAIR(t1/CLOCKS_PER_SEC,max_size_population);
+
 
 	float time_cpu = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
 
@@ -295,24 +298,23 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 15;
-	int N = 3;
-	vector<int> I = { 1 , 2 , 3, 4 , 5 , 6 , 7};
+	int K = 1;
+	int N = 1;
+	vector<int> I = { 0, 1 , 2 , 3, 4 , 5 , 6 , 7};
 
 	int iter;
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixARS.csv";
-	string prefix = "_AVG_PS_RS";
+	string WS_matrix_file = "WS_MatrixD.csv";
+	string prefix = "_AVG_PS";
 	srand(time(NULL));
 
-	vector<int> sizer = {2,8,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
+//	vector<int> sizer = {2,8,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
 
 //	vector<int> sizer = {2,8,10,20,60,80,100,200};  //C
 
-//	vector<int> sizer = {2,8,20,60,100,200};  //D
+	vector<int> sizer = {2,8,20,60,100,200};  //D
 
-<<<<<<< HEAD
 	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
@@ -360,7 +362,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 			}
 		}
 
-		eval_ks->save_PF_evaluation_map();
+//		eval_ks->save_PF_evaluation_map();
 
 		eval_ks.reset();
 	}
@@ -379,10 +381,10 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "A";
-	string taille = "100";
+	string type_inst = "B";
+	string taille = "600";
 
-	script_knapsack(type_inst, taille, WS_DM);
+//	script_knapsack(type_inst, taille, WS_DM);
 //
 //	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //		,"MOLS2", -1 , 10, 410 , "./DM_preference_point");
@@ -438,20 +440,22 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM);
+//	script_Cst_PSize(type_inst,taille,WS_DM);
 
 //	vector<int> sizer = {2,8,14,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
 
-//	for(auto t : sizer){
+	vector<int> sizer = {2,8,20,60,100,200};  //D
+
+	for(auto t : sizer){
+		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+			,"FRONT", t , 10, 410 , "./DM_preference_point");
+		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+			,"POPULATION", t , 10, 410 , "./DM_preference_point");
+		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
+			,"NON_DOMINATED_LOCALLY", t , 10, 410 , "./DM_preference_point");
 //		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//			,"FRONT", t , 10, 410 , "./DM_preference_point");
-//		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//			,"POPULATION", t , 10, 410 , "./DM_preference_point");
-//		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-//			,"NON_DOMINATED_LOCALLY", t , 10, 410 , "./DM_preference_point");
-////		Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO_PSize("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
-////			,"NEIGHBORS", t , 10, 410 , "./DM_preference_point");
-//	}
+//			,"NEIGHBORS", t , 10, 410 , "./DM_preference_point");
+	}
 
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //			,"MOLS2", 1, 20, 201 , "./DM_preference_point");

@@ -532,9 +532,9 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS(double starting_time_sec){
 		}
 
 		if( ((int)Population.size() - new_pop ) == 0){
-//			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
-//				save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",*it);
-//			}
+			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
+				save_new_point(filename_instance+"_VARIABLE_"+to_string(STEPS_PLOT)+"_"+to_string(INFO)+".expl",*it);
+			}
 //			cout<<new_pop<<endl;
 			new_pop = 0;
 			STEPS_PLOT++;
@@ -624,7 +624,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
+		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
 
 		set< string > current_neighbors;// = alt->get_neighborhood();
 
@@ -681,7 +681,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 			list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
 
-//			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
+			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
 
 			if( Update_Archive(new_alt, local_OPT_Sol, next_Population) ){
 
@@ -706,9 +706,9 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 		if( Population.empty() ){
 
-//			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
-//				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_FRONT_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
-//			}
+			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
+				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_FRONT_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
+			}
 
 
 			for(list< string >::iterator it = next_Population.begin(); it != next_Population.end(); ++it)
@@ -745,13 +745,15 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 
 
-list< shared_ptr< Alternative > > MainKnapsack::MOLS1_Cst_PSize(double starting_time_sec, int UB_Population_size){
+list< shared_ptr< Alternative > > MainKnapsack::MOLS1_Cst_PSize_Diversification(double starting_time_sec, int UB_Population_size){
 
 	shared_ptr< AlternativeKnapsack > alt;
 	list< string > Local_front;
 	list< string > Dominated_alt;
 	int nb_iteration = 0, step = 0;
 
+
+	int limit_no_improvment = 2;
 
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
@@ -760,13 +762,13 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS1_Cst_PSize(double starting_
 	}
 
 
-	while( !Population.empty() and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
+	while( ( (limit_no_improvment > 0) or !Population.empty() )  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
 
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
+		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -789,9 +791,9 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS1_Cst_PSize(double starting_
 				Update_Archive(neighbor,Local_front);
 			}
 			else{
-//				Dominated_alt.push_back(*id_neighbor);
-				dic_Alternative[*id_neighbor].reset();
-				dic_Alternative.erase(*id_neighbor);
+				Dominated_alt.push_back(*id_neighbor);
+//				dic_Alternative[*id_neighbor].reset();
+//				dic_Alternative.erase(*id_neighbor);
 			}
 			neighbor.reset();
 		}
@@ -817,7 +819,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS1_Cst_PSize(double starting_
 
 				list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
 
-//				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
+				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
 
 				if( Update_Archive(new_alt, local_OPT_Sol, Population) ){
 
@@ -825,17 +827,30 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS1_Cst_PSize(double starting_
 						Population.push_back(*id_new_alt);
 						OPT_Solution = local_OPT_Sol;
 					}
-	//				else{
-	//					Dominated_alt.push_back(*id_new_alt);
-	//				}
+					else{
+						Dominated_alt.push_back(*id_new_alt);
+					}
 				}
-	//			else {
-	//				Dominated_alt.push_back(*id_new_alt);        // CANT HANDLE MORE THAN UB_POPULATION
-	//			}
+				else {
+					Dominated_alt.push_back(*id_new_alt);        // CANT HANDLE MORE THAN UB_POPULATION
+				}
 
 				local_OPT_Sol.clear();
 			}
 
+
+			if( Population.empty() )
+				limit_no_improvment--;
+			else
+				limit_no_improvment =  2;
+
+
+			if( ((int)Population.size() < UB_Population_size)  and   ( (limit_no_improvment > 0) or !Population.empty() ) ){
+				int to_add = ( UB_Population_size - (int)Population.size() ) ;
+//				Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
+//				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
+				Random_Selection(Dominated_alt, to_add);
+			}
 
 
 
