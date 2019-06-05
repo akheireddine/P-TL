@@ -4,6 +4,7 @@
 
 
 #include "MainKnapsack.h"
+#include <map>
 
 using namespace std;
 
@@ -32,13 +33,18 @@ private:
 	float time;
 	vector< float > PF_indicators, Point_indicators;
 
+
+	map<int, map < int, vector< float > > > eval_values;                          // {size : { INFO : vector of SUM indicators } }
+
+
 public:
 
 	vector< tuple<float, vector< float> > > Items_information;
 
 	//CONSTRUCTOR
-//	Evaluator(string filename, string WS_matrix_file, string WS_DM_preferences, string DT_file, float time, string PFI_file);
 	Evaluator(string filename, string WS_DM_preferences, string SDT_file, string PFI_file);
+	Evaluator(string filename, string WS_DM_preferences, string SDT_file, string PFI_file, vector<int> sizes, vector<int> information_rate, int K);
+
 	~Evaluator(){
 
 		for(list< vector< float > >::iterator i = PFront.begin(); i != PFront.end(); ++i){
@@ -100,9 +106,12 @@ public:
 	vector< float > OPT_Alternative_PLNE(vector<float> WS_vector);
 	float evaluate_Dist_ratio();
 	void evaluate_PF(MainKnapsack * knaps, float time_cpu);
+	void evaluate_PF(MainKnapsack * knaps, int sizer, int info, float time_cpu);
+
 	vector< float > evaluate_standard_deviation_from_OPT_point();
 
 	void save_PF_evaluation();
+	void save_PF_evaluation_map();
 
 
 

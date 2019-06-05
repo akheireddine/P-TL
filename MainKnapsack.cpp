@@ -385,24 +385,23 @@ void MainKnapsack::Learning_Threshold_Accepting_AVG(list< string > & dominated_s
 
 
 //		//AVERAGE TA
-//		float aggreg_value = -1;
-//		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-//			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
-//		}
-//
-//		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
+		float aggreg_value = 0;
+		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+		}
+
+		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
 
 
 
 		//MIN TA
-		float aggreg_value = -1;
-		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
-			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
-			if(aggreg_value == -1   or  (val < aggreg_value)  )
-				aggreg_value =  val;
-		}
-		float val_key = aggreg_value;
-
+//		float aggreg_value = -1;
+//		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+//			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+//			if(aggreg_value == -1   or  (val < aggreg_value)  )
+//				aggreg_value =  val;
+//		}
+//		float val_key = aggreg_value;
 
 
 
@@ -412,20 +411,18 @@ void MainKnapsack::Learning_Threshold_Accepting_AVG(list< string > & dominated_s
 	}
 
 	//LEARNING
-	float Ta_tmp = 0.0;
-	for(map< float, string >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
-		Ta_tmp += (*i).first;
-	}
-	Ta_tmp /= ratio_items.size();
+//	float Ta_tmp = 0.0;
+//	for(map< float, string >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
+//		Ta_tmp += (*i).first;
+//	}
+//	Ta_tmp /= ratio_items.size();
+//
+//	if( (Ta_tmp * alpha < Ta)  or (Ta == -1)){
+//		Ta = Ta_tmp * alpha ;
+//	}
+//	else
+//		Ta *= alpha;
 
-	if( (Ta_tmp * alpha < Ta)  or (Ta == -1)){
-		Ta = Ta_tmp * alpha ;
-	}
-	else
-		Ta *= alpha;
-
-//	map< float, string, less<float>  >::iterator minus = ratio_items.begin();
-//	if()
 
 	int cpt= 0;
 	int min_bound = (upper_bound != -1)? upper_bound : (int)dominated_solutions.size();
@@ -438,14 +435,8 @@ void MainKnapsack::Learning_Threshold_Accepting_AVG(list< string > & dominated_s
 			dominated_solutions.remove((*i).second);
 			cpt++;
 		}
-//		else
-//			break;
 	}
 
-//	if(cpt == 0 )
-//		Ta *= 1.005;
-
-//	cout<<"TA : "<<Ta<<endl;
 
 }
 
@@ -635,15 +626,15 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 //		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
 
-		set< string > current_neighbors = alt->get_neighborhood();
+		set< string > current_neighbors;// = alt->get_neighborhood();
 
-//		if( common_neighbors.find( alt->get_id_alt( ) ) != common_neighbors.end() )
-//			current_neighbors = common_neighbors[alt->get_id_alt()];
-//
-//		else{
-//			current_neighbors = alt->get_neighborhood();
-//			common_neighbors[alt->get_id_alt()] = current_neighbors;
-//		}
+		if( common_neighbors.find( alt->get_id_alt( ) ) != common_neighbors.end() )
+			current_neighbors = common_neighbors[alt->get_id_alt()];
+
+		else{
+			current_neighbors = alt->get_neighborhood();
+			common_neighbors[alt->get_id_alt()] = current_neighbors;
+		}
 
 		for(set< string >::iterator id_neighbor = current_neighbors.begin(); id_neighbor != current_neighbors.end(); ++id_neighbor){
 
@@ -759,7 +750,6 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS1_Cst_PSize(double starting_
 	shared_ptr< AlternativeKnapsack > alt;
 	list< string > Local_front;
 	list< string > Dominated_alt;
-	list< string > next_Population;
 	int nb_iteration = 0, step = 0;
 
 
@@ -776,7 +766,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS1_Cst_PSize(double starting_
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
+//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -827,12 +817,12 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS1_Cst_PSize(double starting_
 
 				list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
 
-				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
+//				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
 
-				if( Update_Archive(new_alt, local_OPT_Sol, next_Population) ){
+				if( Update_Archive(new_alt, local_OPT_Sol, Population) ){
 
-					if( (int)next_Population.size() < UB_Population_size ){
-						next_Population.push_back(*id_new_alt);
+					if( (int)Population.size() < UB_Population_size ){
+						Population.push_back(*id_new_alt);
 						OPT_Solution = local_OPT_Sol;
 					}
 	//				else{
@@ -849,24 +839,16 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS1_Cst_PSize(double starting_
 
 
 
+			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
+				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 )
+					(*it).second.reset();
+			}
 
-
-			//GIVE CHANCE TO BAAAAD SOLUTIONS WHEN THERE STILL OPTIMAL ONES TO EXPLORE
-//			if( !Population.empty() ){
-//				Limit_number_accepting_N(Dominated_alt, (UB_Population_size - (int)Population.size()) );
-//
-////				Distribution_proba(Dominated_alt, (UB_Population_size - (int)Population.size()) );
-////
-////				Threshold_Accepting_AVG(Dominated_alt, (UB_Population_size - (int)Population.size()) );
-////
-////				Threshold_Accepting_BASIC(Dominated_alt, (UB_Population_size - (int)Population.size()) );
-//
-//			}
 
 			step++;
 
 			Dominated_alt.clear();
-			next_Population.clear();
+			Local_front.clear();
 		}
 	}
 
@@ -906,7 +888,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(d
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_RS_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
+//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
 
 
 
@@ -964,7 +946,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(d
 
 			list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
 
-//			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_TAMIN_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
+//			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
 
 			if( Update_Archive(new_alt, local_OPT_Sol, next_Population) ){
 
@@ -990,7 +972,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(d
 		if( Population.empty() ){
 
 //			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
-//				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_FRONT_RS_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
+//				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_FRONT_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
 //			}
 
 
@@ -1074,7 +1056,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_FAIR(double start
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
+//		save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_POPULATION_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",alt);
 
 
 		set< string > current_neighbors = alt->get_neighborhood();
@@ -1131,7 +1113,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_FAIR(double start
 
 			list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
 
-			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
+//			save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_NON_DOMINATED_LOCALLY_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",new_alt);
 
 			if( Update_Archive(new_alt, local_OPT_Sol, next_Population) ){
 
@@ -1151,11 +1133,9 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_FAIR(double start
 
 		if( Population.empty() ){
 
-
-
-			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
-				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_FRONT_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
-			}
+//			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
+//				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_FRONT_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
+//			}
 
 
 			int i = 0;

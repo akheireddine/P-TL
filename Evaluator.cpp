@@ -43,6 +43,49 @@ Evaluator::Evaluator(string filename, string WS_DM_preferences, string SDT_file,
 }
 
 
+Evaluator::Evaluator(string filename, string WS_DM_preferences, string SDT_file, string PFI_file, vector<int> sizes, vector<int> information_rate, int K){
+
+	filename_instance = filename;
+
+	readFilenameInstance(filename_instance);
+
+	dist_time_file = SDT_file;
+	pf_indicators_file = PFI_file;
+
+	WS_DM_vector = Tools::readWS_DM(WS_DM_preferences);
+
+	readParetoFront();
+
+
+#ifdef __PRINT__
+	cout<<"----------------------- EVALUATION ----------------------"<<endl;
+#endif
+
+	OPT_Alternative = OPT_Alternative_PLNE(WS_DM_vector);
+
+#ifdef __PRINT__
+	cout<<"Preference du décideur ([ " << Tools::print_vector(WS_DM_vector) <<" ]) : "<<endl;
+	cout<<"    "<< Tools::print_vector(OPT_Alternative)<<endl;
+#endif
+
+
+#ifdef __PRINT__
+	cout<<"----------------------- END EVALUATION ----------------------"<<endl<<endl;
+#endif
+
+	K_replication = K;
+
+	for(auto t : sizes ){
+		map< int, vector< float > > info_map;
+		for(auto c : information_rate ){
+			vector<float> new_vec(6,0);
+			info_map[c] = new_vec;
+		}
+		eval_values[t] = info_map;
+	}
+
+}
+
 
 
 bool Evaluator::in_search_space(vector<float> v,vector<float> minus, vector<float> maxus){
@@ -517,6 +560,56 @@ float Evaluator::maximum_distance_D2(list< shared_ptr< Alternative > > OPT_Solut
 	return max_dist_PF;
 }
 
+
+
+void Evaluator::evaluate_PF(MainKnapsack * knaps, int sizer, int info, float time_cpu){
+
+	eval_values[sizer][info][0] += evaluate_Dist_ratio();
+//	eval_values[sizer][info][1] += ;   STD
+	eval_values[sizer][info][2] += time_cpu;
+
+	eval_values[sizer][info][3] += average_distance_D1(knaps->get_OPT_Solution());
+	eval_values[sizer][info][4] += maximum_distance_D2(knaps->get_OPT_Solution());
+	eval_values[sizer][info][5] += PR_D3(knaps->get_OPT_Solution());
+
+
+}
+
+void Evaluator::save_PF_evaluation_map(){
+	ofstream fic_write(dist_time_file.c_str(), ios::app);
+	ofstream fic2_write(pf_indicators_file.c_str(), ios::app);
+
+	for(map<int, map < int, vector< float > > >::iterator iter = eval_values.begin(); iter != eval_values.end(); ++iter){
+
+		for(map < int, vector< float > >::iterator step = (*iter).second.begin(); step != (*iter).second.end(); ++step){
+
+			for(int i = 0; i < 3; i++){
+				eval_values[(*iter).first][(*step).first][i] *= 1.0 / K_replication;
+				fic_write<<eval_values[(*iter).first][(*step).first][i]<<" ";
+			}
+			fic_write<<endl;
+
+
+			for(int i = 3; i < (int) (*step).second.size(); i++){
+				eval_values[(*iter).first][(*step).first][i] *= 1.0 / K_replication;
+				fic2_write<<eval_values[(*iter).first][(*step).first][i]<<" ";
+			}
+			fic2_write<<endl;
+		}
+		Tools::separate_results(dist_time_file,"_____"+to_string((*iter).first));
+		Tools::separate_results(pf_indicators_file,"_____"+to_string((*iter).first));
+	}
+	fic_write.close();
+	fic2_write.close();
+
+
+
+	//REINITIALIZE PARAMETERS
+	eval_values.clear();
+
+}
+
+
 void Evaluator::evaluate_PF(MainKnapsack * knaps, float time_cpu){
 
 	time += time_cpu;
@@ -535,9 +628,6 @@ void Evaluator::evaluate_PF(MainKnapsack * knaps, float time_cpu){
 
 	K_replication++;
 
-//	cout<<"time : "<<time<<endl;
-//	cout<<Tools::print_vector(Point_indicators)<<endl;
-//	cout<<Tools::print_vector(PF_indicators)<<endl;
 
 }
 
