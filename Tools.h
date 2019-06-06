@@ -10,6 +10,8 @@
 #include <fstream>
 #include <set>
 #include <list>
+#include <random>
+
 #pragma once
 
 
@@ -46,6 +48,8 @@ public:
 
 
 	static void save_std_deviation(string filename);
+
+	static void shuffle_list(list< string > & unshuffled_L);
 
 
 //	static void save_information_in(string filename, string smthing);

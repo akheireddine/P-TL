@@ -68,7 +68,19 @@ string Tools::print_vector(vector<float> v){
 
 
 
+void Tools::shuffle_list(list< string > & unshuffled_L){
+	mt19937 g( rand() );
 
+	vector<string> shuffled_L (unshuffled_L.begin(), unshuffled_L.end());
+	shuffle(shuffled_L.begin(), shuffled_L.end(), g);
+
+	unshuffled_L.clear();
+	unshuffled_L.resize(0);
+
+	for(int i = 0; i < (int)shuffled_L.size(); i++){
+		unshuffled_L.push_back( shuffled_L[i] );
+	}
+}
 
 
 //void Tools::save_std_deviation(string filename){

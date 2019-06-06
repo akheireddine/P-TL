@@ -88,13 +88,12 @@ public :
 	list< shared_ptr< Alternative > > MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);
 	list< shared_ptr< Alternative > > MOLS_local_Archive(double starting_time_sec);
 	list< shared_ptr< Alternative > > MOLS_Cst_PSize_Diversification(double starting_time_sec, int UB_Population_size);
-	list< shared_ptr< Alternative > > MOLS1_Cst_PSize_Diversification(double starting_time_sec, int UB_Population_size);
 	list< shared_ptr< Alternative > > MOLS_Cst_PSize_FAIR(double starting_time_sec, int UB_Population_size);
 
 
 
 
-	void Random_Selection(list< string > & dominated_solutions, int upper_bound);
+	void Random_Selection(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 //	void Distribution_proba(list< string > & dominated_solutions, int upper_bound);
 	void Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 //	void Simulated_Annealing(list< string > & dominated_solutions, list< string > & population, int upper_bound);
