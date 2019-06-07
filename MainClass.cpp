@@ -274,11 +274,11 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 	clock_t t1 = clock();
 
-//	knaps->MOLS_Cst_PSize(t1/CLOCKS_PER_SEC,max_size_population);
+	knaps->MOLS_Cst_PSize(t1/CLOCKS_PER_SEC,max_size_population);
 
 //	knaps->MOLS_Cst_PSize_Diversification(t1/CLOCKS_PER_SEC,max_size_population);
 
-	knaps->MOLS_Cst_PSize_FAIR(t1/CLOCKS_PER_SEC,max_size_population);
+//	knaps->MOLS_Cst_PSize_FAIR(t1/CLOCKS_PER_SEC,max_size_population);
 
 
 	float time_cpu = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
@@ -296,15 +296,15 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 15;
-	int N = 5;
-	vector<int> I = {0, 1 , 2 , 3};
+	int K = 30;
+	int N = 1;
+	vector<int> I = {7};
 
 	int iter;
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixFAIR.csv";
-	string prefix = "_AVG_PS_FAIR_MOLS";
+	string WS_matrix_file = "WS_MatrixA_COMPELTE.csv";
+	string prefix = "_AVG_PS_COMPELTION";
 	srand(time(NULL));
 
 	vector<int> sizer = {2,8,20,60,100};         //A
