@@ -127,18 +127,36 @@ void Evaluator::readParetoFront(){
 }
 
 
+void Evaluator::readParetoFront_locally(){
 
-void Evaluator::update_covered_PFront(){
-
-
-	string file_extension = filename_instance+".eff";
+	string file_extension = filename_instance+"_0_"+to_string(UB_Size)+".sol";
 	ifstream fic(file_extension.c_str());
 	string line;
 	vector< float > vector_pareto_objective;
 
-	if (!(fic) or file_extension.find(".eff") == std::string::npos){
-		cerr<<"Error occurred paretofront"<<endl;
+	if (!(fic) or file_extension.find(".sol") == std::string::npos){
+		cerr<<"Error occurred paretofrontlocally"<<endl;
 	}
+
+	PF_Efficient.clear();
+
+	while(!fic.eof()){
+
+		getline(fic,line);
+		if (line.size() == 0)
+			continue;
+
+		vector_pareto_objective = Tools::decompose_line_to_float_vector(line);
+		PF_Efficient.push_back(vector_pareto_objective);
+
+	}
+
+}
+
+
+
+void Evaluator::update_covered_PFront(){
+
 
 	PFront.clear();
 
@@ -313,7 +331,7 @@ void Evaluator::readWS_matrix(string filename){
 //Get minimum gap from OPT_Alternative and save the objective values in vect_criteria
 float Evaluator::nearest_alternative(vector< float > & vect_criteria ){
 
-	ifstream fic((filename_instance+".sol").c_str());
+	ifstream fic((filename_instance+"_"+to_string(INFO)+"_"+to_string(UB_Size)+".sol").c_str());
 
 	vector< float > criteria_val(p_criteria,0);
 	vector< float >tmp_criteria_values;
@@ -448,7 +466,7 @@ float Evaluator::evaluate_Dist_ratio(){
 
 vector< float > Evaluator::evaluate_standard_deviation_from_OPT_point(){
 
-	ifstream fic((filename_instance+".sol").c_str());
+	ifstream fic((filename_instance+"_"+to_string(INFO)+"_"+to_string(UB_Size)+".sol").c_str());
 
 	vector< float > tmp_criteria_values;
 

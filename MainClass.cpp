@@ -30,7 +30,7 @@ void main_Knapsack(string filename_instance, int size_population){
 void script_knapsack(string type_inst, string taille, string WS_DM){
 
 	int K = 10;
-	int N = 7;
+	int N = 1;
 	int I = 1;
 
 	vector<int> graines;
@@ -297,14 +297,14 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	int K = 30;
-	int N = 1;
-	vector<int> I = {7};
+	int N = 7;
+	vector<int> I = {0, 1 , 2, 3, 4 , 5 , 6 , 7};
 
 	int iter;
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixA_COMPELTE.csv";
-	string prefix = "_AVG_PS_COMPELTION";
+	string WS_matrix_file = "WS_MatrixA_UNCERTAINTY_1.csv";
+	string prefix = "_AVG_PS_RS_TOTAL_UNCERTAINTY_SAVING_FRONT";
 	srand(time(NULL));
 
 	vector<int> sizer = {2,8,20,60,100};         //A
@@ -312,6 +312,8 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 //	vector<int> sizer = {2,8,10,20,60,80,100,200};  //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
+
+	UB_Size = sizer[sizer.size() - 1];
 
 	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
@@ -336,6 +338,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 			srand( GRAIN );
 			Ta =  500;
 
+			eval_ks->readParetoFront();
 
 			for(auto step : I){
 
@@ -344,9 +347,14 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),WS_matrix_file);
 
+				if( step == I[1] )
+					eval_ks->readParetoFront_locally();
+
 				eval_ks->readWS_matrix(WS_matrix_file);
 
 				eval_ks->update_covered_PFront();
+
+
 
 				for(int j = (int)sizer.size() - 1 ; j >= 0 ; j--){
 

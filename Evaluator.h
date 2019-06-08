@@ -6,6 +6,11 @@
 #include "MainKnapsack.h"
 #include <map>
 
+
+
+
+extern int UB_Size;
+
 using namespace std;
 
 
@@ -89,6 +94,8 @@ public:
 
 	//READ FILES
 	void readParetoFront();
+	void readParetoFront_locally();
+
 	void update_covered_PFront();
 	void readFilenameInstance(string filename);
 

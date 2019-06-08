@@ -157,7 +157,7 @@ void MainKnapsack::GenerateInitialPopulation(int size_population){
 
 void MainKnapsack::write_solution(string filename){
 
-	ofstream fic(filename.c_str(),ios::app);
+	ofstream fic(filename.c_str());
 
 	for(list< shared_ptr< Alternative >>::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); alt++){
 		for(int i = 0; i < p_criteria; i++)
@@ -582,7 +582,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
 
-	write_solution(filename_instance+".sol");
+	write_solution(filename_instance+"_"+to_string(INFO)+"_"+to_string(UB_Population_size)+".sol");
 
 	return OPT_Solution;
 
@@ -692,8 +692,8 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(d
 
 			int to_add = ( UB_Population_size - (int)Population.size() ) ;
 			if( to_add > 0  and   ( (limit_no_improvment > 0) or !Population.empty() ) ){
-				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
-//				Random_Selection(Dominated_alt,Population, to_add);
+//				Learning_Threshold_Accepting_AVG(Dominated_alt, Population, to_add);
+				Random_Selection(Dominated_alt,Population, to_add);
 			}
 
 
@@ -721,7 +721,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(d
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
 
-	write_solution(filename_instance+".sol");
+	write_solution(filename_instance+"_UNCERTAINTY_SIZE_"+to_string(UB_Population_size)+".sol");
 
 	return OPT_Solution;
 

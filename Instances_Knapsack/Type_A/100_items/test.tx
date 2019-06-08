@@ -1,0 +1,8 @@
+sizer = "2 8 20 60 100"
+do for[i=0:9]{ 
+do for[s in sizer]{ 
+set output "toto_".i."_".s
+plot "2KP100-TA-".i.".eff", for[j=0:7] "2KP100-TA-".i."_".j."_".s.".sol" title "step_".j 
+} 
+}
+

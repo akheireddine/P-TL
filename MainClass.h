@@ -18,6 +18,8 @@ float Temperature = 1500;
 
 int INFO = 0;
 
+int UB_Size;
+
 list<set<int>> init_population;
 
 int GRAIN;
