@@ -296,18 +296,18 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 30;
+	int K = 15;
 	int N = 7;
-	vector<int> I = {0, 1 , 2, 3, 4 , 5 , 6 , 7};
+	vector<int> I = {0,1,2,7};
 
 	int iter;
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixA_UNCERTAINTY_1.csv";
-	string prefix = "_AVG_PS_RS_TOTAL_UNCERTAINTY_SAVING_FRONT";
+	string WS_matrix_file = "WS_MatrixA_UNCERTAINTY_RS_22.csv";
+	string prefix = "_AVG_PS_TOTAL_UNCERTAINTY_LOCAL_FRONT_60";
 	srand(time(NULL));
 
-	vector<int> sizer = {2,8,20,60,100};         //A
+	vector<int> sizer = {60};     //2,8,20,60,   //A
 
 //	vector<int> sizer = {2,8,10,20,60,80,100,200};  //C
 
@@ -355,7 +355,6 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 				eval_ks->update_covered_PFront();
 
 
-
 				for(int j = (int)sizer.size() - 1 ; j >= 0 ; j--){
 
 					iter = sizer[j];
@@ -375,8 +374,86 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 }
 
-
-
+// ORIGINAL VERSION
+//void script_Cst_PSize(string type_inst, string taille, string WS_DM){
+//
+//	int K = 1;
+//	int N = 6;
+//	vector<int> I = {0, 3, 4 , 5 , 6 , 7};
+//
+//	int iter;
+//	vector<int> graines;
+//
+//	string WS_matrix_file = "WS_MatrixA_UNCERTAINTY_1.csv";
+//	string prefix = "_AVG_PS_RS_TOTAL_UNCERTAINTY_SAVING_FRONT";
+//	srand(time(NULL));
+//
+//	vector<int> sizer = {100};  //2,8,20,60,       //A
+//
+////	vector<int> sizer = {2,8,10,20,60,80,100,200};  //C
+//
+////	vector<int> sizer = {2,8,20,60,100,200};        //D
+//
+//	UB_Size = sizer[sizer.size() - 1];
+//
+//	for(int i = 5; i < N; i++){
+//		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+//
+//		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,
+//				"./Data/DistTime/"+type_inst+"/I_"+taille+prefix+to_string(i)+".eval",
+//				"./Data/ParetoFront/"+type_inst+"/I_"+taille+prefix+to_string(i)+".front", sizer , I , K);
+//
+//		MainKnapsack::Generate_random_Population(eval_ks, K);
+//
+////		vector< map< string, set<string> > > common_neighbors_replication(K, map<string, set<string> >());
+//
+//
+//		graines.clear();
+//		for(int k = 0; k < K; k++){
+//			graines.push_back( rand());
+//		}
+//
+//		for(int k = 0; k < K; k++){
+////			common_neighbors.clear();
+//			GRAIN = graines[k];
+//			srand( GRAIN );
+//			Ta =  500;
+//
+//			eval_ks->readParetoFront();
+//
+//			for(auto step : I){
+//
+//				INFO = step;
+//				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
+//
+//				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),WS_matrix_file);
+//
+//				eval_ks->readWS_matrix(WS_matrix_file);
+//
+//				eval_ks->update_covered_PFront();
+//
+//
+//
+//				for(int j = (int)sizer.size() - 1 ; j >= 0 ; j--){
+//
+//					iter = sizer[j];
+//
+//					cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
+//
+//					main_Knapsack_Cst_PSize(filename_instance, 1, iter);
+//				}
+//
+//			}
+//		}
+//
+//		eval_ks->save_PF_evaluation_map();
+//
+//		eval_ks.reset();
+//	}
+//
+//}
+//
+//
 
 
 //***********************************************************************************************************************************//

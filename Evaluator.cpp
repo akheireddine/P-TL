@@ -121,7 +121,6 @@ void Evaluator::readParetoFront(){
 
 		vector_pareto_objective = Tools::decompose_line_to_float_vector(line);
 		PF_Efficient.push_back(vector_pareto_objective);
-
 	}
 
 }
@@ -148,7 +147,6 @@ void Evaluator::readParetoFront_locally(){
 
 		vector_pareto_objective = Tools::decompose_line_to_float_vector(line);
 		PF_Efficient.push_back(vector_pareto_objective);
-
 	}
 
 }
@@ -189,9 +187,7 @@ void Evaluator::update_covered_PFront(){
 			PFront.push_back(*it);
 	}
 
-//	cout<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
-
-
+	cout<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
 }
 
 
@@ -318,7 +314,6 @@ void Evaluator::readWS_matrix(string filename){
 	p_criteria = WS_matrix.size();
 
 	n_objective = WS_matrix[0].size();
-
 }
 
 
@@ -520,7 +515,9 @@ float Evaluator::PR_D3(list< shared_ptr< Alternative > > OPT_Solution){
 
 	vector< shared_ptr< Alternative > >().swap(tmp_opt);
 
-	return nb_found*100.0/opt_size_front;
+	if(PFront.empty())
+		return 0.;
+	return nb_found*100.0/(int)PFront.size();
 }
 
 float Evaluator::average_distance_D1(list< shared_ptr< Alternative > > OPT_Solution){
@@ -554,6 +551,9 @@ float Evaluator::average_distance_D1(list< shared_ptr< Alternative > > OPT_Solut
 	}
 //	cout<<"avg_dist  : "<<avg_dist<<endl;
 //	cout<<"============================================="<<endl;
+
+	if(PFront.empty())
+		return 1800;
 
 	return avg_dist/PFront.size();
 }
@@ -594,6 +594,8 @@ void Evaluator::evaluate_PF(MainKnapsack * knaps, int sizer, int info, float tim
 }
 
 void Evaluator::save_PF_evaluation_map(){
+
+
 	ofstream fic_write(dist_time_file.c_str(), ios::app);
 	ofstream fic2_write(pf_indicators_file.c_str(), ios::app);
 

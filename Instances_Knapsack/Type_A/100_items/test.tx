@@ -1,8 +1,11 @@
-sizer = "2 8 20 60 100"
-do for[i=0:9]{ 
+sizer = "100"
+set terminal pngcairo size 1200,800
+
+
+do for[i=0:0]{ 
 do for[s in sizer]{ 
-set output "toto_".i."_".s
-plot "2KP100-TA-".i.".eff", for[j=0:7] "2KP100-TA-".i."_".j."_".s.".sol" title "step_".j 
+set output "toto_".i."_".s.".png"
+plot "2KP100-TA-".i.".eff" title "OPT front", for[j=0:7] "2KP100-TA-".i."_".j."_".s.".sol" title "step_".j, "../../../DM_preference_point" with points lc rgb "red" title "DMs preference" 
 } 
 }
 
