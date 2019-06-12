@@ -6,6 +6,9 @@ using namespace std;
 
 
 
+list< shared_ptr<Alternative> > OPT_Solution;
+
+
 void main_Knapsack(string filename_instance, int size_population){
 
 	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
@@ -18,7 +21,7 @@ void main_Knapsack(string filename_instance, int size_population){
 
 	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
 
-	eval_ks->evaluate_PF( knaps, time_cpu);
+	eval_ks->evaluate_PF( knaps->get_OPT_Solution(), time_cpu);
 
 	delete knaps;
 
@@ -108,7 +111,7 @@ void main_Knapsack_WSPLS(string filename_instance, int size_population, int iter
 
 	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
 
-	eval_ks->evaluate_PF( knaps, time_cpu);
+	eval_ks->evaluate_PF( knaps->get_OPT_Solution(), time_cpu);
 
 	delete knaps;
 
@@ -188,7 +191,7 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, int iter
 
 	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
 
-	eval_ks->evaluate_PF( knaps, time_cpu);
+	eval_ks->evaluate_PF( knaps->get_OPT_Solution(), time_cpu);
 
 	delete knaps;
 
@@ -252,16 +255,6 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 
 
 
-
-
-
-
-
-
-
-
-
-
 //***********************************************************************************************************************************//
 
 
@@ -286,24 +279,25 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
 
-	eval_ks->evaluate_PF(knaps, max_size_population, INFO, time_cpu);
+//	eval_ks->evaluate_PF( knaps->get_OPT_Solution(), max_size_population, INFO, time_cpu);
+
+	OPT_Solution = knaps->get_OPT_Solution();
 
 	delete knaps;
+
 }
-
-
 
 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 15;
-	int N = 7;
+	int K = 1;
+	int N = 1;
 	vector<int> I = {0,1,2,7};
 
-	int iter;
+	int iter = I[0];
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixA_UNCERTAINTY_RS_22.csv";
+	string WS_matrix_file = "WS_MatrixA_UNCERTAINTY.csv";
 	string prefix = "_AVG_PS_TOTAL_UNCERTAINTY_LOCAL_FRONT_60";
 	srand(time(NULL));
 
@@ -336,19 +330,13 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 //			common_neighbors.clear();
 			GRAIN = graines[k];
 			srand( GRAIN );
-			Ta =  500;
 
-			eval_ks->readParetoFront();
-
-			for(auto step : I){
+			for(auto step : {0}){
 
 				INFO = step;
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 
 				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),WS_matrix_file);
-
-				if( step == I[1] )
-					eval_ks->readParetoFront_locally();
 
 				eval_ks->readWS_matrix(WS_matrix_file);
 
@@ -364,6 +352,22 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 					main_Knapsack_Cst_PSize(filename_instance, 1, iter);
 				}
 
+
+				for(auto steper : {1,2,7} ){
+
+					INFO = steper;
+
+					Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(steper),WS_matrix_file);
+
+					eval_ks->readWS_matrix(WS_matrix_file);
+
+					eval_ks->update_covered_PFront();
+
+					eval_ks->evaluate_PF(OPT_Solution, iter, steper, 1.0);
+
+				}
+
+				OPT_Solution.clear();
 			}
 		}
 
@@ -374,18 +378,19 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 }
 
-// ORIGINAL VERSION
+
+//// ORIGINAL VERSION
 //void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 //
 //	int K = 1;
-//	int N = 6;
-//	vector<int> I = {0, 3, 4 , 5 , 6 , 7};
+//	int N = 11;
+//	vector<int> I = {0, 1,2,3, 4 , 5 , 6 , 7};
 //
 //	int iter;
 //	vector<int> graines;
 //
-//	string WS_matrix_file = "WS_MatrixA_UNCERTAINTY_1.csv";
-//	string prefix = "_AVG_PS_RS_TOTAL_UNCERTAINTY_SAVING_FRONT";
+//	string WS_matrix_file = "WS_MatrixA_1.csv";
+//	string prefix = "_AVG_PS_GENERATED_INST";
 //	srand(time(NULL));
 //
 //	vector<int> sizer = {100};  //2,8,20,60,       //A
@@ -396,7 +401,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 //
 //	UB_Size = sizer[sizer.size() - 1];
 //
-//	for(int i = 5; i < N; i++){
+//	for(int i = 10; i < N; i++){
 //		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 //
 //		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,
@@ -419,7 +424,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 //			srand( GRAIN );
 //			Ta =  500;
 //
-//			eval_ks->readParetoFront();
+////			eval_ks->readParetoFront();
 //
 //			for(auto step : I){
 //
@@ -430,7 +435,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 //
 //				eval_ks->readWS_matrix(WS_matrix_file);
 //
-//				eval_ks->update_covered_PFront();
+////				eval_ks->update_covered_PFront();
 //
 //
 //
@@ -446,14 +451,13 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 //			}
 //		}
 //
-//		eval_ks->save_PF_evaluation_map();
+////		eval_ks->save_PF_evaluation_map();
 //
 //		eval_ks.reset();
 //	}
 //
 //}
-//
-//
+
 
 
 //***********************************************************************************************************************************//
@@ -518,7 +522,7 @@ int main(int argc, char** argv){
 
 
 
-
+	Instance_Generator::random_instances(stoi(taille),3,"Instances_Knapsack/Type_A/"+taille+"_items", 1);
 
 /*
   *************************************************************************************************************************
@@ -579,7 +583,6 @@ int main(int argc, char** argv){
 //			,"MOLS2", -1, 10, 111 , "./DM_preference_point");
 
 
-//	Instance_Generator::random_instances(101,2,"Instances_Knapsack/Type_A/"+taille+"_items", 3);
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //			,"MOLS2", -1, 20, 201 , "./DM_preference_point");
 	return 1;

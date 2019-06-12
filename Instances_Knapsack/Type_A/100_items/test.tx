@@ -1,11 +1,12 @@
-sizer = "100"
-set terminal pngcairo size 1200,800
-
-
+sizer = "60"
+set terminal pngcairo size 1000,750
+set colorsequence classic
+set grid
+set style line 1000 lc rgb '#cc1300' pt 3 ps 5
 do for[i=0:0]{ 
 do for[s in sizer]{ 
 set output "toto_".i."_".s.".png"
-plot "2KP100-TA-".i.".eff" title "OPT front", for[j=0:7] "2KP100-TA-".i."_".j."_".s.".sol" title "step_".j, "../../../DM_preference_point" with points lc rgb "red" title "DMs preference" 
+plot "2KP100-TA-".i.".eff" title "OPT front", for[j=0:7] "2KP100-TA-".i."_".j."_".s.".sol" title "step_".j lw 2 , "../../../DM_preference_point" with points ls 1000 title "DMs preference" 
 } 
 }
 

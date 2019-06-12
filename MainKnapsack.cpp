@@ -722,6 +722,7 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize_Diversification(d
 	cout<<"Number of iteration "<<nb_iteration<<endl;
 
 	write_solution(filename_instance+"_UNCERTAINTY_SIZE_"+to_string(UB_Population_size)+".sol");
+//	write_solution(filename_instance+"_"+to_string(INFO)+"_"+to_string(UB_Population_size)+".sol");
 
 	return OPT_Solution;
 

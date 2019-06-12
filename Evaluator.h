@@ -112,9 +112,10 @@ public:
 	float nearest_alternative(vector< float > & vect_criteria );
 	vector< float > OPT_Alternative_PLNE(vector<float> WS_vector);
 	float evaluate_Dist_ratio();
-	void evaluate_PF(MainKnapsack * knaps, float time_cpu);
-	void evaluate_PF(MainKnapsack * knaps, int sizer, int info, float time_cpu);
 
+
+	void evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, float time_cpu);
+	void evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int sizer, int info, float time_cpu);
 	vector< float > evaluate_standard_deviation_from_OPT_point();
 
 	void save_PF_evaluation();
@@ -130,6 +131,8 @@ public:
 	float average_distance_D1(list< shared_ptr< Alternative > > OPT_Solution);
 	float maximum_distance_D2(list< shared_ptr< Alternative > > OPT_Solution);
 	float PR_D3(list< shared_ptr< Alternative > > OPT_Solution);
+
+
 
 
 

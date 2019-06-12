@@ -189,9 +189,8 @@ void Tools::generate_random_WS(string filename, int nb_criteria){
 
 
 vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, vector< vector< float > > ws_matrix){
-	float sum = 0.0, big_max = -1;
+
 	vector<float> weighted_sum(p_criteria);
-	vector<pair<float, float > > min_max(p_criteria,pair<float,float>());
 
 	if(p_criteria == 2){
 //		const auto [minus, maxus] = minmax_element(begin(ws_matrix[0]), end(ws_matrix[0]));
@@ -206,27 +205,35 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 	}
 
 	else{
+
+		float sum = 1.0;
+		vector<pair<float, float > > min_max(p_criteria,pair<float,float>());
+
 		for(int i = 0; i < p_criteria ; i++){
-			float minus = *(min_element(ws_matrix[0].begin(), ws_matrix[0].end()) );
-			float maxus = *(max_element(ws_matrix[0].begin(), ws_matrix[0].end()) );
+			float minus = *(min_element(ws_matrix[i].begin(), ws_matrix[i].end()) );
+			float maxus = *(max_element(ws_matrix[i].begin(), ws_matrix[i].end()) );
 
 			min_max[i] = make_pair (minus, maxus);
 		}
 
-		for(int i =0; i < p_criteria ; i++){
 
-			float wi =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX / (min_max[i].second - min_max[i].first))) + min_max[i].first ;
-			for(int j = i+1; j < p_criteria ; j++){
-				if( big_max < min_max[j].second or big_max==-1 )
-					big_max = min_max[j].second;
-			}
-			while(  (1 - (wi+sum))  > big_max ){
-				wi =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX / (min_max[i].second - min_max[i].first))) + min_max[i].first ;
-			}
+		for(int i = 0; i < p_criteria - 1 ; i++){
 
-			sum += wi;
+			float min_total = 0;
+			for(int j = i+1; j < p_criteria; j++)
+				min_total += min_max[j].first;
+
+
+			min_max[i].second = min(min_max[i].second, sum - min_total);
+
+ 			float wi =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX / (min_max[i].second - min_max[i].first))) + min_max[i].first ;
+
 			weighted_sum[i] = wi;
+
+			sum -= wi;
 		}
+
+		weighted_sum[p_criteria - 1] = sum;
 	}
 
 //	cout<<print_vector(weighted_sum)<<endl;

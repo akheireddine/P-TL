@@ -187,7 +187,7 @@ void Evaluator::update_covered_PFront(){
 			PFront.push_back(*it);
 	}
 
-	cout<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
+	cout<<"PF/PE   : "<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
 }
 
 
@@ -515,10 +515,10 @@ float Evaluator::PR_D3(list< shared_ptr< Alternative > > OPT_Solution){
 
 	vector< shared_ptr< Alternative > >().swap(tmp_opt);
 
-	if(PFront.empty())
-		return 0.;
 	return nb_found*100.0/(int)PFront.size();
 }
+
+
 
 float Evaluator::average_distance_D1(list< shared_ptr< Alternative > > OPT_Solution){
 
@@ -526,12 +526,6 @@ float Evaluator::average_distance_D1(list< shared_ptr< Alternative > > OPT_Solut
 	float avg_dist = 0.;
 
 
-//	cout<<"============================================="<<endl;
-//	for(auto t : OPT_Solution){
-//		cout<<Tools::print_vector(t->get_objective_values())<<endl;
-//	}
-//
-//
 //	cout<<"PFront : "<<PFront.size()<<"    OPT SOL found  : "<<OPT_Solution.size()<<endl;
 
 //	cout<<"avg_dist  : "<<avg_dist<<endl;
@@ -552,11 +546,9 @@ float Evaluator::average_distance_D1(list< shared_ptr< Alternative > > OPT_Solut
 //	cout<<"avg_dist  : "<<avg_dist<<endl;
 //	cout<<"============================================="<<endl;
 
-	if(PFront.empty())
-		return 1800;
-
 	return avg_dist/PFront.size();
 }
+
 
 
 float Evaluator::maximum_distance_D2(list< shared_ptr< Alternative > > OPT_Solution){
@@ -580,15 +572,28 @@ float Evaluator::maximum_distance_D2(list< shared_ptr< Alternative > > OPT_Solut
 
 
 
-void Evaluator::evaluate_PF(MainKnapsack * knaps, int sizer, int info, float time_cpu){
 
-	eval_values[sizer][info][0] += evaluate_Dist_ratio();
+
+void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int sizer, int info, float time_cpu){
+
+//	eval_values[sizer][info][0] += evaluate_Dist_ratio();
 //	eval_values[sizer][info][1] += ;   STD
 	eval_values[sizer][info][2] += time_cpu;
 
-	eval_values[sizer][info][3] += average_distance_D1(knaps->get_OPT_Solution());
-	eval_values[sizer][info][4] += maximum_distance_D2(knaps->get_OPT_Solution());
-	eval_values[sizer][info][5] += PR_D3(knaps->get_OPT_Solution());
+	eval_values[sizer][info][3] += average_distance_D1(OPT_Solution);
+	eval_values[sizer][info][4] += maximum_distance_D2(OPT_Solution);
+	eval_values[sizer][info][5] += PR_D3(OPT_Solution);
+
+
+	ofstream fic(filename_instance+"_"+to_string(info)+"_"+to_string(sizer)+".sol");
+	for(list< vector< float > >::iterator alt = PFront.begin(); alt != PFront.end(); ++alt){
+		for(int i = 0; i < p_criteria; i++)
+				fic<< (*alt)[i]<< " ";
+			fic<<endl;
+	}
+	fic.close();
+
+//	cout<<"OPT/PF   : "<<OPT_Solution.size()<<" / "<<PFront.size()<<endl;
 
 
 }
@@ -630,7 +635,7 @@ void Evaluator::save_PF_evaluation_map(){
 }
 
 
-void Evaluator::evaluate_PF(MainKnapsack * knaps, float time_cpu){
+void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, float time_cpu){
 
 	time += time_cpu;
 
@@ -640,11 +645,11 @@ void Evaluator::evaluate_PF(MainKnapsack * knaps, float time_cpu){
 
 //	merge(tmp_std.begin(),tmp_std.end(),std.begin(),std.end(),std.begin());
 
-	PF_indicators[0] += average_distance_D1(knaps->get_OPT_Solution());
+	PF_indicators[0] += average_distance_D1(OPT_Solution);
 
-	PF_indicators[1] += maximum_distance_D2(knaps->get_OPT_Solution());
+	PF_indicators[1] += maximum_distance_D2(OPT_Solution);
 
-	PF_indicators[2] += PR_D3(knaps->get_OPT_Solution());
+	PF_indicators[2] += PR_D3(OPT_Solution);
 
 	K_replication++;
 

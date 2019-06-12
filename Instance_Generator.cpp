@@ -20,7 +20,7 @@ void Instance_Generator::random_instances(int n_items, int p_criteria,string pat
 
 
 	int Weight = 0;
-	for(int i = 0; i < nb_instances; i++){
+	for(int i = 10; i < nb_instances+10; i++){
 
 		string filename = "2KP"+to_string(n_items)+"-TA-"+to_string(i)+".dat";
 
