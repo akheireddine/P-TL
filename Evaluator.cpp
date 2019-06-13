@@ -192,6 +192,50 @@ void Evaluator::update_covered_PFront(){
 
 
 
+void Evaluator::update_covered_OPT_Solution(list< shared_ptr< Alternative > > & Opt_Solution){
+
+
+	vector< float > minus(p_criteria, -1);
+	vector< float > maxus(p_criteria, -1);
+
+
+	for(int i = 0; i < n_objective; i++){
+		vector< float > obj, extrem_solution;
+
+		for(int j = 0; j < p_criteria; j++){
+			obj.push_back(WS_matrix[j][i]);
+		}
+
+		extrem_solution = OPT_Alternative_PLNE(obj);
+
+		for(int j = 0; j < p_criteria; j++){
+			if( minus[j] == -1    or   extrem_solution[j] < minus[j] )
+				minus[j] = extrem_solution[j];
+
+			if(maxus[j] == -1     or   maxus[j] < extrem_solution[j])
+				maxus[j] = extrem_solution[j];
+		}
+
+	}
+
+	list< shared_ptr< Alternative > > tmp_opt(Opt_Solution.begin(), Opt_Solution.end());
+
+	Opt_Solution.clear();
+
+	for(list< shared_ptr< Alternative > >::iterator it = tmp_opt.begin(); it != tmp_opt.end(); ++it){
+		vector< float > criteria = (*it)->get_criteria_values();
+		if( in_search_space(criteria,minus, maxus) )
+			Opt_Solution.push_back(*it);
+
+	}
+
+//	cout<<"OPT/PE   : "<<Opt_Solution.size()<<" / "<<PFront.size()<<endl;
+
+}
+
+
+
+
 
 void Evaluator::readFilenameInstance(string filename){
 
@@ -525,13 +569,13 @@ float Evaluator::average_distance_D1(list< shared_ptr< Alternative > > OPT_Solut
 	float min_dist = -1;
 	float avg_dist = 0.;
 
-
-//	cout<<"PFront : "<<PFront.size()<<"    OPT SOL found  : "<<OPT_Solution.size()<<endl;
-
-//	cout<<"avg_dist  : "<<avg_dist<<endl;
+//	float maximal_dist = 0;
 
 	for(list< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
 		min_dist = -1;
+
+		vector< float > vector_null((*pareto_sol).size(),0);
+//		maximal_dist += Tools::euclidian_distance(vector_null, *pareto_sol);
 
 		for(list< shared_ptr< Alternative > >::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
 
@@ -543,6 +587,13 @@ float Evaluator::average_distance_D1(list< shared_ptr< Alternative > > OPT_Solut
 		avg_dist += min_dist;
 
 	}
+
+	if(OPT_Solution.empty()){
+//		cout<<" max_dist "<<maximal_dist<<"OPT "<<PFront.size()<<"( "<<Tools::print_vector(*PFront.begin())<<")"<<endl;
+		cout<<" NOT FOUND "<<PFront.size()<<endl;
+		return 0;//maximal_dist/PFront.size();
+	}
+
 //	cout<<"avg_dist  : "<<avg_dist<<endl;
 //	cout<<"============================================="<<endl;
 
@@ -585,13 +636,13 @@ void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int 
 	eval_values[sizer][info][5] += PR_D3(OPT_Solution);
 
 
-//	ofstream fic(filename_instance+"_"+to_string(info)+"_"+to_string(sizer)+".sol");
-//	for(list< vector< float > >::iterator alt = PFront.begin(); alt != PFront.end(); ++alt){
-//		for(int i = 0; i < p_criteria; i++)
-//				fic<< (*alt)[i]<< " ";
-//			fic<<endl;
-//	}
-//	fic.close();
+	ofstream fic(filename_instance+"_"+to_string(info)+"_"+to_string(sizer)+".sol");
+	for(list< shared_ptr< Alternative > >::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); ++alt){
+		for(int i = 0; i < p_criteria; i++)
+				fic<< (*alt)->get_criteria_values()[i]<< " ";
+			fic<<endl;
+	}
+	fic.close();
 
 //	cout<<"OPT/PF   : "<<OPT_Solution.size()<<" / "<<PFront.size()<<endl;
 
