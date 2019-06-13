@@ -136,6 +136,9 @@ public:
 
 	void update_covered_OPT_Solution(list< shared_ptr< Alternative > > & Opt_Solution);
 
+
+	void save_evolution_indicators(list< shared_ptr< Alternative > > OPT_Solution, string filename_instance, int info, int sizer, float time_cpu);
+
 };
 
 

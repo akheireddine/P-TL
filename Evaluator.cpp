@@ -191,7 +191,7 @@ void Evaluator::update_covered_PFront(){
 }
 
 
-
+//OPTIONAL
 void Evaluator::update_covered_OPT_Solution(list< shared_ptr< Alternative > > & Opt_Solution){
 
 
@@ -569,13 +569,11 @@ float Evaluator::average_distance_D1(list< shared_ptr< Alternative > > OPT_Solut
 	float min_dist = -1;
 	float avg_dist = 0.;
 
-//	float maximal_dist = 0;
 
 	for(list< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
 		min_dist = -1;
 
 		vector< float > vector_null((*pareto_sol).size(),0);
-//		maximal_dist += Tools::euclidian_distance(vector_null, *pareto_sol);
 
 		for(list< shared_ptr< Alternative > >::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
 
@@ -589,9 +587,8 @@ float Evaluator::average_distance_D1(list< shared_ptr< Alternative > > OPT_Solut
 	}
 
 	if(OPT_Solution.empty()){
-//		cout<<" max_dist "<<maximal_dist<<"OPT "<<PFront.size()<<"( "<<Tools::print_vector(*PFront.begin())<<")"<<endl;
 		cout<<" NOT FOUND "<<PFront.size()<<endl;
-		return 0;//maximal_dist/PFront.size();
+		return 0;
 	}
 
 //	cout<<"avg_dist  : "<<avg_dist<<endl;
@@ -623,11 +620,19 @@ float Evaluator::maximum_distance_D2(list< shared_ptr< Alternative > > OPT_Solut
 
 
 
+void Evaluator::save_evolution_indicators(list< shared_ptr< Alternative > > OPT_Solution, string filename_instance, int info, int sizer, float time_cpu){
+
+	float d1 = average_distance_D1(OPT_Solution);
+
+	ofstream fic(filename_instance+"_"+to_string(info)+"_"+to_string(sizer)+".ev",ios::app);
+	fic<< d1<< " "<<time_cpu<<endl;;
+	fic.close();
+}
 
 
 void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int sizer, int info, float time_cpu){
 
-//	eval_values[sizer][info][0] += evaluate_Dist_ratio();
+	eval_values[sizer][info][0] += evaluate_Dist_ratio();
 //	eval_values[sizer][info][1] += ;   STD
 	eval_values[sizer][info][2] += time_cpu;
 
@@ -635,17 +640,7 @@ void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int 
 	eval_values[sizer][info][4] += maximum_distance_D2(OPT_Solution);
 	eval_values[sizer][info][5] += PR_D3(OPT_Solution);
 
-
-	ofstream fic(filename_instance+"_"+to_string(info)+"_"+to_string(sizer)+".sol");
-	for(list< shared_ptr< Alternative > >::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); ++alt){
-		for(int i = 0; i < p_criteria; i++)
-				fic<< (*alt)->get_criteria_values()[i]<< " ";
-			fic<<endl;
-	}
-	fic.close();
-
 //	cout<<"OPT/PF   : "<<OPT_Solution.size()<<" / "<<PFront.size()<<endl;
-
 
 }
 
@@ -671,6 +666,7 @@ void Evaluator::save_PF_evaluation_map(){
 				fic2_write<<eval_values[(*iter).first][(*step).first][i]<<" ";
 			}
 			fic2_write<<endl;
+			Tools::separate_results(filename_instance+"_"+to_string((*step).first)+"_"+to_string((*iter).first)+".ev","______________K"+to_string(K_replication));
 		}
 		Tools::separate_results(dist_time_file,"_____"+to_string((*iter).first));
 		Tools::separate_results(pf_indicators_file,"_____"+to_string((*iter).first));
@@ -693,8 +689,6 @@ void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, floa
 	Point_indicators[0] += evaluate_Dist_ratio();
 
 	vector<float> tmp_std = evaluate_standard_deviation_from_OPT_point();
-
-//	merge(tmp_std.begin(),tmp_std.end(),std.begin(),std.end(),std.begin());
 
 	PF_indicators[0] += average_distance_D1(OPT_Solution);
 

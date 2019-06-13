@@ -23,6 +23,8 @@ extern int INFO;
 
 
 
+extern shared_ptr< Evaluator > eval_ks;
+
 
 
 

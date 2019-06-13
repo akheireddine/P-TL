@@ -552,6 +552,9 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 		if( Population.empty() ){
 
+
+			eval_ks->save_evolution_indicators(OPT_Solution, filename_instance, INFO, UB_Population_size, (clock() - starting_time_sec)* 1.0/CLOCKS_PER_SEC );
+
 //			for(list< shared_ptr< Alternative >>::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
 //				save_new_point(filename_instance+"_"+to_string(UB_Population_size)+"_FRONT_"+to_string(step)+"_INFO_"+to_string(INFO)+".expl",(*it));
 //			}
@@ -582,8 +585,11 @@ list< shared_ptr< Alternative > > MainKnapsack::MOLS_Cst_PSize(double starting_t
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
 
-	write_solution(filename_instance+"_"+to_string(INFO)+"_"+to_string(UB_Population_size)+".sol");
+	Tools::separate_results(filename_instance+"_"+to_string(INFO)+"_"+to_string(UB_Population_size)+".iter", to_string(nb_iteration));
+	Tools::separate_results(filename_instance+"_"+to_string(INFO)+"_"+to_string(UB_Population_size)+".ev", "_________ ");
 
+
+	write_solution(filename_instance+"_"+to_string(INFO)+"_"+to_string(UB_Population_size)+".sol");
 	return OPT_Solution;
 
 }
