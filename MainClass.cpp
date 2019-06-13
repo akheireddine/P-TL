@@ -290,9 +290,9 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 1;
-	int N = 1;
-	vector<int> I = {0,1,2,7};
+	int K = 30;
+	int N = 6;
+	vector<int> I = {0,1,2,3,4,5,6,7};
 
 	int iter = I[0];
 	vector<int> graines;
@@ -353,7 +353,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 				}
 
 
-				for(auto steper : {1,2,7} ){
+				for(auto steper : {1,2,3,4,5,6,7} ){
 
 					INFO = steper;
 

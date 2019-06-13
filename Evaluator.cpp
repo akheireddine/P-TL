@@ -187,7 +187,7 @@ void Evaluator::update_covered_PFront(){
 			PFront.push_back(*it);
 	}
 
-	cout<<"PF/PE   : "<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
+//	cout<<"PF/PE   : "<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
 }
 
 
@@ -585,13 +585,13 @@ void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int 
 	eval_values[sizer][info][5] += PR_D3(OPT_Solution);
 
 
-	ofstream fic(filename_instance+"_"+to_string(info)+"_"+to_string(sizer)+".sol");
-	for(list< vector< float > >::iterator alt = PFront.begin(); alt != PFront.end(); ++alt){
-		for(int i = 0; i < p_criteria; i++)
-				fic<< (*alt)[i]<< " ";
-			fic<<endl;
-	}
-	fic.close();
+//	ofstream fic(filename_instance+"_"+to_string(info)+"_"+to_string(sizer)+".sol");
+//	for(list< vector< float > >::iterator alt = PFront.begin(); alt != PFront.end(); ++alt){
+//		for(int i = 0; i < p_criteria; i++)
+//				fic<< (*alt)[i]<< " ";
+//			fic<<endl;
+//	}
+//	fic.close();
 
 //	cout<<"OPT/PF   : "<<OPT_Solution.size()<<" / "<<PFront.size()<<endl;
 
