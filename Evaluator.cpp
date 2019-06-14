@@ -39,6 +39,7 @@ Evaluator::Evaluator(string filename, string WS_DM_preferences, string SDT_file,
 	PF_indicators.resize(3,0);
 	time = 0;
 	K_replication = 0;
+	cpt_k = 0;
 
 }
 
@@ -74,6 +75,7 @@ Evaluator::Evaluator(string filename, string WS_DM_preferences, string SDT_file,
 #endif
 
 	K_replication = K;
+	cpt_k = 0;
 
 	for(auto t : sizes ){
 		map< int, vector< float > > info_map;
@@ -368,9 +370,9 @@ void Evaluator::readWS_matrix(string filename){
 
 
 //Get minimum gap from OPT_Alternative and save the objective values in vect_criteria
-float Evaluator::nearest_alternative(vector< float > & vect_criteria ){
+float Evaluator::nearest_alternative(vector< float > & vect_criteria, string sol_filename ){
 
-	ifstream fic((filename_instance+"_"+to_string(INFO)+"_"+to_string(UB_Size)+".sol").c_str());
+	ifstream fic(sol_filename);
 
 	vector< float > criteria_val(p_criteria,0);
 	vector< float >tmp_criteria_values;
@@ -485,13 +487,13 @@ vector< float > Evaluator::OPT_Alternative_PLNE(vector<float> WS_vector){
 
 
 //Evaluation the quality of PLS and WS-PLS solutions to DMs real preferences
-float Evaluator::evaluate_Dist_ratio(){
+float Evaluator::evaluate_Dist_ratio(string sol_filename){
 
 	string line;
 	vector<float> vector_criteria;
 
 	//Get minimum objective values difference between the best alternative and WS-MOLS front computed
-	float min_mols_ratio = nearest_alternative(vector_criteria);
+	float min_mols_ratio = nearest_alternative(vector_criteria,sol_filename);
 #ifdef __PRINT__
 	cout<<"Solution found in (efficient) front "<<endl;
 	cout<<"   ratio ( "<<min_mols_ratio<<" )"<<endl;
@@ -620,19 +622,19 @@ float Evaluator::maximum_distance_D2(list< shared_ptr< Alternative > > OPT_Solut
 
 
 
-void Evaluator::save_evolution_indicators(list< shared_ptr< Alternative > > OPT_Solution, string filename_instance, int info, int sizer, float time_cpu){
+void Evaluator::save_evolution_indicators(list< shared_ptr< Alternative > > OPT_Solution, string filename_instance, int info, int sizer, float time_cpu, int pop_size){
 
 	float d1 = average_distance_D1(OPT_Solution);
 
 	ofstream fic(filename_instance+"_"+to_string(info)+"_"+to_string(sizer)+".ev",ios::app);
-	fic<< d1<< " "<<time_cpu<<endl;;
+	fic<<d1<< " "<<pop_size<<" "<<time_cpu<<" "<<cpt_k<<endl;;
 	fic.close();
 }
 
 
-void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int sizer, int info, float time_cpu){
+void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, string sol_filename, int sizer, int info, float time_cpu){
 
-	eval_values[sizer][info][0] += evaluate_Dist_ratio();
+	eval_values[sizer][info][0] += evaluate_Dist_ratio(sol_filename);
 //	eval_values[sizer][info][1] += ;   STD
 	eval_values[sizer][info][2] += time_cpu;
 
@@ -640,6 +642,7 @@ void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int 
 	eval_values[sizer][info][4] += maximum_distance_D2(OPT_Solution);
 	eval_values[sizer][info][5] += PR_D3(OPT_Solution);
 
+	cpt_k++;
 //	cout<<"OPT/PF   : "<<OPT_Solution.size()<<" / "<<PFront.size()<<endl;
 
 }
@@ -658,14 +661,14 @@ void Evaluator::save_PF_evaluation_map(){
 				eval_values[(*iter).first][(*step).first][i] *= 1.0 / K_replication;
 				fic_write<<eval_values[(*iter).first][(*step).first][i]<<" ";
 			}
-			fic_write<<endl;
+			fic_write<<(*step).first<<endl;
 
 
 			for(int i = 3; i < (int) (*step).second.size(); i++){
 				eval_values[(*iter).first][(*step).first][i] *= 1.0 / K_replication;
 				fic2_write<<eval_values[(*iter).first][(*step).first][i]<<" ";
 			}
-			fic2_write<<endl;
+			fic2_write<<(*step).first<<endl;
 			Tools::separate_results(filename_instance+"_"+to_string((*step).first)+"_"+to_string((*iter).first)+".ev","______________K"+to_string(K_replication));
 		}
 		Tools::separate_results(dist_time_file,"_____"+to_string((*iter).first));
@@ -678,15 +681,16 @@ void Evaluator::save_PF_evaluation_map(){
 
 	//REINITIALIZE PARAMETERS
 	eval_values.clear();
+	cpt_k=0;
 
 }
 
 
-void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, float time_cpu){
+void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, string sol_filename,  float time_cpu){
 
 	time += time_cpu;
 
-	Point_indicators[0] += evaluate_Dist_ratio();
+	Point_indicators[0] += evaluate_Dist_ratio(sol_filename);
 
 	vector<float> tmp_std = evaluate_standard_deviation_from_OPT_point();
 
@@ -698,6 +702,7 @@ void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, floa
 
 	K_replication++;
 
+	cpt_k=K_replication;
 
 }
 
@@ -737,6 +742,7 @@ void Evaluator::save_PF_evaluation(){
 	PF_indicators.clear();
 	PF_indicators.resize(3,0);
 	K_replication = 0;
+	cpt_k=0;
 
 }
 

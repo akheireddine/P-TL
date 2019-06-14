@@ -70,7 +70,7 @@ public :
 
 	//RESOLUTION
 	bool Update_Archive(shared_ptr< Alternative > p, list< shared_ptr< Alternative > > &set_SOL);
-	bool Update_Archive(shared_ptr< Alternative > p, list< string > &set_SOL);
+	bool Update_LocalArchive(shared_ptr< Alternative > p, list< string > &set_SOL);
 
 
 	bool Update_Archive(shared_ptr< Alternative > p, list< shared_ptr< Alternative > > &set_SOL, list<string> & population);
@@ -96,10 +96,9 @@ public :
 
 
 	void Random_Selection(list< string > & dominated_solutions, list< string > & population, int upper_bound);
-//	void Distribution_proba(list< string > & dominated_solutions, int upper_bound);
-	void Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound);
+//	void Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 //	void Simulated_Annealing(list< string > & dominated_solutions, list< string > & population, int upper_bound);
-	void Learning_Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound);
+	void Ordered_Selection(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 
 	//EVALUATION
 	void save_new_point(string filename, shared_ptr< Alternative > alt);

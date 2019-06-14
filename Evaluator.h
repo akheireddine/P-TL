@@ -34,7 +34,8 @@ private:
 
 
 
-	float K_replication;
+	int K_replication;
+	int cpt_k = 0;
 	float time;
 	vector< float > PF_indicators, Point_indicators;
 
@@ -109,13 +110,13 @@ public:
 
 
 	//EVALUATION
-	float nearest_alternative(vector< float > & vect_criteria );
+	float nearest_alternative(vector< float > & vect_criteria, string sol_filename );
 	vector< float > OPT_Alternative_PLNE(vector<float> WS_vector);
-	float evaluate_Dist_ratio();
+	float evaluate_Dist_ratio(string sol_filename);
 
 
-	void evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, float time_cpu);
-	void evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int sizer, int info, float time_cpu);
+	void evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, string sol_filename, float time_cpu);
+	void evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, string sol_filename, int sizer, int info, float time_cpu);
 	vector< float > evaluate_standard_deviation_from_OPT_point();
 
 	void save_PF_evaluation();
@@ -137,7 +138,7 @@ public:
 	void update_covered_OPT_Solution(list< shared_ptr< Alternative > > & Opt_Solution);
 
 
-	void save_evolution_indicators(list< shared_ptr< Alternative > > OPT_Solution, string filename_instance, int info, int sizer, float time_cpu);
+	void save_evolution_indicators(list< shared_ptr< Alternative > > OPT_Solution, string filename_instance, int info, int sizer, float time_cpu, int pop_size);
 
 };
 

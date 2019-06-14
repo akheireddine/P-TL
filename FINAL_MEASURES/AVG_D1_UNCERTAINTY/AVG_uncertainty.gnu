@@ -17,7 +17,8 @@ unset ytics
 set output "AVG_A_100_D1_Info.png"
 set terminal pngcairo size 1200,800
 
-set key at screen 0.81,screen 0.9
+set key at screen 0.9,screen 0.9
+set key invert
 
 set colorsequence default
 set grid
