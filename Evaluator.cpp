@@ -155,41 +155,104 @@ void Evaluator::readParetoFront_locally(){
 
 
 
+//void Evaluator::update_covered_PFrontPL(){
+//
+//
+//	PFront.clear();
+//
+//	vector< float > minus(p_criteria, -1);
+//	vector< float > maxus(p_criteria, -1);
+//
+//
+//	for(int i = 0; i < n_objective; i++){
+//		vector< float > obj, extrem_solution;
+//
+//		for(int j = 0; j < p_criteria; j++){
+//			obj.push_back(WS_matrix[j][i]);
+//		}
+//
+//		extrem_solution = OPT_Alternative_PLNE(obj);
+//
+//		for(int j = 0; j < p_criteria; j++){
+//			if( minus[j] == -1    or   extrem_solution[j] < minus[j] )
+//				minus[j] = extrem_solution[j];
+//
+//			if(maxus[j] == -1     or   maxus[j] < extrem_solution[j])
+//				maxus[j] = extrem_solution[j];
+//		}
+//
+//	}
+//
+//	for(vector< vector< float > >::iterator it = PF_Efficient.begin(); it != PF_Efficient.end(); ++it){
+//
+//		if( in_search_space(*it,minus, maxus) )
+//			PFront.push_back(*it);
+//	}
+//
+////	cout<<"PF/PE   : "<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
+//}
+
+
+
+bool dominates(vector< float > e1, vector< float > e2){
+
+	bool dominated = false, dominates = false;
+
+	for(int i = 0; i < (int)e1.size() ; i++){
+		if(e1 < e2)
+			dominated = true;
+		else if (e1 > e2)
+			dominates = true;
+	}
+
+	if(dominated and dominates)
+		return false;
+
+	if(dominated and !dominates)
+		return false;
+
+	//dominates and !dominated
+	return true;
+}
+
+vector< float > transform(vector< float > src, vector< vector< float > > ws_matrix){
+
+	vector< float > dest(src.size(),0);
+
+	for(int i = 0; i < (int)ws_matrix[0].size(); i++){
+		for(int j = 0; j < (int)src.size() ; j++){
+			dest[i] += ws_matrix[j][i] * src[j];
+		}
+	}
+
+	return dest;
+}
+
+
 void Evaluator::update_covered_PFront(){
 
+	bool dominated;
 
 	PFront.clear();
 
-	vector< float > minus(p_criteria, -1);
-	vector< float > maxus(p_criteria, -1);
-
-
-	for(int i = 0; i < n_objective; i++){
-		vector< float > obj, extrem_solution;
-
-		for(int j = 0; j < p_criteria; j++){
-			obj.push_back(WS_matrix[j][i]);
-		}
-
-		extrem_solution = OPT_Alternative_PLNE(obj);
-
-		for(int j = 0; j < p_criteria; j++){
-			if( minus[j] == -1    or   extrem_solution[j] < minus[j] )
-				minus[j] = extrem_solution[j];
-
-			if(maxus[j] == -1     or   maxus[j] < extrem_solution[j])
-				maxus[j] = extrem_solution[j];
-		}
-
-	}
-
 	for(vector< vector< float > >::iterator it = PF_Efficient.begin(); it != PF_Efficient.end(); ++it){
 
-		if( in_search_space(*it,minus, maxus) )
-			PFront.push_back(*it);
+		dominated = false;
+
+		vector< float > it_trans = transform(*it, WS_matrix);
+
+		for(list< vector< float > >::iterator e = PFront.begin(); e != PFront.end(); ++e){
+
+			if( dominates(*e,it_trans) ){
+				dominated = true;
+				break;
+			}
+		}
+		if( !dominated )
+			PFront.push_back(it_trans);
 	}
 
-//	cout<<"PF/PE   : "<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
+	cout<<"PF/PE   : "<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
 }
 
 

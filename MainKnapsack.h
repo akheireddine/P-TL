@@ -101,8 +101,7 @@ public :
 	void Ordered_Selection(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 
 	//EVALUATION
-	void save_new_point(string filename, shared_ptr< Alternative > alt);
-	void write_solution(string filename);
+	void save_information(string filename, vector< float > criteria_vect, float time_cpu, int index);
 
 	//STATIC METHOD
 	static void Generate_random_Population(shared_ptr< Evaluator > evaluator, int number_of_individu);
