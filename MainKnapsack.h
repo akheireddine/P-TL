@@ -11,16 +11,12 @@ class MainKnapsack;
 
 
 
-extern float Ta;
-extern float Temperature;
-
-extern int GRAIN;
-extern map<string, set<string> > common_neighbors;
-
 
 extern list<set<int>> init_population;
-extern int INFO;
 
+extern int GRAIN;
+extern int INFO;
+extern int K_replication;
 
 
 extern shared_ptr< Evaluator > eval_ks;
@@ -69,7 +65,7 @@ public :
 //	void readInitPopulationFile(string filename);
 
 	//RESOLUTION
-	bool Update_Archive(shared_ptr< Alternative > p, list< shared_ptr< Alternative > > &set_SOL);
+	bool Update_Archive(shared_ptr< Alternative > p, list< shared_ptr< Alternative > >  &set_SOL);
 	bool Update_LocalArchive(shared_ptr< Alternative > p, list< string > &set_SOL);
 
 
@@ -77,7 +73,6 @@ public :
 
 
 
-//	bool Update_Archive_Threshold_Accepting(Alternative* p, list< Alternative* > &set_SOL);
 	void update_alternatives(list< string > &set_Alt, bool Pareto);
 
 
@@ -86,18 +81,17 @@ public :
 	void SWITCH_PLS_WS(double starting_time_sec, int ITER_PLS, int ITER_WS);
 
 
-	list< shared_ptr< Alternative > > MOLS(double starting_time_sec,int ITER);
-	list< shared_ptr< Alternative > > MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);
-	list< shared_ptr< Alternative > > MOLS_local_Archive(double starting_time_sec);
-	list< shared_ptr< Alternative > > MOLS_Cst_PSize_Diversification(double starting_time_sec, int UB_Population_size);
-	list< shared_ptr< Alternative > > MOLS_Cst_PSize_FAIR(double starting_time_sec, int UB_Population_size);
+	void MOLS(double starting_time_sec,int ITER);
+	void MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);
+	void MOLS_local_Archive(double starting_time_sec);
+	void MOLS_Cst_PSize_RS(double starting_time_sec, int UB_Population_size);
+	void MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population_size);
+//	void MOLS_Cst_PSize_FAIR(double starting_time_sec, int UB_Population_size);
 
 
 
 
 	void Random_Selection(list< string > & dominated_solutions, list< string > & population, int upper_bound);
-//	void Threshold_Accepting_AVG(list< string > & dominated_solutions, list< string > & population, int upper_bound);
-//	void Simulated_Annealing(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 	void Ordered_Selection(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 
 	//EVALUATION
@@ -112,7 +106,7 @@ public :
 
 	//functions to overload
 	void initializeInformation(shared_ptr< Evaluator > evaluator);
-	list< shared_ptr< Alternative > > MOLS(double starting_time_sec);
+	void MOLS(double starting_time_sec);
 	void GenerateInitialPopulation(int size_population);
 
 

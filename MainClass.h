@@ -12,10 +12,6 @@
 
 
 
-float Ta = 500;
-
-float Temperature = 1500;
-
 int INFO = 0;
 
 int UB_Size;
@@ -24,9 +20,6 @@ list<set<int>> init_population;
 
 int GRAIN;
 
-
-
-map<string, set<string> > common_neighbors;
-
-
 shared_ptr< Evaluator >  eval_ks;
+
+int K_replication = 0;

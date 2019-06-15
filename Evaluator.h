@@ -110,13 +110,13 @@ public:
 
 
 	//EVALUATION
-	float nearest_alternative(vector< float > & vect_criteria, string sol_filename );
+	float nearest_alternative(vector< float > & vect_criteria, list< shared_ptr< Alternative > > OPT_Solution);
 	vector< float > OPT_Alternative_PLNE(vector<float> WS_vector);
-	float evaluate_Dist_ratio(string sol_filename);
+	float evaluate_Dist_ratio(list< shared_ptr< Alternative > > OPT_Solution);
 
 
-	void evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, string sol_filename, float time_cpu);
-	void evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, string sol_filename, int sizer, int info, float time_cpu);
+	void evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, float time_cpu);
+	void evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int sizer, int info, float time_cpu);
 	vector< float > evaluate_standard_deviation_from_OPT_point();
 
 	void save_PF_evaluation();

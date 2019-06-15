@@ -35,7 +35,7 @@ protected :
 	int n_objective;
 	int p_criteria;									// Number of criteria
 	list< string > Population;				// current set of non-dominated alternatives during the solving process
-	string filename_instance;					    // instance pathname
+	string filename_population;					    // instance pathname
 
 public:
 	virtual ~LSStructure(){
@@ -58,13 +58,13 @@ public:
 	};
 
 	void initializeInformation(shared_ptr< Evaluator > evaluator);
-	virtual list< shared_ptr< Alternative > > MOLS(double starting_time_sec) = 0;
+	virtual void MOLS(double starting_time_sec) = 0;
 	virtual void GenerateInitialPopulation(int size_population) = 0;
 
 	//GETTERS
 	int get_p_criteria(){ return p_criteria; };
 	int get_n_objective(){ return n_objective; };
-	string get_filename_isntance(){ return filename_instance; };
+	string get_filename_instance(){ return filename_population; };
 	vector< vector< float > > get_WS_matrix(){ return WS_matrix; };
 	list< shared_ptr<Alternative> > get_OPT_Solution(){ return OPT_Solution; };
 

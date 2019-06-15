@@ -433,41 +433,24 @@ void Evaluator::readWS_matrix(string filename){
 
 
 //Get minimum gap from OPT_Alternative and save the objective values in vect_criteria
-float Evaluator::nearest_alternative(vector< float > & vect_criteria, string sol_filename ){
+float Evaluator::nearest_alternative(vector< float > & vect_criteria, list< shared_ptr< Alternative > > OPT_Solution ){
 
-	ifstream fic(sol_filename);
-
-	vector< float > criteria_val(p_criteria,0);
+	vector< float > criteria_val;
 	vector< float >tmp_criteria_values;
+	float min_ratio = -1, tmp_ratio = -1;
 
-	float min_ratio = -1, tmp_ratio = 1;
-	string line;
 
-	while(!fic.eof()){
+	for(list< shared_ptr< Alternative > >::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
 
-		getline(fic,line);
-
-		if(line.size() == 0)
-			continue;
-
-		tmp_criteria_values = Tools::decompose_line_to_float_vector(line);
-
-		tmp_ratio = Tools::get_ratio(tmp_criteria_values, OPT_Alternative, WS_DM_vector);
+		tmp_ratio = Tools::get_ratio((*it)->get_criteria_values(), OPT_Alternative, WS_DM_vector);
 
 		if( (min_ratio == -1) or (tmp_ratio < min_ratio) ){
 			min_ratio = tmp_ratio;
 			criteria_val = tmp_criteria_values;
 		}
-
-		if( min_ratio == 0 )  // equal to DMs preferences
-			break;
-
 	}
-
-	fic.close();
 	vect_criteria = criteria_val;
 	return min_ratio;
-
 }
 
 
@@ -550,13 +533,13 @@ vector< float > Evaluator::OPT_Alternative_PLNE(vector<float> WS_vector){
 
 
 //Evaluation the quality of PLS and WS-PLS solutions to DMs real preferences
-float Evaluator::evaluate_Dist_ratio(string sol_filename){
+float Evaluator::evaluate_Dist_ratio(list< shared_ptr< Alternative > > OPT_Solution){
 
 	string line;
 	vector<float> vector_criteria;
 
 	//Get minimum objective values difference between the best alternative and WS-MOLS front computed
-	float min_mols_ratio = nearest_alternative(vector_criteria,sol_filename);
+	float min_mols_ratio = nearest_alternative(vector_criteria, OPT_Solution);
 #ifdef __PRINT__
 	cout<<"Solution found in (efficient) front "<<endl;
 	cout<<"   ratio ( "<<min_mols_ratio<<" )"<<endl;
@@ -695,9 +678,9 @@ void Evaluator::save_evolution_indicators(list< shared_ptr< Alternative > > OPT_
 }
 
 
-void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, string sol_filename, int sizer, int info, float time_cpu){
+void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int sizer, int info, float time_cpu){
 
-	eval_values[sizer][info][0] += evaluate_Dist_ratio(sol_filename);
+	eval_values[sizer][info][0] += evaluate_Dist_ratio(OPT_Solution);
 //	eval_values[sizer][info][1] += ;   STD
 	eval_values[sizer][info][2] += time_cpu;
 
@@ -749,11 +732,11 @@ void Evaluator::save_PF_evaluation_map(){
 }
 
 
-void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, string sol_filename,  float time_cpu){
+void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution,  float time_cpu){
 
 	time += time_cpu;
 
-	Point_indicators[0] += evaluate_Dist_ratio(sol_filename);
+	Point_indicators[0] += evaluate_Dist_ratio(OPT_Solution);
 
 	vector<float> tmp_std = evaluate_standard_deviation_from_OPT_point();
 
@@ -872,8 +855,6 @@ void Evaluator::compute_information_rate_front(){
 }
 
 #define PI 3.14159265
-
-
 
 
 float Evaluator::compute_information_rate(){
