@@ -5,14 +5,13 @@
 //#define __PRINT__
 
 
-Evaluator::Evaluator(string filename, string WS_DM_preferences, string SDT_file, string PFI_file){
+Evaluator::Evaluator(string filename, string WS_DM_preferences, string INDIC_file){
 
 	filename_instance = filename;
 
 	readFilenameInstance(filename_instance);
 
-	dist_time_file = SDT_file;
-	pf_indicators_file = PFI_file;
+	indicator_file = INDIC_file;
 
 	WS_DM_vector = Tools::readWS_DM(WS_DM_preferences);
 
@@ -44,35 +43,19 @@ Evaluator::Evaluator(string filename, string WS_DM_preferences, string SDT_file,
 }
 
 
-Evaluator::Evaluator(string filename, string WS_DM_preferences, string SDT_file, string PFI_file, vector<int> sizes, vector<int> information_rate, int K){
+Evaluator::Evaluator(string filename, string WS_DM_preferences, string INDIC_file, vector<int> sizes, vector<int> information_rate, int K){
 
 	filename_instance = filename;
 
 	readFilenameInstance(filename_instance);
 
-	dist_time_file = SDT_file;
-	pf_indicators_file = PFI_file;
+	indicator_file = INDIC_file;
 
 	WS_DM_vector = Tools::readWS_DM(WS_DM_preferences);
 
 	readParetoFront();
 
-
-#ifdef __PRINT__
-	cout<<"----------------------- EVALUATION ----------------------"<<endl;
-#endif
-
 	OPT_Alternative = OPT_Alternative_PLNE(WS_DM_vector);
-
-#ifdef __PRINT__
-	cout<<"Preference du décideur ([ " << Tools::print_vector(WS_DM_vector) <<" ]) : "<<endl;
-	cout<<"    "<< Tools::print_vector(OPT_Alternative)<<endl;
-#endif
-
-
-#ifdef __PRINT__
-	cout<<"----------------------- END EVALUATION ----------------------"<<endl<<endl;
-#endif
 
 	K_replication = K;
 	cpt_k = 0;
@@ -89,16 +72,6 @@ Evaluator::Evaluator(string filename, string WS_DM_preferences, string SDT_file,
 }
 
 
-
-bool Evaluator::in_search_space(vector<float> v,vector<float> minus, vector<float> maxus){
-
-	for(int j = 0; j < p_criteria; j++)
-		if( (v[j] < minus[j] )  or (v[j] > maxus[j]) )
-				return false;
-
-	return true;
-
-}
 
 
 
@@ -128,30 +101,30 @@ void Evaluator::readParetoFront(){
 }
 
 
-void Evaluator::readParetoFront_locally(){
-
-	string file_extension = filename_instance+"_0_"+to_string(UB_Size)+".sol";
-	ifstream fic(file_extension.c_str());
-	string line;
-	vector< float > vector_pareto_objective;
-
-	if (!(fic) or file_extension.find(".sol") == std::string::npos){
-		cerr<<"Error occurred paretofrontlocally"<<endl;
-	}
-
-	PF_Efficient.clear();
-
-	while(!fic.eof()){
-
-		getline(fic,line);
-		if (line.size() == 0)
-			continue;
-
-		vector_pareto_objective = Tools::decompose_line_to_float_vector(line);
-		PF_Efficient.push_back(vector_pareto_objective);
-	}
-
-}
+//void Evaluator::readParetoFront_locally(){
+//
+//	string file_extension = filename_instance+"_0_"+to_string(UB_Size)+".sol";
+//	ifstream fic(file_extension.c_str());
+//	string line;
+//	vector< float > vector_pareto_objective;
+//
+//	if (!(fic) or file_extension.find(".sol") == std::string::npos){
+//		cerr<<"Error occurred paretofrontlocally"<<endl;
+//	}
+//
+//	PF_Efficient.clear();
+//
+//	while(!fic.eof()){
+//
+//		getline(fic,line);
+//		if (line.size() == 0)
+//			continue;
+//
+//		vector_pareto_objective = Tools::decompose_line_to_float_vector(line);
+//		PF_Efficient.push_back(vector_pareto_objective);
+//	}
+//
+//}
 
 
 
@@ -185,7 +158,7 @@ void Evaluator::readParetoFront_locally(){
 //
 //	for(vector< vector< float > >::iterator it = PF_Efficient.begin(); it != PF_Efficient.end(); ++it){
 //
-//		if( in_search_space(*it,minus, maxus) )
+//		if( Tools::in_search_space(*it,minus, maxus) )
 //			PFront.push_back(*it);
 //	}
 //
@@ -194,108 +167,97 @@ void Evaluator::readParetoFront_locally(){
 
 
 
-bool dominates(vector< float > e1, vector< float > e2){
+int dominates(vector< float > e1, vector< float > e2){
 
 	bool dominated = false, dominates = false;
 
 	for(int i = 0; i < (int)e1.size() ; i++){
-		if(e1 < e2)
+		if(e1[i] < e2[i])
 			dominated = true;
-		else if (e1 > e2)
+		else if (e1[i] > e2[i])
 			dominates = true;
+
+		if(dominates and dominated)
+			return 0;
 	}
-
-	if(dominated and dominates)
-		return false;
-
 	if(dominated and !dominates)
-		return false;
+		return -1;
 
-	//dominates and !dominated
-	return true;
-}
-
-vector< float > transform(vector< float > src, vector< vector< float > > ws_matrix){
-
-	vector< float > dest(src.size(),0);
-
-	for(int i = 0; i < (int)ws_matrix[0].size(); i++){
-		for(int j = 0; j < (int)src.size() ; j++){
-			dest[i] += ws_matrix[j][i] * src[j];
-		}
-	}
-
-	return dest;
+	//dominates and !dominated  OR  !dominated and !dominates
+	return 1;
 }
 
 
 void Evaluator::update_covered_PFront(){
 
-	bool dominated;
-
 	PFront.clear();
 
 	for(vector< vector< float > >::iterator it = PF_Efficient.begin(); it != PF_Efficient.end(); ++it){
 
-		dominated = false;
-
-		vector< float > it_trans = transform(*it, WS_matrix);
+		bool dominated = false;
+		list< vector< float  > > to_rm;
+		vector< float > it_trans = Tools::transform(*it, WS_matrix);
 
 		for(list< vector< float > >::iterator e = PFront.begin(); e != PFront.end(); ++e){
 
-			if( dominates(*e,it_trans) ){
+			int val =  dominates(*e,it_trans);
+			if( val == 1 ){
 				dominated = true;
 				break;
 			}
+			else if( val == -1)
+				to_rm.push_back(*e);
 		}
-		if( !dominated )
+
+		if( !dominated ){
+			for(list< vector< float > >::iterator rm = to_rm.begin(); rm != to_rm.end(); ++rm){
+				PFront.remove(*rm);
+			}
 			PFront.push_back(it_trans);
+		}
 	}
 
-	cout<<"PF/PE   : "<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
+//	cout<<"PF/PE   : "<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
 }
 
 
+
 //OPTIONAL
-void Evaluator::update_covered_OPT_Solution(list< shared_ptr< Alternative > > & Opt_Solution){
+void Evaluator::update_covered_OPT_Solution(list< vector< float > > & Opt_Solution){
 
+	bool dominated;
 
-	vector< float > minus(p_criteria, -1);
-	vector< float > maxus(p_criteria, -1);
-
-
-	for(int i = 0; i < n_objective; i++){
-		vector< float > obj, extrem_solution;
-
-		for(int j = 0; j < p_criteria; j++){
-			obj.push_back(WS_matrix[j][i]);
-		}
-
-		extrem_solution = OPT_Alternative_PLNE(obj);
-
-		for(int j = 0; j < p_criteria; j++){
-			if( minus[j] == -1    or   extrem_solution[j] < minus[j] )
-				minus[j] = extrem_solution[j];
-
-			if(maxus[j] == -1     or   maxus[j] < extrem_solution[j])
-				maxus[j] = extrem_solution[j];
-		}
-
-	}
-
-	list< shared_ptr< Alternative > > tmp_opt(Opt_Solution.begin(), Opt_Solution.end());
+	list< vector< float > > tmp_opt(Opt_Solution.begin(), Opt_Solution.end());
 
 	Opt_Solution.clear();
 
-	for(list< shared_ptr< Alternative > >::iterator it = tmp_opt.begin(); it != tmp_opt.end(); ++it){
-		vector< float > criteria = (*it)->get_criteria_values();
-		if( in_search_space(criteria,minus, maxus) )
-			Opt_Solution.push_back(*it);
+	for(list< vector< float > >::iterator it = tmp_opt.begin(); it != tmp_opt.end(); ++it){
 
+		dominated = false;
+		list< vector< float  > > to_rm;
+		vector< float > it_trans = Tools::transform(*it, WS_matrix);
+
+		for(list< vector< float > >::iterator e = Opt_Solution.begin(); e != Opt_Solution.end(); ++e){
+
+			vector< float > e_trans = Tools::transform(*e, WS_matrix);
+
+			int val =  dominates(e_trans,it_trans);
+			if( val == 1 ){
+				dominated = true;
+				break;
+			}
+			else if( val == -1)
+				to_rm.push_back(*e);
+		}
+		if( !dominated ){
+			for(list< vector< float > >::iterator rm = to_rm.begin(); rm != to_rm.end(); ++rm){
+				Opt_Solution.remove(*rm);
+			}
+			Opt_Solution.push_back(*it);
+		}
 	}
 
 //	cout<<"OPT/PE   : "<<Opt_Solution.size()<<" / "<<PFront.size()<<endl;
-
 }
 
 
@@ -433,16 +395,16 @@ void Evaluator::readWS_matrix(string filename){
 
 
 //Get minimum gap from OPT_Alternative and save the objective values in vect_criteria
-float Evaluator::nearest_alternative(vector< float > & vect_criteria, list< shared_ptr< Alternative > > OPT_Solution ){
+float Evaluator::nearest_alternative(vector< float > & vect_criteria, list< vector< float > > OPT_Solution ){
 
 	vector< float > criteria_val;
 	vector< float >tmp_criteria_values;
 	float min_ratio = -1, tmp_ratio = -1;
 
 
-	for(list< shared_ptr< Alternative > >::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
+	for(list< vector< float > >::iterator it = OPT_Solution.begin(); it != OPT_Solution.end(); ++it){
 
-		tmp_ratio = Tools::get_ratio((*it)->get_criteria_values(), OPT_Alternative, WS_DM_vector);
+		tmp_ratio = Tools::get_ratio((*it), OPT_Alternative, WS_DM_vector);
 
 		if( (min_ratio == -1) or (tmp_ratio < min_ratio) ){
 			min_ratio = tmp_ratio;
@@ -533,7 +495,7 @@ vector< float > Evaluator::OPT_Alternative_PLNE(vector<float> WS_vector){
 
 
 //Evaluation the quality of PLS and WS-PLS solutions to DMs real preferences
-float Evaluator::evaluate_Dist_ratio(list< shared_ptr< Alternative > > OPT_Solution){
+float Evaluator::evaluate_Dist_ratio(list< vector< float > > OPT_Solution){
 
 	string line;
 	vector<float> vector_criteria;
@@ -553,31 +515,32 @@ float Evaluator::evaluate_Dist_ratio(list< shared_ptr< Alternative > > OPT_Solut
 
 vector< float > Evaluator::evaluate_standard_deviation_from_OPT_point(){
 
-	ifstream fic((filename_instance+"_"+to_string(INFO)+"_"+to_string(UB_Size)+".sol").c_str());
-
-	vector< float > tmp_criteria_values;
-
-	float tmp_ratio = 1.;
 	vector< float > st_deviation;
 
-	string line;
-
-	while(!fic.eof()){
-
-		getline(fic,line);
-
-		if(line.size() == 0)
-			continue;
-
-		tmp_criteria_values = Tools::decompose_line_to_float_vector(line);
-
-		tmp_ratio = Tools::get_ratio(tmp_criteria_values, OPT_Alternative, WS_DM_vector);
-
-		st_deviation.push_back(tmp_ratio);
-
-	}
-
-	fic.close();
+//	ifstream fic((filename_instance+"_"+to_string(INFO)+"_"+to_string(UB_Size)+".sol").c_str());
+//
+//	vector< float > tmp_criteria_values;
+//
+//	float tmp_ratio = 1.;
+//
+//	string line;
+//
+//	while(!fic.eof()){
+//
+//		getline(fic,line);
+//
+//		if(line.size() == 0)
+//			continue;
+//
+//		tmp_criteria_values = Tools::decompose_line_to_float_vector(line);
+//
+//		tmp_ratio = Tools::get_ratio(tmp_criteria_values, OPT_Alternative, WS_DM_vector);
+//
+//		st_deviation.push_back(tmp_ratio);
+//
+//	}
+//
+//	fic.close();
 
 	return st_deviation;
 }
@@ -588,15 +551,15 @@ vector< float > Evaluator::evaluate_standard_deviation_from_OPT_point(){
  * ************************************************* PF MEASUREMENT PART *************************************************
  */
 
-float Evaluator::PR_D3(list< shared_ptr< Alternative > > OPT_Solution){
+float Evaluator::PR_D3(list< vector< float > > OPT_Solution){
 
 	int opt_size_front = 0, nb_found = 0;
 
-	vector< shared_ptr< Alternative > > tmp_opt(OPT_Solution.begin(),OPT_Solution.end());
+	list< vector< float > > tmp_opt(OPT_Solution.begin(),OPT_Solution.end());
 
 	for(list< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
-		for(vector< shared_ptr< Alternative > >::iterator alt = tmp_opt.begin(); alt != tmp_opt.end(); ++alt){
-			if( Tools::equal_vectors((*alt)->get_criteria_values(),*pareto_sol) ){
+		for(list< vector< float > >::iterator alt = tmp_opt.begin(); alt != tmp_opt.end(); ++alt){
+			if( Tools::equal_vectors((*alt),*pareto_sol) ){
 				nb_found += 1;
 				tmp_opt.erase(alt);
 				break;
@@ -605,14 +568,13 @@ float Evaluator::PR_D3(list< shared_ptr< Alternative > > OPT_Solution){
 		opt_size_front++;
 	}
 
-	vector< shared_ptr< Alternative > >().swap(tmp_opt);
 
 	return nb_found*100.0/(int)PFront.size();
 }
 
 
 
-float Evaluator::average_distance_D1(list< shared_ptr< Alternative > > OPT_Solution){
+float Evaluator::average_distance_D1(list< vector< float > > OPT_Solution){
 
 	float min_dist = -1;
 	float avg_dist = 0.;
@@ -623,9 +585,9 @@ float Evaluator::average_distance_D1(list< shared_ptr< Alternative > > OPT_Solut
 
 		vector< float > vector_null((*pareto_sol).size(),0);
 
-		for(list< shared_ptr< Alternative > >::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
+		for(list< vector< float > >::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
 
-			float euclid_dist_tmp = Tools::euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
+			float euclid_dist_tmp = Tools::euclidian_distance((*eff_sol), *pareto_sol);
 			if(euclid_dist_tmp < min_dist  or min_dist == -1)
 				min_dist = euclid_dist_tmp;
 		}
@@ -647,14 +609,14 @@ float Evaluator::average_distance_D1(list< shared_ptr< Alternative > > OPT_Solut
 
 
 
-float Evaluator::maximum_distance_D2(list< shared_ptr< Alternative > > OPT_Solution){
+float Evaluator::maximum_distance_D2(list< vector< float > > OPT_Solution){
 	float min_dist = -1;
 	float max_dist_PF = 0.;
 
 	for(list< vector<float > >::iterator pareto_sol = PFront.begin(); pareto_sol != PFront.end(); ++pareto_sol){
 		min_dist = -1;
-		for(list< shared_ptr< Alternative > >::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
-			float euclid_dist_tmp = Tools::euclidian_distance((*eff_sol)->get_criteria_values(), *pareto_sol);
+		for(list< vector< float > >::iterator eff_sol = OPT_Solution.begin(); eff_sol != OPT_Solution.end(); ++eff_sol){
+			float euclid_dist_tmp = Tools::euclidian_distance((*eff_sol), *pareto_sol);
 			if(euclid_dist_tmp < min_dist  or min_dist == -1)
 				min_dist = euclid_dist_tmp;
 		}
@@ -668,7 +630,7 @@ float Evaluator::maximum_distance_D2(list< shared_ptr< Alternative > > OPT_Solut
 
 
 
-void Evaluator::save_evolution_indicators(list< shared_ptr< Alternative > > OPT_Solution, string filename_instance, int info, int sizer, float time_cpu, int pop_size){
+void Evaluator::save_evolution_indicators(list< vector< float > > OPT_Solution, string filename_instance, int info, int sizer, float time_cpu, int pop_size){
 
 	float d1 = average_distance_D1(OPT_Solution);
 
@@ -678,7 +640,7 @@ void Evaluator::save_evolution_indicators(list< shared_ptr< Alternative > > OPT_
 }
 
 
-void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int sizer, int info, float time_cpu){
+void Evaluator::evaluate_PF(list< vector< float > > OPT_Solution, int sizer, int info, float time_cpu){
 
 	eval_values[sizer][info][0] += evaluate_Dist_ratio(OPT_Solution);
 //	eval_values[sizer][info][1] += ;   STD
@@ -696,8 +658,7 @@ void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int 
 void Evaluator::save_PF_evaluation_map(){
 
 
-	ofstream fic_write(dist_time_file.c_str(), ios::app);
-	ofstream fic2_write(pf_indicators_file.c_str(), ios::app);
+	ofstream fic_write(indicator_file.c_str(), ios::app);
 
 	for(map<int, map < int, vector< float > > >::iterator iter = eval_values.begin(); iter != eval_values.end(); ++iter){
 
@@ -707,22 +668,18 @@ void Evaluator::save_PF_evaluation_map(){
 				eval_values[(*iter).first][(*step).first][i] *= 1.0 / K_replication;
 				fic_write<<eval_values[(*iter).first][(*step).first][i]<<" ";
 			}
-			fic_write<<(*step).first<<endl;
+			fic_write<<(*step).first<<"  ";
 
 
 			for(int i = 3; i < (int) (*step).second.size(); i++){
 				eval_values[(*iter).first][(*step).first][i] *= 1.0 / K_replication;
-				fic2_write<<eval_values[(*iter).first][(*step).first][i]<<" ";
+				fic_write<<eval_values[(*iter).first][(*step).first][i]<<" ";
 			}
-			fic2_write<<(*step).first<<endl;
-			Tools::separate_results(filename_instance+"_"+to_string((*step).first)+"_"+to_string((*iter).first)+".ev","______________K"+to_string(K_replication));
+			fic_write<<(*step).first<<endl;
 		}
-		Tools::separate_results(dist_time_file,"_____"+to_string((*iter).first));
-		Tools::separate_results(pf_indicators_file,"_____"+to_string((*iter).first));
+		Tools::separate_results(indicator_file,"_____"+to_string((*iter).first));
 	}
 	fic_write.close();
-	fic2_write.close();
-
 
 
 	//REINITIALIZE PARAMETERS
@@ -732,13 +689,13 @@ void Evaluator::save_PF_evaluation_map(){
 }
 
 
-void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution,  float time_cpu){
+void Evaluator::evaluate_PF(list< vector< float > > OPT_Solution,  float time_cpu){
 
 	time += time_cpu;
 
 	Point_indicators[0] += evaluate_Dist_ratio(OPT_Solution);
 
-	vector<float> tmp_std = evaluate_standard_deviation_from_OPT_point();
+//	Point_indicators[1] += evaluate_standard_deviation_from_OPT_point();
 
 	PF_indicators[0] += average_distance_D1(OPT_Solution);
 
@@ -756,29 +713,22 @@ void Evaluator::evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution,  flo
 
 void Evaluator::save_PF_evaluation(){
 
-	ofstream fic_write(dist_time_file.c_str(), ios::app);
+	ofstream fic_write(indicator_file.c_str(), ios::app);
 
 	for(int i = 0; i < (int) Point_indicators.size(); i++){
 		Point_indicators[i] *= 1.0 / K_replication;
 		fic_write<<Point_indicators[i]<<" ";
 	}
 
-	fic_write<<time/K_replication*1.0<<" ";
+	fic_write<<time/K_replication*1.0<<"  ";
 
-	fic_write<<endl;
-	fic_write.close();
-
-
-	ofstream fic2_write(pf_indicators_file.c_str(), ios::app);
 
 	for(int i = 0; i < (int) PF_indicators.size(); i++){
 		PF_indicators[i] *= 1.0 / K_replication;
-		fic2_write<<PF_indicators[i]<<" ";
+		fic_write<<PF_indicators[i]<<" ";
 	}
-	fic2_write<<endl;
-	fic2_write.close();
-
-//	cout<<"K = "<<K_replication<<endl;
+	fic_write<<endl;
+	fic_write.close();
 
 
 	//REINITIALIZE PARAMETERS
@@ -791,6 +741,77 @@ void Evaluator::save_PF_evaluation(){
 	cpt_k=0;
 
 }
+/**
+ * ************************************************* SAVE FROM POPULATION FILE *************************************************
+ */
+
+
+void Evaluator::save_information(string file_population){
+
+	vector< float > indicator(6,0.);
+	float nb_iteration = 0.;
+
+
+	for(int k = 0; k < K_replication; k++){
+		string file_extension = file_population+"/Pop_"+to_string(k)+".pop";
+		ifstream fic_read(file_extension);
+		string line;
+		vector< float > vector_line;
+		list< vector< float > > Population;
+		vector< float > time_exec;
+		vector< int > index;
+
+		if (!(fic_read) or file_extension.find(".pop") == std::string::npos){
+			cerr<<"Error occurred save information from .pop file"<<endl;
+		}
+
+
+		while(!fic_read.eof()){
+			getline(fic_read,line);
+			if (line.size() == 0)
+				continue;
+
+			vector_line = Tools::decompose_line_to_float_vector(line);
+			vector< float > criteria_value(vector_line.begin(), vector_line.begin() + p_criteria);
+			Population.push_back( criteria_value);
+			time_exec.push_back( *(vector_line.begin() + p_criteria ) );
+
+//			index.push_back( *(vector_line.begin() + p_criteria + 1));
+			nb_iteration++;
+		}
+
+		update_covered_OPT_Solution(Population);
+
+		indicator[0] += evaluate_Dist_ratio(Population);
+		indicator[1] += 0;
+		indicator[2] += time_exec.back();      // LAST ONE
+		indicator[3] += average_distance_D1(Population);
+		indicator[4] += maximum_distance_D2(Population);
+		indicator[5] += PR_D3(Population);
+
+		fic_read.close();
+	}
+
+
+	ofstream fic_write(indicator_file.c_str(), ios::app);
+
+	for(int i = 0; i < (int) indicator.size(); i++){
+		indicator[i] *= 1.0 / K_replication;
+		fic_write<<indicator[i]<<" ";
+	}
+
+	fic_write<<endl;
+	fic_write.close();
+
+}
+
+
+
+
+
+
+
+
 
 
 

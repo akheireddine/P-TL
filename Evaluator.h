@@ -18,8 +18,7 @@ class Evaluator{
 private:
 
 	string filename_instance;
-	string dist_time_file;
-	string pf_indicators_file;
+	string indicator_file;
 	list< vector< float > > PFront;                 //covered pareto front
 	string PF_filename;
 	vector< float > OPT_Alternative;
@@ -48,8 +47,8 @@ public:
 	vector< tuple<float, vector< float> > > Items_information;
 
 	//CONSTRUCTOR
-	Evaluator(string filename, string WS_DM_preferences, string SDT_file, string PFI_file);
-	Evaluator(string filename, string WS_DM_preferences, string SDT_file, string PFI_file, vector<int> sizes, vector<int> information_rate, int K);
+	Evaluator(string filename, string WS_DM_preferences, string INDIC_file);
+	Evaluator(string filename, string WS_DM_preferences, string INDIC_file, vector<int> sizes, vector<int> information_rate, int K);
 
 	~Evaluator(){
 
@@ -81,6 +80,9 @@ public:
 
 	};
 
+	//SETTERS
+	void set_K_replication(int k){ K_replication = k;};
+	void set_indicator_file(string new_file){ indicator_file = new_file; };
 	//GETTERS
 	string get_filename_instance(){ return filename_instance; };
 	list< vector<float > > get_PFront(){ return PFront; };
@@ -95,7 +97,7 @@ public:
 
 	//READ FILES
 	void readParetoFront();
-	void readParetoFront_locally();
+//	void readParetoFront_locally();
 
 	void update_covered_PFront();
 	void readFilenameInstance(string filename);
@@ -104,19 +106,19 @@ public:
 
 
 	//INTERN OPERATIONS
-	bool in_search_space(vector<float> v,vector<float> minus, vector<float> maxus);
+//	bool in_search_space(vector<float> v,vector<float> minus, vector<float> maxus);
 
 
 
 
 	//EVALUATION
-	float nearest_alternative(vector< float > & vect_criteria, list< shared_ptr< Alternative > > OPT_Solution);
+	float nearest_alternative(vector< float > & vect_criteria, list< vector< float > > OPT_Solution);
 	vector< float > OPT_Alternative_PLNE(vector<float> WS_vector);
-	float evaluate_Dist_ratio(list< shared_ptr< Alternative > > OPT_Solution);
+	float evaluate_Dist_ratio(list< vector< float > > OPT_Solution);
 
 
-	void evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, float time_cpu);
-	void evaluate_PF(list< shared_ptr< Alternative > > OPT_Solution, int sizer, int info, float time_cpu);
+	void evaluate_PF(list< vector< float > > OPT_Solution, float time_cpu);
+	void evaluate_PF(list< vector< float > > OPT_Solution, int sizer, int info, float time_cpu);
 	vector< float > evaluate_standard_deviation_from_OPT_point();
 
 	void save_PF_evaluation();
@@ -129,16 +131,20 @@ public:
 
 
 	//INDICATORS
-	float average_distance_D1(list< shared_ptr< Alternative > > OPT_Solution);
-	float maximum_distance_D2(list< shared_ptr< Alternative > > OPT_Solution);
-	float PR_D3(list< shared_ptr< Alternative > > OPT_Solution);
+	float average_distance_D1(list< vector< float > > OPT_Solution);
+	float maximum_distance_D2(list< vector< float > > OPT_Solution);
+	float PR_D3(list< vector< float > > OPT_Solution);
 
 
 
-	void update_covered_OPT_Solution(list< shared_ptr< Alternative > > & Opt_Solution);
+	void update_covered_OPT_Solution(list< vector< float > > & Opt_Solution);
 
 
-	void save_evolution_indicators(list< shared_ptr< Alternative > > OPT_Solution, string filename_instance, int info, int sizer, float time_cpu, int pop_size);
+	void save_evolution_indicators(list< vector< float > > OPT_Solution, string filename_instance, int info, int sizer, float time_cpu, int pop_size);
+
+
+
+	void save_information(string file_population);
 
 };
 

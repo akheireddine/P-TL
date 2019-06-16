@@ -141,6 +141,35 @@ void Tools::copy_into(string src_filename, string dest_filename){
 }
 
 
+
+/***
+ * **************************************************************************************************
+ */
+
+
+vector< float > Tools::transform(vector< float > src, vector< vector< float > > ws_matrix){
+	vector< float > dest(src.size(),0);
+	for(int i = 0; i < (int)ws_matrix[0].size(); i++){
+		for(int j = 0; j < (int)src.size() ; j++){
+			dest[i] += ws_matrix[j][i] * src[j];
+		}
+	}
+	return dest;
+}
+
+bool Tools::in_search_space(vector<float> v,vector<float> minus, vector<float> maxus){
+	for(int j = 0; j < (int)v.size(); j++)
+		if( (v[j] < minus[j] )  or (v[j] > maxus[j]) )
+				return false;
+	return true;
+}
+
+/***
+ * **************************************************************************************************
+ */
+
+
+
 vector<float> Tools::generate_random_WS_aggregator(int n_w){
 
 	float sum = 0;

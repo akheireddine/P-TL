@@ -14,12 +14,8 @@ class MainKnapsack;
 
 extern list<set<int>> init_population;
 
-extern int GRAIN;
 extern int INFO;
-extern int K_replication;
-
-
-extern shared_ptr< Evaluator > eval_ks;
+extern int k_replication;
 
 
 

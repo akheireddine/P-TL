@@ -224,17 +224,17 @@ void MainKnapsack::Ordered_Selection(list< string > & dominated_solutions, list<
 
 //		//AVERAGE TA
 //		float aggreg_value = 0;
-//		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+//		for(list< shared_ptr< Alternative > >::iterator alt_opt = Archive.begin(); alt_opt != Archive.end(); ++alt_opt){
 //			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
 //		}
 //
-//		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
+//		float val_key = abs( aggreg_value*1.0 / (int)Archive.size() );
 
 
 
 		//MIN TA
 		float aggreg_value = -1;
-		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+		for(list< shared_ptr< Alternative > >::iterator alt_opt = Archive.begin(); alt_opt != Archive.end(); ++alt_opt){
 			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
 			if(aggreg_value == -1   or  (val < aggreg_value)  )
 				aggreg_value =  val;
@@ -299,7 +299,7 @@ void MainKnapsack::MOLS(double starting_time_sec){
 	//First initialization NO FILTERING
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
 		dic_Alternative[ *p ] = make_shared< AlternativeKnapsack >( *p, this, WS_matrix);
-		OPT_Solution.push_back( dic_Alternative[ *p ] );
+		Archive.push_back( dic_Alternative[ *p ] );
 	}
 
 	index++;
@@ -311,7 +311,7 @@ void MainKnapsack::MOLS(double starting_time_sec){
 		Population.pop_front();
 
 
-		save_information(filename_population+"/MOLS/"+to_string(INFO)+"/Pop_K"+to_string(K_replication)+".pop", alt->get_criteria_values(), (clock()* 1./CLOCKS_PER_SEC - starting_time_sec), index );
+		save_information(filename_population+"/MOLS/"+to_string(INFO)+"/Pop_"+to_string(k_replication)+".pop", alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
 
 		set< string > current_neighbors  = alt->get_neighborhood();
 
@@ -345,7 +345,7 @@ void MainKnapsack::MOLS(double starting_time_sec){
 		//filter
 		for(list< string >::iterator id_new_alt = Local_front.begin(); id_new_alt != Local_front.end(); ++id_new_alt){
 			shared_ptr< AlternativeKnapsack > new_alt = dic_Alternative[*id_new_alt];
-			if( Update_Archive(new_alt, OPT_Solution) ){
+			if( Update_Archive(new_alt, Archive) ){
 				Population.push_back(*id_new_alt);
 				new_pop++;
 			}
@@ -369,7 +369,13 @@ void MainKnapsack::MOLS(double starting_time_sec){
 	}
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
+
+	OPT_Solution.clear();
+	for(list< shared_ptr< Alternative > >::iterator it = Archive.begin(); it != Archive.end(); ++it){
+		OPT_Solution.push_back((*it)->get_criteria_values());
+	}
 }
+
 
 
 
@@ -388,7 +394,7 @@ void MainKnapsack::MOLS_Cst_PSize(double starting_time_sec, int UB_Population_si
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
 		dic_Alternative[ *p ] = make_shared< AlternativeKnapsack >( *p, this, WS_matrix );
-		OPT_Solution.push_back( dic_Alternative[ *p ] );
+		Archive.push_back( dic_Alternative[ *p ] );
 	}
 
 
@@ -399,7 +405,7 @@ void MainKnapsack::MOLS_Cst_PSize(double starting_time_sec, int UB_Population_si
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_information(filename_population+"/MOLS_PSize/"+to_string(UB_Population_size)+"/"+to_string(INFO)+"/Pop_K"+to_string(K_replication)+".pop", alt->get_criteria_values(), (clock()* 1./CLOCKS_PER_SEC - starting_time_sec), index );
+		save_information(filename_population+"/MOLS_PSize/"+to_string(UB_Population_size)+"/"+to_string(INFO)+"/Pop_"+to_string(k_replication)+".pop", alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -433,11 +439,11 @@ void MainKnapsack::MOLS_Cst_PSize(double starting_time_sec, int UB_Population_si
 
 			shared_ptr< AlternativeKnapsack > new_alt = dic_Alternative[*id_new_alt];
 
-			list< shared_ptr<Alternative> > local_OPT_Sol( OPT_Solution.begin(), OPT_Solution.end());
+			list< shared_ptr<Alternative> > local_Archive( Archive.begin(), Archive.end());
 
-			if( Update_Archive(new_alt, local_OPT_Sol, next_Population) and  (int)next_Population.size() < UB_Population_size ){
+			if( Update_Archive(new_alt, local_Archive, next_Population) and  (int)next_Population.size() < UB_Population_size ){
 				next_Population.push_back(*id_new_alt);
-				OPT_Solution = local_OPT_Sol;
+				Archive = local_Archive;
 			}
 			else
 				dic_Alternative[*id_new_alt].reset();
@@ -471,6 +477,11 @@ void MainKnapsack::MOLS_Cst_PSize(double starting_time_sec, int UB_Population_si
 	}
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
+
+	OPT_Solution.clear();
+	for(list< shared_ptr< Alternative > >::iterator it = Archive.begin(); it != Archive.end(); ++it){
+		OPT_Solution.push_back((*it)->get_criteria_values());
+	}
 }
 
 
@@ -489,7 +500,7 @@ void MainKnapsack::MOLS_Cst_PSize_RS(double starting_time_sec, int UB_Population
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
 		dic_Alternative[ *p ] = make_shared< AlternativeKnapsack >( *p, this, WS_matrix );
-		OPT_Solution.push_back( dic_Alternative[ *p ] );
+		Archive.push_back( dic_Alternative[ *p ] );
 	}
 
 
@@ -499,7 +510,7 @@ void MainKnapsack::MOLS_Cst_PSize_RS(double starting_time_sec, int UB_Population
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_information(filename_population+"/MOLS_PSize_DIV/RS/"+to_string(UB_Population_size)+"/"+to_string(INFO)+"/Pop_K"+to_string(K_replication)+".pop", alt->get_criteria_values(), (clock()* 1./CLOCKS_PER_SEC - starting_time_sec), index );
+		save_information(filename_population+"/MOLS_PSize_DIV/RS/"+to_string(UB_Population_size)+"/"+to_string(INFO)+"/Pop_"+to_string(k_replication)+".pop", alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -537,11 +548,11 @@ void MainKnapsack::MOLS_Cst_PSize_RS(double starting_time_sec, int UB_Population
 			shared_ptr< AlternativeKnapsack > new_alt = dic_Alternative[*id_new_alt];
 
 			// a solution in LOcal_front could be non-dominated in the Archive but the next_Population size has exceeded UB_Population
-			list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
+			list< shared_ptr<Alternative> > local_Archive ( Archive.begin(), Archive.end());
 
-			if( Update_Archive(new_alt, local_OPT_Sol, next_Population) and  (int)next_Population.size() < UB_Population_size ){
+			if( Update_Archive(new_alt, local_Archive, next_Population) and  (int)next_Population.size() < UB_Population_size ){
 				next_Population.push_back(*id_new_alt);
-				OPT_Solution = local_OPT_Sol;
+				Archive = local_Archive;
 			}
 			else {
 				Dominated_alt.push_back(*id_new_alt);
@@ -591,6 +602,11 @@ void MainKnapsack::MOLS_Cst_PSize_RS(double starting_time_sec, int UB_Population
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
 
+	OPT_Solution.clear();
+	for(list< shared_ptr< Alternative > >::iterator it = Archive.begin(); it != Archive.end(); ++it){
+		OPT_Solution.push_back((*it)->get_criteria_values());
+	}
+
 }
 
 
@@ -609,7 +625,7 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
 		dic_Alternative[ *p ] = make_shared< AlternativeKnapsack >( *p, this, WS_matrix );
-		OPT_Solution.push_back( dic_Alternative[ *p ] );
+		Archive.push_back( dic_Alternative[ *p ] );
 	}
 
 
@@ -619,7 +635,7 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_information(filename_population+"/MOLS_PSize_DIV/OS"+to_string(UB_Population_size)+"/"+to_string(INFO)+"/Pop_K"+to_string(K_replication)+".pop", alt->get_criteria_values(), (clock()* 1./CLOCKS_PER_SEC - starting_time_sec), index );
+		save_information(filename_population+"/MOLS_PSize_DIV/OS/"+to_string(UB_Population_size)+"/"+to_string(INFO)+"/Pop_"+to_string(k_replication)+".pop", alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -657,11 +673,11 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
 			shared_ptr< AlternativeKnapsack > new_alt = dic_Alternative[*id_new_alt];
 
 			// a solution in LOcal_front could be non-dominated in the Archive but the next_Population size has exceeded UB_Population
-			list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
+			list< shared_ptr<Alternative> > local_Archive ( Archive.begin(), Archive.end());
 
-			if( Update_Archive(new_alt, local_OPT_Sol, next_Population) and  (int)next_Population.size() < UB_Population_size ){
+			if( Update_Archive(new_alt, local_Archive, next_Population) and  (int)next_Population.size() < UB_Population_size ){
 				next_Population.push_back(*id_new_alt);
-				OPT_Solution = local_OPT_Sol;
+				Archive = local_Archive;
 			}
 			else {
 				Dominated_alt.push_back(*id_new_alt);
@@ -710,6 +726,11 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
 
+	OPT_Solution.clear();
+	for(list< shared_ptr< Alternative > >::iterator it = Archive.begin(); it != Archive.end(); ++it){
+		OPT_Solution.push_back((*it)->get_criteria_values());
+	}
+
 }
 
 
@@ -739,7 +760,7 @@ void MainKnapsack::MOLS(double starting_time_sec,int ITER){
 	//First initialization NO FILTERING
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
 		dic_Alternative[ *p ] = make_shared< AlternativeKnapsack >( *p, this, WS_matrix);
-		OPT_Solution.push_back( dic_Alternative[ *p ] );
+		Archive.push_back( dic_Alternative[ *p ] );
 	}
 
 	index++;
@@ -795,7 +816,7 @@ void MainKnapsack::MOLS(double starting_time_sec,int ITER){
 
 			shared_ptr< AlternativeKnapsack > new_alt = dic_Alternative[*id_new_alt];
 
-			if( Update_Archive(new_alt, OPT_Solution) ){
+			if( Update_Archive(new_alt, Archive) ){
 				Population.push_back(*id_new_alt);
 				new_pop++;
 			}
@@ -820,6 +841,12 @@ void MainKnapsack::MOLS(double starting_time_sec,int ITER){
 	}
 
 	cout<<"Number of iteration "<<nb_iteration<<endl;
+
+	OPT_Solution.clear();
+	for(list< shared_ptr< Alternative > >::iterator it = Archive.begin(); it != Archive.end(); ++it){
+		OPT_Solution.push_back((*it)->get_criteria_values());
+	}
+
 }
 
 void MainKnapsack::HYBRID_WS_PLS(double starting_time_sec,int ITER){
@@ -829,9 +856,9 @@ void MainKnapsack::HYBRID_WS_PLS(double starting_time_sec,int ITER){
 
 	//MUST CLEAN CURRENT POPULATION AND REPLACE IT WITH OPT SOLUTION
 //	Population.clear();
-	for(list< shared_ptr<Alternative> >::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); ++alt)
+	for(list< shared_ptr<Alternative> >::iterator alt = Archive.begin(); alt != Archive.end(); ++alt)
 		Population.push_back((*alt)->get_id_alt());
-	OPT_Solution.clear();
+	Archive.clear();
 
 	change_to_pareto_selection();
 
@@ -858,17 +885,17 @@ void MainKnapsack::HYBRID_PLS_WS(double starting_time_sec, int ITER){
 
 	//MUST CLEAN DICT ALTERNATIVE AND KEEP OPT SOLUTION
 //	Population.clear();
-	for(list< shared_ptr<Alternative> >::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); ++alt)
+	for(list< shared_ptr<Alternative> >::iterator alt = Archive.begin(); alt != Archive.end(); ++alt)
 		Population.push_back((*alt)->get_id_alt());
 
 	//WS
 	update_alternatives(Population,false);
 
-	cout<<"Number of solution found with PLS : "<<OPT_Solution.size()<<endl;
-	OPT_Solution.clear();
+	cout<<"Number of solution found with PLS : "<<Archive.size()<<endl;
+	Archive.clear();
 
 	MOLS(starting_time_sec);
-	cout<<"Number of solution found with WS : "<<OPT_Solution.size()<<endl;
+	cout<<"Number of solution found with WS : "<<Archive.size()<<endl;
 }
 
 
@@ -879,7 +906,7 @@ void MainKnapsack::SWITCH_PLS_WS(double starting_time_sec, int ITER_PLS, int ITE
 
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
 		dic_Alternative[ *p ] = make_shared< AlternativeKnapsack >( *p, this, WS_matrix);
-		OPT_Solution.push_back( dic_Alternative[ *p ] );
+		Archive.push_back( dic_Alternative[ *p ] );
 	}
 
 	while( !Population.empty()  and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
@@ -890,16 +917,16 @@ void MainKnapsack::SWITCH_PLS_WS(double starting_time_sec, int ITER_PLS, int ITE
 
 		MOLS(starting_time_sec,ITER_PLS);
 
-		cout<<"PLS : "<<OPT_Solution.size()<<endl;
+		cout<<"PLS : "<<Archive.size()<<endl;
 
 		index++;
 
 //		MUST CLEAN DICT ALTERNATIVE AND KEEP OPT SOLUTION
-		for(list< shared_ptr<Alternative> >::iterator alt = OPT_Solution.begin(); alt != OPT_Solution.end(); ++alt)
+		for(list< shared_ptr<Alternative> >::iterator alt = Archive.begin(); alt != Archive.end(); ++alt)
 			if( find(Population.begin(), Population.end() , (*alt)->get_id_alt()) == Population.end())
 				Population.push_back((*alt)->get_id_alt());
 
-		OPT_Solution.clear();
+		Archive.clear();
 
 		//WS
 		update_alternatives(Population,false);
@@ -907,7 +934,7 @@ void MainKnapsack::SWITCH_PLS_WS(double starting_time_sec, int ITER_PLS, int ITE
 
 		if(ITER_WS > 2)
 			ITER_WS -= 1;
-		cout<<"WS : "<<OPT_Solution.size()<<endl;
+		cout<<"WS : "<<Archive.size()<<endl;
 
 	}
 
@@ -925,7 +952,7 @@ void MainKnapsack::MOLS_local_Archive(double starting_time_sec){
 
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
 //		dic_Alternative[ *p ] = new AlternativeKnapsack( *p , this, WS_matrix);;
-		(dic_Alternative[ *p ])->set_local_Archive(OPT_Solution);
+		(dic_Alternative[ *p ])->set_local_Archive(Archive);
 
 	}
 //	index++;
@@ -1015,8 +1042,13 @@ void MainKnapsack::MOLS_local_Archive(double starting_time_sec){
 	for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
 
 		if(dic_Alternative[(*it).first].use_count() > 1 )
-			OPT_Solution.push_back((*it).second);
+			Archive.push_back((*it).second);
 
+	}
+
+	OPT_Solution.clear();
+	for(list< shared_ptr< Alternative > >::iterator it = Archive.begin(); it != Archive.end(); ++it){
+		OPT_Solution.push_back((*it)->get_criteria_values());
 	}
 
 }
@@ -1090,7 +1122,6 @@ bool MainKnapsack::Update_Archive(shared_ptr< Alternative > p, list< shared_ptr<
 		//could be a solution in the Population and we want to explore it anyway
 		set_SOL.remove(*rm);
 		(*rm).reset();
-
 	}
 
 	set_SOL.push_back(p);
@@ -1210,7 +1241,7 @@ bool MainKnapsack::Update_Archive(shared_ptr< Alternative > p, list< shared_ptr<
 //	//First initialization
 //	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
 //		dic_Alternative[ *p ] = make_shared< AlternativeKnapsack >( *p, this, WS_matrix );
-//		OPT_Solution.push_back( dic_Alternative[ *p ] );
+//		Archive.push_back( dic_Alternative[ *p ] );
 //	}
 //
 //
@@ -1260,11 +1291,11 @@ bool MainKnapsack::Update_Archive(shared_ptr< Alternative > p, list< shared_ptr<
 //			shared_ptr< AlternativeKnapsack > new_alt = dic_Alternative[*id_new_alt];
 //
 //			// a solution in LOcal_front could be non-dominated in the Archive but the next_Population size has exceeded UB_Population
-//			list< shared_ptr<Alternative> > local_OPT_Sol ( OPT_Solution.begin(), OPT_Solution.end());
+//			list< shared_ptr<Alternative> > local_Archive ( Archive.begin(), Archive.end());
 //
-//			if( Update_Archive(new_alt, local_OPT_Sol, next_Population) and  (int)next_Population.size() < UB_Population_size ){
+//			if( Update_Archive(new_alt, local_Archive, next_Population) and  (int)next_Population.size() < UB_Population_size ){
 //				next_Population.push_back(*id_new_alt);
-//				OPT_Solution = local_OPT_Sol;
+//				Archive = local_Archive;
 //			}
 //			else {
 //				Dominated_alt.push_back(*id_new_alt);
@@ -1365,7 +1396,7 @@ bool MainKnapsack::Update_Archive(shared_ptr< Alternative > p, list< shared_ptr<
 //
 //	//First initialization
 //	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
-//		OPT_Solution.push_back( dic_Alternative[ *p ] );
+//		Archive.push_back( dic_Alternative[ *p ] );
 //		step++;
 //	}
 //
@@ -1405,7 +1436,7 @@ bool MainKnapsack::Update_Archive(shared_ptr< Alternative > p, list< shared_ptr<
 //
 //				AlternativeKnapsack * new_alt = dic_Alternative[*id_new_alt];
 //
-//				if( Update_Archive(new_alt, OPT_Solution) ){
+//				if( Update_Archive(new_alt, Archive) ){
 //					Population.push_back(*id_new_alt);
 //				}
 //				else{
@@ -1435,7 +1466,7 @@ bool MainKnapsack::Update_Archive(shared_ptr< Alternative > p, list< shared_ptr<
 //
 //	filter_efficient_set_decision_space();
 //
-//	return OPT_Solution;
+//	return Archive;
 //
 //}
 
@@ -1456,16 +1487,16 @@ bool MainKnapsack::Update_Archive(shared_ptr< Alternative > p, list< shared_ptr<
 //
 //		//		//AVERAGE TA
 ////		float aggreg_value = -1;
-////		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+////		for(list< shared_ptr< Alternative > >::iterator alt_opt = Archive.begin(); alt_opt != Archive.end(); ++alt_opt){
 ////			aggreg_value +=  (f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
 ////		}
 ////
-////		float val_key = abs( aggreg_value*1.0 / (int)OPT_Solution.size() );
+////		float val_key = abs( aggreg_value*1.0 / (int)Archive.size() );
 //
 //
 //		//MIN TA
 //		float aggreg_value = -1;
-//		for(list< shared_ptr< Alternative > >::iterator alt_opt = OPT_Solution.begin(); alt_opt != OPT_Solution.end(); ++alt_opt){
+//		for(list< shared_ptr< Alternative > >::iterator alt_opt = Archive.begin(); alt_opt != Archive.end(); ++alt_opt){
 //			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
 //			if(aggreg_value == -1   or  (val < aggreg_value)  )
 //				aggreg_value =  val;
