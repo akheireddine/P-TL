@@ -154,7 +154,16 @@ void MainKnapsack::GenerateInitialPopulation(int size_population){
  */
 
 void MainKnapsack::save_information(string filename, vector< float > criteria_vect, float time_cpu, int index){
-	ofstream fic(filename.c_str(),ios::app);
+
+//	const char * exist_dir = ("if [ ! -d "+filename+" ]; then mkdir -p "+filename+"; fi").c_str();
+//	system(exist_dir);
+
+	system(("if [ ! -d "+filename+" ]; then mkdir -p "+filename+"; fi").c_str());
+
+
+	string extends_file = filename+"/Pop_"+to_string(k_replication)+".pop";
+
+	ofstream fic(extends_file.c_str(),ios::app);
 
 	fic<<Tools::print_vector(criteria_vect)<<" "<<time_cpu<<" "<<index<<endl;
 
@@ -311,7 +320,7 @@ void MainKnapsack::MOLS(double starting_time_sec){
 		Population.pop_front();
 
 
-		save_information(filename_population+"/MOLS/"+to_string(INFO)+"/Pop_"+to_string(k_replication)+".pop", alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
+		save_information(filename_population+"/MOLS/"+to_string(INFO), alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
 
 		set< string > current_neighbors  = alt->get_neighborhood();
 
@@ -405,7 +414,7 @@ void MainKnapsack::MOLS_Cst_PSize(double starting_time_sec, int UB_Population_si
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_information(filename_population+"/MOLS_PSize/"+to_string(UB_Population_size)+"/"+to_string(INFO)+"/Pop_"+to_string(k_replication)+".pop", alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
+		save_information(filename_population+"/MOLS_PSize/"+to_string(UB_Population_size)+"/"+to_string(INFO), alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -510,7 +519,7 @@ void MainKnapsack::MOLS_Cst_PSize_RS(double starting_time_sec, int UB_Population
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_information(filename_population+"/MOLS_PSize_DIV/RS/"+to_string(UB_Population_size)+"/"+to_string(INFO)+"/Pop_"+to_string(k_replication)+".pop", alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
+		save_information(filename_population+"/MOLS_PSize_DIV/RS/"+to_string(UB_Population_size)+"/"+to_string(INFO), alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -635,7 +644,7 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_information(filename_population+"/MOLS_PSize_DIV/OS/"+to_string(UB_Population_size)+"/"+to_string(INFO)+"/Pop_"+to_string(k_replication)+".pop", alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
+		save_information(filename_population+"/MOLS_PSize_DIV/OS/"+to_string(UB_Population_size)+"/"+to_string(INFO), alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
 
 		set< string > current_neighbors = alt->get_neighborhood();
 

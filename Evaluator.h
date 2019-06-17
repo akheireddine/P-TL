@@ -47,7 +47,7 @@ public:
 	vector< tuple<float, vector< float> > > Items_information;
 
 	//CONSTRUCTOR
-	Evaluator(string filename, string WS_DM_preferences, string INDIC_file);
+	Evaluator(string filename, string WS_DM_preferences, string INDIC_file="");
 	Evaluator(string filename, string WS_DM_preferences, string INDIC_file, vector<int> sizes, vector<int> information_rate, int K);
 
 	~Evaluator(){
@@ -144,7 +144,8 @@ public:
 
 
 
-	void save_information(string file_population);
+	void save_information(string file_population, string save_path, string format);
+	void save_other_information(string file_population, string save_path, string format);
 
 };
 

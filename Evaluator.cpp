@@ -200,7 +200,9 @@ void Evaluator::update_covered_PFront(){
 
 		for(list< vector< float > >::iterator e = PFront.begin(); e != PFront.end(); ++e){
 
-			int val =  dominates(*e,it_trans);
+			vector< float > e_trans = Tools::transform(*e, WS_matrix);
+
+			int val =  dominates(e_trans,it_trans);
 			if( val == 1 ){
 				dominated = true;
 				break;
@@ -213,7 +215,7 @@ void Evaluator::update_covered_PFront(){
 			for(list< vector< float > >::iterator rm = to_rm.begin(); rm != to_rm.end(); ++rm){
 				PFront.remove(*rm);
 			}
-			PFront.push_back(it_trans);
+			PFront.push_back(*it);
 		}
 	}
 
@@ -256,6 +258,8 @@ void Evaluator::update_covered_OPT_Solution(list< vector< float > > & Opt_Soluti
 			Opt_Solution.push_back(*it);
 		}
 	}
+
+
 
 //	cout<<"OPT/PE   : "<<Opt_Solution.size()<<" / "<<PFront.size()<<endl;
 }
@@ -746,10 +750,75 @@ void Evaluator::save_PF_evaluation(){
  */
 
 
-void Evaluator::save_information(string file_population){
+void Evaluator::save_information(string file_population, string save_path, string format){
+
+	system(("if [ ! -d "+save_path+" ]; then mkdir -p "+save_path+"; fi").c_str());
+
+	vector< float > indicator(7,0.);
+
+
+	for(int k = 0; k < K_replication; k++){
+		string file_extension = file_population+"/Pop_"+to_string(k)+".pop";
+		ifstream fic_read(file_extension);
+		string line;
+		vector< float > vector_line;
+		list< vector< float > > Population;
+		vector< float > time_exec;
+		vector< int > index;
+		int nb_iteration = 0.;
+
+		if (!(fic_read) or file_extension.find(".pop") == std::string::npos){
+			cerr<<"Error occurred save information from .pop file"<<endl;
+		}
+
+
+		while(!fic_read.eof()){
+			getline(fic_read,line);
+			if (line.size() == 0)
+				continue;
+
+			vector_line = Tools::decompose_line_to_float_vector(line);
+			vector< float > criteria_value(vector_line.begin(), vector_line.begin() + p_criteria);
+			Population.push_back( criteria_value);
+			time_exec.push_back( *(vector_line.begin() + p_criteria ) );
+//			index.push_back( *(vector_line.begin() + p_criteria + 1));
+			nb_iteration++;
+		}
+
+		update_covered_OPT_Solution(Population);
+
+		indicator[0] += evaluate_Dist_ratio(Population);
+		indicator[1] += 0;
+		indicator[2] += time_exec.back();      // LAST ONE
+		indicator[3] += nb_iteration;
+		indicator[4] += average_distance_D1(Population);
+		indicator[5] += maximum_distance_D2(Population);
+		indicator[6] += PR_D3(Population);
+
+		fic_read.close();
+	}
+
+
+	ofstream fic_write((save_path+"/K_"+to_string(K_replication)+"."+format).c_str(), ios::app);
+
+	for(int i = 0; i < (int) indicator.size(); i++){
+		indicator[i] *= 1.0 / K_replication;
+		fic_write<<indicator[i]<<" ";
+	}
+
+	fic_write<<endl;
+	fic_write.close();
+
+}
+
+
+
+//evolution of INDICATORS with time
+void Evaluator::save_other_information(string file_population, string save_path, string format){
+
+	system(("if [ ! -d "+save_path+" ]; then mkdir -p "+save_path+"; fi").c_str());
 
 	vector< float > indicator(6,0.);
-	float nb_iteration = 0.;
 
 
 	for(int k = 0; k < K_replication; k++){
@@ -775,40 +844,53 @@ void Evaluator::save_information(string file_population){
 			vector< float > criteria_value(vector_line.begin(), vector_line.begin() + p_criteria);
 			Population.push_back( criteria_value);
 			time_exec.push_back( *(vector_line.begin() + p_criteria ) );
-
-//			index.push_back( *(vector_line.begin() + p_criteria + 1));
-			nb_iteration++;
+			index.push_back( *(vector_line.begin() + p_criteria + 1));
 		}
 
-		update_covered_OPT_Solution(Population);
+		int i_start = 0;
+		for(int i = 0; i < (int)index.size(); i++){
 
-		indicator[0] += evaluate_Dist_ratio(Population);
-		indicator[1] += 0;
-		indicator[2] += time_exec.back();      // LAST ONE
-		indicator[3] += average_distance_D1(Population);
-		indicator[4] += maximum_distance_D2(Population);
-		indicator[5] += PR_D3(Population);
+			if( index[i] != index[i + 1] or (i == (int)index.size() -1 )){
+
+				list< vector <float > >::iterator it_pop_start = Population.begin(), it_pop_end = Population.begin();
+				advance(it_pop_start, i_start);
+				advance(it_pop_end,i + 1);
+
+				list< vector <float > > curr_Population( it_pop_start, it_pop_end);
+
+				update_covered_OPT_Solution(curr_Population);
+
+//				indicator[0] = evaluate_Dist_ratio(curr_Population);
+//				indicator[1] = 0;
+				indicator[2] = time_exec[i];		      // LAST ONE
+				indicator[3] = average_distance_D1(curr_Population);
+				indicator[4] = maximum_distance_D2(curr_Population);
+				indicator[5] = PR_D3(curr_Population);
+
+
+				ofstream fic_write((save_path+"/K_"+to_string(k)+"."+format).c_str(), ios::app);
+
+				for(int j = 2; j < (int) indicator.size(); j++)
+					fic_write<<indicator[j]<<" ";
+
+				fic_write<<k<<endl;
+				fic_write.close();
+
+				i_start = i + 1;
+			}
+
+		}
+
 
 		fic_read.close();
 	}
 
 
-	ofstream fic_write(indicator_file.c_str(), ios::app);
 
-	for(int i = 0; i < (int) indicator.size(); i++){
-		indicator[i] *= 1.0 / K_replication;
-		fic_write<<indicator[i]<<" ";
-	}
 
-	fic_write<<endl;
-	fic_write.close();
+
 
 }
-
-
-
-
-
 
 
 
