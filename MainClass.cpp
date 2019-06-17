@@ -333,7 +333,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixA2I.csv";
+	string WS_matrix_file = "WS_MatrixA21.csv";
 	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
@@ -449,7 +449,7 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "100";
+	string taille = "200";
 
 //	script_knapsack(type_inst, taille, WS_DM);
 //
@@ -507,9 +507,9 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-//	script_Cst_PSize(type_inst,taille,WS_DM);
+	script_Cst_PSize(type_inst,taille,WS_DM);
 
-	script_Cst_PSizeV1V2(type_inst, taille, WS_DM);
+//	script_Cst_PSizeV1V2(type_inst, taille, WS_DM);
 
 
 //	script_save_information(type_inst, taille, WS_DM);
