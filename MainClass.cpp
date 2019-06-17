@@ -233,16 +233,16 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 
 void script_Cst_PSizeV1V2(string type_inst, string taille, string WS_DM){
 
-	int K = 30;
+	int K = 20;
 	int N = 10;
 	vector<int> I = {0,1,2,3,4,5,6,7};
 
-	string WS_matrix_file = "WS_MatrixA_V12.csv";
+	string WS_matrix_file = "WS_MatrixC_V12.csv";
 	string prefix = "MOLS_PSize";
 
-	vector<int> sizer = {2,8,20,60,100};     //   //A
+//	vector<int> sizer = {2,8,20,60,100};     //   //A
 
-//	vector<int> sizer = {2,8,10,20,60,80,100,200};  //C
+	vector<int> sizer = {2,8,20,60,100,200};  //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
@@ -398,18 +398,18 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 void script_save_information(string type_inst, string taille, string WS_DM){
 
-	int K = 30;
-	int N = 10;
+	int K = 20;
+	int N = 5;
 	vector<int> I = {0,1,2,3,4,5,6,7};
 
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixAV1.csv";
+	string WS_matrix_file = "WS_MatrixCSAVE.csv";
 	string prefix = "MOLS_PSize";
 
-	vector<int> sizer = {2,8,20,60,100};  //       //A
+//	vector<int> sizer = {2,8,20,60,100};  //       //A
 
-//	vector<int> sizer = {2,8,20,60,100,200};  //C
+	vector<int> sizer = {2,8,20,60,100,200};  //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
@@ -444,12 +444,18 @@ void script_save_information(string type_inst, string taille, string WS_DM){
 
 }
 
+//***********************************************************************************************************************************//
+
+
+
+
+
 int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "A";
-	string taille = "200";
+	string type_inst = "C";
+	string taille = "100";
 
 //	script_knapsack(type_inst, taille, WS_DM);
 //
@@ -507,9 +513,9 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM);
+//	script_Cst_PSize(type_inst,taille,WS_DM);
 
-//	script_Cst_PSizeV1V2(type_inst, taille, WS_DM);
+	script_Cst_PSizeV1V2(type_inst, taille, WS_DM);
 
 
 //	script_save_information(type_inst, taille, WS_DM);
