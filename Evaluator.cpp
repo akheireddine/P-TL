@@ -754,7 +754,7 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 	system(("if [ ! -d "+save_path+" ]; then mkdir -p "+save_path+"; fi").c_str());
 
-	vector< float > indicator(7,0.);
+	vector< float > indicator(8,0.);
 
 
 	for(int k = 0; k < K_replication; k++){
@@ -794,7 +794,7 @@ void Evaluator::save_information(string file_population, string save_path, strin
 		indicator[4] += average_distance_D1(Population);
 		indicator[5] += maximum_distance_D2(Population);
 		indicator[6] += PR_D3(Population);
-
+		indicator[7] += Population.size();
 		fic_read.close();
 	}
 
