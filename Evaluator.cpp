@@ -885,15 +885,76 @@ void Evaluator::save_other_information(string file_population, string save_path,
 		fic_read.close();
 	}
 
-
-
-
-
-
 }
 
 
 
+void Evaluator::compute_avg_type_instances(string evaluation_save_path, string method_name, string format, int k_replic, int nb_instances, vector< int > ub_values, vector< int >  Info ){
+
+//	system(("if [ ! -d "+evaluation_save_path+" ]; then mkdir -p "+evaluation_save_path+"; fi").c_str());
+
+	vector< vector< float > > part_indic(ub_values.size(), vector< float >(Info.size(), 0.) );
+	vector< vector< vector< float > > > indicator(7, part_indic );
+
+
+	for(int n = 0; n < nb_instances; n++){
+		string file_extension = evaluation_save_path+"/T"+to_string(n)+"/"+method_name+"/K_"+to_string(k_replic)+"."+format;
+		ifstream fic_read(file_extension);
+		string line;
+		vector< float > vector_line;
+
+		if (!(fic_read) or file_extension.find(format) == std::string::npos){
+			cerr<<"Error occurred compute avg type instaces "<<endl;
+		}
+
+		int size = 0;
+		int info = 0;
+		while(!fic_read.eof()){
+			getline(fic_read,line);
+			if (line.size() == 0)
+				continue;
+
+			if(line.find("#__________") != std::string::npos  or line.find("__________") != std::string::npos){
+				size = (size + 1)%ub_values.size();
+				info = 0;
+				continue;
+			}
+
+			vector_line = Tools::decompose_line_to_float_vector(line);
+
+			indicator[0][size][info] += vector_line[0];
+			indicator[1][size][info] += vector_line[1];
+			indicator[2][size][info] += vector_line[2];
+			indicator[3][size][info] += vector_line[3];
+			indicator[4][size][info] += vector_line[4];
+			indicator[5][size][info] += vector_line[5];
+			indicator[6][size][info] += vector_line[6];
+
+			info++;
+		}
+
+		fic_read.close();
+	}
+
+	ofstream fic_write((evaluation_save_path+"/AVG_K_"+to_string(k_replic)+"."+format).c_str(), ios::app);
+
+	for(int j = 0; j < (int)ub_values.size(); j++){
+		for(int l = 0; l < (int)Info.size(); l++ ){
+			for(int i = 0; i < (int)indicator.size(); i++){
+				indicator[i][j][l] *= 1.0 / nb_instances;
+				fic_write<<indicator[i][j][l]<<" ";
+			}
+			if(l < (int)Info.size() - 1)
+				fic_write<<endl;
+		}
+
+		fic_write<<endl<<"__________"<<ub_values[j]<<"__"<<method_name<<endl;
+	}
+
+	fic_write<<endl<<endl;;
+	fic_write.close();
+
+}
 
 
 

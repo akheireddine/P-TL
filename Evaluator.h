@@ -146,6 +146,9 @@ public:
 
 	void save_information(string file_population, string save_path, string format);
 	void save_other_information(string file_population, string save_path, string format);
+	static void compute_avg_type_instances(string evaluation_save_path, string method_name, string format, int k_replic
+			, int nb_instances, vector< int > ub_values, vector< int > Info );
+
 
 };
 
