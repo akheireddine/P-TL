@@ -238,7 +238,7 @@ void script_Cst_PSizeV1V2(string type_inst, string taille, string WS_DM){
 	vector< string > I = {"1","1.1","1.2","1.3","2","2.1","3","4","5","6","7"};
 
 	string WS_matrix_file = "WS_MatrixA_V12.csv";
-	string prefix = "MOLS_PSize";
+	string prefix = "MOLS_PSize_DIV/OS";
 
 	vector<int> sizer = {2,8,20,60,100};     //   //A
 
@@ -302,11 +302,11 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 	clock_t t = clock();
 
-	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
+//	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
 
 //	knaps->MOLS_Cst_PSize_RS(t/CLOCKS_PER_SEC,max_size_population);
 
-//	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
+	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
 
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
@@ -327,14 +327,14 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 //// ORIGINAL VERSION
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 30;
+	int K = 29;
 	int N = 1;
 	vector< string > I = {"1.1","1.2","1.3","2.1"};
 
 	vector<int> graines;
 
 	string WS_matrix_file = "WS_MatrixAVA.csv";
-	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
@@ -371,7 +371,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 				eval_ks->update_covered_PFront();
 
 				for(int k = 0; k < K; k++){
-					k_replication = k + 10 ;
+					k_replication = k  ;
 					GRAIN = graines[k];
 					srand( GRAIN );
 					main_Knapsack_Cst_PSize(filename_population, 1, iter);
@@ -405,7 +405,7 @@ void script_save_information(string type_inst, string taille, string WS_DM){
 	vector<int> graines;
 
 	string WS_matrix_file = "WS_MatrixAz.csv";
-	string prefix = "MOLS_PSize";
+	string prefix = "MOLS_PSize_DIV/OS";
 
 	vector<int> sizer = {2,8,20,60,100};  //       //A
 
@@ -481,7 +481,7 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "100";
+	string taille = "10";
 
 //	script_knapsack(type_inst, taille, WS_DM);
 //
@@ -532,17 +532,20 @@ int main(int argc, char** argv){
 //	vector<float> opt_points{31157,35210}; //C-100-T0
 //	vector<float> opt_points{39061,40421};  //A-100-T2
 
+/*
+  *************************************************************************************************************************
+*/
 
-
-//	Instance_Generator::random_instances(stoi(taille),3,"Instances_Knapsack/Type_A/"+taille+"_items", 1);
+	Instance_Generator * inst = new Instance_Generator(stoi(taille), 3, 1);
+	inst->random_instances("Instances_Knapsack/Type_A/"+taille+"_items");
 
 /*
   *************************************************************************************************************************
 */
 //	script_Cst_PSize(type_inst,taille,WS_DM);
-
-	script_Cst_PSizeV1V2(type_inst, taille, WS_DM);
-////
+//
+//	script_Cst_PSizeV1V2(type_inst, taille, WS_DM);
+//////
 //	script_save_information(type_inst, taille, WS_DM);
 
 //	save_avg_instances(type_inst, taille, WS_DM);

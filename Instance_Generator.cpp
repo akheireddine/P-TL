@@ -16,17 +16,24 @@
 
 #define N_WS 100
 
+Instance_Generator::Instance_Generator(int n, int p, int nb_inst){
+	p_criteria = p;
+	n_items = n;
+	nb_instances = nb_inst;
+}
 
-void Instance_Generator::random_instances(int n_items, int p_criterias,string path, int nb_instances ){
+void Instance_Generator::random_instances(string path){
+
+	system(("if [ ! -d "+path+" ]; then mkdir -p "+path+"; fi").c_str());
 
 
-	int Weight = 0;
 	for(int i = 10; i < nb_instances+10; i++){
+		int Weight = 0;
 
 		string filename = "2KP"+to_string(n_items)+"-TA-"+to_string(i);
 
 		vector< string > weights(n_items);
-		vector< vector< string > > utilities(n_items,vector< string >(p_criterias) );
+		vector< vector< string > > utilities(n_items,vector< string >(p_criteria) );
 
 		//RANDOM GENERATION
 		for(int n = 0; n < n_items; n++){
@@ -35,7 +42,7 @@ void Instance_Generator::random_instances(int n_items, int p_criterias,string pa
 
 			Weight += rand_weight;
 
-			for(int p = 0; p < p_criterias; p++){
+			for(int p = 0; p < p_criteria; p++){
 				int rand_utility = LO_U + (rand()) /((RAND_MAX/(HI_U-LO_U)));
 				utilities[n][p] = to_string(rand_utility);
 			}
@@ -60,15 +67,15 @@ void Instance_Generator::random_instances(int n_items, int p_criterias,string pa
 
 string Instance_Generator::write_content(vector< string > weights, vector< vector< string > > utilities, string Weight){
 
-	string content = "n "+to_string(weights.size())+"\n";
+	string content = "n "+to_string(n_items)+"\n";
 
 	content += "c  w \n";
 
-	for(int i = 0; i < (int)weights.size(); i++ ){
+	for(int i = 0; i < n_items; i++ ){
 
 		content += "i "+weights[i];
 
-		for(int j = 0; j < (int)utilities[i].size(); j++){
+		for(int j = 0; j < p_criteria; j++){
 
 			content +=" 	 "+utilities[i][j];
 		}
@@ -194,7 +201,7 @@ vector< float > Instance_Generator::PL_WS(vector<float> WS_vector){
 
 	for(int i = 0; i < n_item; i++){
 		float coeff = 0.;
-		for(int j = 0; j < p_criteria ; j++)
+		for(int j = 0; j < Instance_Generator::p_criteria ; j++)
 			  coeff += get_utility(i,j) * WS_vector[j];
 
 		obj.setLinearCoef(x[i], coeff);
@@ -213,10 +220,10 @@ vector< float > Instance_Generator::PL_WS(vector<float> WS_vector){
 	}
 
 	//GET SOLUTION CRITERIA VALUE
-	vector< float > opt_alt(p_criteria,0);
+	vector< float > opt_alt(Instance_Generator::p_criteria,0);
 	for(int i = 0; i < n_item; i++){
 		if( cplex.getValue(x[i]) > 0){
-			for(int j = 0; j < p_criteria; j++)
+			for(int j = 0; j < Instance_Generator::p_criteria; j++)
 				opt_alt[j] += get_utility(i,j);
 		}
 	}
@@ -235,6 +242,7 @@ void Instance_Generator::set_Efficient_front(string filename){
 
 	readFile(filename);
 
+	cout<<p_criteria<<endl;
 	vector< vector< float > >  pareto(p_criteria);
 	vector< float > random_ws;
 
@@ -246,11 +254,18 @@ void Instance_Generator::set_Efficient_front(string filename){
 				pareto[i].push_back(0.);
 		}
 	}
+	cout<<pareto.size()<<endl;
 
+	for(int i = 0; i < p_criteria; i++)
+		cout<<Tools::print_vector(pareto[i])<<endl;
 
 	for(int i = 0; i < N_WS; i++){
 		random_ws =  Tools::generate_random_restricted_WS_aggregator(p_criteria,pareto);
+		cout<<"toto2"<<endl;
+
 		efficient_solution.push_back(PL_WS(random_ws));
+		cout<<"toto3"<<endl;
+
 	}
 
 

@@ -1,3 +1,5 @@
+#ifndef __INST_GENERATOR__
+#define __INST_GENERATOR__
 
 
 #include <iostream>
@@ -9,28 +11,32 @@
 using namespace std;
 
 class Instance_Generator {
+private :
+	 float Backpack_capacity;
+	 int n_items;
+	 int p_criteria ;
+	 int nb_instances;
+
+	 vector< tuple<float, vector< float> > > Items_information;
 public:
 
-	static float Backpack_capacity;
-	static int n_items;
-	static int p_criteria ;
+	Instance_Generator(int n, int p, int nb_inst);
 
-	static vector< tuple<float, vector< float> > > Items_information;
+	void random_instances(string path);
 
+	string write_content(vector< string > weights, vector< vector< string > > utilities, string Weight);
 
+	void readFile(string filename);
 
+	vector< float > PL_WS(vector<float> WS_vector);
 
+	void set_Efficient_front(string filename);
 
-	static void random_instances(int n_items, int p_criterias,string path, int nb_instances );
+	float get_weight_of(int i) { return std::get<0>(Items_information[i]); };
 
-	static string write_content(vector< string > weights, vector< vector< string > > utilities, string Weight);
-
-	static void readFile(string filename);
-
-	static vector< float > PL_WS(vector<float> WS_vector);
-
-	static void set_Efficient_front(string filename);
-
-	static float get_weight_of(int i) { return std::get<0>(Items_information[i]); };
-	static float get_utility(int i, int j) { return std::get<1>(Items_information[i])[j]; };
+	float get_utility(int i, int j) { return std::get<1>(Items_information[i])[j]; };
 };
+
+
+
+#endif
