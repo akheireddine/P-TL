@@ -14,7 +14,7 @@ class MainKnapsack;
 
 extern list<set<int>> init_population;
 
-extern int INFO;
+extern string INFO;
 extern int k_replication;
 
 

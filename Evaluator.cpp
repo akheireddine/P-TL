@@ -219,6 +219,11 @@ void Evaluator::update_covered_PFront(){
 		}
 	}
 
+//	ofstream fic_write(("INFO_"+to_string(INFO)+"_OPT_S60_T2").c_str(), ios::app);
+//	for(auto t : PFront){
+//		fic_write<<Tools::print_vector(t)<<endl;
+//	}
+
 //	cout<<"PF/PE   : "<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
 }
 
@@ -260,6 +265,13 @@ void Evaluator::update_covered_OPT_Solution(list< vector< float > > & Opt_Soluti
 	}
 
 
+//	ofstream fic_write(("INFO_"+to_string(INFO)+"_V1_S60").c_str(), ios::app);
+//	for(auto t : Opt_Solution){
+//		fic_write<<Tools::print_vector(t)<<endl;
+//	}
+//
+//	fic_write.close();
+//
 
 //	cout<<"OPT/PE   : "<<Opt_Solution.size()<<" / "<<PFront.size()<<endl;
 }

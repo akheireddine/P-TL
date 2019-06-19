@@ -320,7 +320,7 @@ void MainKnapsack::MOLS(double starting_time_sec){
 		Population.pop_front();
 
 
-		save_information(filename_population+"/MOLS/"+to_string(INFO), alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
+		save_information(filename_population+"/MOLS/"+INFO, alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
 
 		set< string > current_neighbors  = alt->get_neighborhood();
 
@@ -414,7 +414,7 @@ void MainKnapsack::MOLS_Cst_PSize(double starting_time_sec, int UB_Population_si
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_information(filename_population+"/MOLS_PSize/"+to_string(UB_Population_size)+"/"+to_string(INFO), alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
+		save_information(filename_population+"/MOLS_PSize/"+to_string(UB_Population_size)+"/"+INFO, alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -519,7 +519,7 @@ void MainKnapsack::MOLS_Cst_PSize_RS(double starting_time_sec, int UB_Population
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_information(filename_population+"/MOLS_PSize_DIV/RS/"+to_string(UB_Population_size)+"/"+to_string(INFO), alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
+		save_information(filename_population+"/MOLS_PSize_DIV/RS/"+to_string(UB_Population_size)+"/"+INFO, alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -644,7 +644,7 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_information(filename_population+"/MOLS_PSize_DIV/OS/"+to_string(UB_Population_size)+"/"+to_string(INFO), alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
+		save_information(filename_population+"/MOLS_PSize_DIV/OS/"+to_string(UB_Population_size)+"/"+INFO, alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
 
 		set< string > current_neighbors = alt->get_neighborhood();
 

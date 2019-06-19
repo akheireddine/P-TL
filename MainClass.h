@@ -12,7 +12,7 @@
 
 
 
-int INFO = 0;
+string INFO;
 
 list<set<int>> init_population;
 
