@@ -167,26 +167,6 @@ void Evaluator::readParetoFront(){
 
 
 
-int dominates(vector< float > e1, vector< float > e2){
-
-	bool dominated = false, dominates = false;
-
-	for(int i = 0; i < (int)e1.size() ; i++){
-		if(e1[i] < e2[i])
-			dominated = true;
-		else if (e1[i] > e2[i])
-			dominates = true;
-
-		if(dominates and dominated)
-			return 0;
-	}
-	if(dominated and !dominates)
-		return -1;
-
-	//dominates and !dominated  OR  !dominated and !dominates
-	return 1;
-}
-
 
 void Evaluator::update_covered_PFront(){
 
@@ -202,7 +182,7 @@ void Evaluator::update_covered_PFront(){
 
 			vector< float > e_trans = Tools::transform(*e, WS_matrix);
 
-			int val =  dominates(e_trans,it_trans);
+			int val =  Tools::dominates(e_trans,it_trans);
 			if( val == 1 ){
 				dominated = true;
 				break;
@@ -248,7 +228,7 @@ void Evaluator::update_covered_OPT_Solution(list< vector< float > > & Opt_Soluti
 
 			vector< float > e_trans = Tools::transform(*e, WS_matrix);
 
-			int val =  dominates(e_trans,it_trans);
+			int val =  Tools::dominates(e_trans,it_trans);
 			if( val == 1 ){
 				dominated = true;
 				break;

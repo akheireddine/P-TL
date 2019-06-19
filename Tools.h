@@ -54,6 +54,8 @@ public:
 	static vector< float > transform(vector< float > src, vector< vector< float > > ws_matrix);
 	static bool in_search_space(vector<float> v,vector<float> minus, vector<float> maxus);
 
+	static int dominates(vector< float > e1, vector< float > e2);
+
 
 //	static void save_information_in(string filename, string smthing);
 //	static vector<float> generate_random_restricted_WS_aggregator_PL(int p_criteria, vector< vector< float > > ws_matrix);
