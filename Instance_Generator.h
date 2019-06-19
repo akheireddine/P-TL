@@ -4,13 +4,12 @@
 #include <string>
 #include <vector>
 #include "Tools.h"
-#include <ilcplex/ilocplex.h>
 #include <map>
 
 using namespace std;
 
 class Instance_Generator {
-private :
+public:
 
 	static float Backpack_capacity;
 	static int n_items;
@@ -19,11 +18,10 @@ private :
 	static vector< tuple<float, vector< float> > > Items_information;
 
 
-public:
 
 
 
-	static void random_instances(int n_items, int p_criteria,string path, int nb_instances );
+	static void random_instances(int n_items, int p_criterias,string path, int nb_instances );
 
 	static string write_content(vector< string > weights, vector< vector< string > > utilities, string Weight);
 

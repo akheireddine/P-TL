@@ -13,7 +13,7 @@ uncertainty[8] = 0
 
 unset ytics
 unset xtics
-set terminal pngcairo size 1600,1200
+set terminal pngcairo size 1900,1400
 
 #set key at screen 0.9,screen 0.9
 unset key
@@ -72,7 +72,7 @@ filename = "./Data/Population/".type."/".length."/T".i."/".algo."/".s."/".j."/Po
 stats filename using 4 nooutput
 set style data points
 
-plot for [k=STATS_min+1:STATS_max] filename using 1:($4==k?$2:1/0):4 with points lt 1 pt k palette 
+plot "Instances_Knapsack/Type_".type."/".length."_items/2KP".length."-T".type."-".i.".eff", for [k=STATS_min+1:STATS_max] filename using 1:($4==k?$2:1/0):4 with points lt 1 pt k palette 
 } 
 unset multiplot
 unset output

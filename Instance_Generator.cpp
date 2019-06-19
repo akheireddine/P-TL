@@ -5,6 +5,7 @@
 
 #include <random>
 #include <fstream>
+#include <ilcplex/ilocplex.h>
 
 
 #define LO_W 2
@@ -16,7 +17,7 @@
 #define N_WS 100
 
 
-void Instance_Generator::random_instances(int n_items, int p_criteria,string path, int nb_instances ){
+void Instance_Generator::random_instances(int n_items, int p_criterias,string path, int nb_instances ){
 
 
 	int Weight = 0;
@@ -25,7 +26,7 @@ void Instance_Generator::random_instances(int n_items, int p_criteria,string pat
 		string filename = "2KP"+to_string(n_items)+"-TA-"+to_string(i);
 
 		vector< string > weights(n_items);
-		vector< vector< string > > utilities(n_items,vector< string >(p_criteria) );
+		vector< vector< string > > utilities(n_items,vector< string >(p_criterias) );
 
 		//RANDOM GENERATION
 		for(int n = 0; n < n_items; n++){
@@ -34,7 +35,7 @@ void Instance_Generator::random_instances(int n_items, int p_criteria,string pat
 
 			Weight += rand_weight;
 
-			for(int p = 0; p < p_criteria; p++){
+			for(int p = 0; p < p_criterias; p++){
 				int rand_utility = LO_U + (rand()) /((RAND_MAX/(HI_U-LO_U)));
 				utilities[n][p] = to_string(rand_utility);
 			}
