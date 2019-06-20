@@ -5,16 +5,18 @@
 
 #include <random>
 #include <fstream>
+#include <set>
+
 #include <ilcplex/ilocplex.h>
 
 
 #define LO_W 2
-#define HI_W 25
+#define HI_W 1000
 
 #define LO_U 10
-#define HI_U 35
+#define HI_U 2000
 
-#define N_WS 100
+#define N_WS 10000
 
 Instance_Generator::Instance_Generator(int n, int p, int nb_inst){
 	p_criteria = p;
@@ -22,12 +24,13 @@ Instance_Generator::Instance_Generator(int n, int p, int nb_inst){
 	nb_instances = nb_inst;
 }
 
+
 void Instance_Generator::random_instances(string path){
 
 	system(("if [ ! -d "+path+" ]; then mkdir -p "+path+"; fi").c_str());
 
 
-	for(int i = 10; i < nb_instances+10; i++){
+	for(int i = 11; i < nb_instances+11; i++){
 		int Weight = 0;
 
 		string filename = "2KP"+to_string(n_items)+"-TA-"+to_string(i);
@@ -48,20 +51,18 @@ void Instance_Generator::random_instances(string path){
 			}
 		}
 
-		Weight /= n_items;
+//		Weight /= n_items;
+		Weight /= 5;
 		string content = write_content(weights, utilities, to_string(Weight));
 
 		ofstream fic((path+"/"+filename+".dat").c_str());
-
 		fic<<content<<endl;
 		fic.close();
 
-		set_Efficient_front(filename);
+		set_Efficient_front(path+"/"+filename);
 	}
 
 }
-
-
 
 
 
@@ -107,6 +108,11 @@ void Instance_Generator::readFile(string filename){
 
 	ifstream fic((filename+".dat").c_str());
 
+
+	if (!(fic) ){
+		cerr<<"Error occurred readFile Instance_Generator"<<endl;
+	}
+
 	//comments
 	getline(fic,line);
 	while( line[0] == 'c' )
@@ -120,12 +126,12 @@ void Instance_Generator::readFile(string filename){
 	Items_information.resize(n_items);
 
 	//comments
+
 	getline(fic,line);
 	while( line[0] == 'c' )
 		getline(fic,line);
 
 	//items information
-
 
 	while(line[0] == 'i'){
 
@@ -134,15 +140,16 @@ void Instance_Generator::readFile(string filename){
 		std::strcpy(cline, line.c_str());
 
 		line_value.clear();
-		pch = strtok (cline," 	");
+		pch = strtok (cline," 	 ");
 		while (pch != NULL){
 			line_value.push_back(atof(pch));
-			pch = strtok (NULL, " 	");
+			pch = strtok (NULL, " 	 ");
 		}
 
 		weight = line_value[0];
 
 		line_value.erase(line_value.begin());
+
 
 		Items_information[i] = make_tuple(weight,line_value);
 
@@ -153,7 +160,6 @@ void Instance_Generator::readFile(string filename){
 
 	//number of criteria
 	p_criteria = line_value.size();
-
 	//comments
 	while( line[0] == 'c' )
 		getline(fic,line);
@@ -201,7 +207,7 @@ vector< float > Instance_Generator::PL_WS(vector<float> WS_vector){
 
 	for(int i = 0; i < n_item; i++){
 		float coeff = 0.;
-		for(int j = 0; j < Instance_Generator::p_criteria ; j++)
+		for(int j = 0; j < p_criteria ; j++)
 			  coeff += get_utility(i,j) * WS_vector[j];
 
 		obj.setLinearCoef(x[i], coeff);
@@ -220,10 +226,10 @@ vector< float > Instance_Generator::PL_WS(vector<float> WS_vector){
 	}
 
 	//GET SOLUTION CRITERIA VALUE
-	vector< float > opt_alt(Instance_Generator::p_criteria,0);
+	vector< float > opt_alt(p_criteria,0);
 	for(int i = 0; i < n_item; i++){
 		if( cplex.getValue(x[i]) > 0){
-			for(int j = 0; j < Instance_Generator::p_criteria; j++)
+			for(int j = 0; j < p_criteria; j++)
 				opt_alt[j] += get_utility(i,j);
 		}
 	}
@@ -242,7 +248,6 @@ void Instance_Generator::set_Efficient_front(string filename){
 
 	readFile(filename);
 
-	cout<<p_criteria<<endl;
 	vector< vector< float > >  pareto(p_criteria);
 	vector< float > random_ws;
 
@@ -254,36 +259,33 @@ void Instance_Generator::set_Efficient_front(string filename){
 				pareto[i].push_back(0.);
 		}
 	}
-	cout<<pareto.size()<<endl;
-
-	for(int i = 0; i < p_criteria; i++)
-		cout<<Tools::print_vector(pareto[i])<<endl;
 
 	for(int i = 0; i < N_WS; i++){
 		random_ws =  Tools::generate_random_restricted_WS_aggregator(p_criteria,pareto);
-		cout<<"toto2"<<endl;
-
 		efficient_solution.push_back(PL_WS(random_ws));
-		cout<<"toto3"<<endl;
-
 	}
 
+	set<int> indic_to_rm;
 
-	vector< vector< float > > tmp_sol(efficient_solution.begin(),efficient_solution.end());
+	for(int i = 0; i < (int)efficient_solution.size(); i++){
+		for(int j = i+1; j < (int)efficient_solution.size(); j++){
 
-
-	for(vector< vector< float > >::iterator e1 = tmp_sol.begin(); e1 != tmp_sol.end(); ++e1){
-		for(vector< vector< float > >::iterator e2 = tmp_sol.begin(); e2 != tmp_sol.end(); ++e2){
-
-			int val =  Tools::dominates(*e1,*e2);
+			int val =  Tools::dominates(efficient_solution[i],efficient_solution[j]);
 			if( val == 1 )
-				efficient_solution.erase(e2);
+				indic_to_rm.insert(j);
 			else if( val == -1){
-				efficient_solution.erase(e1);
+				indic_to_rm.insert(i);
 				break;
 			}
 		}
+	}
 
+	vector< vector< float > > tmp_efficient_solution = efficient_solution;
+	efficient_solution.clear();
+
+	for(int i = 0; i < (int)tmp_efficient_solution.size(); i++){
+		if( indic_to_rm.count(i) == 0)
+			efficient_solution.push_back(tmp_efficient_solution[i]);
 	}
 
 
@@ -294,3 +296,12 @@ void Instance_Generator::set_Efficient_front(string filename){
 
 	fic_write.close();
 }
+
+
+
+
+
+
+
+
+

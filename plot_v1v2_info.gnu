@@ -101,18 +101,17 @@ sizer[5] = 100
 type = "A"
 algo = "MOLS_PSize_DIV/OS"
 length = "100"
-replic = "30"
-i = 0
+replic = "29"
 
 set key at screen 0.9,screen 0.3
 
-set xtics ('41' 0 ,'28' 1 ,'12' 2 ,'10' 3,'8' 4,'4' 5, '0' 6 )     
+#set xtics ('41' 0 ,'28' 1 ,'12' 2 ,'10' 3,'8' 4,'4' 5, '0' 6 )     
 set xlabel "Information rate (degree)"
 set grid
 set terminal pngcairo size 1400,1000
 set colorsequence podo
 
-do for[i=0:4]{
+do for[i=0:0]{
 
 
 set output "evol_V1V2_".type."_".length."_OS_D1_INFO_T".i.".png"
@@ -120,7 +119,7 @@ set multiplot layout 2,3 columnsfirst rowsfirst title " {/:Bold=15 Evolution of 
 
 do for[j in "0 1 2 3 4"]{
 set label 1 "{/:Bold=10 Size_{".sizer[j+1]."} }" at graph 0.85,0.95 font ",8"
-plot "./Data/Evaluation/".type."/".length."/T".i."/".algo."/K_".replic.".v1" every ::(7*j + 1*j)::((j+1)*7 + 1*j) using 5 w linespoints title "w/o information + filtering",  "./Data/Evaluation/".type."/".length."/T".i."/".algo."/K_".replic.".v2" every ::(7*j + 1*j)::((j+1)*7 + 1*j) using 5 w linespoints title "w/o information", "./Data/Evaluation/".type."/".length."/T".i."/".algo."/K_".replic.".eval" every ::(7*j + 1*j  + 1)::((j+1)*7 + 1*j) using 5 w linespoints title "w information",
+plot "./Data/Evaluation/".type."/".length."/T".i."/".algo."/K_".replic.".v1" every ::(11*j + 1*j)::((j+1)*11 + 1*j) using 5 w linespoints title "w/o information + filtering",  "./Data/Evaluation/".type."/".length."/T".i."/".algo."/K_".replic.".v2" every ::(11*j + 1*j)::((j+1)*11 + 1*j) using 5 w linespoints title "w/o information", "./Data/Evaluation/".type."/".length."/T".i."/".algo."/K_".replic.".eval" every ::(11*j + 1*j  + 1)::((j+1)*11 + 1*j) using 5 w linespoints title "w information",
 }
 unset multiplot
 unset output

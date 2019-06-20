@@ -40,7 +40,10 @@ public:
 
 	static void copy_into(string src_filename, string dest_filename);
 	static void separate_results(string filename, string separator);
+
 	static vector<float> readWS_DM(string WS_DM_preferences);
+	static vector< vector< float > > readMatrix(string filename);
+
 	static vector<float> generate_random_WS_aggregator(int n_w);
 	static void generate_random_WS(string filename, int nb_criteria);
 	static vector<float> generate_random_restricted_WS_aggregator(int p_criteria, vector< vector< float > > ws_matrix);

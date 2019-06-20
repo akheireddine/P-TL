@@ -1,20 +1,19 @@
 #ifndef __INST_GENERATOR__
 #define __INST_GENERATOR__
 
-
+#include "Tools.h"
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Tools.h"
 #include <map>
 
 using namespace std;
 
 class Instance_Generator {
-private :
+protected :
 	 float Backpack_capacity;
 	 int n_items;
-	 int p_criteria ;
+	 int p_criteria;
 	 int nb_instances;
 
 	 vector< tuple<float, vector< float> > > Items_information;

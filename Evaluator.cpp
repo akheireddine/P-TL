@@ -82,8 +82,9 @@ void Evaluator::readParetoFront(){
 	string line;
 	vector< float > vector_pareto_objective;
 
+
 	if (!(fic) or file_extension.find(".eff") == std::string::npos){
-		cerr<<"Error occurred paretofront"<<endl;
+		cerr<<"Error occurred paretofront1"<<endl;
 	}
 
 	PF_Efficient.clear();
@@ -101,30 +102,6 @@ void Evaluator::readParetoFront(){
 }
 
 
-//void Evaluator::readParetoFront_locally(){
-//
-//	string file_extension = filename_instance+"_0_"+to_string(UB_Size)+".sol";
-//	ifstream fic(file_extension.c_str());
-//	string line;
-//	vector< float > vector_pareto_objective;
-//
-//	if (!(fic) or file_extension.find(".sol") == std::string::npos){
-//		cerr<<"Error occurred paretofrontlocally"<<endl;
-//	}
-//
-//	PF_Efficient.clear();
-//
-//	while(!fic.eof()){
-//
-//		getline(fic,line);
-//		if (line.size() == 0)
-//			continue;
-//
-//		vector_pareto_objective = Tools::decompose_line_to_float_vector(line);
-//		PF_Efficient.push_back(vector_pareto_objective);
-//	}
-//
-//}
 
 
 
@@ -343,40 +320,7 @@ void Evaluator::readFilenameInstance(string filename){
 
 void Evaluator::readWS_matrix(string filename){
 
-	char *cline, *pch;
-	int i;
-	WS_matrix.clear();
-	WS_matrix.resize(0);
-
-	ifstream fic(filename.c_str());
-	string line;
-	i = 0;
-
-	if (!(fic) or filename.find(".csv") == std::string::npos){
-		cerr<<"Error occurred readWS_Matrix EVALUATOR"<<endl;
-	}
-
-//	WS_matrix.resize(p_criteria,vector< float >());
-
-	while( !fic.eof() ){
-
-		getline(fic,line);
-
-		cline = new char[line.length() + 1]; // or
-		std::strcpy(cline, line.c_str());
-
-		pch = strtok (cline," 	,;");
-
-		vector< float > ws_line;
-
-		while (pch != NULL){
-			ws_line.push_back(atof(pch));
-			pch = strtok (NULL, " 	,;");
-		}
-		i++;
-		if(ws_line.size() > 0)
-			WS_matrix.push_back(ws_line);
-	}
+	WS_matrix = Tools::readMatrix(filename);
 
 	p_criteria = WS_matrix.size();
 
@@ -1059,11 +1003,7 @@ float Evaluator::compute_information_rate(){
 
 
 	//compute MONTE CARLO APPORIXMATION
-return -1;
-
-
-
-
+	return -1;
 }
 
 

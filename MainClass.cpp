@@ -25,9 +25,6 @@ void main_Knapsack(string filename_instance, int size_population){
 	delete knaps;
 }
 
-
-
-
 void script_knapsack(string type_inst, string taille, string WS_DM){
 
 	int K = 10;
@@ -105,7 +102,6 @@ void main_Knapsack_WSPLS(string filename_instance, int size_population, int iter
 	delete knaps;
 }
 
-
 void script_knapsack_WSPLS(string type_inst, string taille, string WS_DM){
 
 	int K = 1;
@@ -157,21 +153,19 @@ void script_knapsack_WSPLS(string type_inst, string taille, string WS_DM){
 
 //***********************************************************************************************************************************//
 
-void main_Knapsack_PLSWS(string filename_instance, int size_population, int iter){
+void main_Knapsack_PLSWS(string filename_instance, int size_population, int UB, vector< string > steps){
 
 	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
 
 	clock_t t = clock();
 
-//	knaps->HYBRID_PLS_WS(t/CLOCKS_PER_SEC,iter);
-
-	knaps->SWITCH_PLS_WS(t/CLOCKS_PER_SEC,iter, 10);
+	knaps->MOLS_SWITCH_OBJECTIVE(t/CLOCKS_PER_SEC, UB , steps);
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
 	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
 
-	eval_ks->evaluate_PF( knaps->get_OPT_Solution(), time_cpu);
+//	eval_ks->evaluate_PF( knaps->get_OPT_Solution(), time_cpu);
 
 	delete knaps;
 }
@@ -182,42 +176,56 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 
 	int K = 1;
 	int N = 1;
-	string I = "1";
+	string path_information = "./Data/WS_Learning/Test2/Iteration_";
+	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3"};
 
-	INFO = I;
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixA.csv";
-	string prefix = "_AVG_Ta_500";
+	string WS_matrix_file = "WS_MatrixPLS_A.csv";
+	string prefix = "MOLS_SWITCH_OBJECTIVE";                //OS and RS  use MOLS_PSize/OS
+
 	srand(time(NULL));
 
+	vector<int> sizer = {2,8,20,60,100};  //       //A
+
+//	vector<int> sizer = {2,8,20,60,100,200};       //C
+
+//	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 0; i < N ; i++){
+
+	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+I, WS_matrix_file);
+		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
+		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i);
 
-		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,
-				"./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval");
+		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,filename_indicator);
+
+		Tools::copy_into(I[0],WS_matrix_file);
+
+		eval_ks->readWS_matrix(WS_matrix_file);
+
+		eval_ks->update_covered_PFront();
 
 		MainKnapsack::Generate_random_Population(eval_ks, K);
 
-		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i);
+		graines.clear();
+		for(int k = 0; k < K; k++){
+			graines.push_back( rand());
+		}
 
-	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		for(int step = 50; step < 51; step++){
-			cout<<"_________________________________ NB-ITER "<<step<<"___________________________"<<endl;
-			eval_ks->readWS_matrix(WS_matrix_file);
-			eval_ks->update_covered_PFront();
+		for(auto iter : sizer){
+			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
 			for(int k = 0; k < K; k++){
-				k_replication = k;
+				k_replication = k  ;
 				GRAIN = graines[k];
 				srand( GRAIN );
-				main_Knapsack_PLSWS(filename_population, 1, step);
+				main_Knapsack_PLSWS(filename_population, 1, iter, I);
 			}
-			eval_ks->save_PF_evaluation();
+//			Tools::separate_results(filename_indicator,"__________"+to_string(iter));
 		}
+
 		eval_ks.reset();
 	}
 }
@@ -308,12 +316,9 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
 
-
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
 	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
-
-//	eval_ks->evaluate_PF( knaps->get_OPT_Solution(), max_size_population, INFO, time_cpu);
 
 //	eval_ks->evaluate_PF( knaps->get_OPT_Solution(), time_cpu);
 
@@ -327,25 +332,26 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 //// ORIGINAL VERSION
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 29;
-	int N = 1;
-	vector< string > I = {"1.1","1.2","1.3","2.1"};
+	int K = 20;
+	int N = 12;
+	vector< string > I = {"0","1","2","3","4","5","6","7"};
+	string testname = "Test3";
 
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixAVA.csv";
+	string WS_matrix_file = "WS_MatrixA.csv";
 	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2,8,20,60,100};  //       //A
+	vector<int> sizer = {2,8,20,100,200,400,500};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 0; i < N; i++){
+	for(int i = 10; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -365,9 +371,10 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 			for(auto step : I){
 				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 				INFO = step;
-				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+step,WS_matrix_file);
+				Tools::copy_into("./Data/WS_Learning/"+testname+"/Iteration_"+step,WS_matrix_file);
 
 				eval_ks->readWS_matrix(WS_matrix_file);
+
 				eval_ks->update_covered_PFront();
 
 				for(int k = 0; k < K; k++){
@@ -481,7 +488,7 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "10";
+	string taille = "100";
 
 //	script_knapsack(type_inst, taille, WS_DM);
 //
@@ -536,8 +543,8 @@ int main(int argc, char** argv){
   *************************************************************************************************************************
 */
 
-	Instance_Generator * inst = new Instance_Generator(stoi(taille), 3, 1);
-	inst->random_instances("Instances_Knapsack/Type_A/"+taille+"_items");
+//	Instance_Generator * inst = new Instance_Generator(stoi(taille), 3, 1);
+//	inst->random_instances("Instances_Knapsack/Type_A/"+taille+"_items");
 
 /*
   *************************************************************************************************************************
@@ -597,8 +604,7 @@ int main(int argc, char** argv){
 */
 
 
-//	script_knapsack_PLSWS(type_inst,taille,WS_DM);
-
+	script_knapsack_PLSWS(type_inst,taille,WS_DM);
 
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //			,"MOLS2", -1, 10, 111 , "./DM_preference_point");

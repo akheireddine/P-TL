@@ -57,6 +57,17 @@ public :
 	float get_utility(int i, int j) { return std::get<1>(Items_information[i])[j]; };
 	float get_capacity(){ return Backpack_capacity; };
 
+
+	//SETTERS
+	void set_WS_matrix(vector< vector< float > > new_ws){
+		n_objective = new_ws.size();
+		p_criteria = new_ws[0].size();
+		WS_matrix.resize(p_criteria);
+		for(int i = 0 ; i < p_criteria; i++)
+			WS_matrix[i] = new_ws[i];
+	};
+
+
 	//READ FILES
 //	void readInitPopulationFile(string filename);
 
@@ -70,11 +81,14 @@ public :
 
 
 	void update_alternatives(list< string > &set_Alt, bool Pareto);
+	void update_WS_matrix_Population();
 
 
 	void HYBRID_WS_PLS(double starting_time_sec, int ITER);
 	void HYBRID_PLS_WS(double starting_time_sec, int ITER);
 	void SWITCH_PLS_WS(double starting_time_sec, int ITER_PLS, int ITER_WS);
+
+	void MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Population_size, vector< string > Informations);
 
 
 	void MOLS(double starting_time_sec,int ITER);
@@ -97,6 +111,7 @@ public :
 	static void Generate_random_Population(shared_ptr< Evaluator > evaluator, int number_of_individu);
 
 
+	void update_extrem_point(vector< float > extrem1, float & epsi, vector< float > point_eval, vector< float > & extrem2);
 
 
 
