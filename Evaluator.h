@@ -140,11 +140,10 @@ public:
 	void update_covered_OPT_Solution(list< vector< float > > & Opt_Solution);
 
 
-	void save_evolution_indicators(list< vector< float > > OPT_Solution, string filename_instance, int info, int sizer, float time_cpu, int pop_size);
+	void readPopulation_File(string file_population, list< vector< float > > & Population,vector< float > & time_exec, vector< int > & index );
 
 
-
-	void save_information(string file_population, string save_path, string format);
+	void save_information(string file_population, string save_path, string format, int budget=-1);
 	void save_other_information(string file_population, string save_path, string format);
 	static void compute_avg_type_instances(string evaluation_save_path, string method_name, string format, int k_replic
 			, int nb_instances, vector< int > ub_values, vector< int > Info );

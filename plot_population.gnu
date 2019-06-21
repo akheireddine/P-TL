@@ -87,7 +87,7 @@ unset output
 
 
 
-sizer = "100"
+sizer = "2 8 20 40 100 200"
 
 array uncertainty[8]
 uncertainty[1] = 90
@@ -102,7 +102,7 @@ uncertainty[8] = 0
 
 unset ytics
 unset xtics
-set terminal pngcairo size 1900,1400
+set terminal pngcairo size 1400,1000
 
 #set key at screen 0.9,screen 0.9
 unset key
@@ -112,7 +112,7 @@ set grid
 
 type = "A"
 info = "0"
-length = "100"
+length = "200"
 algo = "MOLS_SWITCH_OBJECTIVE"
 
 
@@ -148,7 +148,7 @@ set cbtics ('236 Hz' 236,'1296 Hz' 1296) offset 0,0.5 scale 0
 do for[i=0:0]{ 
 set output "EVOL_POP_".type."_".length."_T".i."_".algo.".png"
 
-set multiplot layout 1,1 columnsfirst rowsfirst title " {/:Bold=15 Evolution of the Population (instance T".i."-".type.") }"
+set multiplot layout 3,3 columnsfirst rowsfirst title " {/:Bold=15 Evolution of the Population (instance T".i."-".type.") }"
 do for[s in sizer]{
 
 

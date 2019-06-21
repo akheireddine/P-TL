@@ -973,6 +973,7 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Popula
 	int nb_iteration = 0, index = 0;
 	int cpt_info = 0;
 
+	int surcharge = 2;
 	int limit_no_improvment = 2;
 	vector< float > extrem_point(n_objective,0.), snd_extrem_point(n_objective,0.);
 	float curr_epsilon = 0.;
@@ -998,7 +999,7 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Popula
 
 		update_extrem_point(extrem_point, curr_epsilon, alt->get_objective_values(), snd_extrem_point) ;
 
-		save_information(filename_population+"/MOLS_SWITCH_OBJECTIVE/"+to_string(UB_Population_size)+"/"+INFO, alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
+		save_information(filename_population+"/MOLS_SWITCH_OBJECTIVE/"+to_string(UB_Population_size), alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -1017,9 +1018,10 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Popula
 			if( alt->dominates_objective_space(neighbor) != 1 ){
 				Update_LocalArchive(neighbor,Local_front);
 			}
-			else
-				Dominated_alt.push_back(*id_neighbor);
-
+			else{
+				dic_Alternative[*id_neighbor].reset();
+//				Dominated_alt.push_back(*id_neighbor);
+			}
 			neighbor.reset();
 		}
 
@@ -1043,7 +1045,9 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Popula
 				Archive = local_Archive;
 			}
 			else {
-				Dominated_alt.push_back(*id_new_alt);
+//				Dominated_alt.push_back(*id_new_alt);
+				dic_Alternative[*id_new_alt].reset();
+
 			}
 
 			new_alt.reset();
@@ -1059,38 +1063,42 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Popula
 					Population.push_back(*it);
 
 
-			//ATTEMPT TO ADD DOMINATED SOLUTIONS TO Population
-			if( Population.empty() )
-				limit_no_improvment--;
-			else
-				limit_no_improvment =  2;
+//			ATTEMPT TO ADD DOMINATED SOLUTIONS TO Population
+//			if( Population.empty() )
+//				limit_no_improvment--;
+//			else
+//				limit_no_improvment =  2;
 
-			int to_add = ( UB_Population_size - (int)Population.size() ) ;
-			if( to_add > 0  and   ( (limit_no_improvment > 0) or !Population.empty() ) ){
-				Ordered_Selection(Dominated_alt, Population, to_add);
-			}
+//			int to_add = ( UB_Population_size - (int)Population.size() ) ;
+//			if( to_add > 0  and   ( (limit_no_improvment > 0) or !Population.empty() ) ){
+////				Ordered_Selection(Dominated_alt, Population, to_add);
+//			}
 
-			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
-				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 ){
-					(*it).second.reset();
-					dic_Alternative.erase((*it).first);
-				}
-			}
+//			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
+//				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 ){
+//					(*it).second.reset();
+//					dic_Alternative.erase((*it).first);
+//				}
+//			}
 
+			surcharge = ((int)Population.size() < UB_Population_size) ? surcharge : (surcharge - 1);
 
-			if((int)Population.size() < UB_Population_size and cpt_info <(int) Informations.size()){
-				cpt_info++;
-				cout<<"1 : "<<Informations[cpt_info]<<endl;
-				set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
-				update_WS_matrix_Population();
-			}
-
-			if( curr_epsilon < epsilon  and cpt_info > 0){
+			cout<<"surchange : "<<surcharge<< " , POP/UB : "<<Population.size()<<"/"<<UB_Population_size<<endl;
+			if((int)Population.size() < UB_Population_size and cpt_info > 0 ){
 				cpt_info--;
-				cout<<"2 : "<<Informations[cpt_info]<<endl;
+				cout<<"1 : Iteration_"<<cpt_info<<endl;
 				set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
 				update_WS_matrix_Population();
 			}
+
+			if( (surcharge == 0) and cpt_info < (int)Informations.size() - 1 ){ //curr_epsilon < epsilon  and cpt_info > 0){
+				cpt_info++;
+				cout<<"2 : Iteration_"<<cpt_info<<endl;
+				set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
+				update_WS_matrix_Population();
+				surcharge = 2;
+			} else if ( surcharge == 0 and cpt_info >= (int)Informations.size() - 1 )
+				surcharge = 2;
 
 			extrem_point = snd_extrem_point;
 			curr_epsilon = 0.;

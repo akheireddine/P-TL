@@ -513,7 +513,6 @@ float Evaluator::PR_D3(list< vector< float > > OPT_Solution){
 }
 
 
-
 float Evaluator::average_distance_D1(list< vector< float > > OPT_Solution){
 
 	float min_dist = -1;
@@ -548,7 +547,6 @@ float Evaluator::average_distance_D1(list< vector< float > > OPT_Solution){
 }
 
 
-
 float Evaluator::maximum_distance_D2(list< vector< float > > OPT_Solution){
 	float min_dist = -1;
 	float max_dist_PF = 0.;
@@ -570,63 +568,92 @@ float Evaluator::maximum_distance_D2(list< vector< float > > OPT_Solution){
 
 
 
-void Evaluator::save_evolution_indicators(list< vector< float > > OPT_Solution, string filename_instance, int info, int sizer, float time_cpu, int pop_size){
 
-	float d1 = average_distance_D1(OPT_Solution);
+void Evaluator::readPopulation_File(string file_population, list< vector< float > > & Population,vector< float > & time_exec, vector< int > & index ){
 
-	ofstream fic(filename_instance+"_"+to_string(info)+"_"+to_string(sizer)+".ev",ios::app);
-	fic<<d1<< " "<<pop_size<<" "<<time_cpu<<" "<<cpt_k<<endl;;
-	fic.close();
-}
+	ifstream fic_read(file_population);
+	string line;
+	vector< float > vector_line;
+	Population.clear();
+	time_exec.clear();
+	index.clear();
 
-
-void Evaluator::evaluate_PF(list< vector< float > > OPT_Solution, int sizer, int info, float time_cpu){
-
-	eval_values[sizer][info][0] += evaluate_Dist_ratio(OPT_Solution);
-//	eval_values[sizer][info][1] += ;   STD
-	eval_values[sizer][info][2] += time_cpu;
-
-	eval_values[sizer][info][3] += average_distance_D1(OPT_Solution);
-	eval_values[sizer][info][4] += maximum_distance_D2(OPT_Solution);
-	eval_values[sizer][info][5] += PR_D3(OPT_Solution);
-
-	cpt_k++;
-//	cout<<"OPT/PF   : "<<OPT_Solution.size()<<" / "<<PFront.size()<<endl;
-
-}
-
-void Evaluator::save_PF_evaluation_map(){
-
-
-	ofstream fic_write(indicator_file.c_str(), ios::app);
-
-	for(map<int, map < int, vector< float > > >::iterator iter = eval_values.begin(); iter != eval_values.end(); ++iter){
-
-		for(map < int, vector< float > >::iterator step = (*iter).second.begin(); step != (*iter).second.end(); ++step){
-
-			for(int i = 0; i < 3; i++){
-				eval_values[(*iter).first][(*step).first][i] *= 1.0 / K_replication;
-				fic_write<<eval_values[(*iter).first][(*step).first][i]<<" ";
-			}
-			fic_write<<(*step).first<<"  ";
-
-
-			for(int i = 3; i < (int) (*step).second.size(); i++){
-				eval_values[(*iter).first][(*step).first][i] *= 1.0 / K_replication;
-				fic_write<<eval_values[(*iter).first][(*step).first][i]<<" ";
-			}
-			fic_write<<(*step).first<<endl;
-		}
-		Tools::separate_results(indicator_file,"_____"+to_string((*iter).first));
+	if (!(fic_read) or file_population.find(".pop") == std::string::npos){
+		cerr<<"Error occurred save readPopulation_File from .pop file"<<endl;
 	}
-	fic_write.close();
 
 
-	//REINITIALIZE PARAMETERS
-	eval_values.clear();
-	cpt_k=0;
+	while(!fic_read.eof()){
+		getline(fic_read,line);
+		if (line.size() == 0)
+			continue;
+
+		vector_line = Tools::decompose_line_to_float_vector(line);
+		vector< float > criteria_value(vector_line.begin(), vector_line.begin() + p_criteria);
+		Population.push_back( criteria_value);
+		time_exec.push_back( *(vector_line.begin() + p_criteria ) );
+		index.push_back( *(vector_line.begin() + p_criteria + 1));
+	}
+
+	fic_read.close();
+
 
 }
+
+
+void Evaluator::readEvaluationFile(string filename, string format, int UB_values, int Informations,  ){
+
+	ifstream fic_read(filename);
+	string line;
+	vector< float > vector_line;
+
+	if (!(fic_read) or filename.find(format) == std::string::npos){
+		cerr<<"Error occurred readEvaluationFile "<<endl;
+	}
+
+	int size = 0, size_val = 0;
+	int info = 0, info_val  = 0;
+
+	getline(fic_read,line);
+	vector_line = Tools::decompose_line_to_float_vector(line);
+
+	indicator.resize(vector_line.size());
+
+	do{
+		if (line.size() == 0)
+			continue;
+
+		if(line.find("#__________") != std::string::npos  or line.find("__________") != std::string::npos){
+			size = (size + 1)%ub_values.size();
+			info = 0;
+			continue;
+		}
+
+		vector_line = Tools::decompose_line_to_float_vector(line);
+
+		size_val = UB_values[size];
+		info_val = stoi(Informations[info])
+		indicator[0][size_val][info_val] += vector_line[0];
+		indicator[1][size_val][info_val] += vector_line[1];
+		indicator[2][size_val][info_val] += vector_line[2];
+		indicator[3][size_val][info_val] += vector_line[3];
+		indicator[4][size_val][info_val] += vector_line[4];
+		indicator[5][size_val][info_val] += vector_line[5];
+		indicator[6][size_val][info_val] += vector_line[6];
+
+		info++;
+
+		getline(fic_read,line);
+		vector_line = Tools::decompose_line_to_float_vector(line);
+	}while(!fic_read.eof())
+
+	fic_read.close();
+}
+
+}
+/**
+ * ************************************************* EVALUATE POPULATION *************************************************
+ */
 
 
 void Evaluator::evaluate_PF(list< vector< float > > OPT_Solution,  float time_cpu){
@@ -648,7 +675,6 @@ void Evaluator::evaluate_PF(list< vector< float > > OPT_Solution,  float time_cp
 	cpt_k=K_replication;
 
 }
-
 
 
 void Evaluator::save_PF_evaluation(){
@@ -681,12 +707,13 @@ void Evaluator::save_PF_evaluation(){
 	cpt_k=0;
 
 }
+
 /**
  * ************************************************* SAVE FROM POPULATION FILE *************************************************
  */
 
 
-void Evaluator::save_information(string file_population, string save_path, string format){
+void Evaluator::save_information(string file_population, string save_path, string format, int budget){
 
 	system(("if [ ! -d "+save_path+" ]; then mkdir -p "+save_path+"; fi").c_str());
 
@@ -695,47 +722,45 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 	for(int k = 0; k < K_replication; k++){
 		string file_extension = file_population+"/Pop_"+to_string(k)+".pop";
-		ifstream fic_read(file_extension);
-		string line;
-		vector< float > vector_line;
 		list< vector< float > > Population;
 		vector< float > time_exec;
 		vector< int > index;
-		int nb_iteration = 0.;
 
-		if (!(fic_read) or file_extension.find(".pop") == std::string::npos){
-			cerr<<"Error occurred save information from .pop file"<<endl;
+		readPopulation_File(file_extension, Population, time_exec, index);
+
+		int nb_iteration = Population.size();
+
+		if( budget != -1   and (int)Population.size() > budget ){
+			Population.resize(budget) ;
+
+			update_covered_OPT_Solution(Population);
+
+			indicator[0] += evaluate_Dist_ratio(Population);
+			indicator[1] += 0;
+			indicator[2] += time_exec[ budget - 1 ];
+			indicator[3] += Population.size();
 		}
+		else {
+			update_covered_OPT_Solution(Population);
 
-
-		while(!fic_read.eof()){
-			getline(fic_read,line);
-			if (line.size() == 0)
-				continue;
-
-			vector_line = Tools::decompose_line_to_float_vector(line);
-			vector< float > criteria_value(vector_line.begin(), vector_line.begin() + p_criteria);
-			Population.push_back( criteria_value);
-			time_exec.push_back( *(vector_line.begin() + p_criteria ) );
-//			index.push_back( *(vector_line.begin() + p_criteria + 1));
-			nb_iteration++;
+			indicator[0] += evaluate_Dist_ratio(Population);
+			indicator[1] += 0;
+			indicator[2] += time_exec.back();      // LAST ONE
+			indicator[3] += nb_iteration;
 		}
-
-		update_covered_OPT_Solution(Population);
-
-		indicator[0] += evaluate_Dist_ratio(Population);
-		indicator[1] += 0;
-		indicator[2] += time_exec.back();      // LAST ONE
-		indicator[3] += nb_iteration;
 		indicator[4] += average_distance_D1(Population);
 		indicator[5] += maximum_distance_D2(Population);
 		indicator[6] += PR_D3(Population);
 		indicator[7] += Population.size();
-		fic_read.close();
 	}
 
+	string filesave = save_path+"/K_"+to_string(K_replication)+"."+format;
 
-	ofstream fic_write((save_path+"/K_"+to_string(K_replication)+"."+format).c_str(), ios::app);
+	if( budget != -1 )
+		filesave = save_path+"/K_"+to_string(K_replication)+"_B"+to_string(budget)+"."+format;
+
+
+	ofstream fic_write(filesave.c_str(), ios::app);
 
 	for(int i = 0; i < (int) indicator.size(); i++){
 		indicator[i] *= 1.0 / K_replication;
@@ -754,34 +779,16 @@ void Evaluator::save_other_information(string file_population, string save_path,
 
 	system(("if [ ! -d "+save_path+" ]; then mkdir -p "+save_path+"; fi").c_str());
 
-	vector< float > indicator(6,0.);
+	vector< float > indicator(4,0.);
 
 
 	for(int k = 0; k < K_replication; k++){
 		string file_extension = file_population+"/Pop_"+to_string(k)+".pop";
-		ifstream fic_read(file_extension);
-		string line;
-		vector< float > vector_line;
 		list< vector< float > > Population;
 		vector< float > time_exec;
 		vector< int > index;
 
-		if (!(fic_read) or file_extension.find(".pop") == std::string::npos){
-			cerr<<"Error occurred save information from .pop file"<<endl;
-		}
-
-
-		while(!fic_read.eof()){
-			getline(fic_read,line);
-			if (line.size() == 0)
-				continue;
-
-			vector_line = Tools::decompose_line_to_float_vector(line);
-			vector< float > criteria_value(vector_line.begin(), vector_line.begin() + p_criteria);
-			Population.push_back( criteria_value);
-			time_exec.push_back( *(vector_line.begin() + p_criteria ) );
-			index.push_back( *(vector_line.begin() + p_criteria + 1));
-		}
+		readPopulation_File(file_extension, Population, time_exec, index);
 
 		int i_start = 0;
 		for(int i = 0; i < (int)index.size(); i++){
@@ -796,17 +803,15 @@ void Evaluator::save_other_information(string file_population, string save_path,
 
 				update_covered_OPT_Solution(curr_Population);
 
-//				indicator[0] = evaluate_Dist_ratio(curr_Population);
-//				indicator[1] = 0;
-				indicator[2] = time_exec[i];		      // LAST ONE
-				indicator[3] = average_distance_D1(curr_Population);
-				indicator[4] = maximum_distance_D2(curr_Population);
-				indicator[5] = PR_D3(curr_Population);
+				indicator[0] = time_exec[i];		      // LAST ONE
+				indicator[1] = average_distance_D1(curr_Population);
+				indicator[2] = maximum_distance_D2(curr_Population);
+				indicator[3] = PR_D3(curr_Population);
 
 
 				ofstream fic_write((save_path+"/K_"+to_string(k)+"."+format).c_str(), ios::app);
 
-				for(int j = 2; j < (int) indicator.size(); j++)
+				for(int j = 0; j < (int) indicator.size(); j++)
 					fic_write<<indicator[j]<<" ";
 
 				fic_write<<k<<endl;
@@ -816,13 +821,28 @@ void Evaluator::save_other_information(string file_population, string save_path,
 			}
 
 		}
-
-
-		fic_read.close();
 	}
 
 }
 
+
+
+void Evaluator::save_best_parameters(string filename_instance, string format, vector< string > I, vector< int > sizer, int budget){
+	ifstream fic_read(filename_instance+"/K_"+to_string(K_replication)+"_B"+to_string(budget)+"."+format);
+
+	for(auto step : I ){
+
+		for(auto s : sizer){
+
+
+
+
+		}
+
+
+	}
+
+}
 
 
 void Evaluator::compute_avg_type_instances(string evaluation_save_path, string method_name, string format, int k_replic, int nb_instances, vector< int > ub_values, vector< int >  Info ){
@@ -893,12 +913,70 @@ void Evaluator::compute_avg_type_instances(string evaluation_save_path, string m
 }
 
 
+/**
+ * ************************************************* LEARNING PART *************************************************
+*/
+
+//void Evaluator::indicator_value(string save_file, int inst_size, vector< int > sizer, vector< int > budgets,
+//		vector< string > Informations, int k_init){
+//
+//
+//	system(("if [ ! -d "+save_path+" ]; then mkdir -p "+save_path+"; fi").c_str());
+//
+//	vector< float > indicator(5,0.);
+//
+//	for(auto iter : sizer){
+//		int i_step = 0 ;
+//		for(auto step : Informations){
+//			eval_ks->set_WS_matrix(Tools::readMatrix(step);
+//			eval_ks->update_covered_PFront();
+//
+//			for(int i = 0; i < budgets.size(); i++){
+//				for(int k = k_init; k < K_replication + k_init; k++){
+//					string file_extension = file_population+"/Pop_"+to_string(k)+".pop";
+//					list< vector< float > > Population;
+//					vector< float > time_exec;
+//					vector< int > index;
+//
+//					readPopulation_File(file_extension, Population, time_exec, index);
+//
+//
+//					if( budgets[i] > Population.size()){
+//						budgets[i] = Population.size();
+//					}
+//
+//					list< vector< float > > curr_Population_budget(*Population.begin(),*(Population.begin() + budgets[i]))
+//					update_covered_OPT_Solution(curr_Population_budget);
+//
+//					indicator[0] += average_distance_D1(curr_Population_budget);
+//					indicator[1] += maximum_distance_D2(curr_Population_budget);
+//					indicator[2] += PR_D3(curr_Population_budget);
+//					indicator[3] += time_exec[ budgets[i] - 1 ];   				   // LAST ONE
+//					indicator[4] += curr_Population_budget.size();
+//				}
+//
+//
+//				ofstream fic_write((save_path+"/"+to_string(iter)+"/"+to_string(i_step)+"/Learning_K_"+to_string(K_replication)+"."+format).c_str(), ios::app);
+//
+//				for(int i = 0; i < (int) indicator.size(); i++){
+//					indicator[i] *= 1.0 / K_replication;
+//					fic_write<<indicator[i]<<" ";
+//				}
+//
+//				fic_write<<endl;
+//				fic_write.close();
+//			}
+//			i_step++;
+//		}
+//	}
+//}
+
+
 
 
 /**
  * ************************************************* INFORMATION RATE PART *************************************************
- */
-
+*/
 
 
 void Evaluator::compute_information_rate_front(){
@@ -1024,30 +1102,3 @@ float Evaluator::compute_information_rate(){
 
 
 
-//void Evaluator::write_coeff_functions(string filename){
-//
-//	ofstream fic(filename.c_str(), ios::app);
-//
-//	fic<<endl<<"Optimal solution :"<<endl;
-//	fic<<"("; for(int i = 0; i < mainProblem->get_p_criteria(); i++) fic<< OPT_Alternative->get_criteria(i) <<", "; fic<<")"<<endl;
-//	fic<<endl<<"Matrice des objectives & Optimal solution:"<<endl;
-//
-//	for(int i = 0; i < mainProblem->get_p_criteria(); i++){
-//		fic<<"   ";
-//		for(int j = 0; j < mainProblem->get_n_objective(); j++)
-//			fic<<to_string(mainProblem->get_WS_matrix()[i][j])<< " ";
-//		fic<<endl;
-//	}
-//	fic<<endl;
-//
-//	fic.close();
-//
-//}
-//
-//
-//void Evaluator::write_objective_OPT_information(){
-//
-//	write_coeff_functions(dist_time_file);
-//	write_coeff_functions(pf_indicators_file);
-//
-//}
