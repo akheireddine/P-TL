@@ -492,9 +492,9 @@ void script_learning_data(string type_inst, string taille, string WS_DM){
 	string testname = "Test2";
 
 	string WS_matrix_file = "WS_MatrixA.csv";
-	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
 
-	vector<int> sizer = {2,8,20,100,200};  //       //A
+	vector< int > sizer = {2,8,20,100};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
@@ -508,15 +508,14 @@ void script_learning_data(string type_inst, string taille, string WS_DM){
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
 
 		eval_ks->set_K_replication(K);
+
 		for(auto b : Budget){
 
 			for(auto iter : sizer){
 
 				for(auto step : I){
 					cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-					INFO = step;
 					Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+step,WS_matrix_file);
-
 
 					string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/"+to_string(iter)+"/"+step;
 
@@ -525,13 +524,12 @@ void script_learning_data(string type_inst, string taille, string WS_DM){
 
 					eval_ks->save_information(filename_population, filename_indicator, "eval",b);
 				}
-				Tools::separate_results(filename_indicator+"/K_"+to_string(K)+".eval","#__________"+to_string(iter));
+				Tools::separate_results(filename_indicator+"/K_"+to_string(K)+"_B"+to_string(b)+".eval","#__________"+to_string(iter));
 			}
-			eval_ks->save_best_parameters(filename_instance,I, sizer, b);
 		}
+		eval_ks->save_best_parameters(filename_indicator, "eval", I, sizer, Budget);
 		eval_ks.reset();
 	}
-
 
 
 }
@@ -546,7 +544,7 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "200";
+	string taille = "100";
 
 //	script_knapsack(type_inst, taille, WS_DM);
 //

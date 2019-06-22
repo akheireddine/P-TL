@@ -601,56 +601,49 @@ void Evaluator::readPopulation_File(string file_population, list< vector< float 
 }
 
 
-void Evaluator::readEvaluationFile(string filename, string format, int UB_values, int Informations,  ){
+vector< vector < vector< float > > > readEvaluationFile(string filename, int UB_values, int Informations ){
 
 	ifstream fic_read(filename);
-	string line;
-	vector< float > vector_line;
 
 	if (!(fic_read) or filename.find(format) == std::string::npos){
 		cerr<<"Error occurred readEvaluationFile "<<endl;
 	}
 
-	int size = 0, size_val = 0;
-	int info = 0, info_val  = 0;
+	string line;
+	vector< float > vector_line;
+	vector< vector < vector< float > > > indicator(UB_values, vector< float >(Informations, vector< float >(8,0)));
 
-	getline(fic_read,line);
-	vector_line = Tools::decompose_line_to_float_vector(line);
+	int size = 0;
+	int info = 0;
 
-	indicator.resize(vector_line.size());
 
-	do{
+	while(!fic_read.eof()){
+
+		getline(fic_read,line);
+		vector_line = Tools::decompose_line_to_float_vector(line);
+
 		if (line.size() == 0)
 			continue;
 
 		if(line.find("#__________") != std::string::npos  or line.find("__________") != std::string::npos){
-			size = (size + 1)%ub_values.size();
+			size = (size + 1)%UB_values;
 			info = 0;
 			continue;
 		}
 
 		vector_line = Tools::decompose_line_to_float_vector(line);
 
-		size_val = UB_values[size];
-		info_val = stoi(Informations[info])
-		indicator[0][size_val][info_val] += vector_line[0];
-		indicator[1][size_val][info_val] += vector_line[1];
-		indicator[2][size_val][info_val] += vector_line[2];
-		indicator[3][size_val][info_val] += vector_line[3];
-		indicator[4][size_val][info_val] += vector_line[4];
-		indicator[5][size_val][info_val] += vector_line[5];
-		indicator[6][size_val][info_val] += vector_line[6];
+		for(int i = 0; i < (int)vector_line.size(); i++)
+			indicator[size][info][i] = vector_line[i];
 
 		info++;
 
-		getline(fic_read,line);
-		vector_line = Tools::decompose_line_to_float_vector(line);
-	}while(!fic_read.eof())
-
+	}
 	fic_read.close();
+
+	return indicator;
 }
 
-}
 /**
  * ************************************************* EVALUATE POPULATION *************************************************
  */
@@ -827,21 +820,39 @@ void Evaluator::save_other_information(string file_population, string save_path,
 
 
 
-void Evaluator::save_best_parameters(string filename_instance, string format, vector< string > I, vector< int > sizer, int budget){
-	ifstream fic_read(filename_instance+"/K_"+to_string(K_replication)+"_B"+to_string(budget)+"."+format);
+void Evaluator::save_best_parameters(string filename_instance, string format, vector< string > I, vector< int > sizer, vector< int > budget){
 
-	for(auto step : I ){
+
+	ofstream fic_write(filename_instance+"/K_"+to_string(K_replication)+".opt");
+
+	for(auto b : budget){
+
+		ifstream fic_read(filename_instance+"/K_"+to_string(K_replication)+"_B"+to_string(budget)+"."+format);
+
+		vector< vector< vector< float > > > dic_file = readEvaluationFile(fic_read, sizer.size(), I.size());
 
 		for(auto s : sizer){
 
+			vector< float > best_line_indicator(8,-1);
+			string best_info = "-1";
 
+			for(int i = 0; i < (int)I.size(); i++){
 
+				if( best_line_indicator[4] == -1  or dic_file[s][I[i]][4] < best_line_indicator[4] ){
+					best_line_indicator = dic_file[s][I[i]];
+					best_info = I[i];
+				}
+
+			}
+
+			fic_write<<b<<" "<<s<<" "<<best_info<<" "<<best_line_indicator[2]<< " "<<best_line_indicator[3]<<" "<<best_line_indicator[4]<<" "<<
+					best_line_indicator[5]<<" "<<best_line_indicator[6]<<endl;
 
 		}
 
-
 	}
 
+	fic_write.close();
 }
 
 
