@@ -605,13 +605,15 @@ vector< vector < vector< float > > > readEvaluationFile(string filename, int UB_
 
 	ifstream fic_read(filename);
 
-	if (!(fic_read) or filename.find(format) == std::string::npos){
+	if (!(fic_read)){
 		cerr<<"Error occurred readEvaluationFile "<<endl;
 	}
 
+
 	string line;
 	vector< float > vector_line;
-	vector< vector < vector< float > > > indicator(UB_values, vector< float >(Informations, vector< float >(8,0)));
+//	vector< vector< float > > completion(Informations, vector< float >(8,0));
+	vector< vector < vector< float > > > indicator(UB_values, vector< vector< float > >(Informations));
 
 	int size = 0;
 	int info = 0;
@@ -634,10 +636,9 @@ vector< vector < vector< float > > > readEvaluationFile(string filename, int UB_
 		vector_line = Tools::decompose_line_to_float_vector(line);
 
 		for(int i = 0; i < (int)vector_line.size(); i++)
-			indicator[size][info][i] = vector_line[i];
+			indicator[size][info].push_back(vector_line[i]);
 
 		info++;
-
 	}
 	fic_read.close();
 
@@ -825,27 +826,29 @@ void Evaluator::save_best_parameters(string filename_instance, string format, ve
 
 	ofstream fic_write(filename_instance+"/K_"+to_string(K_replication)+".opt");
 
+
 	for(auto b : budget){
 
-		ifstream fic_read(filename_instance+"/K_"+to_string(K_replication)+"_B"+to_string(budget)+"."+format);
+		string fic_read = filename_instance+"/K_"+to_string(K_replication)+"_B"+to_string(b)+"."+format;
+
 
 		vector< vector< vector< float > > > dic_file = readEvaluationFile(fic_read, sizer.size(), I.size());
 
-		for(auto s : sizer){
+		for(int j = 0; j < (int)sizer.size(); j++){
 
 			vector< float > best_line_indicator(8,-1);
 			string best_info = "-1";
 
 			for(int i = 0; i < (int)I.size(); i++){
 
-				if( best_line_indicator[4] == -1  or dic_file[s][I[i]][4] < best_line_indicator[4] ){
-					best_line_indicator = dic_file[s][I[i]];
+				if( best_line_indicator[4] == -1  or dic_file[j][i][4] < best_line_indicator[4] ){
+					best_line_indicator = dic_file[j][i];
 					best_info = I[i];
 				}
 
 			}
 
-			fic_write<<b<<" "<<s<<" "<<best_info<<" "<<best_line_indicator[2]<< " "<<best_line_indicator[3]<<" "<<best_line_indicator[4]<<" "<<
+			fic_write<<b<<" "<<sizer[j]<<" "<<best_info<<" "<<best_line_indicator[2]<< " "<<best_line_indicator[3]<<" "<<best_line_indicator[4]<<" "<<
 					best_line_indicator[5]<<" "<<best_line_indicator[6]<<endl;
 
 		}

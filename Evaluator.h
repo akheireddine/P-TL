@@ -148,6 +148,7 @@ public:
 	static void compute_avg_type_instances(string evaluation_save_path, string method_name, string format, int k_replic
 			, int nb_instances, vector< int > ub_values, vector< int > Info );
 
+	void save_best_parameters(string filename_instance, string format, vector< string > I, vector< int > sizer, vector< int > budget);
 
 
 };

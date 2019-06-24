@@ -334,7 +334,7 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	int K = 20;
-	int N = 12;
+	int N = 10;
 	vector< string > I = {"0","1","2","3","4","5","6","7"};
 	string testname = "Test3";
 
@@ -345,14 +345,14 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2,8,20,100,200,400,500};  //       //A
+	vector<int> sizer = {2,8,20,60,100};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 10; i < N; i++){
+	for(int i = 5; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -379,7 +379,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 				eval_ks->update_covered_PFront();
 
 				for(int k = 0; k < K; k++){
-					k_replication = k  ;
+					k_replication = k  + 10 ;
 					GRAIN = graines[k];
 					srand( GRAIN );
 					main_Knapsack_Cst_PSize(filename_population, 1, iter);
@@ -485,18 +485,19 @@ void save_avg_instances(string type_inst, string taille, string WS_DM){
 
 void script_learning_data(string type_inst, string taille, string WS_DM){
 
-	int K = 30;
+	int K = 20;
 	int N = 10;
-	vector< int > Budget = {100, 2000};
+//	vector< int > Budget = {20,40,100,150,200,400,800};   //A
+	vector< int > Budget = {20,100,400,1000,1500,2000};  //C
 	vector< string > I = {"0","1","2","3","4","5","6","7"};
 	string testname = "Test2";
 
-	string WS_matrix_file = "WS_MatrixA.csv";
+	string WS_matrix_file = "WS_MatrixC_learning.csv";
 	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
 
-	vector< int > sizer = {2,8,20,100};  //       //A
+//	vector< int > sizer = {2,8,20,60,100};  //       //A
 
-//	vector<int> sizer = {2,8,20,60,100,200};       //C
+	vector<int> sizer = {2,8,20,60,100,200};       //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
@@ -543,7 +544,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "A";
+	string type_inst = "C";
 	string taille = "100";
 
 //	script_knapsack(type_inst, taille, WS_DM);
@@ -584,6 +585,7 @@ int main(int argc, char** argv){
 
 
 
+	script_learning_data(type_inst, taille, WS_DM);
 
 /*
   *************************************************************************************************************************
@@ -660,7 +662,7 @@ int main(int argc, char** argv){
 */
 
 
-	script_knapsack_PLSWS(type_inst,taille,WS_DM);
+//	script_knapsack_PLSWS(type_inst,taille,WS_DM);
 
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //			,"MOLS2", -1, 10, 111 , "./DM_preference_point");
