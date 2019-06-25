@@ -717,13 +717,20 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
 				Ordered_Selection(Dominated_alt, Population, to_add);
 			}
 
+			cout<<"pb "<<dic_Alternative.size()<<endl;
 
 			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
+				cout<<"ok "<<(*it)<<endl;
 				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 ){
+					cout<<"here"<<endl;
 					(*it).second.reset();
+					cout<<"la"<<endl;
 					dic_Alternative.erase((*it).first);
+					cout<<"oula"<<endl;
 				}
 			}
+
+			cout<<"pb"<<endl;
 
 			Dominated_alt.clear();
 			next_Population.clear();

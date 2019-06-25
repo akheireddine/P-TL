@@ -297,6 +297,7 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 //	knaps->MOLS_Cst_PSize_RS(t/CLOCKS_PER_SEC,max_size_population);
 
 	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
+	cout<<"why"<<endl;
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
@@ -317,7 +318,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 	int K = 20;
 	int N = 10;
 	vector< string > I = {"0","1","2","3","4","5","6","7"};
-	string testname = "Test3";
+	string testname = "Test2";
 
 	vector<int> graines;
 
@@ -333,7 +334,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 5; i < N; i++){
+	for(int i = 7; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -346,6 +347,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 		for(int k = 0; k < K; k++){
 			graines.push_back( rand());
 		}
+
 
 		for(auto iter : sizer){
 			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
@@ -583,7 +585,7 @@ int main(int argc, char** argv){
 
 
 //	script_learning_data(type_inst, taille, WS_DM);
-	script_learning_opt_algo(type_inst, taille, WS_DM);
+//	script_learning_opt_algo(type_inst, taille, WS_DM);
 /*
   *************************************************************************************************************************
 */
@@ -604,7 +606,7 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-//	script_Cst_PSize(type_inst,taille,WS_DM);
+	script_Cst_PSize(type_inst,taille,WS_DM);
 //
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM);
 //////
