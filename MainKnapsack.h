@@ -60,8 +60,8 @@ public :
 
 	//SETTERS
 	void set_WS_matrix(vector< vector< float > > new_ws){
-		n_objective = new_ws.size();
-		p_criteria = new_ws[0].size();
+		n_objective = new_ws[0].size();
+		p_criteria = new_ws.size();
 		WS_matrix.resize(p_criteria);
 		for(int i = 0 ; i < p_criteria; i++)
 			WS_matrix[i] = new_ws[i];

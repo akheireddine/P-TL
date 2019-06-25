@@ -5,7 +5,7 @@
 
 #include "MainKnapsack.h"
 #include <map>
-
+#include "Tools.h"
 
 
 
@@ -80,11 +80,17 @@ public:
 
 	};
 
+	void set_WS_matrix(vector< vector< float > > new_ws){
+		n_objective = new_ws[0].size();
+		p_criteria = new_ws.size();
+		WS_matrix.resize(p_criteria);
+		for(int i = 0 ; i < p_criteria; i++)
+			WS_matrix[i] = new_ws[i];
+	};
+
 	//SETTERS
 	void set_K_replication(int k){ K_replication = k;};
-	void set_indicator_file(string new_file){ indicator_file = new_file; };
 	//GETTERS
-	string get_filename_instance(){ return filename_instance; };
 	list< vector<float > > get_PFront(){ return PFront; };
 	int get_p_criteria(){ return p_criteria; };
 	int get_n_objective(){ return n_objective; };
@@ -143,13 +149,16 @@ public:
 	void readPopulation_File(string file_population, list< vector< float > > & Population,vector< float > & time_exec, vector< int > & index );
 
 
-	void save_information(string file_population, string save_path, string format, int budget=-1);
+	void save_information(string file_population, string save_path, string format, vector< string > Informations,
+			vector< int > UB_Population, vector<int> Budget, string inst_name);
 	void save_other_information(string file_population, string save_path, string format);
 	static void compute_avg_type_instances(string evaluation_save_path, string method_name, string format, int k_replic
 			, int nb_instances, vector< int > ub_values, vector< int > Info );
 
-	void save_best_parameters(string filename_instance, string format, vector< string > I, vector< int > sizer, vector< int > budget);
+	void save_best_parameters(string filename_instance, string format, vector< string > I, vector< int > sizer, vector< int > budget, string inst_name);
 
+
+	void best_algo_parametrized(string save_data, string filename_algo1, string filename_algo2, string inst_name, int budget);
 
 };
 

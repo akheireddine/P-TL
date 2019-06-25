@@ -295,12 +295,11 @@ vector<float> Tools::readWS_DM(string WS_DM_preferences){
 vector< vector< float > > Tools::readMatrix(string filename){
 
 	char *cline, *pch;
-	int i;
+
 	vector< vector <float > >WS_matrix;
 
 	ifstream fic(filename.c_str());
 	string line;
-	i = 0;
 
 	if (!(fic) ){
 		cerr<<"Error occurred readMatrix Tools"<<endl;
@@ -321,10 +320,11 @@ vector< vector< float > > Tools::readMatrix(string filename){
 			ws_line.push_back(atof(pch));
 			pch = strtok (NULL, " 	,;");
 		}
-		i++;
 		if(ws_line.size() > 0)
 			WS_matrix.push_back(ws_line);
 	}
+
+
 	return WS_matrix;
 }
 

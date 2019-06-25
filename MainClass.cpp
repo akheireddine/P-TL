@@ -248,7 +248,10 @@ void script_Cst_PSizeV1V2(string type_inst, string taille, string WS_DM){
 
 	int K = 29;
 	int N = 1;
-	vector< string > I = {"1","1.1","1.2","1.3","2","2.1","3","4","5","6","7"};
+	string testname = "./Data/WS_Learning/Test2/Iteration_";
+	vector< string > I = {testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
+
+	vector< string> step(1,testname+"0");
 
 	string WS_matrix_file = "WS_MatrixA_V12.csv";
 	string prefix = "MOLS_PSize_DIV/OS";
@@ -262,44 +265,18 @@ void script_Cst_PSizeV1V2(string type_inst, string taille, string WS_DM){
 	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
+		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
+
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
 
 		eval_ks->set_K_replication(K);
 
-		string step = "0";
-		cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-		Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+step,WS_matrix_file);
-		INFO = step;
+		//V2 NO FILTERING
+		eval_ks->save_information(filename_population+"/V2",filename_indicator, "v2", step, sizer, vector<int>(1,-1),"T"+to_string(i));
 
-		eval_ks->readWS_matrix(WS_matrix_file);
+		//V1 FILTERING
+		eval_ks->save_information(filename_population+"/V1", filename_indicator, "v1", I, sizer, vector<int>(1,-1),"T"+to_string(i));
 
-		eval_ks->update_covered_PFront();
-
-		for(auto iter : sizer){
-			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
-			// READ PLS 0 OF UB_BOUND = iter
-			string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/"+to_string(iter)+"/"+step;
-
-			//V1 FILTERING
-			for(vector< string >::iterator steper = I.begin(); steper != I.end(); ++steper){
-				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+(*steper),WS_matrix_file);
-
-				INFO = *steper;
-
-				eval_ks->readWS_matrix(WS_matrix_file);
-
-				eval_ks->update_covered_PFront();
-
-				eval_ks->save_information(filename_population,filename_indicator, "v1");
-//
-				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+step,WS_matrix_file);
-				eval_ks->readWS_matrix(WS_matrix_file);
-//
-				eval_ks->save_information(filename_population,filename_indicator, "v2");
-			}
-			Tools::separate_results(filename_indicator+"/K_"+to_string(K)+".v1","__________"+to_string(iter));
-			Tools::separate_results(filename_indicator+"/K_"+to_string(K)+".v2","__________"+to_string(iter));
-		}
 		eval_ks.reset();
 	}
 }
@@ -411,13 +388,14 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 void script_save_information(string type_inst, string taille, string WS_DM){
 
 	int K = 30;
-	int N = 6;
-	vector< string > I = {"0","1","2","3","4","5","6","7"};
+	int N = 1;
+	string testname = "./Data/WS_Learning/Test2/Iteration_";
+	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixAz.csv";
-	string prefix = "MOLS_PSize_DIV/OS";
+	string WS_matrix_file = "WS_MatrixA.csv";
+	string prefix = "MOLS_PSize";
 
 	vector<int> sizer = {2,8,20,60,100};  //       //A
 
@@ -426,32 +404,16 @@ void script_save_information(string type_inst, string taille, string WS_DM){
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 5; i < N; i++){
+	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
+		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
+
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
 
 		eval_ks->set_K_replication(K);
 
-		for(auto iter : sizer){
-
-			for(auto step : I){
-				cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-				INFO = step;
-				Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+step,WS_matrix_file);
-
-
-				string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/"+to_string(iter)+"/"+step;
-
-				eval_ks->readWS_matrix(WS_matrix_file);
-				eval_ks->update_covered_PFront();
-
-				eval_ks->save_information(filename_population, filename_indicator, "eval");
-//				eval_ks->save_other_information(filename_population, filename_indicator+"/"+to_string(iter)+"/"+to_string(step),"iter");
-			}
-			Tools::separate_results(filename_indicator+"/K_"+to_string(K)+".eval","#__________"+to_string(iter));
-//			Tools::separate_results(filename_indicator+".iter","__________"+to_string(iter));
-		}
+		eval_ks->save_information(filename_population, filename_indicator, "eval", I, sizer,vector< int >(1,-1),"T"+to_string(i));
 
 		eval_ks.reset();
 	}
@@ -490,14 +452,16 @@ void save_avg_instances(string type_inst, string taille, string WS_DM){
 void script_learning_data(string type_inst, string taille, string WS_DM){
 
 	int K = 30;
-	int N = 1;
-	vector< int > Budget = {20,40,100,150,200,400,800,1500};   //A
+	int N = 6;
+	vector< int > Budget = {20,100,800,1500,3000};   //A
 //	vector< int > Budget = {20,100,400,1000,1500,2000};  //C
-	vector< string > I = {"0","1","2","3","4","5","6","7"};
-	string testname = "Test2";
+
+	string testname = "./Data/WS_Learning/Test2/Iteration_";
+	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
+
 
 	string WS_matrix_file = "WS_MatrixA_learning.csv";
-	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
 
 	vector< int > sizer = {2,8,20,60,100};  //       //A
 
@@ -510,30 +474,59 @@ void script_learning_data(string type_inst, string taille, string WS_DM){
 	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
+		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
+
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
 
 		eval_ks->set_K_replication(K);
 
-		for(auto b : Budget){
+		eval_ks->save_information(filename_population, filename_indicator, "eval", I, sizer, Budget,"T"+to_string(i));
 
-			for(auto iter : sizer){
+		eval_ks->save_best_parameters(filename_indicator, "eval", I, sizer, Budget,"T"+to_string(i));
 
-				for(auto step : I){
-					cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
-					Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+step,WS_matrix_file);
-
-					string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/"+to_string(iter)+"/"+step;
-
-					eval_ks->readWS_matrix(WS_matrix_file);
-					eval_ks->update_covered_PFront();
-
-					eval_ks->save_information(filename_population, filename_indicator, "eval",b);
-				}
-				Tools::separate_results(filename_indicator+"/K_"+to_string(K)+"_B"+to_string(b)+".eval","#__________"+to_string(iter));
-			}
-		}
-		eval_ks->save_best_parameters(filename_indicator, "eval", I, sizer, Budget);
 		eval_ks.reset();
+	}
+
+
+}
+
+
+void script_learning_opt_algo(string type_inst, string taille, string WS_DM){
+
+	int K = 30;
+	int N = 6;
+	vector< int > Budget = {20,100,800,1500,3000};   //A
+//	vector< int > Budget = {20,100,400,1000,1500,2000};  //C
+
+	string testname = "./Data/WS_Learning/Test2/Iteration_";
+	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
+
+
+	string WS_matrix_file = "WS_MatrixA_learning.csv";
+	string algo1 = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
+	string algo2 = "MOLS_PSize_DIV/OS";
+
+	vector< int > sizer = {2,8,20,60,100};  //       //A
+
+//	vector<int> sizer = {2,8,20,60,100,200};       //C
+
+//	vector<int> sizer = {2,8,20,60,100,200};        //D
+
+
+
+	for(auto b : Budget){
+		for(int i = 0; i < N; i++){
+			string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+			string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i);
+			string save_data = "./Data/Evaluation/"+type_inst+"/"+taille;
+			eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
+
+			eval_ks->set_K_replication(K);
+
+			eval_ks->best_algo_parametrized(save_data, filename_indicator+"/"+algo1,filename_indicator+"/"+algo2, "T"+to_string(i),b);
+
+			eval_ks.reset();
+		}
 	}
 
 
@@ -590,7 +583,7 @@ int main(int argc, char** argv){
 
 
 //	script_learning_data(type_inst, taille, WS_DM);
-
+	script_learning_opt_algo(type_inst, taille, WS_DM);
 /*
   *************************************************************************************************************************
 */
@@ -605,8 +598,8 @@ int main(int argc, char** argv){
   *************************************************************************************************************************
 */
 
-	Instance_Generator * inst = new Instance_Generator(stoi(taille), 3, 1);
-	inst->random_instances("Instances_Knapsack/Type_A/"+taille+"_items");
+//	Instance_Generator * inst = new Instance_Generator(stoi(taille), 3, 1);
+//	inst->random_instances("Instances_Knapsack/Type_A/"+taille+"_items");
 
 /*
   *************************************************************************************************************************
