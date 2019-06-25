@@ -23,7 +23,7 @@ set grid
 
 type = "A"
 info = "0"
-length = "100"
+length = "200"
 algo = "MOLS_SWITCH_OBJECTIVE"
 
 
@@ -87,7 +87,7 @@ unset output
 
 
 
-sizer = "2 8 20 40 100 200"
+sizer = "20 60 100 200"
 
 array uncertainty[8]
 uncertainty[1] = 90

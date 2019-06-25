@@ -16,8 +16,6 @@
 #define LO_U 10
 #define HI_U 2000
 
-#define N_WS 10000
-
 Instance_Generator::Instance_Generator(int n, int p, int nb_inst){
 	p_criteria = p;
 	n_items = n;
@@ -260,9 +258,27 @@ void Instance_Generator::set_Efficient_front(string filename){
 		}
 	}
 
-	for(int i = 0; i < N_WS; i++){
+	int improvment = 3;
+	bool found = false;
+	while(improvment > 0){
+
 		random_ws =  Tools::generate_random_restricted_WS_aggregator(p_criteria,pareto);
-		efficient_solution.push_back(PL_WS(random_ws));
+		found = false;
+
+		vector< float > new_sol = PL_WS(random_ws);
+		for(size_t n = 0; n < efficient_solution.size(); ++n)
+		{
+		    if( equal(efficient_solution[n].begin(), efficient_solution[n].end(), new_sol.begin()) ){
+		    	improvment--;
+		    	found = true;
+		    	break;
+		    }
+		}
+
+		if( !found ){
+			improvment = 3;
+			efficient_solution.push_back(new_sol);
+		}
 	}
 
 	set<int> indic_to_rm;

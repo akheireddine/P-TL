@@ -973,7 +973,7 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Popula
 	int nb_iteration = 0, index = 0;
 	int cpt_info = 0;
 
-	int surcharge = 2;
+	int surcharge = 3, souscharge = 5;
 	int limit_no_improvment = 2;
 	vector< float > extrem_point(n_objective,0.), snd_extrem_point(n_objective,0.);
 	float curr_epsilon = 0.;
@@ -1082,13 +1082,16 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Popula
 //			}
 
 			surcharge = ((int)Population.size() < UB_Population_size) ? surcharge : (surcharge - 1);
+			souscharge = ((int)Population.size() < UB_Population_size) ? (souscharge - 1) : souscharge;
 
-			cout<<"surchange : "<<surcharge<< " , POP/UB : "<<Population.size()<<"/"<<UB_Population_size<<endl;
-			if((int)Population.size() < UB_Population_size and cpt_info > 0 ){
+			cout<<"surchange : "<<surcharge<< "  souscharge :"<<souscharge<<endl;
+			cout<<"  POP/UB : "<<Population.size()<<"/"<<UB_Population_size<<endl;
+			if( (souscharge == 0) and cpt_info > 0 ){
 				cpt_info--;
 				cout<<"1 : Iteration_"<<cpt_info<<endl;
 				set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
 				update_WS_matrix_Population();
+				souscharge = 5;
 			}
 
 			if( (surcharge == 0) and cpt_info < (int)Informations.size() - 1 ){ //curr_epsilon < epsilon  and cpt_info > 0){
@@ -1096,9 +1099,12 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Popula
 				cout<<"2 : Iteration_"<<cpt_info<<endl;
 				set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
 				update_WS_matrix_Population();
-				surcharge = 2;
+				surcharge = 3;
 			} else if ( surcharge == 0 and cpt_info >= (int)Informations.size() - 1 )
-				surcharge = 2;
+				surcharge = 3;
+			else if (souscharge == 0 and cpt_info == 0)
+				souscharge = 5;
+
 
 			extrem_point = snd_extrem_point;
 			curr_epsilon = 0.;
@@ -1118,8 +1124,6 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Popula
 	for(list< shared_ptr< Alternative > >::iterator it = Archive.begin(); it != Archive.end(); ++it){
 		OPT_Solution.push_back((*it)->get_criteria_values());
 	}
-
-
 }
 
 

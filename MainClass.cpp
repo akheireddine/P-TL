@@ -167,7 +167,10 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, int UB, 
 
 //	eval_ks->evaluate_PF( knaps->get_OPT_Solution(), time_cpu);
 
-	delete knaps;
+	cout<<"whata"<<endl;
+
+//	delete knaps;
+	cout<<"the hell"<<endl;
 }
 
 
@@ -182,12 +185,12 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixPLS_A.csv";
+	string WS_matrix_file = "WS_MatrixPLS_A2.csv";
 	string prefix = "MOLS_SWITCH_OBJECTIVE";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2,8,20,40,100,200}; //       //A
+	vector<int> sizer = {20,60,100,200}; //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
@@ -224,8 +227,9 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 				srand( GRAIN );
 				main_Knapsack_PLSWS(filename_population, 1, iter, I);
 			}
-//			Tools::separate_results(filename_indicator,"__________"+to_string(iter));
+			cout<<" iterator done : "<<iter<<endl;
 		}
+		cout<<"wher"<<endl;
 
 		eval_ks.reset();
 	}
@@ -406,9 +410,9 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 void script_save_information(string type_inst, string taille, string WS_DM){
 
-	int K = 29;
-	int N = 1;
-	vector< string > I = {"0","1","1.1","1.2","1.3","2","2.1","3","4","5","6","7"};
+	int K = 30;
+	int N = 6;
+	vector< string > I = {"0","1","2","3","4","5","6","7"};
 
 	vector<int> graines;
 
@@ -422,7 +426,7 @@ void script_save_information(string type_inst, string taille, string WS_DM){
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 0; i < N; i++){
+	for(int i = 5; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
@@ -485,19 +489,19 @@ void save_avg_instances(string type_inst, string taille, string WS_DM){
 
 void script_learning_data(string type_inst, string taille, string WS_DM){
 
-	int K = 20;
-	int N = 10;
-//	vector< int > Budget = {20,40,100,150,200,400,800};   //A
-	vector< int > Budget = {20,100,400,1000,1500,2000};  //C
+	int K = 30;
+	int N = 1;
+	vector< int > Budget = {20,40,100,150,200,400,800,1500};   //A
+//	vector< int > Budget = {20,100,400,1000,1500,2000};  //C
 	vector< string > I = {"0","1","2","3","4","5","6","7"};
 	string testname = "Test2";
 
-	string WS_matrix_file = "WS_MatrixC_learning.csv";
-	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
+	string WS_matrix_file = "WS_MatrixA_learning.csv";
+	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
 
-//	vector< int > sizer = {2,8,20,60,100};  //       //A
+	vector< int > sizer = {2,8,20,60,100};  //       //A
 
-	vector<int> sizer = {2,8,20,60,100,200};       //C
+//	vector<int> sizer = {2,8,20,60,100,200};       //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
@@ -544,7 +548,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "C";
+	string type_inst = "A";
 	string taille = "100";
 
 //	script_knapsack(type_inst, taille, WS_DM);
@@ -585,7 +589,7 @@ int main(int argc, char** argv){
 
 
 
-	script_learning_data(type_inst, taille, WS_DM);
+//	script_learning_data(type_inst, taille, WS_DM);
 
 /*
   *************************************************************************************************************************
@@ -601,8 +605,8 @@ int main(int argc, char** argv){
   *************************************************************************************************************************
 */
 
-//	Instance_Generator * inst = new Instance_Generator(stoi(taille), 3, 1);
-//	inst->random_instances("Instances_Knapsack/Type_A/"+taille+"_items");
+	Instance_Generator * inst = new Instance_Generator(stoi(taille), 3, 1);
+	inst->random_instances("Instances_Knapsack/Type_A/"+taille+"_items");
 
 /*
   *************************************************************************************************************************

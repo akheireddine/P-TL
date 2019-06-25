@@ -9,7 +9,7 @@ UB = ["2","8","20","60","100"]
 info = ["0","1","2","3","4","5","6","7"]
 
 path = "./Data/Population/"
-methodes = ["MOLS_PSize"]#,"MOLS_PSize_DIV/OS","MOLS_PSize_DIV/RS"]
+methodes = ["MOLS_PSize","MOLS_PSize_DIV/OS","MOLS_PSize_DIV/RS"]
 
 for t in types:
     for ta in taille:

@@ -727,14 +727,16 @@ void Evaluator::save_information(string file_population, string save_path, strin
 		if( budget != -1   and (int)Population.size() > budget ){
 			Population.resize(budget) ;
 
+			nb_iteration = Population.size();
 			update_covered_OPT_Solution(Population);
 
 			indicator[0] += evaluate_Dist_ratio(Population);
 			indicator[1] += 0;
 			indicator[2] += time_exec[ budget - 1 ];
-			indicator[3] += Population.size();
+			indicator[3] += nb_iteration;
 		}
 		else {
+
 			update_covered_OPT_Solution(Population);
 
 			indicator[0] += evaluate_Dist_ratio(Population);
