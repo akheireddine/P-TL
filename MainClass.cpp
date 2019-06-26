@@ -454,8 +454,8 @@ void save_avg_instances(string type_inst, string taille, string WS_DM){
 void script_learning_data(string type_inst, string taille, string WS_DM){
 
 	int K = 30;
-	int N = 6;
-	vector< int > Budget = {20,100,800,1500,3000};   //A
+	int N = 10;
+	vector< int > Budget = {20,60,100,140,420,820,1220,4020};   //A
 //	vector< int > Budget = {20,100,400,1000,1500,2000};  //C
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
@@ -463,7 +463,7 @@ void script_learning_data(string type_inst, string taille, string WS_DM){
 
 
 	string WS_matrix_file = "WS_MatrixA_learning.csv";
-	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
 
 	vector< int > sizer = {2,8,20,60,100};  //       //A
 
@@ -497,7 +497,7 @@ void script_learning_opt_algo(string type_inst, string taille, string WS_DM){
 
 	int K = 30;
 	int N = 6;
-	vector< int > Budget = {20,100,800,1500,3000};   //A
+	vector< int > Budget = {20,60,100,140,420,820,1220,4020};   //A
 //	vector< int > Budget = {20,100,400,1000,1500,2000};  //C
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
@@ -585,7 +585,7 @@ int main(int argc, char** argv){
 
 
 //	script_learning_data(type_inst, taille, WS_DM);
-//	script_learning_opt_algo(type_inst, taille, WS_DM);
+	script_learning_opt_algo(type_inst, taille, WS_DM);
 /*
   *************************************************************************************************************************
 */
@@ -606,7 +606,7 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM);
+//	script_Cst_PSize(type_inst,taille,WS_DM);
 //
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM);
 //////

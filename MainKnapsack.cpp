@@ -720,7 +720,7 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
 			cout<<"pb "<<dic_Alternative.size()<<endl;
 
 			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
-				cout<<"ok "<<(*it)<<endl;
+//				cout<<"ok "<<(*it)<<endl;
 				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 ){
 					cout<<"here"<<endl;
 					(*it).second.reset();
