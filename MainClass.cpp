@@ -315,14 +315,14 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	int K = 1;
-	int N = 1;
-	vector< string > I = {"0"};
-	string testname = "Test2";
+	int N = 12;
+	vector< string > I = {"3"};
+	string testname = "Test3";
 
 	vector<int> graines;
 
 	string WS_matrix_file = "WS_MatrixA.csv";
-	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
@@ -333,7 +333,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 0; i < N; i++){
+	for(int i = 11; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i);

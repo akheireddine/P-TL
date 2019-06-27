@@ -235,35 +235,31 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 
 	else{
 
-		float sum = 1.0;
-		vector<pair<float, float > > min_max(p_criteria,pair<float,float>());
+		vector< float > rand_value;
+		vector< float > feasible_ws;
 
-		for(int i = 0; i < p_criteria ; i++){
-			float minus = *(min_element(ws_matrix[i].begin(), ws_matrix[i].end()) );
-			float maxus = *(max_element(ws_matrix[i].begin(), ws_matrix[i].end()) );
+		for(int i = 0; i < p_criteria - 1; i++){
+			float rando_val =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX) );
+			rand_value.push_back( rando_val  );
+		}
+		rand_value.push_back(0); rand_value.push_back(1.);
 
-			min_max[i] = make_pair (minus, maxus);
+		sort(rand_value.begin(), rand_value.end());
+
+		for(size_t i = 0; i < rand_value.size() - 1; i++)
+			feasible_ws.push_back( rand_value[i+1] - rand_value[i]);
+
+		for(int i = 0; i < p_criteria; i++){
+			float val = 0.;
+
+			for(size_t j = 0; j < feasible_ws.size(); j++)
+				val += ws_matrix[i][j] * feasible_ws[j] * 1.0;
+
+			weighted_sum[i] = val ;
 		}
 
-
-		for(int i = 0; i < p_criteria - 1 ; i++){
-
-			float min_total = 0;
-			for(int j = i+1; j < p_criteria; j++)
-				min_total += min_max[j].first;
-
-
-			min_max[i].second = min(min_max[i].second, sum - min_total);
-
- 			float wi =  static_cast <float> (rand())*1.0 /( static_cast <float> (RAND_MAX / (min_max[i].second - min_max[i].first))) + min_max[i].first ;
-
-			weighted_sum[i] = wi;
-
-			sum -= wi;
-		}
-
-		weighted_sum[p_criteria - 1] = sum;
 	}
+
 
 
 //	cout<<print_vector(weighted_sum)<<endl;
@@ -369,61 +365,6 @@ int Tools::dominates(vector< float > e1, vector< float > e2){
 
 
 
-//vector<float> Tools::generate_random_restricted_WS_aggregator_PL(int p_criteria, vector< vector< float > > ws_matrix){
-//
-//	IloEnv   env;
-//	IloModel model(env);
-//	vector<IloNumVar > w(p_criteria);
-//	IloRangeArray Constraints(env);
-//	vector<float> weighted_sum(p_criteria);
-//
-//	//VARIABLES
-//	for(int i = 0; i < p_criteria; i++){
-//
-//		const auto [minus, maxus] = minmax_element(begin(ws_matrix[i]), end(ws_matrix[i]));
-//		w[i] = IloNumVar(env,*minus, *maxus, ILOFLOAT);
-//		ostringstream varname;
-//		varname.str("");
-//		varname<<"w_"<<i;
-//		w[i].setName(varname.str().c_str());
-//	}
-//
-//	//CONSTRAINTS
-//	IloExpr c1(env);
-//
-//	for(int j = 0; j < p_criteria ; j++)
-//		c1 += w[j] ;
-//	Constraints.add(c1 ==  1 );
-//
-//	model.add(Constraints);
-//
-//	//OBJECTIVE
-////	IloObjective obj=IloAdd(model, IloMaximize(env));
-//
-////	cout<<obj<<endl;
-//
-//	//SOLVE
-//	IloCplex cplex(model);
-//
-//	cplex.setOut(env.getNullStream());
-//
-//	if ( !cplex.solve() ) {
-//		 env.error() << "Failed to optimize WEIGHTS LP" << endl;
-//		 exit(1);
-//	}
-//
-//	//GET SOLUTION
-//	for(int i = 0; i < p_criteria; i++){
-//			weighted_sum[i] = cplex.getValue(w[i])  ;
-//	}
-//	env.end();
-//
-////	cout<<"----------------------"<<endl<<"WEIGHTED SUM PL ["<<print_vector(weighted_sum)<<"]"<<endl<<"----------------------"<<endl;
-//
-//	return weighted_sum;
-//
-//
-//}
 
 
 
