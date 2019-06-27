@@ -469,11 +469,11 @@ void MainKnapsack::MOLS_Cst_PSize(double starting_time_sec, int UB_Population_si
 				if( dic_Alternative[*it].use_count() != 0)  //could be dominated by a solution in a different Local front list
 					Population.push_back(*it);
 
-
-			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
+			map<string, shared_ptr< AlternativeKnapsack > > tmp_dic_Alternative = dic_Alternative;
+			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = tmp_dic_Alternative.begin(); it != tmp_dic_Alternative.end(); ++it){
 				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 ){
 					(*it).second.reset();
-					dic_Alternative.erase((*it).first);
+//					dic_Alternative.erase((*it).first);
 				}
 			}
 
@@ -593,8 +593,8 @@ void MainKnapsack::MOLS_Cst_PSize_RS(double starting_time_sec, int UB_Population
 				Random_Selection(Dominated_alt,Population, to_add);
 			}
 
-
-			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
+			map<string, shared_ptr< AlternativeKnapsack > > tmp_dic_Alternative = dic_Alternative;
+			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = tmp_dic_Alternative.begin(); it != tmp_dic_Alternative.end(); ++it){
 				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 ){
 					(*it).second.reset();
 					dic_Alternative.erase((*it).first);
@@ -717,20 +717,14 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
 				Ordered_Selection(Dominated_alt, Population, to_add);
 			}
 
-			cout<<"pb "<<dic_Alternative.size()<<endl;
-
-			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
-//				cout<<"ok "<<(*it)<<endl;
+			map<string, shared_ptr< AlternativeKnapsack > > tmp_dic_Alternative = dic_Alternative;
+			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = tmp_dic_Alternative.begin(); it != tmp_dic_Alternative.end(); ++it){
 				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 ){
-					cout<<"here"<<endl;
 					(*it).second.reset();
-					cout<<"la"<<endl;
 					dic_Alternative.erase((*it).first);
-					cout<<"oula"<<endl;
 				}
 			}
 
-			cout<<"pb"<<endl;
 
 			Dominated_alt.clear();
 			next_Population.clear();

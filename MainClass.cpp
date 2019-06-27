@@ -292,12 +292,11 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 	clock_t t = clock();
 
-//	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
+	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
 
 //	knaps->MOLS_Cst_PSize_RS(t/CLOCKS_PER_SEC,max_size_population);
 
-	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
-	cout<<"why"<<endl;
+//	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
@@ -315,9 +314,9 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 //// ORIGINAL VERSION
 void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
-	int K = 20;
-	int N = 10;
-	vector< string > I = {"0","1","2","3","4","5","6","7"};
+	int K = 1;
+	int N = 1;
+	vector< string > I = {"0"};
 	string testname = "Test2";
 
 	vector<int> graines;
@@ -327,14 +326,14 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2,8,20,60,100};  //       //A
+	vector<int> sizer = {2};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 7; i < N; i++){
+	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -362,7 +361,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 				eval_ks->update_covered_PFront();
 
 				for(int k = 0; k < K; k++){
-					k_replication = k  + 10 ;
+					k_replication = k  + 30 ;
 					GRAIN = graines[k];
 					srand( GRAIN );
 					main_Knapsack_Cst_PSize(filename_population, 1, iter);
@@ -585,17 +584,7 @@ int main(int argc, char** argv){
 
 
 //	script_learning_data(type_inst, taille, WS_DM);
-	script_learning_opt_algo(type_inst, taille, WS_DM);
-/*
-  *************************************************************************************************************************
-*/
-	//TEST2
-//	vector<float> opt_points{37652, 41042};  //A-100-T0
-//	vector<float> opt_points{78121,76394};   //A-200-T0
-//	vector<float> opt_points{115950, 114016};            //A-300-T0
-//	vector<float> opt_points{31157,35210}; //C-100-T0
-//	vector<float> opt_points{39061,40421};  //A-100-T2
-
+//	script_learning_opt_algo(type_inst, taille, WS_DM);
 /*
   *************************************************************************************************************************
 */
@@ -606,7 +595,7 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-//	script_Cst_PSize(type_inst,taille,WS_DM);
+	script_Cst_PSize(type_inst,taille,WS_DM);
 //
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM);
 //////
