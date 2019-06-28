@@ -11,15 +11,16 @@
 
 
 #define LO_W 2
-#define HI_W 1000
+#define HI_W 2000
 
 #define LO_U 10
-#define HI_U 2000
+#define HI_U 5000
 
 Instance_Generator::Instance_Generator(int n, int p, int nb_inst){
 	p_criteria = p;
 	n_items = n;
 	nb_instances = nb_inst;
+	srand(time(NULL));
 }
 
 
@@ -28,9 +29,9 @@ void Instance_Generator::random_instances(string path){
 	system(("if [ ! -d "+path+" ]; then mkdir -p "+path+"; fi").c_str());
 
 
-	for(int i = 11; i < nb_instances+11; i++){
+	for(int i = 0; i < nb_instances ; i++){
 		int Weight = 0;
-
+		srand(rand());
 		string filename = "2KP"+to_string(n_items)+"-TA-"+to_string(i);
 
 		vector< string > weights(n_items);
@@ -49,8 +50,8 @@ void Instance_Generator::random_instances(string path){
 			}
 		}
 
-//		Weight /= n_items;
-		Weight /= 5;
+		Weight /= n_items;
+//		Weight /= 5;
 		string content = write_content(weights, utilities, to_string(Weight));
 
 		ofstream fic((path+"/"+filename+".dat").c_str());
@@ -258,7 +259,7 @@ void Instance_Generator::set_Efficient_front(string filename){
 		}
 	}
 
-	int improvment = 3;
+	int improvment = 5;
 	bool found = false;
 	while(improvment > 0){
 

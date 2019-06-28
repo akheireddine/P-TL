@@ -325,6 +325,7 @@ void Evaluator::readWS_matrix(string filename){
 	p_criteria = WS_matrix.size();
 
 	n_objective = WS_matrix[0].size();
+
 }
 
 
@@ -697,6 +698,8 @@ void Evaluator::save_PF_evaluation(){
 
 void Evaluator::save_information(string file_population, string save_path, string format, vector< string > Informations,
 		vector< int > UB_Population, vector<int> Budget, string inst_name){
+
+	system(("if [ ! -d "+save_path+" ]; then mkdir -p "+save_path+"; fi").c_str());
 
 	string filesave = save_path+"/K_"+to_string(K_replication)+"."+format;
 	ofstream fic_write(filesave.c_str());

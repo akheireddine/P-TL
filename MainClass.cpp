@@ -25,7 +25,7 @@ void main_Knapsack(string filename_instance, int size_population){
 	delete knaps;
 }
 
-void script_knapsack(string type_inst, string taille, string WS_DM){
+void script_knapsack(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 10;
 	int N = 1;
@@ -35,15 +35,16 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 
 	string WS_matrix_file = "WS_MatrixA.csv";
 	string prefix = "_AVG_MOLS2";
+
 	srand(time(NULL));
 
 
 
 	for(int i = 0; i < N ; i++){
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,
-				"./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval");
+				"./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval");
 
 		MainKnapsack::Generate_random_Population(eval_ks, K);
 
@@ -58,7 +59,7 @@ void script_knapsack(string type_inst, string taille, string WS_DM){
 //!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		for(int step = 0; step < I; step++){
 
-			string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i);
+			string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
 			INFO = to_string(step);
 			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 			Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+to_string(step),WS_matrix_file);
@@ -102,7 +103,7 @@ void main_Knapsack_WSPLS(string filename_instance, int size_population, int iter
 	delete knaps;
 }
 
-void script_knapsack_WSPLS(string type_inst, string taille, string WS_DM){
+void script_knapsack_WSPLS(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 1;
 	int N = 1;
@@ -113,20 +114,22 @@ void script_knapsack_WSPLS(string type_inst, string taille, string WS_DM){
 
 	string WS_matrix_file = "WS_MatrixA.csv";
 	string prefix = "_AVG_Ta_500";
+
+
 	srand(time(NULL));
 
 	INFO = I;
 	for(int i = 0; i < N ; i++){
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		Tools::copy_into("./Data/WS_Learning/Test2/Iteration_"+I, WS_matrix_file);
 
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,
-				"./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval");
+				"./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval");
 
 
 		MainKnapsack::Generate_random_Population(eval_ks, K);
 
-		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i);
+		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
 	//!!!!!!!!!!!!!!!!!!!!! CHANGE DMS WSUMM FOR TEST1 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		for(int step = 500; step < 501; step++){
 			cout<<"_________________________________ NB-ITER "<<step<<"___________________________"<<endl;
@@ -175,13 +178,14 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, int UB, 
 
 
 
-void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
+void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 1;
 	int N = 1;
 	string path_information = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
 	,path_information+"6", path_information+"7"};
+
 
 	vector<int> graines;
 
@@ -199,9 +203,9 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 
 
 	for(int i = 0; i < N; i++){
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
-		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i);
+		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
+		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
 
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,filename_indicator);
 
@@ -244,7 +248,7 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM){
 
 
 
-void script_Cst_PSizeV1V2(string type_inst, string taille, string WS_DM){
+void script_Cst_PSizeV1V2(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 29;
 	int N = 1;
@@ -263,9 +267,9 @@ void script_Cst_PSizeV1V2(string type_inst, string taille, string WS_DM){
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 	for(int i = 0; i < N; i++){
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
-		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
+		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
+		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
 
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
 
@@ -302,8 +306,6 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
 
-//	eval_ks->evaluate_PF( knaps->get_OPT_Solution(), time_cpu);
-
 	delete knaps;
 }
 
@@ -312,31 +314,31 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 
 //// ORIGINAL VERSION
-void script_Cst_PSize(string type_inst, string taille, string WS_DM){
+void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_criteria){
 
-	int K = 1;
-	int N = 12;
-	vector< string > I = {"3"};
+	int K = 30;
+	int N = 30;
+	vector< string > I = {"0","1","2","3","4","5","6","7"};
 	string testname = "Test3";
 
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixA.csv";
+	string WS_matrix_file = "WS_MatrixA5.csv";
 	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2};  //       //A
+	vector<int> sizer = {2,8,20,60,100,200,400,1000,3000};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 11; i < N; i++){
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
-		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i);
+	for(int i = 0; i < N; i++){
+		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
+		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
 
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,filename_indicator);
 
@@ -358,17 +360,16 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 				eval_ks->readWS_matrix(WS_matrix_file);
 
+
 				eval_ks->update_covered_PFront();
 
 				for(int k = 0; k < K; k++){
-					k_replication = k  + 30 ;
+					k_replication = k  ;
 					GRAIN = graines[k];
 					srand( GRAIN );
 					main_Knapsack_Cst_PSize(filename_population, 1, iter);
 				}
-//				eval_ks->save_PF_evaluation();
 			}
-//			Tools::separate_results(filename_indicator,"__________"+to_string(iter));
 		}
 
 		eval_ks.reset();
@@ -386,19 +387,17 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM){
 
 
 
-void script_save_information(string type_inst, string taille, string WS_DM){
+void script_save_information(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 30;
-	int N = 1;
-	string testname = "./Data/WS_Learning/Test2/Iteration_";
+	int N = 30;
+	string testname = "./Data/WS_Learning/Test3/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
-	vector<int> graines;
+	string WS_matrix_file = "WS_MatrixAS5z.csv";
+	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
 
-	string WS_matrix_file = "WS_MatrixA.csv";
-	string prefix = "MOLS_PSize";
-
-	vector<int> sizer = {2,8,20,60,100};  //       //A
+	vector<int> sizer = {2,8,20,60,100,200,400,1000,3000};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};  //C
 
@@ -406,9 +405,9 @@ void script_save_information(string type_inst, string taille, string WS_DM){
 
 
 	for(int i = 0; i < N; i++){
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
-		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
+		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
+		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
 
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
 
@@ -424,7 +423,7 @@ void script_save_information(string type_inst, string taille, string WS_DM){
 
 
 
-void save_avg_instances(string type_inst, string taille, string WS_DM){
+void save_avg_instances(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 10;
 	int N = 3;
@@ -438,7 +437,7 @@ void save_avg_instances(string type_inst, string taille, string WS_DM){
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
-	string save_file = "./Data/Evaluation/"+type_inst+"/"+taille;
+	string save_file = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 	eval_ks->compute_avg_type_instances(save_file, prefix, "v2", K, N, sizer , I);
 
 	eval_ks.reset();
@@ -450,7 +449,7 @@ void save_avg_instances(string type_inst, string taille, string WS_DM){
 //***********************************************************************************************************************************//
 
 
-void script_learning_data(string type_inst, string taille, string WS_DM){
+void script_learning_data(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 30;
 	int N = 10;
@@ -473,9 +472,9 @@ void script_learning_data(string type_inst, string taille, string WS_DM){
 
 
 	for(int i = 0; i < N; i++){
-		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
-		string filename_population = "./Data/Population/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
+		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
+		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
 
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
 
@@ -492,7 +491,7 @@ void script_learning_data(string type_inst, string taille, string WS_DM){
 }
 
 
-void script_learning_opt_algo(string type_inst, string taille, string WS_DM){
+void script_learning_opt_algo(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 30;
 	int N = 6;
@@ -501,7 +500,6 @@ void script_learning_opt_algo(string type_inst, string taille, string WS_DM){
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
-
 
 	string WS_matrix_file = "WS_MatrixA_learning.csv";
 	string algo1 = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
@@ -517,9 +515,9 @@ void script_learning_opt_algo(string type_inst, string taille, string WS_DM){
 
 	for(auto b : Budget){
 		for(int i = 0; i < N; i++){
-			string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-			string filename_indicator = "./Data/Evaluation/"+type_inst+"/"+taille+"/T"+to_string(i);
-			string save_data = "./Data/Evaluation/"+type_inst+"/"+taille;
+			string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+			string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
+			string save_data = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 			eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
 
 			eval_ks->set_K_replication(K);
@@ -543,7 +541,8 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "100";
+	string taille = "500";
+	string p_criteria = "3";
 
 //	script_knapsack(type_inst, taille, WS_DM);
 //
@@ -589,20 +588,28 @@ int main(int argc, char** argv){
   *************************************************************************************************************************
 */
 
-//	Instance_Generator * inst = new Instance_Generator(stoi(taille), 3, 1);
-//	inst->random_instances("Instances_Knapsack/Type_A/"+taille+"_items");
+	Instance_Generator * inst = new Instance_Generator(stoi(taille), stoi(p_criteria), 30);
+	inst->random_instances("Instances_Knapsack"+p_criteria+"/Type_A/"+taille+"_items");
 
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM);
+	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
 //
-//	script_Cst_PSizeV1V2(type_inst, taille, WS_DM);
+//	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
-//	script_save_information(type_inst, taille, WS_DM);
+	script_save_information(type_inst, taille, WS_DM, p_criteria);
 
-//	save_avg_instances(type_inst, taille, WS_DM);
+//	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
 //
+
+/*
+  *************************************************************************************************************************
+*/
+
+
+
+
 //	vector<int> sizer = {2,8,20,60,80,100};//4,6,8,10,15,20,40,60,80,100,200};//10,50,150,200}; //A
 //
 ////	vector<int> sizer = {2,8,20,60,100,200};  //D
@@ -635,7 +642,6 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-
 
 //	script_knapsack_WSPLS(type_inst,taille,WS_DM);
 
@@ -693,129 +699,4 @@ int main(int argc, char** argv){
 
 
 
-
-
-
-
-
-
-
-//Evaluator* main_Knapsack_WSPLS(string filename_instance, string type_instance, string num_instance,
-//		int size_population, string WS_DM_preferences, int max_step){
-//
-//	string pref_filename = "./WS_Matrix.csv";
-//
-//	MainKnapsack * knaps = new MainKnapsack(filename_instance, size_population, pref_filename);
-//
-//	clock_t t1 = clock();
-//	knaps->HYBRID_WS_PLS(t1/CLOCKS_PER_SEC,max_step);
-//	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
-//
-//	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
-//
-//	string size_instance = to_string(knaps->get_n_items());
-//
-//	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
-//			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+"_WSPLS.eval"
-//			, t2,
-//			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+"_WSPLS.front");
-//
-//	return eval;
-//}
-//
-//void script_WSPLS(string type_inst, string taille, string WS_DM){
-//
-//	Evaluator * eval_ks;
-//
-//
-//	for(int i = 0; i < 10; i++){
-//
-//		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-//
-//
-//		for(int iter = 2; iter <= 14 ; iter += 2){
-//			cout<<"============================================   "<<iter<<" STEPS   ============================================"<<endl;
-//			ITERATION_WS_PLS = iter;
-//			Tools::cpt_count = 0;
-//
-//			for(int k = 0; k < 10; k++){
-//				Tools::generate_random_WS("WS_Matrix.csv",2);
-//				eval_ks = main_Knapsack_WSPLS(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
-//			}
-//
-//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_WSPLS"+taille+"_AVG.eval");
-//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_WSPLS"+taille+"_AVG.front");
-//
-//			eval_ks->write_objective_OPT_information();
-////			free(eval_ks);
-//		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_WSPLS"+taille+"_AVG.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_WSPLS"+taille+"_AVG.front",type_inst+to_string(i)+"___");
-//
-//	}
-//
-//
-//}
-
-////***********************************************************************************************************************************//
-//
-//
-//Evaluator* main_Knapsack_PLSWS(string filename_instance, string type_instance, string num_instance,
-//		int size_population, string WS_DM_preferences, int max_step){
-//
-////	string pref_filename = "./WS_Matrix.csv";
-//
-//	MainKnapsack * knaps = new MainKnapsack(filename_instance, size_population);
-//
-//	clock_t t1 = clock();
-//	knaps->HYBRID_PLS_WS(t1/CLOCKS_PER_SEC,max_step);
-//	float t2 = (clock() - t1) * 1.0/CLOCKS_PER_SEC;
-//
-//	cout<<"Execution time : "<<t2<<" sec"<<endl<<endl;
-//
-//	string size_instance = to_string(knaps->get_n_items());
-//
-//	Evaluator * eval = new Evaluator(filename_instance, knaps, WS_DM_preferences,
-//			"./Data/DistTime/"+type_instance+"/I"+num_instance+"_"+size_instance+"_PLSWS.eval"
-//			, t2,
-//			"./Data/ParetoFront/"+type_instance+"/I"+num_instance+"_"+size_instance+"_PLSWS.front");
-//
-//	return eval;
-//}
-//
-//void script_PLSWS(string type_inst, string taille, string WS_DM){
-//
-//	Evaluator * eval_ks;
-//
-//
-//	for(int i = 0; i < 3; i++){
-//
-//		string filename_instance = "./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-//
-//
-//		for(int iter = 10; iter <= 11 ; iter+= 50 ){
-//			cout<<"============================================   "<<iter<<" STEPS   ============================================"<<endl;
-//			Tools::cpt_count = 0;
-//			ITERATION_WS_PLS = iter;
-//
-//
-//			for(int k = 0; k < 1; k++){
-//				eval_ks = main_Knapsack_PLSWS(filename_instance, type_inst, to_string(i),1, WS_DM, iter);
-//			}
-//			Tools::save_average_dist_time("./Data/DistTime/"+type_inst+"/I_PLSWS"+taille+"_AVG.eval");
-//
-//			Tools::save_average_indicator("./Data/ParetoFront/"+type_inst+"/I_PLSWS"+taille+"_AVG.front");
-//
-//			eval_ks->write_objective_OPT_information();
-//
-//			free( eval_ks );
-//		}
-//		Tools::separate_results("./Data/DistTime/"+type_inst+"/I_PLSWS"+taille+"_AVG.eval",type_inst+to_string(i)+"___");
-//		Tools::separate_results("./Data/ParetoFront/"+type_inst+"/I_PLSWS"+taille+"_AVG.front",type_inst+to_string(i)+"___");
-//
-//	}
-//
-//
-//}
-//
 

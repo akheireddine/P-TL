@@ -1,4 +1,4 @@
-sizer = "2 8 20 60 100"
+sizer = "2 8 20 60 100 200"
 
 array uncertainty[8]
 uncertainty[1] = 90
@@ -23,8 +23,9 @@ set grid
 
 type = "A"
 info = "0"
-length = "200"
-algo = "MOLS_SWITCH_OBJECTIVE"
+length = "100"
+algo = "MOLS_PSize_DIV/OS"
+p = "3"
 
 
 # line styles
@@ -67,12 +68,12 @@ do for[j=0:7]{
 
 set label 1 "{/:Bold=10 ".uncertainty[j+1]." ° }" at graph 0.05,0.95 font ",8"
 
-filename = "./Data/Population/".type."/".length."/T".i."/".algo."/".s."/".j."/Pop_0.pop"
+filename = "./Data/Population".p."/".type."/".length."/T".i."/".algo."/".s."/".j."/Pop_0.pop"
 
 stats filename using 4 nooutput
 set style data points
 
-plot "Instances_Knapsack/Type_".type."/".length."_items/2KP".length."-T".type."-".i.".eff", for [k=STATS_min+1:STATS_max] filename using 1:($4==k?$2:1/0):4 with points lt 1 pt k palette 
+splot "Instances_Knapsack".p."/Type_".type."/".length."_items/2KP".length."-T".type."-".i.".eff" w points lw 8 lc rgb "#800080", filename using 1:2:3 with points lt palette lw 2
 } 
 unset multiplot
 unset output

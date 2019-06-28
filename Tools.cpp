@@ -221,7 +221,15 @@ vector<float> Tools::generate_random_restricted_WS_aggregator(int p_criteria, ve
 
 	vector<float> weighted_sum(p_criteria);
 
-	if(p_criteria == 2){
+
+	//mono-objective
+	if(ws_matrix[0].size() == 1){
+		for(size_t i = 0; i < ws_matrix[0].size(); i++)
+		weighted_sum[i] = ws_matrix[0][i];
+	}
+
+	//more than one objective
+	else if(p_criteria == 2){
 //		const auto [minus, maxus] = minmax_element(begin(ws_matrix[0]), end(ws_matrix[0]));
 		float minus = *(min_element(ws_matrix[0].begin(), ws_matrix[0].end()) );
 		float maxus = *(max_element(ws_matrix[0].begin(), ws_matrix[0].end()) );
