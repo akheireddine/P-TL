@@ -317,25 +317,25 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_criteria){
 
 	int K = 30;
-	int N = 30;
+	int N = 10;
 	vector< string > I = {"0","1","2","3","4","5","6","7"};
 	string testname = "Test3";
 
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixA5.csv";
+	string WS_matrix_file = "WS_MatrixA500normal_p3.csv";
 	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2,8,20,60,100,200,400,1000,3000};  //       //A
+	vector<int> sizer = {2,8,20,60,100,200,400};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 0; i < N; i++){
+	for(int i = 2; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -360,11 +360,10 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 
 				eval_ks->readWS_matrix(WS_matrix_file);
 
-
 				eval_ks->update_covered_PFront();
 
 				for(int k = 0; k < K; k++){
-					k_replication = k  ;
+					k_replication = k ;
 					GRAIN = graines[k];
 					srand( GRAIN );
 					main_Knapsack_Cst_PSize(filename_population, 1, iter);
@@ -588,8 +587,8 @@ int main(int argc, char** argv){
   *************************************************************************************************************************
 */
 
-	Instance_Generator * inst = new Instance_Generator(stoi(taille), stoi(p_criteria), 30);
-	inst->random_instances("Instances_Knapsack"+p_criteria+"/Type_A/"+taille+"_items");
+//	Instance_Generator * inst = new Instance_Generator(stoi(taille), stoi(p_criteria), 30);
+//	inst->random_instances("Instances_Knapsack"+p_criteria+"/Type_A/"+taille+"_items");
 
 /*
   *************************************************************************************************************************
@@ -598,7 +597,7 @@ int main(int argc, char** argv){
 //
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
-	script_save_information(type_inst, taille, WS_DM, p_criteria);
+//	script_save_information(type_inst, taille, WS_DM, p_criteria);
 
 //	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
 //
