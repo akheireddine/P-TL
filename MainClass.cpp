@@ -2,6 +2,8 @@
 #include "MainClass.h"
 #include <time.h>
 
+
+
 using namespace std;
 
 
@@ -323,7 +325,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixA500normal_p3.csv";
+	string WS_matrix_file = "WS_MatrixA110normal_p3.csv";
 	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
@@ -335,7 +337,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 2; i < N; i++){
+	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -393,10 +395,10 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 	string testname = "./Data/WS_Learning/Test3/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
-	string WS_matrix_file = "WS_MatrixAS5z.csv";
-	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
+	string WS_matrix_file = "WS_MatrixAS.csv";
+	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
 
-	vector<int> sizer = {2,8,20,60,100,200,400,1000,3000};  //       //A
+	vector<int> sizer = {2,8,20,60,100,200,400};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};  //C
 
@@ -450,19 +452,19 @@ void save_avg_instances(string type_inst, string taille, string WS_DM, string p_
 
 void script_learning_data(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 30;
+	int K = 10;
 	int N = 10;
-	vector< int > Budget = {20,60,100,140,420,820,1220,4020};   //A
+	vector< int > Budget = {20,60,100,140,420,820,1220,2020,4020};   //A
 //	vector< int > Budget = {20,100,400,1000,1500,2000};  //C
 
-	string testname = "./Data/WS_Learning/Test2/Iteration_";
+	string testname = "./Data/WS_Learning/Test3/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
 
 	string WS_matrix_file = "WS_MatrixA_learning.csv";
 	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
 
-	vector< int > sizer = {2,8,20,60,100};  //       //A
+	vector<int> sizer = {2,8,20,60,100,200,400};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
@@ -493,18 +495,18 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 void script_learning_opt_algo(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 30;
-	int N = 6;
-	vector< int > Budget = {20,60,100,140,420,820,1220,4020};   //A
+	int N = 30;
+	vector< int > Budget = {20,60,100,140,420,820,1220,2020,4020};   //A
 //	vector< int > Budget = {20,100,400,1000,1500,2000};  //C
 
-	string testname = "./Data/WS_Learning/Test2/Iteration_";
+	string testname = "./Data/WS_Learning/Test3/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
 	string WS_matrix_file = "WS_MatrixA_learning.csv";
 	string algo1 = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
 	string algo2 = "MOLS_PSize_DIV/OS";
 
-	vector< int > sizer = {2,8,20,60,100};  //       //A
+	vector<int> sizer = {2,8,20,60,100,200,400};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
@@ -534,13 +536,12 @@ void script_learning_opt_algo(string type_inst, string taille, string WS_DM, str
 
 
 
-
 int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "500";
+	string taille = "110";
 	string p_criteria = "3";
 
 //	script_knapsack(type_inst, taille, WS_DM);
@@ -579,21 +580,27 @@ int main(int argc, char** argv){
 //			,type_inst,taille,"varying WS (line 2)","keep same WS (line 1)");
 
 
-
-
-//	script_learning_data(type_inst, taille, WS_DM);
-//	script_learning_opt_algo(type_inst, taille, WS_DM);
 /*
   *************************************************************************************************************************
 */
 
-//	Instance_Generator * inst = new Instance_Generator(stoi(taille), stoi(p_criteria), 30);
+//	script_learning_data(type_inst, taille, WS_DM, p_criteria);
+//	script_learning_opt_algo(type_inst, taille, WS_DM, p_criteria);
+/*
+  *************************************************************************************************************************
+*/
+	string output1="";
+	string output2="";
+	system( ("python3.7 Instance_Generator.py 10 > toto"));
+
+
+//	Instance_Generator * inst = new Instance_Generator(stoi(taille), stoi(p_criteria), 10);
 //	inst->random_instances("Instances_Knapsack"+p_criteria+"/Type_A/"+taille+"_items");
 
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
+//	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
 //
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////

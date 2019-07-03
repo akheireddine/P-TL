@@ -50,8 +50,51 @@ void Instance_Generator::random_instances(string path){
 			}
 		}
 
-		Weight /= n_items;
+		Weight /= 2;
+//		Weight /= n_items;
 //		Weight /= 5;
+		string content = write_content(weights, utilities, to_string(Weight));
+
+		ofstream fic((path+"/"+filename+".dat").c_str());
+		fic<<content<<endl;
+		fic.close();
+
+		set_Efficient_front(path+"/"+filename);
+	}
+
+}
+
+
+void Instance_Generator::conflicting_instances(string path){
+
+	system(("if [ ! -d "+path+" ]; then mkdir -p "+path+"; fi").c_str());
+
+
+	for(int i = 0; i < nb_instances ; i++){
+		int Weight = 0;
+		srand(rand());
+		string filename = "2KP"+to_string(n_items)+"-TB-"+to_string(i);
+
+		vector< string > weights(n_items);
+		vector< vector< string > > utilities(n_items);
+
+		//RANDOM GENERATION
+		system( ("python3.7 Instance_Generator.py "+to_string(n_items)+" > generate_conflict_variables.txt").c_str());
+		ifstream fic_read_corr_utilities("generate_conflict_variables.txt");
+
+		for(int n = 0; n < n_items; n++){
+			int rand_weight = LO_W +  (rand()) /( (RAND_MAX/(HI_W-LO_W)));
+			weights[n] = to_string(rand_weight);
+
+			Weight += rand_weight;
+
+			string line;
+
+			getline(fic_read_corr_utilities,line);
+
+			utilities[n].push_back(Tools::decompose_line_to_float_vector(line));
+			}
+		Weight /= 2;
 		string content = write_content(weights, utilities, to_string(Weight));
 
 		ofstream fic((path+"/"+filename+".dat").c_str());

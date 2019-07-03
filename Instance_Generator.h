@@ -22,6 +22,9 @@ public:
 	Instance_Generator(int n, int p, int nb_inst);
 
 	void random_instances(string path);
+	void conflicting_instances(string path);
+
+
 
 	string write_content(vector< string > weights, vector< vector< string > > utilities, string Weight);
 
