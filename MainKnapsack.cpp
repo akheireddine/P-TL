@@ -975,7 +975,7 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Popula
 	int cpt_info = 0;
 
 	int surcharge = 3, souscharge = 5;
-	int limit_no_improvment = 2;
+//	int limit_no_improvment = 2;
 	vector< float > extrem_point(n_objective,0.), snd_extrem_point(n_objective,0.);
 	float curr_epsilon = 0.;
 

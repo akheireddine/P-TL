@@ -8,8 +8,8 @@ taille = ["100"]
 UB = ["2","8","20","60","100"]
 info = ["0","1","2","3","4","5","6","7"]
 
-path = "./Data/Population/"
-methodes = ["MOLS_PSize","MOLS_PSize_DIV/OS","MOLS_PSize_DIV/RS"]
+path = "./Data/Population2/"
+methodes = ["MOLS_PSize","MOLS_PSize_DIV/OS"]
 
 for t in types:
     for ta in taille:
@@ -29,7 +29,7 @@ for t in types:
                                     first = False
                                 
                                 elif len(split_line) > 1 and split_line[3] == '0' and first == False:
-                                    print "found"
+                                    print ("found")
                                     with open(filename+fic, "w") as f_write :
                                         f_write.writelines(lines[0:id_line -1 ])
                                     break

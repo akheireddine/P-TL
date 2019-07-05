@@ -6,6 +6,8 @@
 #include <random>
 #include <fstream>
 #include <set>
+#include <sstream>      // std::istringstream
+#include <iterator>
 
 #include <ilcplex/ilocplex.h>
 
@@ -51,8 +53,6 @@ void Instance_Generator::random_instances(string path){
 		}
 
 		Weight /= 2;
-//		Weight /= n_items;
-//		Weight /= 5;
 		string content = write_content(weights, utilities, to_string(Weight));
 
 		ofstream fic((path+"/"+filename+".dat").c_str());
@@ -79,7 +79,7 @@ void Instance_Generator::conflicting_instances(string path){
 		vector< vector< string > > utilities(n_items);
 
 		//RANDOM GENERATION
-		system( ("python3.7 Instance_Generator.py "+to_string(n_items)+" > generate_conflict_variables.txt").c_str());
+		system( ("python3.7 Instance_Generator.py "+to_string(p_criteria)+" "+to_string(n_items)+" > generate_conflict_variables.txt").c_str());
 		ifstream fic_read_corr_utilities("generate_conflict_variables.txt");
 
 		for(int n = 0; n < n_items; n++){
@@ -92,8 +92,10 @@ void Instance_Generator::conflicting_instances(string path){
 
 			getline(fic_read_corr_utilities,line);
 
-			utilities[n].push_back(Tools::decompose_line_to_float_vector(line));
-			}
+			istringstream iss(line);
+			vector< string >  utility((istream_iterator<std::string>(iss)), istream_iterator<std::string>());
+			utilities[n] = ( utility );
+		}
 		Weight /= 2;
 		string content = write_content(weights, utilities, to_string(Weight));
 
@@ -302,12 +304,14 @@ void Instance_Generator::set_Efficient_front(string filename){
 		}
 	}
 
-	int improvment = 5;
+	int improvment = 10;
 	bool found = false;
 	while(improvment > 0){
 
 		random_ws =  Tools::generate_random_restricted_WS_aggregator(p_criteria,pareto);
 		found = false;
+
+		cout<<Tools::print_vector(random_ws)<<endl;
 
 		vector< float > new_sol = PL_WS(random_ws);
 		for(size_t n = 0; n < efficient_solution.size(); ++n)
@@ -320,7 +324,7 @@ void Instance_Generator::set_Efficient_front(string filename){
 		}
 
 		if( !found ){
-			improvment = 3;
+			improvment = 10;
 			efficient_solution.push_back(new_sol);
 		}
 	}

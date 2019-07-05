@@ -278,10 +278,10 @@ void script_Cst_PSizeV1V2(string type_inst, string taille, string WS_DM, string 
 		eval_ks->set_K_replication(K);
 
 		//V2 NO FILTERING
-		eval_ks->save_information(filename_population+"/V2",filename_indicator, "v2", step, sizer, vector<int>(1,-1),"T"+to_string(i));
+		eval_ks->save_information(filename_population+"/V2",filename_indicator, "v2", step, sizer, vector<int>(1,-1),"T"+to_string(i), type_inst, taille);
 
 		//V1 FILTERING
-		eval_ks->save_information(filename_population+"/V1", filename_indicator, "v1", I, sizer, vector<int>(1,-1),"T"+to_string(i));
+		eval_ks->save_information(filename_population+"/V1", filename_indicator, "v1", I, sizer, vector<int>(1,-1),"T"+to_string(i), type_inst, taille);
 
 		eval_ks.reset();
 	}
@@ -298,11 +298,11 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 	clock_t t = clock();
 
-	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
+//	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
 
 //	knaps->MOLS_Cst_PSize_RS(t/CLOCKS_PER_SEC,max_size_population);
 
-//	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
+	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
@@ -318,26 +318,26 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 //// ORIGINAL VERSION
 void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_criteria){
 
-	int K = 30;
+	int K = 20;
 	int N = 10;
 	vector< string > I = {"0","1","2","3","4","5","6","7"};
-	string testname = "Test3";
+	string testname = "Test2";
 
 	vector<int> graines;
 
-	string WS_matrix_file = "WS_MatrixA110normal_p3.csv";
-	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
+	string WS_matrix_file = "WS_MatrixC100OS.csv";
+	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2,8,20,60,100,200,400};  //       //A
+//	vector<int> sizer = {2,8,20,60,100,200,400};  //       //A
 
-//	vector<int> sizer = {2,8,20,60,100,200};       //C
+	vector<int> sizer = {2,8,20,60,100,200};       //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 0; i < N; i++){
+	for(int i = 1; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -365,7 +365,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 				eval_ks->update_covered_PFront();
 
 				for(int k = 0; k < K; k++){
-					k_replication = k ;
+					k_replication = k + 10;
 					GRAIN = graines[k];
 					srand( GRAIN );
 					main_Knapsack_Cst_PSize(filename_population, 1, iter);
@@ -391,21 +391,21 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 void script_save_information(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 30;
-	int N = 30;
-	string testname = "./Data/WS_Learning/Test3/Iteration_";
+	int N = 10;
+	string testname = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
-	string WS_matrix_file = "WS_MatrixAS.csv";
+	string WS_matrix_file = "WS_MatrixA_save_info.csv";
 	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
 
-	vector<int> sizer = {2,8,20,60,100,200,400};  //       //A
+	vector<int> sizer = {2,8,20,60,100};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};  //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 0; i < N; i++){
+	for(int i = 9; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
 		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
@@ -414,7 +414,7 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 
 		eval_ks->set_K_replication(K);
 
-		eval_ks->save_information(filename_population, filename_indicator, "eval", I, sizer,vector< int >(1,-1),"T"+to_string(i));
+		eval_ks->save_information(filename_population, filename_indicator, "eval", I, sizer,vector< int >(1,-1),"T"+to_string(i), type_inst, taille);
 
 		eval_ks.reset();
 	}
@@ -452,21 +452,20 @@ void save_avg_instances(string type_inst, string taille, string WS_DM, string p_
 
 void script_learning_data(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 10;
+	int K = 20;
 	int N = 10;
 	vector< int > Budget = {20,60,100,140,420,820,1220,2020,4020};   //A
-//	vector< int > Budget = {20,100,400,1000,1500,2000};  //C
 
-	string testname = "./Data/WS_Learning/Test3/Iteration_";
+	string testname = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
 
-	string WS_matrix_file = "WS_MatrixA_learning.csv";
-	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
+	string WS_matrix_file = "WS_MatrixC_learning.csv";
+	string prefix = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
 
-	vector<int> sizer = {2,8,20,60,100,200,400};  //       //A
+//	vector<int> sizer = {2,8,20,60,100};  //       //A
 
-//	vector<int> sizer = {2,8,20,60,100,200};       //C
+	vector<int> sizer = {2,8,20,60,100,200};       //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
@@ -481,7 +480,7 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 
 		eval_ks->set_K_replication(K);
 
-		eval_ks->save_information(filename_population, filename_indicator, "eval", I, sizer, Budget,"T"+to_string(i));
+		eval_ks->save_information(filename_population, filename_indicator, "eval", I, sizer, Budget,"T"+to_string(i), type_inst, taille);
 
 		eval_ks->save_best_parameters(filename_indicator, "eval", I, sizer, Budget,"T"+to_string(i));
 
@@ -495,18 +494,18 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 void script_learning_opt_algo(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 30;
-	int N = 30;
+	int N = 5;
 	vector< int > Budget = {20,60,100,140,420,820,1220,2020,4020};   //A
 //	vector< int > Budget = {20,100,400,1000,1500,2000};  //C
 
 	string testname = "./Data/WS_Learning/Test3/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
-	string WS_matrix_file = "WS_MatrixA_learning.csv";
+	string WS_matrix_file = "WS_MatrixA_learnings.csv";
 	string algo1 = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
 	string algo2 = "MOLS_PSize_DIV/OS";
 
-	vector<int> sizer = {2,8,20,60,100,200,400};  //       //A
+	vector<int> sizer = {2,8,20,60,100,200};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
@@ -541,7 +540,7 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "110";
+	string taille = "101";
 	string p_criteria = "3";
 
 //	script_knapsack(type_inst, taille, WS_DM);
@@ -589,19 +588,22 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-	string output1="";
-	string output2="";
-	system( ("python3.7 Instance_Generator.py 10 > toto"));
+//	string output1="";
+//	string output2="";
+//	system( ("python3.7 Instance_Generator.py 2 10 > toto"));
 
 
-//	Instance_Generator * inst = new Instance_Generator(stoi(taille), stoi(p_criteria), 10);
-//	inst->random_instances("Instances_Knapsack"+p_criteria+"/Type_A/"+taille+"_items");
+	Instance_Generator * inst = new Instance_Generator(stoi(taille), stoi(p_criteria), 1);
+	inst->random_instances("Instances_Knapsack"+p_criteria+"/Type_A/"+taille+"_items");
+//
+//	inst->conflicting_instances("Instances_Knapsack"+p_criteria+"/Type_B/"+taille+"_items");
+
 
 /*
   *************************************************************************************************************************
 */
 //	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
-//
+////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
 //	script_save_information(type_inst, taille, WS_DM, p_criteria);

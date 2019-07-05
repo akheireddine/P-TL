@@ -610,6 +610,8 @@ map< int, vector< vector< float > > > readEvaluationFile(string filename, int bu
 		cerr<<"Error occurred readEvaluationFile "<<endl;
 	}
 
+	// "Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR"<<endl;    FILE.EVAL
+
 
 	string line;
 	vector< float > vector_line;
@@ -617,16 +619,17 @@ map< int, vector< vector< float > > > readEvaluationFile(string filename, int bu
 
 	int size = 0;
 
-
+	int size_index = 4;
+	int budget_index = 3;
 	while(!fic_read.eof()){
 
 		getline(fic_read,line);
 		vector_line = Tools::decompose_line_to_float_vector(line);
 
-		if (line.size() == 0  or  vector_line[1] != budget)
+		if (line.size() == 0  or  vector_line[budget_index] != budget)
 			continue;
 
-		size = vector_line[2];
+		size = vector_line[size_index];
 		indicator[size].push_back(vector_line);
 	}
 	fic_read.close();
@@ -697,13 +700,19 @@ void Evaluator::save_PF_evaluation(){
 
 
 void Evaluator::save_information(string file_population, string save_path, string format, vector< string > Informations,
-		vector< int > UB_Population, vector<int> Budget, string inst_name){
+		vector< int > UB_Population, vector<int> Budget, string inst_name, string type_instance, string taille){
 
 	system(("if [ ! -d "+save_path+" ]; then mkdir -p "+save_path+"; fi").c_str());
 
 	string filesave = save_path+"/K_"+to_string(K_replication)+"."+format;
 	ofstream fic_write(filesave.c_str());
-	fic_write<<"Instance, Budget, PopSize, Info, nb evaluation, AVG dist, MaxMin, PR"<<endl;
+	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR"<<endl;
+
+	vector<float> info_rate;
+	for(size_t i = 0; i < Informations.size(); i++){
+		set_WS_matrix(Tools::readMatrix(Informations[i]));
+		info_rate.push_back( compute_information_rate() );
+	}
 
 	for(auto b : Budget){
 
@@ -754,7 +763,7 @@ void Evaluator::save_information(string file_population, string save_path, strin
 					indicator[7] += Population.size();
 				}
 
-				fic_write<<inst_name<<", "<<b<<", "<<ub<<", "<<i;
+				fic_write<<type_instance<<", "<<taille<<", "<<inst_name<<", "<<b<<", "<<ub<<", "<<info_rate[i];
 				for(size_t j = 3; j < indicator.size() - 1; j++){
 					indicator[j] *= 1.0 / K_replication;
 					fic_write<<", "<<indicator[j];
@@ -830,27 +839,30 @@ void Evaluator::save_best_parameters(string filename_instance, string format, ve
 	string fic_read = filename_instance+"/K_"+to_string(K_replication)+"."+format;
 
 	ofstream fic_write(filename_instance+"/K_"+to_string(K_replication)+".opt");
-	fic_write<<"Instance, Budget, PopSize, Info, nb evaluation, AVG dist, MaxMin, PR"<<endl;
+	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR"<<endl;
+//	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR"<<endl;    FILE.EVAL
 
 
+	int info_index = 5;
+	int avg_dist_index = 7;
 	for(auto b : budget){
 
 		map< int, vector< vector< float > > > dic_file = readEvaluationFile(fic_read, b);
 
 		for(auto j : sizer) {
 
-			vector< float > best_line_indicator(8,-1);
-			int best_info = -1;
+			vector< float > best_line_indicator(10,-1);
+			float best_info = -1;
 
 			for(size_t i = 0; i < I.size(); i++){
 
-				if( best_info == -1  or dic_file[j][i][5] < best_line_indicator[5] ){
+				if( best_info == -1  or dic_file[j][i][avg_dist_index] < best_line_indicator[avg_dist_index] ){
 					best_line_indicator = dic_file[j][i];
-					best_info = dic_file[j][i][3];
+					best_info = dic_file[j][i][info_index];
 				}
 			}
-			fic_write<<inst_name<<", "<<b<<", "<<j<<", "<<best_info<<", "<<best_line_indicator[4]<<", "<<best_line_indicator[5]<<", "<<
-					best_line_indicator[6]<<", "<<best_line_indicator[7]<<endl;
+			fic_write<<best_line_indicator[0]<<", "<<best_line_indicator[1]<<", "<<inst_name<<", "<<b<<", "<<j<<", "<<best_info<<", "<<best_line_indicator[avg_dist_index - 1]<<", "<<best_line_indicator[avg_dist_index]<<", "<<
+					best_line_indicator[avg_dist_index + 1]<<", "<<best_line_indicator[avg_dist_index + 2]<<endl;
 		}
 
 	}
@@ -864,16 +876,20 @@ void Evaluator::best_algo_parametrized(string save_data, string filename_algo1, 
 	string fic_read2 = filename_algo2+"/K_"+to_string(K_replication)+".opt";
 
 	ofstream fic_write(save_data+"/K_"+to_string(K_replication)+".algo",ios::app);
-	fic_write<<"Budget, Instance, Diversification, PopSize, Info, AVG dist, MaxMin, PR"<<endl;
+	fic_write<<"Type, Size, Budget, Instance, Diversification, PopSize, Info, AVG_dist, MaxMin, PR"<<endl;
+//	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR"<<endl;  FILE .OPT
 
 	float d1_opt = -1, curr_opt;
 	int opt_size = -1;
 	map< int, vector< vector< float > > > dic_algo1 = readEvaluationFile(fic_read1, budget);
 	map< int, vector< vector< float > > > dic_algo2 = readEvaluationFile(fic_read2, budget);
 
-	vector< float > best_line_indicator(8, -1);
-	bool div = true;
-	int info = -1;
+	vector< float > best_line_indicator(10, -1);
+	string div = "TRUE";
+	float info = -1;
+
+	int avg_dist_index = 7;
+	int info_index = 5;
 
 	for(map< int, vector< vector< float > > >::iterator s = dic_algo1.begin() ; s != dic_algo1.end(); ++s){
 
@@ -882,25 +898,25 @@ void Evaluator::best_algo_parametrized(string save_data, string filename_algo1, 
 		for(size_t i = 0; i < val1.size(); i++){
 			bool div_tmp = true;
 
-			if( val1[i][5] < val2[i][5] ){
+			if( val1[i][avg_dist_index] < val2[i][avg_dist_index] ){
 				div_tmp = false;
-				curr_opt = val1[i][5];
+				curr_opt = val1[i][avg_dist_index];
 			} else
-				curr_opt = val2[i][5];
+				curr_opt = val2[i][avg_dist_index];
 
 			if( d1_opt == -1  or curr_opt < d1_opt ){
 				d1_opt = curr_opt;
 				opt_size = (*s).first;
-				div = div_tmp;
-				info = ( div_tmp )? val2[i][3] : val1[i][3];
+				div = (div_tmp)? "TRUE" : "FALSE" ;
+				info = ( div_tmp )? val2[i][info_index] : val1[i][info_index];
 				best_line_indicator = ( div_tmp )? val2[i] : val1[i];
 			}
 		}
 	}
 
 
-	fic_write<<budget<<", "<<inst_name<<", "<<div<<", "<<opt_size<<", "<<info<<", "<<best_line_indicator[5]<<", "<<
-		best_line_indicator[6]<<", "<<best_line_indicator[7]<<endl;
+	fic_write<<best_line_indicator[0]<<", "<<best_line_indicator[1]<<", "<<budget<<", "<<inst_name<<", "<<div<<", "<<opt_size<<", "<<info<<", "<<best_line_indicator[avg_dist_index]<<", "<<
+		best_line_indicator[avg_dist_index + 1 ]<<", "<<best_line_indicator[avg_dist_index + 2]<<endl;
 
 }
 

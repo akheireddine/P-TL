@@ -150,7 +150,7 @@ public:
 
 
 	void save_information(string file_population, string save_path, string format, vector< string > Informations,
-			vector< int > UB_Population, vector<int> Budget, string inst_name);
+			vector< int > UB_Population, vector<int> Budget, string inst_name, string type_instance, string taille);
 	void save_other_information(string file_population, string save_path, string format);
 	static void compute_avg_type_instances(string evaluation_save_path, string method_name, string format, int k_replic
 			, int nb_instances, vector< int > ub_values, vector< int > Info );
