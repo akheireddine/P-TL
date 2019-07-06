@@ -540,7 +540,7 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "101";
+	string taille = "200";
 	string p_criteria = "3";
 
 //	script_knapsack(type_inst, taille, WS_DM);
@@ -593,7 +593,7 @@ int main(int argc, char** argv){
 //	system( ("python3.7 Instance_Generator.py 2 10 > toto"));
 
 
-	Instance_Generator * inst = new Instance_Generator(stoi(taille), stoi(p_criteria), 1);
+	Instance_Generator * inst = new Instance_Generator(stoi(taille), stoi(p_criteria), 10);
 	inst->random_instances("Instances_Knapsack"+p_criteria+"/Type_A/"+taille+"_items");
 //
 //	inst->conflicting_instances("Instances_Knapsack"+p_criteria+"/Type_B/"+taille+"_items");

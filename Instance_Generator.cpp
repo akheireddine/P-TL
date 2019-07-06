@@ -287,7 +287,7 @@ vector< float > Instance_Generator::PL_WS(vector<float> WS_vector){
 
 void Instance_Generator::set_Efficient_front(string filename){
 
-	vector< vector< float > > efficient_solution;
+	list< vector< float > > efficient_solution;
 	string output = filename+".eff";
 
 	readFile(filename);
@@ -304,53 +304,94 @@ void Instance_Generator::set_Efficient_front(string filename){
 		}
 	}
 
-	int improvment = 10;
-	bool found = false;
-	while(improvment > 0){
+	int improvement = 3;
 
+
+	while( improvement > 0 ){
+		vector< vector< float > > to_remove;
+		int dom_val;
+		bool dominated = false;
 		random_ws =  Tools::generate_random_restricted_WS_aggregator(p_criteria,pareto);
-		found = false;
-
-		cout<<Tools::print_vector(random_ws)<<endl;
 
 		vector< float > new_sol = PL_WS(random_ws);
-		for(size_t n = 0; n < efficient_solution.size(); ++n)
-		{
-		    if( equal(efficient_solution[n].begin(), efficient_solution[n].end(), new_sol.begin()) ){
-		    	improvment--;
-		    	found = true;
-		    	break;
-		    }
-		}
 
-		if( !found ){
-			improvment = 10;
-			efficient_solution.push_back(new_sol);
-		}
-	}
 
-	set<int> indic_to_rm;
+//		cout<<Tools::print_vector(random_ws)<<endl;
 
-	for(int i = 0; i < (int)efficient_solution.size(); i++){
-		for(int j = i+1; j < (int)efficient_solution.size(); j++){
 
-			int val =  Tools::dominates(efficient_solution[i],efficient_solution[j]);
-			if( val == 1 )
-				indic_to_rm.insert(j);
-			else if( val == -1){
-				indic_to_rm.insert(i);
+		for(list< vector< float > >::iterator alt = efficient_solution.begin(); alt != efficient_solution.end(); ++alt){
+
+			dom_val = Tools::dominates(*alt,new_sol);
+
+			if( (dom_val == 1) ){			// alt dominates p or already exists in set_SOL
+				improvement--;
+				dominated = true;
 				break;
 			}
+			else if( dom_val == -1 )   // p dominates alt
+				to_remove.push_back(*alt);
+
+			improvement = 3;
 		}
+
+		if( ! dominated )
+			efficient_solution.push_back(new_sol);
+
+		for(vector< vector< float > >::iterator rm = to_remove.begin(); rm != to_remove.end(); ++rm){
+			efficient_solution.remove(*rm);
+		}
+
+
 	}
 
-	vector< vector< float > > tmp_efficient_solution = efficient_solution;
-	efficient_solution.clear();
 
-	for(int i = 0; i < (int)tmp_efficient_solution.size(); i++){
-		if( indic_to_rm.count(i) == 0)
-			efficient_solution.push_back(tmp_efficient_solution[i]);
-	}
+
+//	bool found = false;
+//	while(improvment > 0){
+//
+//		random_ws =  Tools::generate_random_restricted_WS_aggregator(p_criteria,pareto);
+//		found = false;
+//
+//		cout<<Tools::print_vector(random_ws)<<endl;
+//
+//		vector< float > new_sol = PL_WS(random_ws);
+//		for(size_t n = 0; n < efficient_solution.size(); ++n)
+//		{
+//		    if( equal(efficient_solution[n].begin(), efficient_solution[n].end(), new_sol.begin()) ){
+//		    	improvment--;
+//		    	found = true;
+//		    	break;
+//		    }
+//		}
+//
+//		if( !found ){
+//			improvment = 10;
+//			efficient_solution.push_back(new_sol);
+//		}
+//	}
+//
+//	set<int> indic_to_rm;
+//
+//	for(int i = 0; i < (int)efficient_solution.size(); i++){
+//		for(int j = i+1; j < (int)efficient_solution.size(); j++){
+//
+//			int val =  Tools::dominates(efficient_solution[i],efficient_solution[j]);
+//			if( val == 1 )
+//				indic_to_rm.insert(j);
+//			else if( val == -1){
+//				indic_to_rm.insert(i);
+//				break;
+//			}
+//		}
+//	}
+//
+//	vector< vector< float > > tmp_efficient_solution = efficient_solution;
+//	efficient_solution.clear();
+//
+//	for(int i = 0; i < (int)tmp_efficient_solution.size(); i++){
+//		if( indic_to_rm.count(i) == 0)
+//			efficient_solution.push_back(tmp_efficient_solution[i]);
+//	}
 
 
 	ofstream fic_write(output.c_str());
