@@ -170,6 +170,23 @@ void MainKnapsack::save_information(string filename, vector< float > criteria_ve
 	fic.close();
 }
 
+void MainKnapsack::save_information(string filename, vector< float > criteria_vect, float time_cpu, int index, int ub){
+
+//	const char * exist_dir = ("if [ ! -d "+filename+" ]; then mkdir -p "+filename+"; fi").c_str();
+//	system(exist_dir);
+
+	system(("if [ ! -d "+filename+" ]; then mkdir -p "+filename+"; fi").c_str());
+
+
+	string extends_file = filename+"/Pop_"+to_string(k_replication)+".pop";
+
+	ofstream fic(extends_file.c_str(),ios::app);
+
+	fic<<Tools::print_vector(criteria_vect)<<" "<<time_cpu<<" "<<index<<" "<<ub<<endl;
+
+	fic.close();
+}
+
 
 
 
@@ -965,7 +982,7 @@ void MainKnapsack::update_extrem_point(vector< float > extrem1, float & epsi, ve
 
 #define epsilon 10
 
-void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Population_size, vector< string > Informations){
+void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, vector< int > UB_Population_list, vector< string > Informations){
 
 	shared_ptr< AlternativeKnapsack > alt;
 	list< string > Local_front;
@@ -975,10 +992,13 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Popula
 	int cpt_info = 0;
 
 	int surcharge = 3, souscharge = 5;
-//	int limit_no_improvment = 2;
 	vector< float > extrem_point(n_objective,0.), snd_extrem_point(n_objective,0.);
 	float curr_epsilon = 0.;
 
+	int UB_Population_size = UB_Population_list[0];
+	int ub_pop = 0;
+
+	int limit_no_improvment = 2;
 
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
@@ -1000,7 +1020,8 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Popula
 
 		update_extrem_point(extrem_point, curr_epsilon, alt->get_objective_values(), snd_extrem_point) ;
 
-		save_information(filename_population+"/MOLS_SWITCH_OBJECTIVE/"+to_string(UB_Population_size), alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
+//		save_information(filename_population+"/MOLS_SWITCH_OBJECTIVE/"+to_string(UB_Population_size), alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
+		save_information(filename_population+"/"+INFO, alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index, UB_Population_size );
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -1065,50 +1086,71 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, int UB_Popula
 
 
 //			ATTEMPT TO ADD DOMINATED SOLUTIONS TO Population
-//			if( Population.empty() )
-//				limit_no_improvment--;
-//			else
-//				limit_no_improvment =  2;
+			if( Population.empty() )
+				limit_no_improvment--;
+			else
+				limit_no_improvment =  2;
 
-//			int to_add = ( UB_Population_size - (int)Population.size() ) ;
-//			if( to_add > 0  and   ( (limit_no_improvment > 0) or !Population.empty() ) ){
-////				Ordered_Selection(Dominated_alt, Population, to_add);
-//			}
-
-//			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = dic_Alternative.begin(); it != dic_Alternative.end(); ++it){
-//				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 ){
-//					(*it).second.reset();
-//					dic_Alternative.erase((*it).first);
-//				}
-//			}
-
-			surcharge = ((int)Population.size() < UB_Population_size) ? surcharge : (surcharge - 1);
-			souscharge = ((int)Population.size() < UB_Population_size) ? (souscharge - 1) : souscharge;
-
-			cout<<"surchange : "<<surcharge<< "  souscharge :"<<souscharge<<endl;
-			cout<<"  POP/UB : "<<Population.size()<<"/"<<UB_Population_size<<endl;
-			if( (souscharge == 0) and cpt_info > 0 ){
-				cpt_info--;
-				cout<<"1 : Iteration_"<<cpt_info<<endl;
-				set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
-				update_WS_matrix_Population();
-				souscharge = 5;
+			int to_add = ( UB_Population_size - (int)Population.size() ) ;
+			if( to_add > 0  and   ( (limit_no_improvment > 0) or !Population.empty() ) ){
+				Ordered_Selection(Dominated_alt, Population, to_add);
 			}
 
-			if( (surcharge == 0) and cpt_info < (int)Informations.size() - 1 ){ //curr_epsilon < epsilon  and cpt_info > 0){
-				cpt_info++;
-				cout<<"2 : Iteration_"<<cpt_info<<endl;
-				set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
-				update_WS_matrix_Population();
-				surcharge = 3;
-			} else if ( surcharge == 0 and cpt_info >= (int)Informations.size() - 1 )
-				surcharge = 3;
-			else if (souscharge == 0 and cpt_info == 0)
-				souscharge = 5;
+			map<string, shared_ptr< AlternativeKnapsack > > tmp_dic_Alternative = dic_Alternative;
+			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = tmp_dic_Alternative.begin(); it != tmp_dic_Alternative.end(); ++it){
+				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 ){
+					(*it).second.reset();
+					dic_Alternative.erase((*it).first);
+				}
+			}
+
+/*
+ *  	********************			UPDATE INFORMATION
+ */
+//			surcharge = ((int)Population.size() < UB_Population_size) ? surcharge : (surcharge - 1);
+//			souscharge = ((int)Population.size() < UB_Population_size) ? (souscharge - 1) : souscharge;
+//
+//			cout<<"surchange : "<<surcharge<< "  souscharge :"<<souscharge<<endl;
+//			cout<<"  POP/UB : "<<Population.size()<<"/"<<UB_Population_size<<endl;
+//			if( (souscharge == 0) and cpt_info > 0 ){
+//				cpt_info--;
+//				cout<<"1 : Iteration_"<<cpt_info<<endl;
+//				set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
+//				update_WS_matrix_Population();
+//				souscharge = 5;
+//			}
+//
+//			if( (surcharge == 0) and cpt_info < (int)Informations.size() - 1 ){ //curr_epsilon < epsilon  and cpt_info > 0){
+//				cpt_info++;
+//				cout<<"2 : Iteration_"<<cpt_info<<endl;
+//				set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
+//				update_WS_matrix_Population();
+//				surcharge = 3;
+//			} else if ( surcharge == 0 and cpt_info >= (int)Informations.size() - 1 )
+//				surcharge = 3;
+//			else if (souscharge == 0 and cpt_info == 0)
+//				souscharge = 5;
+//			extrem_point = snd_extrem_point;
+//			curr_epsilon = 0.;
+/*
+ *  	********************			UPDATE INFORMATION
+ */
 
 
-			extrem_point = snd_extrem_point;
-			curr_epsilon = 0.;
+/*
+ *  	********************			UPDATE UB_SIZE
+ */
+			surcharge = ((int)Population.size() < UB_Population_size) ? surcharge : (surcharge - 1);
+			if( (surcharge == 0) and ub_pop < (int)UB_Population_list.size() - 1 ){
+				ub_pop++;
+				UB_Population_size = UB_Population_list[ub_pop];
+				cout<<"Size : "<<UB_Population_list[ub_pop]<<endl;
+				surcharge = 3;
+			}
+/*
+ *  	********************			UPDATE UB_SIZE
+ */
+
 
 			Dominated_alt.clear();
 			next_Population.clear();

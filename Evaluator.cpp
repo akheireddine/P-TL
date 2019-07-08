@@ -579,6 +579,7 @@ void Evaluator::readPopulation_File(string file_population, list< vector< float 
 	time_exec.clear();
 	index.clear();
 
+	cout<<file_population<<endl;
 	if (!(fic_read) or file_population.find(".pop") == std::string::npos){
 		cerr<<"Error occurred save readPopulation_File from .pop file"<<endl;
 	}
@@ -700,13 +701,14 @@ void Evaluator::save_PF_evaluation(){
 
 
 void Evaluator::save_information(string file_population, string save_path, string format, vector< string > Informations,
-		vector< int > UB_Population, vector<int> Budget, string inst_name, string type_instance, string taille){
+		vector< int > UB_Population, vector<int> Budget, string inst_name, string type_instance, string taille, int div){
 
 	system(("if [ ! -d "+save_path+" ]; then mkdir -p "+save_path+"; fi").c_str());
 
+	string div_str = (div == 0)? "FALSE" : "TRUE";
 	string filesave = save_path+"/K_"+to_string(K_replication)+"."+format;
-	ofstream fic_write(filesave.c_str());
-	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR"<<endl;
+	ofstream fic_write(filesave.c_str(),  ios::app);
+//	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
 
 	vector<float> info_rate;
 	for(size_t i = 0; i < Informations.size(); i++){
@@ -727,8 +729,12 @@ void Evaluator::save_information(string file_population, string save_path, strin
 				vector< float > indicator(8,0.);
 
 				for(int k = 0; k < K_replication; k++){
+					string file_extension;
+					if(ub == -1)
+						file_extension = file_population+"/"+to_string(i)+"/Pop_"+to_string(k)+".pop";
+					else
+						file_extension = file_population+"/"+to_string(ub)+"/"+to_string(i)+"/Pop_"+to_string(k)+".pop";
 
-					string file_extension = file_population+"/"+to_string(ub)+"/"+to_string(i)+"/Pop_"+to_string(k)+".pop";
 					list< vector< float > > Population;
 					vector< float > time_exec;
 					vector< int > index;
@@ -768,7 +774,7 @@ void Evaluator::save_information(string file_population, string save_path, strin
 					indicator[j] *= 1.0 / K_replication;
 					fic_write<<", "<<indicator[j];
 				}
-				fic_write<<endl;
+				fic_write<<", "<<div_str<<endl;
 			}
 		}
 	}
@@ -838,9 +844,13 @@ void Evaluator::save_best_parameters(string filename_instance, string format, ve
 
 	string fic_read = filename_instance+"/K_"+to_string(K_replication)+"."+format;
 
-	ofstream fic_write(filename_instance+"/K_"+to_string(K_replication)+".opt");
-	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR"<<endl;
-//	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR"<<endl;    FILE.EVAL
+	ofstream fic_write;
+	if( budget[0] == -1)
+		ofstream fic_write(filename_instance+"/K_"+to_string(K_replication)+".optS", ios::app);
+	else
+		ofstream fic_write(filename_instance+"/K_"+to_string(K_replication)+".opt", ios::app);
+
+//	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
 
 
 	int info_index = 5;
@@ -851,7 +861,7 @@ void Evaluator::save_best_parameters(string filename_instance, string format, ve
 
 		for(auto j : sizer) {
 
-			vector< float > best_line_indicator(10,-1);
+			vector< float > best_line_indicator(11,-1);
 			float best_info = -1;
 
 			for(size_t i = 0; i < I.size(); i++){
@@ -862,7 +872,7 @@ void Evaluator::save_best_parameters(string filename_instance, string format, ve
 				}
 			}
 			fic_write<<best_line_indicator[0]<<", "<<best_line_indicator[1]<<", "<<inst_name<<", "<<b<<", "<<j<<", "<<best_info<<", "<<best_line_indicator[avg_dist_index - 1]<<", "<<best_line_indicator[avg_dist_index]<<", "<<
-					best_line_indicator[avg_dist_index + 1]<<", "<<best_line_indicator[avg_dist_index + 2]<<endl;
+					best_line_indicator[avg_dist_index + 1]<<", "<<best_line_indicator[avg_dist_index + 2]<<", "<<best_line_indicator[avg_dist_index + 3]<<endl;
 		}
 
 	}
@@ -876,8 +886,7 @@ void Evaluator::best_algo_parametrized(string save_data, string filename_algo1, 
 	string fic_read2 = filename_algo2+"/K_"+to_string(K_replication)+".opt";
 
 	ofstream fic_write(save_data+"/K_"+to_string(K_replication)+".algo",ios::app);
-	fic_write<<"Type, Size, Budget, Instance, Diversification, PopSize, Info, AVG_dist, MaxMin, PR"<<endl;
-//	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR"<<endl;  FILE .OPT
+//	fic_write<<"Type, Size, Budget, Instance, Diversification, PopSize, Info, AVG_dist, MaxMin, PR"<<endl;
 
 	float d1_opt = -1, curr_opt;
 	int opt_size = -1;
