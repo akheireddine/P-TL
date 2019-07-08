@@ -607,6 +607,7 @@ map< int, vector< vector< float > > > readEvaluationFile(string filename, int bu
 
 	ifstream fic_read(filename);
 
+	cout<<filename<<endl;
 	if (!(fic_read)){
 		cerr<<"Error occurred readEvaluationFile "<<endl;
 	}
@@ -627,6 +628,7 @@ map< int, vector< vector< float > > > readEvaluationFile(string filename, int bu
 		getline(fic_read,line);
 		vector_line = Tools::decompose_line_to_float_vector(line);
 
+		cout<<vector_line[10]<<endl;
 		if (line.size() == 0  or  vector_line[budget_index] != budget)
 			continue;
 
@@ -705,7 +707,7 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 	system(("if [ ! -d "+save_path+" ]; then mkdir -p "+save_path+"; fi").c_str());
 
-	string div_str = (div == 0)? "FALSE" : "TRUE";
+	string div_str = (div == 0)? "0" : "1";
 	string filesave = save_path+"/K_"+to_string(K_replication)+"."+format;
 	ofstream fic_write(filesave.c_str(),  ios::app);
 //	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
@@ -786,6 +788,93 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 
 
+void Evaluator::save_normalized_information(string file_population, string save_path, string format, vector< string > Informations,
+		vector< int > UB_Population, vector<int> Budget, string inst_name, string type_instance, string taille, int div){
+
+	system(("if [ ! -d "+save_path+" ]; then mkdir -p "+save_path+"; fi").c_str());
+
+	string div_str = (div == 0)? "0" : "1";
+	string filesave = save_path+"/K_"+to_string(K_replication)+"."+format;
+	ofstream fic_write(filesave.c_str(),  ios::app);
+//	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
+
+	vector<float> info_rate;
+	for(size_t i = 0; i < Informations.size(); i++){
+		set_WS_matrix(Tools::readMatrix(Informations[i]));
+		info_rate.push_back( compute_information_rate() );
+	}
+
+	for(auto b : Budget){
+
+		for(auto ub : UB_Population){
+
+			for(size_t i = 0; i < Informations.size(); i++){
+
+				set_WS_matrix(Tools::readMatrix(Informations[i]));
+
+				update_covered_PFront();
+
+				vector< float > indicator(8,0.);
+
+				for(int k = 0; k < K_replication; k++){
+					string file_extension;
+					if(ub == -1)
+						file_extension = file_population+"/"+to_string(i)+"/Pop_"+to_string(k)+".pop";
+					else
+						file_extension = file_population+"/"+to_string(ub)+"/"+to_string(i)+"/Pop_"+to_string(k)+".pop";
+
+					list< vector< float > > Population;
+					vector< float > time_exec;
+					vector< int > index;
+
+					readPopulation_File(file_extension, Population, time_exec, index);
+
+					int nb_iteration = Population.size();
+
+					if( b != -1   and (int)Population.size() > b ){
+						Population.resize(b) ;
+
+						nb_iteration = Population.size();
+						update_covered_OPT_Solution(Population);
+
+						indicator[0] += evaluate_Dist_ratio(Population);
+						indicator[1] += 0;
+						indicator[2] += time_exec[ b - 1 ];
+						indicator[3] += nb_iteration;
+					}
+					else {
+
+						update_covered_OPT_Solution(Population);
+
+						indicator[0] += evaluate_Dist_ratio(Population);
+						indicator[1] += 0;
+						indicator[2] += time_exec.back();      // LAST ONE
+						indicator[3] += nb_iteration;
+					}
+					indicator[4] += average_distance_D1(Population);
+					indicator[5] += maximum_distance_D2(Population);
+					indicator[6] += PR_D3(Population);
+					indicator[7] += Population.size();
+				}
+
+				fic_write<<type_instance<<", "<<taille<<", "<<inst_name<<", "<<b<<", "<<ub<<", "<<info_rate[i];
+				for(size_t j = 3; j < indicator.size() - 1; j++){
+					indicator[j] *= 1.0 / K_replication;
+					fic_write<<", "<<indicator[j];
+				}
+				fic_write<<", "<<div_str<<endl;
+			}
+		}
+	}
+
+
+	fic_write.close();
+
+}
+
+
+
+
 //evolution of INDICATORS with time
 void Evaluator::save_other_information(string file_population, string save_path, string format){
 
@@ -844,11 +933,13 @@ void Evaluator::save_best_parameters(string filename_instance, string format, ve
 
 	string fic_read = filename_instance+"/K_"+to_string(K_replication)+"."+format;
 
-	ofstream fic_write;
+	string file_to_write = "";
 	if( budget[0] == -1)
-		ofstream fic_write(filename_instance+"/K_"+to_string(K_replication)+".optS", ios::app);
+		file_to_write = filename_instance+"/K_"+to_string(K_replication)+".optS";
 	else
-		ofstream fic_write(filename_instance+"/K_"+to_string(K_replication)+".opt", ios::app);
+		file_to_write = filename_instance+"/K_"+to_string(K_replication)+".opt";
+
+	ofstream fic_write(file_to_write, ios::app);
 
 //	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
 
@@ -865,6 +956,7 @@ void Evaluator::save_best_parameters(string filename_instance, string format, ve
 			float best_info = -1;
 
 			for(size_t i = 0; i < I.size(); i++){
+				cout<<dic_file[j][i][avg_dist_index + 3]<<endl;
 
 				if( best_info == -1  or dic_file[j][i][avg_dist_index] < best_line_indicator[avg_dist_index] ){
 					best_line_indicator = dic_file[j][i];
@@ -894,7 +986,7 @@ void Evaluator::best_algo_parametrized(string save_data, string filename_algo1, 
 	map< int, vector< vector< float > > > dic_algo2 = readEvaluationFile(fic_read2, budget);
 
 	vector< float > best_line_indicator(10, -1);
-	string div = "TRUE";
+	string div = "1";
 	float info = -1;
 
 	int avg_dist_index = 7;
@@ -916,7 +1008,7 @@ void Evaluator::best_algo_parametrized(string save_data, string filename_algo1, 
 			if( d1_opt == -1  or curr_opt < d1_opt ){
 				d1_opt = curr_opt;
 				opt_size = (*s).first;
-				div = (div_tmp)? "TRUE" : "FALSE" ;
+				div = (div_tmp)? "1" : "0" ;
 				info = ( div_tmp )? val2[i][info_index] : val1[i][info_index];
 				best_line_indicator = ( div_tmp )? val2[i] : val1[i];
 			}

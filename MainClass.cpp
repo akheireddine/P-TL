@@ -178,8 +178,8 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, vector< 
 
 void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 10;
-	int N = 1;
+	int K = 30;
+	int N = 3;
 	string path_information = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
 	,path_information+"6", path_information+"7"};
@@ -450,8 +450,8 @@ void save_avg_instances(string type_inst, string taille, string WS_DM, string p_
 
 void script_learning_data(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 10;
-	int N = 1;
+	int K = 30;
+	int N = 10;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
@@ -496,8 +496,8 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 
 void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 10;
-	int N = 1;
+	int K = 25;
+	int N = 3;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
@@ -513,9 +513,9 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 	ofstream fic1(filename_indicator+"/K_"+to_string(K)+".evalS");
 	fic1<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
 	fic1.close();
-	ofstream fic2(filename_indicator+"/K_"+to_string(K)+".opt");
-	fic2<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
-	fic2.close();
+//	ofstream fic2(filename_indicator+"/K_"+to_string(K)+".optS");
+//	fic2<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
+//	fic2.close();
 
 	for(size_t j = 0; j < prefixes.size(); j++){
 		for(int i = 0; i < N; i++){
@@ -528,7 +528,7 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 
 			eval_ks->save_information(filename_population, filename_indicator, "evalS", I, sizer, Budget, to_string(i), type_inst, taille, j);
 
-			eval_ks->save_best_parameters(filename_indicator, "evalS", I, sizer, Budget,to_string(i));
+//			eval_ks->save_best_parameters(filename_indicator, "evalS", I, sizer, Budget,to_string(i));
 
 			eval_ks.reset();
 		}
@@ -540,9 +540,8 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 void script_learning_opt_algo(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 30;
-	int N = 5;
-	vector< int > Budget = {20,60,100,140,420,820,1220,2020,4020};   //A
-//	vector< int > Budget = {20,100,400,1000,1500,2000};  //C
+	int N = 7;
+	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
@@ -550,7 +549,7 @@ void script_learning_opt_algo(string type_inst, string taille, string WS_DM, str
 	string algo1 = "MOLS_PSize";                //OS and RS  use MOLS_PSize/OS
 	string algo2 = "MOLS_PSize_DIV/OS";
 
-	vector<int> sizer = {2,8,20,60,100,200};  //       //A
+	vector<int> sizer = {2,8,20,60,100};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 

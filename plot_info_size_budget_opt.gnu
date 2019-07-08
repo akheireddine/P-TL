@@ -2,26 +2,25 @@
 set colorsequence podo
 set terminal pngcairo size 1200,800
 
-set output "opt_size_budget.png"
-set datafile separator " "
+
 
 p = 2
 type ="A"
 taille ="100"
-
-#Type, Size, Budget, Instance, Diversification, PopSize, Info, AVG_dist, MaxMin, PR
-
+div = "FALSE"
 
 
-plot for[i=0:4] x0 = y0 = NaN, "./Data/Evaluation".p."/".type."/".taille."/K_30.algo" u ($4==i?(y0=$6,x0=$3) : x0):(y0) w lp linetype (i+1) pt i lw 1.5 title "T".i
+#Type,  Size,  Instance,  Budget,  PopSize,  Info,  nb_evaluation,  AVG_dist,  MaxMin,  PR,  Diversification
+
+set output "OPT_size_budget_div0.png"
+plot for[i=0:0] x0 = y0 = NaN, "./Data/Evaluation".p."/".type."/".taille."/K_30.algo" u ($3==i && stringcolumn(11) eq div?(y0=$5,x0=$4) : x0):(y0) w lp linetype (i+1) pt i lw 1.5 title "T".i
 unset output
 
 
 
-
-set output "opt_info_budget.png"
+set output "OPT_info_budget_div0.png"
 set datafile separator " "
-plot for[i=0:4] x0 = y0 = NaN, "./Data/Evaluation".p."/".type."/".taille."/K_30.algo" u ($4==i?(y0=$7,x0=$3) : x0):(y0) w lp linetype (i+1)  pt i lw 1.5 title "T".i
+plot for[i=0:9] x0 = y0 = NaN, "./Data/Evaluation".p."/".type."/".taille."/K_30.algo" u ($3==i && stringcolumn(11) eq div? (y0=$76,x0=$4) : x0):(y0) w lp linetype (i+1)  pt i lw 1.5 title "T".i
 unset output
 
 

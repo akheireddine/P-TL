@@ -1,0 +1,39 @@
+
+set colorsequence podo
+set terminal pngcairo size 1200,800
+
+
+
+p = 2
+type ="A"
+taille ="100"
+
+#Type,  Size,  Instance,  Budget,  PopSize,  Info,  nb_evaluation,  AVG_dist,  MaxMin,  PR,  Diversification
+
+
+
+
+set xlabe "Budget"
+set ylabel "AVG minimum distance"
+info=90
+pop_size=100
+div="FALSE"
+
+set output "D1_budget_dyn_stat_Div0.png"
+
+set multiplot layout 2,2 columnsfirst rowsfirst title " {/:Bold=15 Compare Static & Dynamic algorithm varying the Population size }"
+
+
+do for[i=0:0]{
+plot x0 = y0 = NaN, "./Data/Evaluation".p."/".type."/".taille."/K_30.eval" u ($5==pop_size && $3==i && $6==info && stringcolumn(11) eq div?(y0=$8,x0=$4) : x0):(y0) w lp lc rgb "red" pt i lw 1.5 title "T".i." (static)",  x0 = y0 = NaN, "./Data/Evaluation".p."/".type."/".taille."/K_30.evalS" u ($3==i && $6==info && stringcolumn(11) eq div?(y0=$8,x0=$4) : x0):(y0) w lp lc rgb "blue" pt i lw 1.5 title "T".i." (dynamic)" 
+}
+unset multiplot
+unset output
+
+
+
+
+
+
+
+
