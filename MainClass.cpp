@@ -555,18 +555,20 @@ void script_learning_opt_algo(string type_inst, string taille, string WS_DM, str
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
+	string save_data = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
+//	ofstream fic_write(save_data+"/K_"+to_string(K_replication)+".algo",ios::app);
+//	fic_write<<"Type, Size, Budget, Instance, Diversification, PopSize, Info, AVG_dist, MaxMin, PR"<<endl;
 
 	for(auto b : Budget){
 		for(int i = 0; i < N; i++){
 			string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-			string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
-			string save_data = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
+			string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 			eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
 
 			eval_ks->set_K_replication(K);
 
-			eval_ks->best_algo_parametrized(save_data, filename_indicator+"/"+algo1,filename_indicator+"/"+algo2, to_string(i),b);
+//			eval_ks->best_algo_parametrized(save_data, filename_indicator, to_string(i),b);
 
 			eval_ks.reset();
 		}
@@ -628,7 +630,7 @@ int main(int argc, char** argv){
   *************************************************************************************************************************
 */
 
-//	script_learning_data(type_inst, taille, WS_DM, p_criteria);
+	script_learning_data(type_inst, taille, WS_DM, p_criteria);
 //	script_learning_opt_algo(type_inst, taille, WS_DM, p_criteria);
 /*
   *************************************************************************************************************************
@@ -647,7 +649,7 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
+//	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
 ////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
