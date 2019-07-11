@@ -178,8 +178,8 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, vector< 
 
 void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 30;
-	int N = 3;
+	int K = 10;
+	int N = 2;
 	string path_information = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
 	,path_information+"6", path_information+"7"};
@@ -187,11 +187,11 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string
 
 	vector<int> graines;
 
-	string prefix = "MOLS_SWITCH_OBJECTIVE/OS";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "MOLS_SWITCH_OBJECTIVE_DEC/OS";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2,8,20,30,40,50,60}; //       //A
+	vector<int> sizer = {60,50,40,30,20,8,2}; //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
@@ -243,6 +243,11 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string
 
 void script_Cst_PSizeV1V2(string type_inst, string taille, string WS_DM, string p_criteria ){
 
+	int id_type_inst = 0;
+	if(type_inst.compare("C"))
+		id_type_inst = 1;
+
+
 	int K = 29;
 	int N = 1;
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
@@ -273,10 +278,10 @@ void script_Cst_PSizeV1V2(string type_inst, string taille, string WS_DM, string 
 			eval_ks->set_K_replication(K);
 
 			//V2 NO FILTERING
-			eval_ks->save_information(filename_population+"/V2",filename_indicator, "v2", step, sizer, vector<int>(1,-1), to_string(i), type_inst, taille, j);
+			eval_ks->save_information(filename_population+"/V2",filename_indicator, "v2", step, sizer, vector<int>(1,-1), i, id_type_inst, taille, j);
 
 			//V1 FILTERING
-			eval_ks->save_information(filename_population+"/V1", filename_indicator, "v1", I, sizer, vector<int>(1,-1), to_string(i), type_inst, taille, j);
+			eval_ks->save_information(filename_population+"/V1", filename_indicator, "v1", I, sizer, vector<int>(1,-1), i, id_type_inst, taille, j);
 
 			eval_ks.reset();
 		}
@@ -384,6 +389,10 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 
 void script_save_information(string type_inst, string taille, string WS_DM, string p_criteria ){
 
+	int id_type_inst = 0;
+	if(type_inst.compare("C"))
+		id_type_inst = 1;
+
 	int K = 30;
 	int N = 10;
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
@@ -412,7 +421,7 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 
 			eval_ks->set_K_replication(K);
 
-			eval_ks->save_information(filename_population, filename_indicator, "eval", I, sizer,vector< int >(1,-1),to_string(i), type_inst, taille, j );
+			eval_ks->save_information(filename_population, filename_indicator, "eval", I, sizer,vector< int >(1,-1), i, id_type_inst, taille, j );
 
 			eval_ks.reset();
 		}
@@ -450,12 +459,21 @@ void save_avg_instances(string type_inst, string taille, string WS_DM, string p_
 
 void script_learning_data(string type_inst, string taille, string WS_DM, string p_criteria ){
 
+	int id_type_inst = 0;
+	if(type_inst.compare("C"))
+		id_type_inst = 1;
+
 	int K = 30;
 	int N = 10;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
-	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
+
+	vector< string > I = {testname+"0"};
+	vector<float> info_rate;
+	for(size_t i = 0; i < I.size(); i++){
+		info_rate.push_back( Tools::compute_information_rate(Tools::readMatrix(I[i]), stoi(p_criteria)) );
+	}
 
 	vector< string > prefixes = {"MOLS_PSize", "MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
 
@@ -468,70 +486,80 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
+	string format_in = "eval";
+	string format_out = "opt";
+
 //	ofstream fic1(filename_indicator+"/K_"+to_string(K)+".eval");
 //	fic1<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
 //	fic1.close();
-	ofstream fic2(filename_indicator+"/K_"+to_string(K)+".opt");
-	fic2<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
+	ofstream fic2(filename_indicator+"/K_"+to_string(K)+"."+format_out);
+	fic2<<"Type,  Size,  Instance,  Budget,  PopSize, Info,  nb_evaluation,  AVG_dist,  MaxMin,  PR,  Diversification"<<endl;
 	fic2.close();
 
-	for(size_t j = 0; j < prefixes.size(); j++){
-		for(int i = 0; i < N; i++){
-			string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-			string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefixes[j];
 
-			eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
+	for(int i = 0; i < N; i++){
+		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
+		eval_ks->set_K_replication(K);
 
-			eval_ks->set_K_replication(K);
-
-//			eval_ks->save_information(filename_population, filename_indicator, "eval", I, sizer, Budget, to_string(i), type_inst, taille, j);
-
-			eval_ks->save_best_parameters(filename_indicator, "eval", I, sizer, Budget,to_string(i));
-
-			eval_ks.reset();
-		}
+//		for(size_t j = 0; j < prefixes.size(); j++){
+//			string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefixes[j];
+//			eval_ks->save_information(filename_population, filename_indicator, format_in, I, sizer, Budget, i, id_type_inst, taille, j);
+//		}
+		eval_ks->save_best_parameters(filename_indicator, format_in, format_out, info_rate, sizer, Budget, i);
+		eval_ks.reset();
 	}
 }
 
 
 void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 25;
-	int N = 3;
+	int id_type_inst = 0;
+	if(type_inst.compare("C"))
+		id_type_inst = 1;
+
+
+	int K = 10;
+	int N = 2;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
-	vector< string > I = {testname+"0"};//,testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
-	vector< string > prefixes = {"MOLS_SWITCH_OBJECTIVE", "MOLS_SWITCH_OBJECTIVE/OS"};                //OS and RS  use MOLS_PSize/OS
+	vector< string > I = {testname+"0"};//,testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
+	vector<float> info_rate;
+	for(size_t i = 0; i < I.size(); i++){
+		info_rate.push_back( Tools::compute_information_rate(Tools::readMatrix(I[i]), stoi(p_criteria)) );
+	}
+
+
+	vector< string > prefixes = {"MOLS_SWITCH_OBJECTIVE_DEC", "MOLS_SWITCH_OBJECTIVE_DEC/OS"};                //OS and RS  use MOLS_PSize/OS
 
 	vector<int> sizer = {-1};
 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	ofstream fic1(filename_indicator+"/K_"+to_string(K)+".evalS");
+	string format_in = "evalDEC";
+	string format_out = "optDEC";
+
+	ofstream fic1(filename_indicator+"/K_"+to_string(K)+"."+format_in);
 	fic1<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
 	fic1.close();
-//	ofstream fic2(filename_indicator+"/K_"+to_string(K)+".optS");
-//	fic2<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
-//	fic2.close();
+	ofstream fic2(filename_indicator+"/K_"+to_string(K)+"."+format_out);
+	fic2<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
+	fic2.close();
 
-	for(size_t j = 0; j < prefixes.size(); j++){
-		for(int i = 0; i < N; i++){
-			string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+	for(int i = 0; i < N; i++){
+		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
+		eval_ks->set_K_replication(K);
+
+		for(size_t j = 0; j < prefixes.size(); j++){
 			string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefixes[j];
-
-			eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
-
-			eval_ks->set_K_replication(K);
-
-			eval_ks->save_information(filename_population, filename_indicator, "evalS", I, sizer, Budget, to_string(i), type_inst, taille, j);
-
-//			eval_ks->save_best_parameters(filename_indicator, "evalS", I, sizer, Budget,to_string(i));
-
-			eval_ks.reset();
+			eval_ks->save_information(filename_population, filename_indicator, format_in, I, sizer, Budget, i, id_type_inst, taille, j);
 		}
+		eval_ks->save_best_parameters(filename_indicator, format_in, format_out, info_rate, sizer, Budget, i);
+		eval_ks.reset();
 	}
 }
 
@@ -568,7 +596,7 @@ void script_learning_opt_algo(string type_inst, string taille, string WS_DM, str
 
 			eval_ks->set_K_replication(K);
 
-//			eval_ks->best_algo_parametrized(save_data, filename_indicator, to_string(i),b);
+//			eval_ks->best_algo_parametrized(save_data, filename_indicator, i,b);
 
 			eval_ks.reset();
 		}
@@ -587,7 +615,7 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "200";
+	string taille = "100";
 	string p_criteria = "2";
 
 //	script_knapsack(type_inst, taille, WS_DM);
@@ -630,7 +658,7 @@ int main(int argc, char** argv){
   *************************************************************************************************************************
 */
 
-	script_learning_data(type_inst, taille, WS_DM, p_criteria);
+//	script_learning_data(type_inst, taille, WS_DM, p_criteria);
 //	script_learning_opt_algo(type_inst, taille, WS_DM, p_criteria);
 /*
   *************************************************************************************************************************
@@ -710,7 +738,7 @@ int main(int argc, char** argv){
 
 
 //	script_knapsack_PLSWS(type_inst,taille,WS_DM, p_criteria);
-//	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
+	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //			,"MOLS2", -1, 10, 111 , "./DM_preference_point");
 

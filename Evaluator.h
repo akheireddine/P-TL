@@ -150,15 +150,16 @@ public:
 
 
 	void save_information(string file_population, string save_path, string format, vector< string > Informations,
-			vector< int > UB_Population, vector<int> Budget, string inst_name, string type_instance, string taille,int div);
+			vector< int > UB_Population, vector<int> Budget, int inst_name, int type_instance, string taille,int div);
 	void save_other_information(string file_population, string save_path, string format);
 	static void compute_avg_type_instances(string evaluation_save_path, string method_name, string format, int k_replic
 			, int nb_instances, vector< int > ub_values, vector< int > Info );
 
-	void save_best_parameters(string filename_instance, string format, vector< string > I, vector< int > sizer, vector< int > budget, string inst_name);
+	void save_best_parameters(string filename_instance, string format_in, string format_out, vector< float > I, vector< int > sizer,
+			vector< int > budget, int inst_name);
 
 
-	void best_algo_parametrized(string save_data, string filename_algo1, string filename_algo2, string inst_name, int budget);
+	void best_algo_parametrized(string save_data, string filename_algo1, string filename_algo2, int inst_name, int budget);
 
 };
 

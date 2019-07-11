@@ -31,6 +31,8 @@ public:
 //	static int cpt_count;
 //	static vector< float > ratios_dist_to_OPT;
 
+	static float compute_information_rate(vector< vector< float > > WS_matrix, int p_criteria);
+
 
 	static float euclidian_distance(vector<float> v1, vector<float> v2);
 	static float get_ratio(vector<float> v, vector<float> v_opt, vector<float> weights);

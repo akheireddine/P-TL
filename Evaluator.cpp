@@ -603,16 +603,15 @@ void Evaluator::readPopulation_File(string file_population, list< vector< float 
 }
 
 
-map< int, vector< vector< float > > > readEvaluationFile(string filename, int budget ){
+map< int, vector< vector< float > > > readEvaluationFile(string filename, int budget, int inst_name){
 
 	ifstream fic_read(filename);
 
-	cout<<filename<<endl;
 	if (!(fic_read)){
 		cerr<<"Error occurred readEvaluationFile "<<endl;
 	}
 
-	// "Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR"<<endl;    FILE.EVAL
+	//"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
 
 
 	string line;
@@ -623,15 +622,13 @@ map< int, vector< vector< float > > > readEvaluationFile(string filename, int bu
 
 	int size_index = 4;
 	int budget_index = 3;
-	while(!fic_read.eof()){
+	int inst_id_index = 2;
 
+	while(!fic_read.eof()){
 		getline(fic_read,line);
 		vector_line = Tools::decompose_line_to_float_vector(line);
-
-		cout<<vector_line[10]<<endl;
-		if (line.size() == 0  or  vector_line[budget_index] != budget)
+		if (line.size() == 0  or  vector_line[budget_index] != budget  or  vector_line[inst_id_index] != inst_name)
 			continue;
-
 		size = vector_line[size_index];
 		indicator[size].push_back(vector_line);
 	}
@@ -703,7 +700,7 @@ void Evaluator::save_PF_evaluation(){
 
 
 void Evaluator::save_information(string file_population, string save_path, string format, vector< string > Informations,
-		vector< int > UB_Population, vector<int> Budget, string inst_name, string type_instance, string taille, int div){
+		vector< int > UB_Population, vector<int> Budget, int inst_name, int type_instance, string taille, int div){
 
 	system(("if [ ! -d "+save_path+" ]; then mkdir -p "+save_path+"; fi").c_str());
 
@@ -715,7 +712,7 @@ void Evaluator::save_information(string file_population, string save_path, strin
 	vector<float> info_rate;
 	for(size_t i = 0; i < Informations.size(); i++){
 		set_WS_matrix(Tools::readMatrix(Informations[i]));
-		info_rate.push_back( compute_information_rate() );
+		info_rate.push_back( Tools::compute_information_rate(WS_matrix, p_criteria) );
 	}
 
 	for(auto b : Budget){
@@ -844,51 +841,45 @@ void Evaluator::save_other_information(string file_population, string save_path,
 
 
 
-void Evaluator::save_best_parameters(string filename_instance, string format, vector< string > I, vector< int > sizer,
-		vector< int > budget, string inst_name){
+void Evaluator::save_best_parameters(string filename_instance, string format_in, string format_out, vector< float > I, vector< int > sizer,
+		vector< int > budget, int inst_name){
 
-	string fic_read = filename_instance+"/K_"+to_string(K_replication)+"."+format;
+	string fic_read = filename_instance+"/K_"+to_string(K_replication)+"."+format_in;
 
-	string file_to_write = "";
-	if( budget[0] == -1)
-		file_to_write = filename_instance+"/K_"+to_string(K_replication)+".optS";
-	else
-		file_to_write = filename_instance+"/K_"+to_string(K_replication)+".opt";
+	string file_to_write = filename_instance+"/K_"+to_string(K_replication)+"."+format_out;
 
 	ofstream fic_write(file_to_write, ios::app);
 
-//	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
+//	fic_write<<"Type,  Size,  Instance,  Budget,  PopSize,  Info,  nb_evaluation,  AVG_dist,  MaxMin,  PR,  Diversification"<<endl;
 
 
 	int info_index = 5;
 	int avg_dist_index = 7;
 	for(auto b : budget){
-
-		map< int, vector< vector< float > > > dic_file = readEvaluationFile(fic_read, b);
+		map< int, vector< vector< float > > > dic_file = readEvaluationFile(fic_read, b, inst_name);
 
 		for(auto j : sizer) {
 
-			vector< float > best_line_indicator(11,-1);
-			float best_info = -1;
+			for(auto i : I){
+				vector< float > best_line_indicator(11,-1);
+				float best_info = -1;
 
-			for(size_t i = 0; i < I.size(); i++){
-				cout<<dic_file[j][i][avg_dist_index + 3]<<endl;
-
-				if( best_info == -1  or dic_file[j][i][avg_dist_index] < best_line_indicator[avg_dist_index] ){
-					best_line_indicator = dic_file[j][i];
-					best_info = dic_file[j][i][info_index];
+				for(size_t a = 0; a < dic_file[j].size(); a++){
+//
+					if( best_line_indicator[avg_dist_index] == -1  or (dic_file[j][a][avg_dist_index] < best_line_indicator[avg_dist_index] and dic_file[j][a][info_index] == i ) ){
+						best_line_indicator = dic_file[j][a];
+						best_info = i;
+					}
 				}
-			}
-			fic_write<<best_line_indicator[0]<<", "<<best_line_indicator[1]<<", "<<inst_name<<", "<<b<<", "<<j<<", "<<best_info<<", "<<best_line_indicator[avg_dist_index - 1]<<", "<<best_line_indicator[avg_dist_index]<<", "<<
+				fic_write<<best_line_indicator[0]<<", "<<best_line_indicator[1]<<", "<<inst_name<<", "<<b<<", "<<j<<", "<<best_info<<", "<<best_line_indicator[avg_dist_index - 1]<<", "<<best_line_indicator[avg_dist_index]<<", "<<
 					best_line_indicator[avg_dist_index + 1]<<", "<<best_line_indicator[avg_dist_index + 2]<<", "<<best_line_indicator[avg_dist_index + 3]<<endl;
+			}
 		}
-
 	}
-
 	fic_write.close();
 }
 
-void Evaluator::best_algo_parametrized(string save_data, string filename_algo1, string filename_algo2, string inst_name,int budget){
+void Evaluator::best_algo_parametrized(string save_data, string filename_algo1, string filename_algo2, int inst_name,int budget){
 
 	string fic_read1 = filename_algo1+"/K_"+to_string(K_replication)+".opt";
 	string fic_read2 = filename_algo2+"/K_"+to_string(K_replication)+".opt";
@@ -898,8 +889,8 @@ void Evaluator::best_algo_parametrized(string save_data, string filename_algo1, 
 
 	float d1_opt = -1, curr_opt;
 	int opt_size = -1;
-	map< int, vector< vector< float > > > dic_algo1 = readEvaluationFile(fic_read1, budget);
-	map< int, vector< vector< float > > > dic_algo2 = readEvaluationFile(fic_read2, budget);
+	map< int, vector< vector< float > > > dic_algo1 = readEvaluationFile(fic_read1, budget, inst_name);
+	map< int, vector< vector< float > > > dic_algo2 = readEvaluationFile(fic_read2, budget, inst_name);
 
 	vector< float > best_line_indicator(10, -1);
 	string div = "1";
@@ -1125,57 +1116,7 @@ void Evaluator::compute_information_rate_front(){
 
 }
 
-#define PI 3.14159265
 
-
-float Evaluator::compute_information_rate(){
-
-
-	vector<vector<float > > matrix = WS_matrix;
-	float uv = 0, u_norme = 0, v_norme = 0;
-	//compute angle
-
-	if(p_criteria == 2){
-
-		for(int i = 0; i < 2 ; i++){
-			uv += matrix[i][0] * matrix[i][1] ;
-			u_norme += matrix[i][0] * matrix[i][0];
-			v_norme += matrix[i][1] * matrix[i][1];
-		}
-		if( sqrt(u_norme * v_norme) == 0 ) return 0;
-
-		float degree = acos(uv*1.0 / sqrt(u_norme * v_norme)) * 180.0 / PI;
-		return degree;
-
-	}
-
-	//compute volume
-	if(p_criteria == 3){
-		vector< vector<float > > matrix = WS_matrix;
-		vector<float> lengths(3,0);
-		float maxus, minus;
-
-		for(int i = 0; i < 3; i++){
-			maxus = -1, minus = -1;
-			for(int j = 0; j < n_objective; j++){
-				if( WS_matrix[i][j] < minus   or minus == -1 )
-					minus = WS_matrix[i][j];
-				if( WS_matrix[i][j] > maxus or maxus == -1)
-					maxus = WS_matrix[i][j];
-			}
-
-			lengths[i] = abs(maxus - minus);
-
-		}
-
-		return lengths[0] * lengths[1] * lengths[2];
-	}
-
-
-
-	//compute MONTE CARLO APPORIXMATION
-	return -1;
-}
 
 
 

@@ -1138,9 +1138,17 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, vector< int >
 
 
 /*
- *  	********************			UPDATE UB_SIZE
+ *  	*****************************************			UPDATE UB_SIZE
  */
-			surcharge = ((int)Population.size() < UB_Population_size) ? surcharge : (surcharge - 1);
+//			surcharge = ((int)Population.size() < UB_Population_size) ? surcharge : (surcharge - 1);
+//			if( (surcharge == 0) and ub_pop < (int)UB_Population_list.size() - 1 ){
+//				ub_pop++;
+//				UB_Population_size = UB_Population_list[ub_pop];
+//				cout<<"Size : "<<UB_Population_list[ub_pop]<<endl;
+//				surcharge = 3;
+//			}
+
+			surcharge = ((int)Population.size() > UB_Population_size) ? surcharge : (surcharge - 1);
 			if( (surcharge == 0) and ub_pop < (int)UB_Population_list.size() - 1 ){
 				ub_pop++;
 				UB_Population_size = UB_Population_list[ub_pop];
@@ -1148,7 +1156,7 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, vector< int >
 				surcharge = 3;
 			}
 /*
- *  	********************			UPDATE UB_SIZE
+ *  	*****************************************			UPDATE UB_SIZE
  */
 
 

@@ -7,7 +7,7 @@
 #include <numeric>
 #include <ilcplex/ilocplex.h>
 #include <cstdlib>      // std::rand, std::srand
-
+#define PI 3.14159265
 
 
 float Tools::euclidian_distance(vector<float> v1, vector<float> v2){
@@ -81,6 +81,77 @@ void Tools::shuffle_list(list< string > & unshuffled_L){
 		unshuffled_L.push_back( shuffled_L[i] );
 	}
 }
+
+
+
+
+float Tools::compute_information_rate(vector< vector< float > > WS_matrix, int p_criteria){
+
+	int n_objective = WS_matrix[0].size();
+
+	vector<vector<float > > matrix = WS_matrix;
+	float uv = 0, u_norme = 0, v_norme = 0;
+	//compute angle
+
+	if(p_criteria == 2){
+
+		for(int i = 0; i < 2 ; i++){
+			uv += matrix[i][0] * matrix[i][1] ;
+			u_norme += matrix[i][0] * matrix[i][0];
+			v_norme += matrix[i][1] * matrix[i][1];
+		}
+		if( sqrt(u_norme * v_norme) == 0 ) return 0;
+
+		float degree = acos(uv*1.0 / sqrt(u_norme * v_norme)) * 180.0 / PI;
+		return degree;
+
+	}
+
+	//compute volume
+	if(p_criteria == 3){
+		vector< vector<float > > matrix = WS_matrix;
+		vector<float> lengths(3,0);
+		float maxus, minus;
+
+		for(int i = 0; i < 3; i++){
+			maxus = -1, minus = -1;
+			for(int j = 0; j < n_objective; j++){
+				if( WS_matrix[i][j] < minus   or minus == -1 )
+					minus = WS_matrix[i][j];
+				if( WS_matrix[i][j] > maxus or maxus == -1)
+					maxus = WS_matrix[i][j];
+			}
+
+			lengths[i] = abs(maxus - minus);
+
+		}
+
+		return lengths[0] * lengths[1] * lengths[2];
+	}
+
+
+
+	//compute MONTE CARLO APPORIXMATION
+	return -1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //void Tools::save_std_deviation(string filename){
