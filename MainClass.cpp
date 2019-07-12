@@ -322,7 +322,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 	int K = 20;
 	int N = 3;
 	vector< string > I = {"0","1","2","3","4","5","6","7"};
-	string testname = "Test2";
+	string testname = "Test3";
 
 	vector<int> graines;
 
@@ -380,6 +380,75 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 
 
 
+
+void main_Knapsack_ParamsCheating(string filename_instance, int size_population, vector< map< string, float > > Parameters,
+		map<float,int> info_rate, string info_file ){
+
+	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
+
+	clock_t t = clock();
+
+	knaps->MOLS_OPT_PARAMETERS(t/CLOCKS_PER_SEC, Parameters, info_rate, info_file);
+
+	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
+
+	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
+
+	delete knaps;
+}
+
+void script_OPT_ParamsCheating(string type_inst, string taille, string WS_DM, string p_criteria){
+
+	int K = 30;
+	int N = 1;
+	string testname = "./Data/WS_Learning/Test2/Iteration_";
+	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
+
+	vector<int> graines;
+
+	string prefix = "MOLS_PSize_DIV_CHEATING";
+
+	srand(time(NULL));
+
+
+
+	map<float, int> info_rate;
+	for(size_t i = 0; i < I.size(); i++){
+		float key = Tools::compute_information_rate(Tools::readMatrix(I[i]), stoi(p_criteria));
+		info_rate[key] = i;
+	}
+
+	string datafile = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/K_"+to_string(K)+".algo";
+
+	cout<<datafile<<endl;
+	for(int i = 0; i < N; i++){
+
+		vector< map< string, float > > opt_parameters = Tools::readOPTalgoFile(datafile, i);
+
+		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
+		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
+
+		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,filename_indicator);
+
+		MainKnapsack::Generate_random_Population(eval_ks, K);
+
+		graines.clear();
+		for(int k = 0; k < K; k++){
+			graines.push_back( rand());
+		}
+
+		for(int k = 0; k < K; k++){
+			k_replication = k ;
+			GRAIN = graines[k];
+			srand( GRAIN );
+			main_Knapsack_ParamsCheating(filename_population, 1, opt_parameters, info_rate, testname);
+		}
+		eval_ks.reset();
+	}
+
+}
+
 //***********************************************************************************************************************************//
 
 
@@ -428,8 +497,6 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 		}
 	}
 }
-
-
 
 
 void save_avg_instances(string type_inst, string taille, string WS_DM, string p_criteria ){
@@ -617,7 +684,7 @@ int main(int argc, char** argv){
 
 	string type_inst = "A";
 	string taille = "100";
-	string p_criteria = "3";
+	string p_criteria = "2";
 
 //	script_knapsack(type_inst, taille, WS_DM);
 //
@@ -678,7 +745,7 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
+//	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
 ////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
@@ -746,6 +813,18 @@ int main(int argc, char** argv){
 
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //			,"MOLS2", -1, 20, 201 , "./DM_preference_point");
+
+
+
+
+/*
+  *************************************************************************************************************************
+*/
+
+	script_OPT_ParamsCheating(type_inst,taille,WS_DM, p_criteria);
+
+
+
 	return 1;
 
 }

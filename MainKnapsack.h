@@ -95,10 +95,8 @@ public :
 	void MOLS_local_Archive(double starting_time_sec);
 	void MOLS_Cst_PSize_RS(double starting_time_sec, int UB_Population_size);
 	void MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population_size);
-
-//	void MOLS_Cst_PSize_FAIR(double starting_time_sec, int UB_Population_size);
-
-
+	void MOLS_OPT_PARAMETERS(double starting_time_sec, vector< map<string, float > > OPT_Params,
+			map<float,int> id_info, string information_file);
 
 
 	void Random_Selection(list< string > & dominated_solutions, list< string > & population, int upper_bound);

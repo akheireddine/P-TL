@@ -30,7 +30,7 @@ public:
 //	if(mainLSStructure.use_count() > 1){ mainLSStructure.reset(); }
 
 	//GETTERS
-	float get_weight(){ return weight; }
+	float get_weight(){ return weight; };
 
 	//ALGORITHMS
 	void enumerate_neighborhood(set<int> curr_BP, set<int> item_OUT, float bp_weight, map< float, int, greater <float> > ratio_items);
@@ -48,6 +48,8 @@ public:
 	int dominates_decision_space(shared_ptr< Alternative > alt);
 	set< string > get_neighborhood();
 	void update_objective_vector();
+	void set_local_WS_matrix(vector<vector<float > > matrix);
+
 	inline int get_nb_items(){
 		int nb = 0;
 		for(int i = 0; i < (int)id_alt.length(); i++)

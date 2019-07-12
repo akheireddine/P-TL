@@ -112,6 +112,14 @@ AlternativeKnapsack::AlternativeKnapsack(string id_alternative, MainKnapsack * m
 
 }
 
+
+
+void AlternativeKnapsack::set_local_WS_matrix(vector<vector<float > > matrix){
+	local_WS_matrix = matrix;
+	nb_objective = local_WS_matrix[0].size();
+	update_objective_vector();
+}
+
 void AlternativeKnapsack::update_objective_vector(){
 
 	objective_values.clear();

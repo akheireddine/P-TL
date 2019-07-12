@@ -82,7 +82,6 @@ void Evaluator::readParetoFront(){
 	string line;
 	vector< float > vector_pareto_objective;
 
-
 	if (!(fic) or file_extension.find(".eff") == std::string::npos){
 		cerr<<"Error occurred paretofront1"<<endl;
 	}
@@ -104,43 +103,6 @@ void Evaluator::readParetoFront(){
 
 
 
-
-//void Evaluator::update_covered_PFrontPL(){
-//
-//
-//	PFront.clear();
-//
-//	vector< float > minus(p_criteria, -1);
-//	vector< float > maxus(p_criteria, -1);
-//
-//
-//	for(int i = 0; i < n_objective; i++){
-//		vector< float > obj, extrem_solution;
-//
-//		for(int j = 0; j < p_criteria; j++){
-//			obj.push_back(WS_matrix[j][i]);
-//		}
-//
-//		extrem_solution = OPT_Alternative_PLNE(obj);
-//
-//		for(int j = 0; j < p_criteria; j++){
-//			if( minus[j] == -1    or   extrem_solution[j] < minus[j] )
-//				minus[j] = extrem_solution[j];
-//
-//			if(maxus[j] == -1     or   maxus[j] < extrem_solution[j])
-//				maxus[j] = extrem_solution[j];
-//		}
-//
-//	}
-//
-//	for(vector< vector< float > >::iterator it = PF_Efficient.begin(); it != PF_Efficient.end(); ++it){
-//
-//		if( Tools::in_search_space(*it,minus, maxus) )
-//			PFront.push_back(*it);
-//	}
-//
-////	cout<<"PF/PE   : "<<PFront.size()<<" / "<<PF_Efficient.size()<<endl;
-//}
 
 
 

@@ -52,7 +52,6 @@ public:
 	inline vector< vector< float > > get_local_WS_matrix(){ return local_WS_matrix;};
 	inline list< shared_ptr< Alternative > > get_local_Archive(){ return local_Archive; };
 	//SETTERS
-	inline void set_local_WS_matrix(vector<vector<float > > matrix){ local_WS_matrix = matrix; nb_objective = local_WS_matrix[0].size();};
 	inline void set_local_Archive(list< shared_ptr< Alternative > > opt_sol){ local_Archive.clear(); local_Archive = opt_sol; };
 //	inline void add_alt_local_Archive(string new_alt){ local_Archive.push_back(new_alt); };
 
@@ -60,6 +59,7 @@ public:
 	virtual set< string > get_neighborhood() = 0;
 	virtual int dominates_objective_space(shared_ptr< Alternative > alt) = 0;
 	virtual int dominates_decision_space(shared_ptr< Alternative > alt) = 0;
+	virtual void set_local_WS_matrix(vector<vector<float > > matrix) = 0;
 	virtual void update_objective_vector() = 0;
 	virtual int get_nb_items() = 0;
 	virtual bool contains_items(shared_ptr< Alternative > alt) = 0;
