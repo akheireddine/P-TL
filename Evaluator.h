@@ -159,7 +159,7 @@ public:
 			vector< int > budget, int inst_name);
 
 
-	void best_algo_parametrized(string save_data, string filename_algo1, string filename_algo2, int inst_name, int budget);
+	void best_algo_parametrized(string save_data, string filename_algo, string format_in, string format_out, int inst_name,int budget);
 
 };
 

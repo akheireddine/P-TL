@@ -178,7 +178,7 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, vector< 
 
 void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 10;
+	int K = 20;
 	int N = 2;
 	string path_information = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
@@ -222,7 +222,7 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string
 //			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
 
 			for(int k = 0; k < K; k++){
-				k_replication = k  ;
+				k_replication = k +10 ;
 				GRAIN = graines[k];
 				srand( GRAIN );
 				main_Knapsack_PLSWS(filename_population, 1, sizer, I);
@@ -244,7 +244,7 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string
 void script_Cst_PSizeV1V2(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int id_type_inst = 0;
-	if(type_inst.compare("C"))
+	if(type_inst.compare("C") == 0)
 		id_type_inst = 1;
 
 
@@ -299,11 +299,11 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 	clock_t t = clock();
 
-//	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
+	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
 
 //	knaps->MOLS_Cst_PSize_RS(t/CLOCKS_PER_SEC,max_size_population);
 
-	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
+//	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
@@ -319,25 +319,26 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 //// ORIGINAL VERSION
 void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_criteria){
 
-	int K = 30;
-	int N = 1;
+	int K = 20;
+	int N = 3;
 	vector< string > I = {"0","1","2","3","4","5","6","7"};
 	string testname = "Test2";
 
 	vector<int> graines;
 
-	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "MOLS_PSize_DIV";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2, 8, 20, 60, 100, 400};  //       //A
+//	vector<int> sizer = {2, 8, 20, 60, 100, 400};  //       //A
+	vector<int> sizer = {2,10, 30, 60, 100, 200};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 0; i < N; i++){
+	for(int i = 2; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -364,7 +365,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 				eval_ks->update_covered_PFront();
 
 				for(int k = 0; k < K; k++){
-					k_replication = k + 3 ;
+					k_replication = k ;
 					GRAIN = graines[k];
 					srand( GRAIN );
 					main_Knapsack_Cst_PSize(filename_population, 1, iter);
@@ -390,7 +391,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 void script_save_information(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int id_type_inst = 0;
-	if(type_inst.compare("C"))
+	if(type_inst.compare("C") == 0)
 		id_type_inst = 1;
 
 	int K = 30;
@@ -460,7 +461,7 @@ void save_avg_instances(string type_inst, string taille, string WS_DM, string p_
 void script_learning_data(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int id_type_inst = 0;
-	if(type_inst.compare("C"))
+	if(type_inst.compare("C") == 0)
 		id_type_inst = 1;
 
 	int K = 30;
@@ -469,7 +470,7 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
 
-	vector< string > I = {testname+"0"};
+	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 	vector<float> info_rate;
 	for(size_t i = 0; i < I.size(); i++){
 		info_rate.push_back( Tools::compute_information_rate(Tools::readMatrix(I[i]), stoi(p_criteria)) );
@@ -515,11 +516,10 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int id_type_inst = 0;
-	if(type_inst.compare("C"))
+	if(type_inst.compare("C") == 0)
 		id_type_inst = 1;
 
-
-	int K = 10;
+	int K = 30;
 	int N = 2;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
 
@@ -568,7 +568,7 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 void script_learning_opt_algo(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 30;
-	int N = 7;
+	int N = 10;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
@@ -584,9 +584,10 @@ void script_learning_opt_algo(string type_inst, string taille, string WS_DM, str
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 	string save_data = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
-
-//	ofstream fic_write(save_data+"/K_"+to_string(K_replication)+".algo",ios::app);
-//	fic_write<<"Type, Size, Budget, Instance, Diversification, PopSize, Info, AVG_dist, MaxMin, PR"<<endl;
+	string format_in = "opt";
+	string format_out = "algo";
+	ofstream fic_write(save_data+"/K_"+to_string(K)+"."+format_out);
+	fic_write<<"Type,  Size,  Instance,  Budget,  PopSize,  Info,  nb_evaluation,  AVG_dist,  MaxMin,  PR,  Diversification"<<endl;
 
 	for(auto b : Budget){
 		for(int i = 0; i < N; i++){
@@ -596,7 +597,7 @@ void script_learning_opt_algo(string type_inst, string taille, string WS_DM, str
 
 			eval_ks->set_K_replication(K);
 
-//			eval_ks->best_algo_parametrized(save_data, filename_indicator, i,b);
+			eval_ks->best_algo_parametrized(save_data, filename_indicator,format_in, format_out, i,b);
 
 			eval_ks.reset();
 		}
@@ -616,7 +617,7 @@ int main(int argc, char** argv){
 
 	string type_inst = "A";
 	string taille = "100";
-	string p_criteria = "2";
+	string p_criteria = "3";
 
 //	script_knapsack(type_inst, taille, WS_DM);
 //
@@ -677,7 +678,7 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-//	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
+	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
 ////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
@@ -738,7 +739,7 @@ int main(int argc, char** argv){
 
 
 //	script_knapsack_PLSWS(type_inst,taille,WS_DM, p_criteria);
-	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
+//	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //			,"MOLS2", -1, 10, 111 , "./DM_preference_point");
 

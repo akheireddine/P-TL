@@ -579,7 +579,6 @@ void Evaluator::readPopulation_File(string file_population, list< vector< float 
 	time_exec.clear();
 	index.clear();
 
-	cout<<file_population<<endl;
 	if (!(fic_read) or file_population.find(".pop") == std::string::npos){
 		cerr<<"Error occurred save readPopulation_File from .pop file"<<endl;
 	}
@@ -862,16 +861,13 @@ void Evaluator::save_best_parameters(string filename_instance, string format_in,
 
 			for(auto i : I){
 				vector< float > best_line_indicator(11,-1);
-				float best_info = -1;
-
 				for(size_t a = 0; a < dic_file[j].size(); a++){
 //
 					if( best_line_indicator[avg_dist_index] == -1  or (dic_file[j][a][avg_dist_index] < best_line_indicator[avg_dist_index] and dic_file[j][a][info_index] == i ) ){
 						best_line_indicator = dic_file[j][a];
-						best_info = i;
 					}
 				}
-				fic_write<<best_line_indicator[0]<<", "<<best_line_indicator[1]<<", "<<inst_name<<", "<<b<<", "<<j<<", "<<best_info<<", "<<best_line_indicator[avg_dist_index - 1]<<", "<<best_line_indicator[avg_dist_index]<<", "<<
+				fic_write<<best_line_indicator[0]<<", "<<best_line_indicator[1]<<", "<<inst_name<<", "<<b<<", "<<j<<", "<<i<<", "<<best_line_indicator[avg_dist_index - 1]<<", "<<best_line_indicator[avg_dist_index]<<", "<<
 					best_line_indicator[avg_dist_index + 1]<<", "<<best_line_indicator[avg_dist_index + 2]<<", "<<best_line_indicator[avg_dist_index + 3]<<endl;
 			}
 		}
@@ -879,52 +875,64 @@ void Evaluator::save_best_parameters(string filename_instance, string format_in,
 	fic_write.close();
 }
 
-void Evaluator::best_algo_parametrized(string save_data, string filename_algo1, string filename_algo2, int inst_name,int budget){
+void Evaluator::best_algo_parametrized(string save_data, string filename_algo, string format_in, string format_out
+		,int inst_name,int budget){
 
-	string fic_read1 = filename_algo1+"/K_"+to_string(K_replication)+".opt";
-	string fic_read2 = filename_algo2+"/K_"+to_string(K_replication)+".opt";
+	string fic_read = filename_algo+"/K_"+to_string(K_replication)+"."+format_in;
 
-	ofstream fic_write(save_data+"/K_"+to_string(K_replication)+".algo",ios::app);
-//	fic_write<<"Type, Size, Budget, Instance, Diversification, PopSize, Info, AVG_dist, MaxMin, PR"<<endl;
+	ofstream fic_write(save_data+"/K_"+to_string(K_replication)+"."+format_out,ios::app);
+//	fic_write<<"Type,  Size,  Instance,  Budget,  PopSize,  Info,  nb_evaluation,  AVG_dist,  MaxMin,  PR,  Diversification"<<endl;
 
-	float d1_opt = -1, curr_opt;
-	int opt_size = -1;
-	map< int, vector< vector< float > > > dic_algo1 = readEvaluationFile(fic_read1, budget, inst_name);
-	map< int, vector< vector< float > > > dic_algo2 = readEvaluationFile(fic_read2, budget, inst_name);
 
-	vector< float > best_line_indicator(10, -1);
-	string div = "1";
-	float info = -1;
+	map< int, vector< vector< float > > > dic_algo = readEvaluationFile(fic_read, budget, inst_name);
+	vector< float > best_line_indicator(11, -1);
 
 	int avg_dist_index = 7;
-	int info_index = 5;
 
-	for(map< int, vector< vector< float > > >::iterator s = dic_algo1.begin() ; s != dic_algo1.end(); ++s){
+	for(map< int, vector< vector< float > > >::iterator s = dic_algo.begin() ; s != dic_algo.end(); ++s){
 
-		vector< vector< float > > val1 = (*s).second;
-		vector< vector< float > > val2 = dic_algo2[(*s).first];
-		for(size_t i = 0; i < val1.size(); i++){
-			bool div_tmp = true;
+		vector< vector< float > > val = (*s).second;
 
-			if( val1[i][avg_dist_index] < val2[i][avg_dist_index] ){
-				div_tmp = false;
-				curr_opt = val1[i][avg_dist_index];
-			} else
-				curr_opt = val2[i][avg_dist_index];
+		for(size_t a = 0; a < val.size(); a++){
 
-			if( d1_opt == -1  or curr_opt < d1_opt ){
-				d1_opt = curr_opt;
-				opt_size = (*s).first;
-				div = (div_tmp)? "1" : "0" ;
-				info = ( div_tmp )? val2[i][info_index] : val1[i][info_index];
-				best_line_indicator = ( div_tmp )? val2[i] : val1[i];
+			vector< float > vect_line = val[a];
+
+			if( best_line_indicator[avg_dist_index] == -1  or (vect_line[avg_dist_index] < best_line_indicator[avg_dist_index] ) ){
+				best_line_indicator = vect_line;
 			}
+
 		}
 	}
 
+	for(size_t i = 0; i < best_line_indicator.size() - 1; i++)
+		fic_write<<best_line_indicator[i]<<", ";
+	fic_write<<best_line_indicator.back()<<endl;
 
-	fic_write<<best_line_indicator[0]<<", "<<best_line_indicator[1]<<", "<<budget<<", "<<inst_name<<", "<<div<<", "<<opt_size<<", "<<info<<", "<<best_line_indicator[avg_dist_index]<<", "<<
-		best_line_indicator[avg_dist_index + 1 ]<<", "<<best_line_indicator[avg_dist_index + 2]<<endl;
+
+
+//		vector< vector< float > > val2 = dic_algo2[(*s).first];
+//		for(size_t i = 0; i < best_line_indicator.size(); i++){
+//			bool div_tmp = true;
+//
+//			if( val1[i][avg_dist_index] < val2[i][avg_dist_index] ){
+//				div_tmp = false;
+//				curr_opt = val1[i][avg_dist_index];
+//			} else
+//				curr_opt = val2[i][avg_dist_index];
+//
+//			if( d1_opt == -1  or curr_opt < d1_opt ){
+//				d1_opt = curr_opt;
+//				opt_size = (*s).first;
+//				div = (div_tmp)? "1" : "0" ;
+//				info = ( div_tmp )? val2[i][info_index] : val1[i][info_index];
+//				best_line_indicator = ( div_tmp )? val2[i] : val1[i];
+//			}
+//		}
+//	}
+//
+//
+//	fic_write<<best_line_indicator[0]<<", "<<best_line_indicator[1]<<", "<<budget<<", "<<inst_name<<", "<<div<<", "<<opt_size<<", "<<info<<", "<<best_line_indicator[avg_dist_index]<<", "<<
+//		best_line_indicator[avg_dist_index + 1 ]<<", "<<best_line_indicator[avg_dist_index + 2]<<endl;
 
 }
 
