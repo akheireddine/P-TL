@@ -1183,7 +1183,7 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, vector< int >
 void MainKnapsack::MOLS_OPT_PARAMETERS(double starting_time_sec, vector< map<string, float > > OPT_Params,
 		map<float,int> id_info, string information_file){
 
-	size_t i = -1;
+	int i = 0;
 	int index = 0;
 	shared_ptr< AlternativeKnapsack > alt;
 	list< string > Dominated_alt;
@@ -1194,7 +1194,7 @@ void MainKnapsack::MOLS_OPT_PARAMETERS(double starting_time_sec, vector< map<str
 	int limit_no_improvment = 2;
 
 	string save_point_file ="", index_info="";
-	int info, UB_Population_size, budget, div;
+	int info = -1, UB_Population_size = -1, budget = -1, div = -1;
 
 	//First initialization NO FILTERING
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
@@ -1203,21 +1203,29 @@ void MainKnapsack::MOLS_OPT_PARAMETERS(double starting_time_sec, vector< map<str
 	}
 
 	index++;
+//	"Type", "Size", "Instance", "Budget", "PopSize", "Info", "nb_evaluation", "AVG_dist", "MaxMin", "PR", "Diversification"};
 
-	while( i < OPT_Params.size() and !Population.empty() ){
-		i++;
+	while( i < OPT_Params.size() ){//and !Population.empty() ){
+
+
+		for(auto p : Archive){
+			Population.push_back( p->get_id_alt() );
+		}
+
 		map< string, float > params = OPT_Params[i];
+		i++;
 		info = params["Info"];
 		index_info = to_string( id_info[info] );
 		set_WS_matrix( Tools::readMatrix(information_file+index_info) );
 		UB_Population_size = params["PopSize"];
-		budget = params["budget"];
+		budget = params["Budget"];
 		div = params["Diversification"];
 
-		if( div == 1)
-			save_point_file = filename_population+"/MOLS_OPT_PARAMETERS/OS/"+to_string(UB_Population_size)+"/"+index_info;
-		else
-			save_point_file = filename_population+"/MOLS_OPT_PARAMETERS/"+to_string(UB_Population_size)+"/"+index_info;
+//		if( div == 1)
+//			save_point_file = filename_population+"/MOLS_OPT_PARAMETERS/OS/"+index_info;
+//		else
+			save_point_file = filename_population+"/MOLS_OPT_PARAMETERS";
+
 
 		local_iteration = 0;
 
@@ -1226,13 +1234,15 @@ void MainKnapsack::MOLS_OPT_PARAMETERS(double starting_time_sec, vector< map<str
 			alt->set_local_WS_matrix(WS_matrix);
 		}
 
-		while(local_iteration < budget and (clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ){
+		cout<<budget<<endl;
+
+		while(local_iteration < budget and !Population.empty() and (clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ){
 			nb_iteration++;
 			local_iteration++;
 			alt = dic_Alternative[ Population.front() ];
 			Population.pop_front();
 
-			save_information(save_point_file, alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index );
+			save_information(save_point_file, alt->get_criteria_values(), ((clock()* 1./CLOCKS_PER_SEC) - starting_time_sec), index, UB_Population_size );
 
 			set< string > current_neighbors = alt->get_neighborhood();
 

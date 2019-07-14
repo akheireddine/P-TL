@@ -147,13 +147,15 @@ vector< map< string, float > > Tools::readOPTalgoFile(string datafile, int inst_
 		cerr<<"Error occurred readEvaluationFile Tools class "<<endl;
 	}
 
-	vector< string > keys ={"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"};
+	vector< string > keys ={"Type", "Size", "Instance", "Budget", "PopSize", "Info", "nb_evaluation", "AVG_dist", "MaxMin", "PR", "Diversification"};
 
 	string line;
 	vector< float > vector_line;
 	vector< map< string, float > > lines_data;
 
 	int inst_id_index = 2;
+
+	getline(fic_read,line);
 
 	while(!fic_read.eof()){
 		getline(fic_read,line);
@@ -163,8 +165,9 @@ vector< map< string, float > > Tools::readOPTalgoFile(string datafile, int inst_
 			continue;
 
 		map< string, float > param;
-		for(size_t i = 0; i < keys.size(); i++)
+		for(size_t i = 0; i < keys.size(); i++){
 			param[ keys[i] ] = vector_line[i];
+		}
 
 		lines_data.push_back(param);
 	}
