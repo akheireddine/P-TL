@@ -156,20 +156,21 @@ filename_outter = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/predicted_val
 ""
 
 
-PopSizeIndex = [2, 8, 20,60, 100 ]
+PopSizeIndex = [0, 1, 4,8, 9]
 
 InformationIndex = [0,6,9,13,15,17,18,20]
 
-div = 0
+div = 1
+
 def compare_predicted_expected_value():       
     Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))
     Smallreader = list(csv.DictReader(open(filename_pred, newline=''), delimiter = ','))
     
-    for si,size in zip(PopSizeIndex,range(0,len(PopSizeIndex))) : 
+    for si in PopSizeIndex : 
         s = PopSize_norm[si]
         fig = plt.figure(figsize=(15,12))
         fig.suptitle("Prediction of Average min distance from optimal front "+type_inst+taille+" (Varying uncertainty, Populatin size = "
-                                                                +str(PopSize[size])+" ,Diversification :"+str(div)+")" , fontsize=16)
+                                                                +str(PopSize[si])+" ,Diversification :"+str(div)+")" , fontsize=16)
         
         fig.text(0.5, 0.04, 'Budget (normalized)', ha='center', fontsize=10)
         fig.text(0.04, 0.5, 'Average minimal indicator (normalized)', va='center', rotation='vertical', fontsize=10)
@@ -177,7 +178,7 @@ def compare_predicted_expected_value():
         
         for ii,inf_index in zip(InformationIndex,range(0,len(InformationIndex))) : 
             info = Information_norm[ii]
-            for i in N_norm[:1] :
+            for i in N_norm :
                 X = list()
                 Y = list()
                 Xpred = list()
@@ -196,21 +197,21 @@ def compare_predicted_expected_value():
     
     
                 ax = fig.add_subplot("33"+str(inf_index+1))
+                ax.legend()
 
                 if i == 0 :
                     ax.plot(X,Y,c="green",label="Expected AVG_min  ("+str(Information[ii])+"°)")
                     ax.plot(Xpred,Ypred,c="red",label="Predicted AVG_min  ("+str(Information[ii])+"°)")
-                    ax.legend()
                 else:
                     ax.plot(X,Y,c="green")
                     ax.plot(Xpred,Ypred,c="red")
-                    
-        fig.savefig("PredictedD1"+type_inst+taille+"_PopS"+str(PopSize[size])+"_D"+str(div)+".png", dpi=fig.dpi*5)
+
+        fig.savefig("PredictedD1"+type_inst+taille+"_PopS"+str(PopSize[si])+"_D"+str(div)+".png", dpi=fig.dpi*5)
             
         
 ####################################################################################
 
-#compare_predicted_expected_value()
+compare_predicted_expected_value()
 
 ####################################################################################
 
@@ -218,11 +219,11 @@ def compare_predicted_expected_value():
 
 
 BudgetIndex = [0,3,5,7, 11,16,19,25,30,32,33,35,38]
-PopSizeIndex = [2, 8, 20,60, 100 ]
+PopSizeIndex = [0, 1, 4,8, 9]
 
 InformationIndex = [0,6,9,13,15,17,18,20]
 
-div = 0
+div = 1
 
 def Difference_predicted_expected_valueD1():       
     Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))
@@ -231,11 +232,11 @@ def Difference_predicted_expected_valueD1():
     colors = ["red","blue","green","orange","pink","magenta","brown","black","yellow"]
     
 
-    for si,size in zip(PopSizeIndex,range(0,len(PopSizeIndex))) : 
+    for si in PopSizeIndex : 
         s = PopSize_norm[si]
         fig = plt.figure(figsize=(13,10))
         fig.suptitle("Deviation of Average min distance "+type_inst+taille+" (Varying uncertainty, Populatin size = "
-                                                                +str(PopSize[size])+" ,Diversification :"+str(div)+")" , fontsize=16)
+                                                                +str(PopSize[si])+" ,Diversification :"+str(div)+")" , fontsize=16)
 
         fig.text(0.5, 0.04, 'Budget (normalized)', ha='center', fontsize=10)
         fig.text(0.04, 0.5, 'Average minimal indicator (normalized)', va='center', rotation='vertical', fontsize=10)
@@ -274,7 +275,7 @@ def Difference_predicted_expected_valueD1():
                 ax.legend()
 
 
-        fig.savefig("DeviationD1"+type_inst+taille+"_PopS"+str(PopSize[size])+"_D"+str(div)+".png", dpi=fig.dpi*5)
+        fig.savefig("DeviationD1"+type_inst+taille+"_PopS"+str(PopSize[si])+"_D"+str(div)+".png", dpi=fig.dpi*5)
     
     
 ####################################################################################
@@ -292,11 +293,11 @@ def Difference_predicted_expected_valueD2():
     colors = ["red","blue","green","orange","pink","magenta","brown","black","yellow"]
     
 
-    for si,size in zip(PopSizeIndex,range(0,len(PopSizeIndex))) : 
+    for si in PopSizeIndex : 
         s = PopSize_norm[si]
         fig = plt.figure(figsize=(13,10))
         fig.suptitle("Deviation of MaxMin distance "+type_inst+taille+" (Varying uncertainty, Populatin size = "
-                                                                +str(PopSize[size])+" ,Diversification :"+str(div)+")" , fontsize=16)
+                                                                +str(PopSize[si])+" ,Diversification :"+str(div)+")" , fontsize=16)
 
         fig.text(0.5, 0.04, 'Budget (normalized)', ha='center', fontsize=10)
         fig.text(0.04, 0.5, 'MaxMin indicator (normalized)', va='center', rotation='vertical', fontsize=10)
@@ -335,13 +336,13 @@ def Difference_predicted_expected_valueD2():
                 ax.legend()
 
 
-        fig.savefig("DeviationD2"+type_inst+taille+"_PopS"+str(PopSize[size])+"_D"+str(div)+".png", dpi=fig.dpi*5)
+        fig.savefig("DeviationD2"+type_inst+taille+"_PopS"+str(PopSize[si])+"_D"+str(div)+".png", dpi=fig.dpi*5)
     
      
             
 ####################################################################################
         
-Difference_predicted_expected_valueD2()
+#Difference_predicted_expected_valueD2()
 
 ####################################################################################
 
@@ -354,11 +355,11 @@ def Difference_predicted_expected_valueD3():
     colors = ["red","blue","green","orange","pink","magenta","brown","black","yellow"]
     
 
-    for si,size in zip(PopSizeIndex,range(0,len(PopSizeIndex))) : 
+    for si in PopSizeIndex : 
         s = PopSize_norm[si]
         fig = plt.figure(figsize=(13,10))
         fig.suptitle("Deviation of PR  "+type_inst+taille+" (Varying uncertainty, Populatin size = "
-                                                                +str(PopSize[size])+" ,Diversification :"+str(div)+")" , fontsize=16)
+                                                                +str(PopSize[si])+" ,Diversification :"+str(div)+")" , fontsize=16)
 
         fig.text(0.5, 0.04, 'Budget (normalized)', ha='center', fontsize=10)
         fig.text(0.04, 0.5, 'Proportion of optimal solutions indicator (normalized)', va='center', rotation='vertical', fontsize=10)
@@ -397,7 +398,7 @@ def Difference_predicted_expected_valueD3():
                 ax.legend()
 
 
-        fig.savefig("DeviationD3"+type_inst+taille+"_PopS"+str(PopSize[size])+"_D"+str(div)+".png", dpi=fig.dpi*5)
+        fig.savefig("DeviationD3"+type_inst+taille+"_PopS"+str(PopSize[si])+"_D"+str(div)+".png", dpi=fig.dpi*5)
     
      
             
