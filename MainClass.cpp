@@ -299,11 +299,11 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 	clock_t t = clock();
 
-//	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
+	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
 
 //	knaps->MOLS_Cst_PSize_RS(t/CLOCKS_PER_SEC,max_size_population);
 
-	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
+//	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
@@ -320,23 +320,23 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_criteria){
 
 	int K = 20;
-	int N = 1;
-	vector< string > I = {"4","5","6","7"};//"0","1","2","3","4","5","6","7"};
-	string testname = "Test2";
+	int N = 2;
+	vector< string > I = {"0","1","2","3","4","5","6","7"};//"0","1","2","3","4","5","6","7"};
+	string testname = "Test3";
 
 	vector<int> graines;
 
-	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "MOLS_PSize_DIV";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
 //	vector<int> sizer = {2, 8, 20, 60, 100, 400};  //
-	vector<int> sizer = {200};  //
+	vector<int> sizer = {30, 60,100,200};  //
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 0; i < N; i++){
+	for(int i = 8; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -693,12 +693,13 @@ void ML_LinearRegression(string type_inst, string taille, string p_criteria){
 		id_type_inst = "1";
 
 
-	vector< float > PopSize = {0.02, 0.08, 0.10, 0.15, 0.20, 0.31, 0.41, 0.51, 0.61, 0.82, 1.02};
-	vector< float > Budget = {0.005, 0.01, 0.0125, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06, 0.07, 0.085, 0.095, 0.11, 0.12, 0.135, 0.145, 0.16, 0.17, 0.185,
-			0.195, 0.205, 0.21, 0.22, 0.235, 0.245, 0.255, 0.305, 0.355, 0.455, 0.505, 0.605, 0.705, 0.8, 0.855, 0.955, 1.0};
-	vector< float > Information = { 1.00, 0.89, 0.78, 0.67, 0.56, 0.45, 0.44, 0.33, 0.31, 0.22, 0.17, 0.13, 0.11, 0.09, 0.5, 0.04, 0.01, 0};
+	vector< float > PopSize = {0.02, 0.082, 0.102, 0.153, 0.204, 0.306, 0.408, 0.51, 0.612, 0.816, 1.02};
+	vector< float > Budget = {0.005, 0.01, 0.013, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06, 0.07, 0.085, 0.095, 0.11, 0.12, 0.135, 0.145,
+			0.16, 0.17, 0.185, 0.195, 0.205, 0.21, 0.22, 0.245, 0.255, 0.305, 0.355, 0.455, 0.505, 0.605, 0.705, 0.8, 0.855, 0.955, 1.005};
+	vector< float > Information = {1.0, 0.889, 0.778, 0.667, 0.556, 0.456, 0.451, 0.444, 0.333, 0.313, 0.222, 0.167, 0.133, 0.129, 0.111, 0.089, 0.056, 0.048,
+			0.041, 0.011, 0.0};
 	vector< int > Diversification = {0, 1};
-	vector< float > N = {0, 0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77, 0.88, 0.99 };
+	vector< float > N = {0.0, 0.111, 0.222, 0.333, 0.444, 0.556, 0.667, 0.778, 0.889, 1.0};
 
 	string filename = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/predicted_value.eval";
 	ofstream fic_write(filename);
@@ -735,7 +736,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "A";
+	string type_inst = "C";
 	string taille = "100";
 	string p_criteria = "2";
 
@@ -798,7 +799,7 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-//	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
+	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
 ////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
@@ -884,7 +885,7 @@ int main(int argc, char** argv){
   *************************************************************************************************************************
 */
 
-	ML_LinearRegression(type_inst, taille, p_criteria);
+//	ML_LinearRegression(type_inst, taille, p_criteria);
 
 
 	return 1;
