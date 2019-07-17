@@ -301,11 +301,11 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 	clock_t t = clock();
 
-//	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
+	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
 
 //	knaps->MOLS_Cst_PSize_RS(t/CLOCKS_PER_SEC,max_size_population);
 
-	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
+//	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
@@ -321,24 +321,24 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 //// ORIGINAL VERSION
 void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_criteria){
 
-	int K = 9;
-	int N = 9;
-	vector< string > I = {"6"};//"0","1","2","3","4","5","6","7"};
+	int K = 20;
+	int N = 5;
+	vector< string > I = {"0","1","2","3","4","5","6","7"};
 	string testname = "Test2";
 
 	vector<int> graines;
 
-	string prefix = "MOLS_PSize_DIV/OS";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "MOLS_PSize_DIV";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
-//	vector<int> sizer = {2, 8, 20, 60, 100, 400};  //
-	vector<int> sizer = {200};  //
+	vector<int> sizer = {8, 20, 60, 100, 200};  //
+//	vector<int> sizer = {200};  //
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 8; i < N; i++){
+	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -365,7 +365,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 				eval_ks->update_covered_PFront();
 
 				for(int k = 0; k < K; k++){
-					k_replication = k +12 ;
+					k_replication = k  ;
 					GRAIN = graines[k];
 					srand( GRAIN );
 					main_Knapsack_Cst_PSize(filename_population, 1, iter);
@@ -689,8 +689,8 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "A";
-	string taille = "200";
+	string type_inst = "D";
+	string taille = "100";
 	string p_criteria = "2";
 
 //	script_knapsack(type_inst, taille, WS_DM);
@@ -752,7 +752,7 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-//	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
+	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
 ////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
@@ -813,7 +813,7 @@ int main(int argc, char** argv){
 
 
 //	script_knapsack_PLSWS(type_inst,taille,WS_DM, p_criteria);
-	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
+//	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
 
 
 
