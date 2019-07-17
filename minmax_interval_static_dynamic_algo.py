@@ -6,18 +6,23 @@ import matplotlib.pyplot as plt
 
 p = "2"
 type_inst = "A"
-taille="100"
+taille="200"
 
 div = 0
 Information = [90]
-N = 2
+Informations_in = [90, 40.6012,28.1257, 11.5757]
+
+N = 1
 Budget = [20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020]
 filename = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30.eval"
 
-filename_dyn = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30.evalDEC"
+filename_dyn = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_7.evalPI_INC"
 
 Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))
 Smallreader = list(csv.DictReader(open(filename_dyn, newline=''), delimiter = ','))
+
+fig = plt.figure(figsize=(13,10))
+
 for i in range(0,N):
     for info in Information : 
         X = list()
@@ -29,7 +34,8 @@ for i in range(0,N):
             maxus = -1
 
             for row in Bigreader:
-                if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
+#                if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
+                if int(row['Diversification']) == div and (float(row['Info']) in Informations_in) and int(row['Budget']) == b and int(row['Instance']) == i :
                     avg_min = float(row['AVG_dist'])
                     if (avg_min < minus) or (minus == -1) :
                         minus = avg_min
@@ -43,18 +49,26 @@ for i in range(0,N):
             
             
             for row in Smallreader : 
-                if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
+#                if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
+                if int(row['Diversification']) == div and int(row['Budget']) == b and int(row['Instance']) == i :
                     Ydyn.append(float(row['AVG_dist']))
         
-        fig = plt.figure(figsize=(10,8))
-        plt.plot(X,Ymin,c="blue",label="Lower bound")
-        plt.plot(X,Ymax,c="red",label="Upper bound")
-        plt.plot(X,Ydyn,c="green",label="Dynamic method")
-        plt.grid()
-        plt.legend()
-        plt.title("Dynamically varying the Population size and Statically fixed - "+type_inst+taille+" (T"+str(i)+") Diversification :"+str(div) )
-        fig.savefig("Bounding_"+type_inst+taille+"_T"+str(i)+"_I"+str(info)+"_D"+str(div)+".png", dpi=fig.dpi)
-        plt.close()
+        if i == 0 :
+            plt.plot(X,Ymin,c="blue",label="Lower bound")
+            plt.plot(X,Ymax,c="red",label="Upper bound")
+            plt.plot(X,Ydyn,c="green",label="Dynamic method")
+        else:
+            plt.plot(X,Ymin,c="blue")
+            plt.plot(X,Ymax,c="red")
+            plt.plot(X,Ydyn,c="green")
+        
+plt.grid()
+plt.legend(prop={'size': 15})
+plt.xlabel("Budget",size=15)
+plt.ylabel("Average minimum distance Indicator",size=15)
+plt.title("Compare a dynamic approach (decrease the Population size and Information) and a static one (best/worst approx) \n "+type_inst+taille+", Diversification : "+str(div) ,fontsize=15)
+fig.savefig("Bounding_"+type_inst+taille+"_I"+str(info)+"_D"+str(div)+"_PI_INC.png", dpi=fig.dpi)
+plt.close()
             
                 
             

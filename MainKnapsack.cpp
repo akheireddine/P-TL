@@ -1133,6 +1133,12 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE(double starting_time_sec, vector< int >
 				UB_Population_size = UB_Population_list[ub_pop];
 				cout<<"Size : "<<UB_Population_list[ub_pop]<<endl;
 				surcharge = 3;
+				if(cpt_info < (int)Informations.size() - 1 ){
+					cpt_info++;
+					cout<<"Information :"<<cpt_info<<endl;
+					set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
+					update_WS_matrix_Population();
+				}
 			}
 
 //			surcharge = ((int)Population.size() > UB_Population_size) ? surcharge : (surcharge - 1);
