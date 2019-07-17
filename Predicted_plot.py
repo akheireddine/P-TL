@@ -34,22 +34,14 @@ def normalize_parameters() :
     
     
     Budgets = [ round(b*1.0/(max(Budget) - min(Budget)),3) for b in Budget]
-    Budgets[0] = 0.
-    Budgets[len(Budgets) - 1] = 1.
     
     Informations = [ round(inf*1.0/(max(Information) - min(Information)),3) for inf in Information]
-    Informations[0] = 0.
-    Informations[len(Informations) - 1] = 1.
     
     
     N_inst = [ round(n*1.0/(max(N) - min(N)),3) for n in N]
-    N_inst[0] = 0.
-    N_inst[len(N_inst) - 1] = 1.
     
     
     PopulationSize = [ round(p*1.0/( max(PopSize) - min(PopSize)),3) for p in PopSize]
-    PopulationSize[0] = 0.
-    PopulationSize[len(PopulationSize) - 1] = 1.
 
     return Budgets, Informations, N_inst, PopulationSize
 
@@ -111,13 +103,15 @@ def normalize_eval_file(filename_eval_in, filename_eval_out):
 
 def F_prediction_A100(siz, budg, inf, div, inst) :
 
-    avg = 0.0684 + (-0.0135)* inst +  (-0.2217)* budg + 0.1396 * siz + 0.1225 * div
+    avg = 0.0603 + (-0.0135)* inst +  (-0.2201)* budg + 0.138 * siz + 0.0283 * inf + 0.1225 * div
 
-    maxmin = 0.1503 + (-0.023) * inst + (-0.2124) * budg + 0.1102 * siz + (-0.0428) * inf + 0.1125 * div
+    maxmin = 0.0816 + (-0.023) * inst + (-0.2109) * budg + 0.1092 * siz + 0.2197 * inf + 0.1125 * div
 
-    pr = 0.0176 + (-0.089) * inst + 0.2867 * budg + 0.0563 * siz + (-0.0449) * inf + 0.1441 * div    
+    pr = 0.012 + (-0.089) * inst + 0.2857 * budg + 0.0534 * siz + (-0.0205) * inf + 0.1441 * div
+
 
     return round(avg,3),round(maxmin,3),round(pr,3)
+
 
 def ML_LinearRegression(type_inst, taille, p_criteria, filename_o):
     
@@ -156,11 +150,11 @@ filename_outter = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/predicted_val
 ""
 
 
-PopSizeIndex = [0, 1, 4,8, 9]
+PopSizeIndex = [0, 1, 4,8, 10]
 
 InformationIndex = [0,6,9,13,15,17,18,20]
 
-div = 1
+div = 0
 
 def compare_predicted_expected_value():       
     Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))
@@ -219,11 +213,11 @@ compare_predicted_expected_value()
 
 
 BudgetIndex = [0,3,5,7, 11,16,19,25,30,32,33,35,38]
-PopSizeIndex = [0, 1, 4,8, 9]
+PopSizeIndex = [0, 1, 4,8, 10]
 
 InformationIndex = [0,6,9,13,15,17,18,20]
 
-div = 1
+div = 0
 
 def Difference_predicted_expected_valueD1():       
     Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))

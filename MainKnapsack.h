@@ -89,6 +89,7 @@ public :
 	void SWITCH_PLS_WS(double starting_time_sec, int ITER_PLS, int ITER_WS);
 
 	void MOLS_SWITCH_OBJECTIVE(double starting_time_sec, vector< int > UB_Population, vector< string > Informations);
+	void MOLS_SWITCH_OBJECTIVE_OS(double starting_time_sec, vector< int > UB_Population_list, vector< string > Informations);
 
 	void MOLS(double starting_time_sec,int ITER);
 	void MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);

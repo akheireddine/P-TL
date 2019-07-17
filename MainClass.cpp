@@ -164,11 +164,13 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, vector< 
 
 	knaps->MOLS_SWITCH_OBJECTIVE(t/CLOCKS_PER_SEC, UB , steps);
 
+
+//	knaps->MOLS_SWITCH_OBJECTIVE_OS(t/CLOCKS_PER_SEC, UB , steps);
+
+
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
 	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
-
-//	eval_ks->evaluate_PF( knaps->get_OPT_Solution(), time_cpu);
 
 
 //	delete knaps;
@@ -179,7 +181,7 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, vector< 
 void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 20;
-	int N = 2;
+	int N = 10;
 	string path_information = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
 	,path_information+"6", path_information+"7"};
@@ -187,11 +189,12 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string
 
 	vector<int> graines;
 
-	string prefix = "MOLS_SWITCH_OBJECTIVE_DEC/OS";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "MOLS_SWITCH_OBJECTIVE_DEC";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
-	vector<int> sizer = {60,50,40,30,20,8,2}; //       //A
+//	vector<int> sizer = {2,8,20,60,100};
+	vector<int> sizer = {100,60,20,8,2};
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
@@ -218,16 +221,12 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string
 			graines.push_back( rand());
 		}
 
-//		for(auto iter : sizer){
-//			cout<<"============================================   "<<iter<<" POP SIZE   ============================================"<<endl;
-
-			for(int k = 0; k < K; k++){
-				k_replication = k +10 ;
-				GRAIN = graines[k];
-				srand( GRAIN );
-				main_Knapsack_PLSWS(filename_population, 1, sizer, I);
-			}
-//		}
+		for(int k = 0; k < K; k++){
+			k_replication = k  ;
+			GRAIN = graines[k];
+			srand( GRAIN );
+			main_Knapsack_PLSWS(filename_population, 1, sizer, I);
+		}
 		eval_ks.reset();
 	}
 }
@@ -676,56 +675,7 @@ void script_learning_opt_algo(string type_inst, string taille, string WS_DM, str
 
 //***********************************************************************************************************************************//
 
-void F_prediction_A100(float siz, float budg, float inf, int div, float inst, float & avg, float & pr, float & maxmin){
 
-	avg = 0.0608 + (-0.0141)* inst +  (-0.2206)* budg + 0.1377 * siz + 0.0285 * inf + 0.1229 * div;
-
-	maxmin = 0.0826 + (-0.0238) * inst + (-0.2114) * budg + 0.1089 * siz + 0.2198 * inf + 0.1125 * div;
-
-	pr = 0.0208 + (-0.1008) * inst + 0.2702 * budg + 0.0474 * siz + (-0.0209) * inf + 0.1374 * div;
-}
-
-
-void ML_LinearRegression(string type_inst, string taille, string p_criteria){
-
-	string id_type_inst = "0";
-	if(type_inst.compare("C") == 0)
-		id_type_inst = "1";
-
-
-	vector< float > PopSize = {0.02, 0.082, 0.102, 0.153, 0.204, 0.306, 0.408, 0.51, 0.612, 0.816, 1.02};
-	vector< float > Budget = {0.005, 0.01, 0.013, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06, 0.07, 0.085, 0.095, 0.11, 0.12, 0.135, 0.145,
-			0.16, 0.17, 0.185, 0.195, 0.205, 0.21, 0.22, 0.245, 0.255, 0.305, 0.355, 0.455, 0.505, 0.605, 0.705, 0.8, 0.855, 0.955, 1.005};
-	vector< float > Information = {1.0, 0.889, 0.778, 0.667, 0.556, 0.456, 0.451, 0.444, 0.333, 0.313, 0.222, 0.167, 0.133, 0.129, 0.111, 0.089, 0.056, 0.048,
-			0.041, 0.011, 0.0};
-	vector< int > Diversification = {0, 1};
-	vector< float > N = {0.0, 0.111, 0.222, 0.333, 0.444, 0.556, 0.667, 0.778, 0.889, 1.0};
-
-	string filename = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/predicted_value.eval";
-	ofstream fic_write(filename);
-	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
-
-	for(auto i : N){
-
-		for(auto s : PopSize){
-
-			for(auto b : Budget){
-
-				for(auto info : Information){
-
-					for(auto d : Diversification){
-
-						float predicted_avg_min = -1, PR = -1, MaxMin = -1;
-						F_prediction_A100(s, b, info, d, i, predicted_avg_min, PR, MaxMin);
-						fic_write<<id_type_inst+", "+taille+", "+to_string(i)+", "+to_string(b)+", "+to_string(s)+", "+to_string(info)+", 0, "
-								+to_string(predicted_avg_min)+", "+to_string(PR)+", "+to_string(MaxMin)+", "+to_string(d)<<endl;
-					}
-
-				}
-			}
-		}
-	}
-}
 
 //***********************************************************************************************************************************//
 
@@ -736,7 +686,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "C";
+	string type_inst = "A";
 	string taille = "100";
 	string p_criteria = "2";
 
@@ -799,7 +749,7 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
+//	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
 ////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
@@ -859,7 +809,7 @@ int main(int argc, char** argv){
 */
 
 
-//	script_knapsack_PLSWS(type_inst,taille,WS_DM, p_criteria);
+	script_knapsack_PLSWS(type_inst,taille,WS_DM, p_criteria);
 //	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
 //	Gnuplotter::Plot_SEARCH_EVOLUTION("./Instances_Knapsack/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst, type_inst, taille
 //			,"MOLS2", -1, 10, 111 , "./DM_preference_point");
@@ -920,7 +870,56 @@ int main(int argc, char** argv){
 
 
 
-
+//void F_prediction_A100(float siz, float budg, float inf, int div, float inst, float & avg, float & pr, float & maxmin){
+//
+//	avg = 0.0603 + (-0.0135)* inst +  (-0.2201)* budg + 0.138 * siz + 0.0283 * inf + 0.1225 * div;
+//
+//	maxmin = 0.0816 + (-0.023) * inst + (-0.2109) * budg + 0.1092 * siz + 0.2197 * inf + 0.1125 * div;
+//
+//	pr = 0.012 + (-0.089) * inst + 0.2857 * budg + 0.0534 * siz + (-0.0205) * inf + 0.1441 * div;
+//}
+//
+//
+//void ML_LinearRegression(string type_inst, string taille, string p_criteria){
+//
+//	string id_type_inst = "0";
+//	if(type_inst.compare("C") == 0)
+//		id_type_inst = "1";
+//
+//
+//	vector< float > PopSize = {0.02, 0.082, 0.102, 0.153, 0.204, 0.306, 0.408, 0.51, 0.612, 0.816, 1.02};
+//	vector< float > Budget = {0.005, 0.01, 0.013, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.06, 0.07, 0.085, 0.095, 0.11, 0.12, 0.135, 0.145,
+//			0.16, 0.17, 0.185, 0.195, 0.205, 0.21, 0.22, 0.245, 0.255, 0.305, 0.355, 0.455, 0.505, 0.605, 0.705, 0.8, 0.855, 0.955, 1.005};
+//	vector< float > Information = {1.0, 0.889, 0.778, 0.667, 0.556, 0.456, 0.451, 0.444, 0.333, 0.313, 0.222, 0.167, 0.133, 0.129, 0.111, 0.089, 0.056, 0.048,
+//			0.041, 0.011, 0.0};
+//	vector< int > Diversification = {0, 1};
+//	vector< float > N = {0.0, 0.111, 0.222, 0.333, 0.444, 0.556, 0.667, 0.778, 0.889, 1.0};
+//
+//	string filename = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/predicted_value.eval";
+//	ofstream fic_write(filename);
+//	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
+//
+//	for(auto i : N){
+//
+//		for(auto s : PopSize){
+//
+//			for(auto b : Budget){
+//
+//				for(auto info : Information){
+//
+//					for(auto d : Diversification){
+//
+//						float predicted_avg_min = -1, PR = -1, MaxMin = -1;
+//						F_prediction_A100(s, b, info, d, i, predicted_avg_min, PR, MaxMin);
+//						fic_write<<id_type_inst+", "+taille+", "+to_string(i)+", "+to_string(b)+", "+to_string(s)+", "+to_string(info)+", 0, "
+//								+to_string(predicted_avg_min)+", "+to_string(PR)+", "+to_string(MaxMin)+", "+to_string(d)<<endl;
+//					}
+//
+//				}
+//			}
+//		}
+//	}
+//}
 
 
 
