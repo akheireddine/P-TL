@@ -162,11 +162,13 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, vector< 
 
 	clock_t t = clock();
 
-	knaps->MOLS_SWITCH_OBJECTIVE(t/CLOCKS_PER_SEC, UB , steps);
+//	knaps->MOLS_SWITCH_OBJECTIVE(t/CLOCKS_PER_SEC, UB , steps);
 
 
 //	knaps->MOLS_SWITCH_OBJECTIVE_OS(t/CLOCKS_PER_SEC, UB , steps);
 
+
+	knaps->MOLS_DYNAMIC(t/CLOCKS_PER_SEC, UB, steps);
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
@@ -181,18 +183,15 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, vector< 
 void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 20;
-	int N = 3;
+	int N = 2;
 	string path_information = "./Data/WS_Learning/Test2/Iteration_";
-//	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
-//	,path_information+"6", path_information+"7"};
-
-	vector< string > I = { path_information+"3", path_information+"2"
-	,path_information+"1", path_information+"0"};
+	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
+	,path_information+"6", path_information+"7"};
 
 
 	vector<int> graines;
 
-	string prefix = "MOLS_SWITCH_OBJECTIVE_PSizeInfo_INCR";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "MOLS_SWITCH_OBJECTIVE_STRAT12";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
@@ -465,6 +464,8 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 	int id_type_inst = 0;
 	if(type_inst.compare("C") == 0)
 		id_type_inst = 1;
+	else if (type_inst.compare("D") == 0)
+		id_type_inst = 2;
 
 	int K = 30;
 	int N = 10;
@@ -535,7 +536,7 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 		id_type_inst = 1;
 
 	int K = 30;
-	int N = 5;
+	int N = 10;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
@@ -546,7 +547,7 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 		info_rate.push_back( Tools::compute_information_rate(Tools::readMatrix(I[i]), stoi(p_criteria)) );
 	}
 
-	vector< string > prefixes = {"MOLS_PSize"};                //OS and RS  use MOLS_PSize/OS
+	vector< string > prefixes = {"MOLS_PSize","MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
 
 	vector<int> sizer = {2,8,20,60,100};  //       //A
 
@@ -557,18 +558,19 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "eval";
 	string format_out = "opt";
 
-	ofstream fic1(filename_indicator+"/K_"+to_string(K)+".eval");
-	fic1<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
-	fic1.close();
-	ofstream fic2(filename_indicator+"/K_"+to_string(K)+"."+format_out);
-	fic2<<"Type,  Size,  Instance,  Budget,  PopSize, Info,  nb_evaluation,  AVG_dist,  MaxMin,  PR,  Diversification"<<endl;
-	fic2.close();
+//	ofstream fic1(filename_indicator+"/K_"+to_string(K)+".eval");
+//	fic1<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
+//	fic1.close();
+//	ofstream fic2(filename_indicator+"/K_"+to_string(K)+"."+format_out);
+//	fic2<<"Type,  Size,  Instance,  Budget,  PopSize, Info,  nb_evaluation,  AVG_dist,  MaxMin,  PR,  Diversification"<<endl;
+//	fic2.close();
 
 
 	for(int i = 0; i < N; i++){
+		string format_in = "_"+to_string(i)+".eval";
+
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
 		eval_ks->set_K_replication(K);
@@ -577,7 +579,7 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 			string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefixes[j];
 			eval_ks->save_information(filename_population, filename_indicator, format_in, I, sizer, Budget, i, id_type_inst, taille, j);
 		}
-		eval_ks->save_best_parameters(filename_indicator, format_in, format_out, info_rate, sizer, Budget, i);
+//		eval_ks->save_best_parameters(filename_indicator, format_in, format_out, info_rate, sizer, Budget, i);
 		eval_ks.reset();
 	}
 }
@@ -589,8 +591,8 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 	if(type_inst.compare("C") == 0)
 		id_type_inst = 1;
 
-	int K = 7;
-	int N = 1;
+	int K = 20;
+	int N = 2;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
@@ -602,15 +604,15 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 	}
 
 
-	vector< string > prefixes = {"MOLS_SWITCH_OBJECTIVE_PSizeInfo_INCR"};                //OS and RS  use MOLS_PSize/OS
+	vector< string > prefixes = {"MOLS_SWITCH_OBJECTIVE_STRAT12"};                //OS and RS  use MOLS_PSize/OS
 
 	vector<int> sizer = {-1};
 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "evalPI_INC";
-	string format_out = "optPI_INC";
+	string format_in = "eval12_STRAT";
+	string format_out = "opt12_STRAT";
 
 	ofstream fic1(filename_indicator+"/K_"+to_string(K)+"."+format_in);
 	fic1<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
@@ -689,7 +691,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "D";
+	string type_inst = "A";
 	string taille = "100";
 	string p_criteria = "2";
 
@@ -733,7 +735,7 @@ int main(int argc, char** argv){
   *************************************************************************************************************************
 */
 
-//	script_learning_data(type_inst, taille, WS_DM, p_criteria);
+	script_learning_data(type_inst, taille, WS_DM, p_criteria);
 //	script_learning_opt_algo(type_inst, taille, WS_DM, p_criteria);
 /*
   *************************************************************************************************************************
@@ -752,7 +754,7 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
+//	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
 ////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////

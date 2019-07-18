@@ -68,6 +68,10 @@ public :
 	};
 
 
+	vector< float > OPT_Alternative_PLNE(vector<float> WS_vector);
+	vector< float >  get_extrem_points();
+	bool reached_limit(vector< float > extrem_point);
+
 	//READ FILES
 //	void readInitPopulationFile(string filename);
 
@@ -90,8 +94,8 @@ public :
 
 	void MOLS_SWITCH_OBJECTIVE(double starting_time_sec, vector< int > UB_Population, vector< string > Informations);
 	void MOLS_SWITCH_OBJECTIVE_OS(double starting_time_sec, vector< int > UB_Population_list, vector< string > Informations);
+	void MOLS_DYNAMIC(double starting_time_sec, vector< int > UB_Population_list, vector< string > Informations);
 
-	void MOLS(double starting_time_sec,int ITER);
 	void MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);
 	void MOLS_local_Archive(double starting_time_sec);
 	void MOLS_Cst_PSize_RS(double starting_time_sec, int UB_Population_size);
