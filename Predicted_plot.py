@@ -50,8 +50,8 @@ def normalize_parameters() :
 Budget_norm, Information_norm, N_norm, PopSize_norm = normalize_parameters()
 
 
-filename_in = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30._0.eval"
-filename_out = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/INDIVIDUAL/K_30_normalize_0.eval"
+filename_in = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30._4.eval"
+filename_out = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/INDIVIDUAL/K_30_normalize_4.eval"
 
 def normalize_eval_file(filename_eval_in, filename_eval_out):
     
@@ -96,7 +96,7 @@ def normalize_eval_file(filename_eval_in, filename_eval_out):
 
 ####################################################################################
 
-#normalize_eval_file(filename_in,filename_out)
+normalize_eval_file(filename_in,filename_out)
 
 ####################################################################################
 
@@ -274,7 +274,7 @@ def Difference_predicted_expected_valueD1():
     
 ####################################################################################
         
-Difference_predicted_expected_valueD1()
+#Difference_predicted_expected_valueD1()
 
 ####################################################################################
 

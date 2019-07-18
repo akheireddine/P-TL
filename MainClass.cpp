@@ -268,14 +268,14 @@ void main_Knapsack_ML_RegLin(string filename_instance, int size_population, vect
 
 	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
 
-	delete knaps;
+//	delete knaps;
 }
 
 
 void script_knapsack_ML_RegLin(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 1;
-	int N = 3;
+	int K = 10;
+	int N = 10;
 	string path_information = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
 	,path_information+"6", path_information+"7"};
@@ -296,7 +296,7 @@ void script_knapsack_ML_RegLin(string type_inst, string taille, string WS_DM, st
 		float Info_rate = Tools::compute_information_rate(Tools::readMatrix(I[info]), stoi(p_criteria));
 
 
-		for(int i = 0; i < N; i++){
+		for(int i = 3; i < N; i++){
 			string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 			string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 			string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);

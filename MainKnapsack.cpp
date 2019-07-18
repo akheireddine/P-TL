@@ -1421,12 +1421,12 @@ void MainKnapsack::MOLS_DYNAMIC(double starting_time_sec, vector< int > UB_Popul
 
 void best_parametrization_RegLin(float Info_rate, int budget, int &div, int &pop_size, int inst_name, vector<int> UB_Population_list){
 
-	float PopSize_norm = 100 - 2.0;
+	float PopSize_norm = 300 - 2.0; //100 - 2.0;
 	float min_PopSize = 2.;
 
 	float Info_norm = 90.0 - 0. ;
 
-	float Budget_norm = 4020 - 20.0;
+	float Budget_norm = 8000 - 20.;//4020 - 20.0;
 	float min_Budget = 20.;
 
 	float N_norm = 10 - 0;
@@ -1449,15 +1449,13 @@ void best_parametrization_RegLin(float Info_rate, int budget, int &div, int &pop
 				 }
 			}
 		}
-		cout<<"Pop size/Budget/Div : "<<pop_size<<", "<<budget<<", "<<div<<"   :  "<<avg_min<<endl;
-
 	}
 
 	else if ( inst_name == 1){
 		for(auto d : {0,1} ){
 			for(auto p : UB_Population_list){
-				 float val_avg = (-0.2288) * (budget - min_Budget)*1.0/Budget_norm + 0.1363 * (p - min_PopSize)*1.0/PopSize_norm
-													+ 0.0421 * Info_rate*1.0/Info_norm + 0.1134 * d + 0.0703;
+				 float val_avg = (-0.2288) * (budget - min_Budget)*1.0/Budget_norm + 0.1362 * (p - min_PopSize)*1.0/PopSize_norm
+													+ 0.0421 * Info_rate*1.0/Info_norm + 0.1134 * d + 0.072;
 				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
 					 div = d;
 					 avg_min = val_avg;
@@ -1465,14 +1463,25 @@ void best_parametrization_RegLin(float Info_rate, int budget, int &div, int &pop
 				 }
 			}
 		}
-
 	}
-
 	else if (inst_name == 2) {
 		for(auto d : {0,1} ){
 			for(auto p : UB_Population_list){
 				 float val_avg = (-0.207) * (budget - min_Budget)*1.0/Budget_norm + 0.1248 * (p - min_PopSize)*1.0/PopSize_norm
-													+ 0.1123 * d + 0.0671;
+													+ 0.1123 * d + 0.0686;
+				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
+					 div = d;
+					 avg_min = val_avg;
+					 pop_size = p;
+				 }
+			}
+		}
+	}
+	else if (inst_name == 3){
+		for(auto d : {0,1} ){
+			for(auto p : UB_Population_list){
+				 float val_avg = (-0.222) * (budget - min_Budget)*1.0/Budget_norm + 0.1425 * (p - min_PopSize)*1.0/PopSize_norm
+						 + 0.0438 * Info_rate*1.0/Info_norm	 + 0.126 * d + 0.041;
 				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
 					 div = d;
 					 avg_min = val_avg;
@@ -1495,6 +1504,7 @@ void best_parametrization_RegLin(float Info_rate, int budget, int &div, int &pop
 		}
 	}
 
+//	cout<<"Pop size/Budget/Div : "<<pop_size<<", "<<budget<<", "<<div<<"   :  "<<avg_min<<endl;
 }
 
 
@@ -1530,7 +1540,6 @@ void MainKnapsack::MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, in
 
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
-
 
 		save_information(filename_population+"/MOLS_ML_RegLin/"+INFO+"/"+to_string(Budget),alt->get_criteria_values(), nb_iteration, index, PopSize );
 
@@ -1596,10 +1605,10 @@ void MainKnapsack::MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, in
 //			ATTEMPT TO ADD DOMINATED SOLUTIONS TO Population
 
 
-//			if( update_params == 0){
+			if( update_params == 0){
 				best_parametrization_RegLin(Info_rate, (Budget - nb_iteration), diversification, PopSize, inst_name, UB_Population_list);
-//				update_params = 3;
-//			}
+				update_params = 3;
+			}
 
 
 			if( diversification ){
