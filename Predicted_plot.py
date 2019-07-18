@@ -33,15 +33,15 @@ div = 1
 def normalize_parameters() :
     
     
-    Budgets = [ round(b*1.0/(max(Budget) - min(Budget)),3) for b in Budget]
+    Budgets = [ round((b*1.0 - min(Budget))/(max(Budget) - min(Budget)),3) for b in Budget]
     
-    Informations = [ round(inf*1.0/(max(Information) - min(Information)),3) for inf in Information]
-    
-    
-    N_inst = [ round(n*1.0/(max(N) - min(N)),3) for n in N]
+    Informations = [ round((inf*1.0 - min(Information))/(max(Information) - min(Information)),3) for inf in Information]
     
     
-    PopulationSize = [ round(p*1.0/( max(PopSize) - min(PopSize)),3) for p in PopSize]
+    N_inst = [ round((n*1.0 - min(N))/(max(N) - min(N)),3) for n in N]
+    
+    
+    PopulationSize = [ round((p*1.0 - min(PopSize)) /( max(PopSize) - min(PopSize)),3) for p in PopSize]
 
     return Budgets, Informations, N_inst, PopulationSize
 
@@ -50,8 +50,8 @@ def normalize_parameters() :
 Budget_norm, Information_norm, N_norm, PopSize_norm = normalize_parameters()
 
 
-filename_in = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30._9.eval"
-filename_out = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/INDIVIDUAL/K_30_normalize_9.eval"
+filename_in = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30._0.eval"
+filename_out = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/INDIVIDUAL/K_30_normalize_0.eval"
 
 def normalize_eval_file(filename_eval_in, filename_eval_out):
     
@@ -84,9 +84,9 @@ def normalize_eval_file(filename_eval_in, filename_eval_out):
         info = str(Information_norm[Information.index(float(row["Info"]))])
         
         
-        avg = round(float(row["AVG_dist"])/coef1*1.0,3)
-        maxmin = round(float(row["MaxMin"])/coef2*1.0,3)
-        pr = round(float(row["PR"])/coef3*1.0,3)
+        avg = round( (float(row["AVG_dist"]) - min(coef_D1[inst_int]))/coef1*1.0,3)
+        maxmin = round( (float(row["MaxMin"]) - min(coef_D2[inst_int]))/coef2*1.0,3)
+        pr = round( (float(row["PR"]) - min(coef_D3[inst_int]))/coef3*1.0,3)
         
         fwrite.write(row["Type"]+","+row["Size"]+","+inst+","+budget+","+pop+","+info+",0,"+str(avg) +","+str(maxmin)
         +","+str(pr)+","+row["Diversification"]+"\n")
@@ -96,18 +96,18 @@ def normalize_eval_file(filename_eval_in, filename_eval_out):
 
 ####################################################################################
 
-normalize_eval_file(filename_in,filename_out)
+#normalize_eval_file(filename_in,filename_out)
 
 ####################################################################################
 
 
 def F_prediction_A100(siz, budg, inf, div, inst) :
 
-    avg = 0.0603 + (-0.0135)* inst +  (-0.2201)* budg + 0.138 * siz + 0.0283 * inf + 0.1225 * div
+    avg = 0.062 + (-0.0162)* inst +  (-0.2201)* budg + 0.1379 * siz + 0.0283 * inf + 0.1225 * div
 
-    maxmin = 0.0816 + (-0.023) * inst + (-0.2109) * budg + 0.1092 * siz + 0.2197 * inf + 0.1125 * div
+    maxmin = 0.0835 + (-0.0319) * inst + (-0.2109) * budg + 0.1092 * siz + 0.2197 * inf + 0.1125 * div
 
-    pr = 0.012 + (-0.089) * inst + 0.2857 * budg + 0.0534 * siz + (-0.0205) * inf + 0.1441 * div
+    pr = 0.0145 + (-0.089) * inst + 0.2857 * budg + 0.0533 * siz + (-0.0205) * inf + 0.1441 * div
 
 
     return round(avg,3),round(maxmin,3),round(pr,3)
@@ -217,7 +217,7 @@ PopSizeIndex = [0, 1, 4,8, 10]
 
 InformationIndex = [0,6,9,13,15,17,18,20]
 
-div = 0
+div = 1
 
 def Difference_predicted_expected_valueD1():       
     Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))
@@ -274,7 +274,7 @@ def Difference_predicted_expected_valueD1():
     
 ####################################################################################
         
-#Difference_predicted_expected_valueD1()
+Difference_predicted_expected_valueD1()
 
 ####################################################################################
 
