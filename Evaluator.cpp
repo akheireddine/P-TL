@@ -690,9 +690,10 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 				for(int k = 0; k < K_replication; k++){
 					string file_extension;
-					if(ub == -1)
-						file_extension = file_population+"/"+to_string(i)+"/Pop_"+to_string(k)+".pop";
-					else
+					if(ub == -1){
+//						file_extension = file_population+"/"+to_string(i)+"/Pop_"+to_string(k)+".pop";
+						file_extension = file_population+"/"+to_string(i)+"/"+to_string(b)+"/Pop_"+to_string(k)+".pop";
+					}else
 						file_extension = file_population+"/"+to_string(ub)+"/"+to_string(i)+"/Pop_"+to_string(k)+".pop";
 
 					list< vector< float > > Population;

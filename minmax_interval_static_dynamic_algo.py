@@ -12,96 +12,181 @@ div = 0
 Information = [90]
 Informations_in = [90, 40.6012,28.1257, 11.5757]
 
-N = 2
+N = [0,1]
 Budget = [20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020]
-filename = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30.eval"
+#Budget = [50,500,1000,2000,3000,4000,5000,8000]
 
-filename_dyn = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_20.eval12_STRAT"
+filename = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_20.eval12_STRAT"
+
+filename_dyn = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_10.eval_ML"
 
 Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))
 Smallreader = list(csv.DictReader(open(filename_dyn, newline=''), delimiter = ','))
 
-fig = plt.figure(figsize=(13,10))
 
-for i in range(0,N):
-    for info in Information : 
-        X = list()
-        Ymin = list()
-        Ymax = list()
-        Ydyn = list()
-        for b in Budget :
-            minus = -1
-            maxus = -1
+def compare_INF_SUP_BOUND() : 
+    fig = plt.figure(figsize=(13,10))
 
-            for row in Bigreader:
-#                if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
-                if float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
-#                if int(row['Diversification']) == div and (float(row['Info']) in Informations_in) and int(row['Budget']) == b and int(row['Instance']) == i :
-                    avg_min = float(row['AVG_dist'])
-                    if (avg_min < minus) or (minus == -1) :
-                        minus = avg_min
-                    if (avg_min > maxus) or (maxus == -1) :
-                        maxus = avg_min
-                
-
-            Ymin.append(minus)
-            Ymax.append(maxus)
-            X.append(b)
+    for i in N : #range(0,N):
+        Xbudget_f1 = set()
+        Xbudget_f2 = set()
+        for r in Bigreader :
+            Xbudget_f1.add(int(r['Budget']))
             
-            
-            for row in Smallreader : 
-#                if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
-                if float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
-#                if int(row['Diversification']) == div and int(row['Budget']) == b and int(row['Instance']) == i :
-                    Ydyn.append(float(row['AVG_dist']))
+        Xbudget_f1 = list(Xbudget_f1)
+        Xbudget_f1.sort()
         
-        if i == 0 :
-            plt.plot(X,Ymin,c="blue",label="Lower bound")
-            plt.plot(X,Ymax,c="red",label="Upper bound")
-            plt.plot(X,Ydyn,c="green",label="Dynamic method")
-        else:
-            plt.plot(X,Ymin,c="blue")
-            plt.plot(X,Ymax,c="red")
-            plt.plot(X,Ydyn,c="green")
+        for r in Smallreader :
+            Xbudget_f2.add(int(r['Budget']))
         
-plt.grid()
-plt.legend(prop={'size': 15})
-plt.xlabel("Budget",size=15)
-plt.ylabel("Average minimum distance Indicator",size=15)
-plt.title("Compare a dynamic approach (increase the Population size) and a static one (best/worst approx) \n "+type_inst+taille+", Diversification : "+str(div) ,fontsize=15)
-fig.savefig("Bounding_"+type_inst+taille+"_I"+str(info)+"_D01_STRAT12.png", dpi=fig.dpi)
-plt.close()
+        Xbudget_f2 = list(Xbudget_f2)
+        Xbudget_f2.sort()
+    
+        for info in Information : 
+            Ymin = list()
+            Ymax = list()
+            Ydyn = list()
+            
+            for b in Xbudget_f1 :
+                minus = -1
+                maxus = -1
+    
+                for row in Bigreader:
+    #                if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
+                    if float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
+    #                if int(row['Diversification']) == div and (float(row['Info']) in Informations_in) and int(row['Budget']) == b and int(row['Instance']) == i :
+                        avg_min = float(row['AVG_dist'])
+                        if (avg_min < minus) or (minus == -1) :
+                            minus = avg_min
+                        if (avg_min > maxus) or (maxus == -1) :
+                            maxus = avg_min
+                    
+                Ymin.append(minus)
+                Ymax.append(maxus)
+                
+            for b in Xbudget_f2 :
+    
+                for row in Smallreader : 
+    #                if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
+                    if float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
+    #                if int(row['Diversification']) == div and int(row['Budget']) == b and int(row['Instance']) == i :
+                        Ydyn.append(float(row['AVG_dist']))
+            
+            
+    #        print(len(Xbudget_f1), len(Ymax), len(Ymin), len(Ydyn),len(Xbudget_f2))
+            
+            if i == 0 :
+                plt.plot(Xbudget_f1 + Xbudget_f2[-2:],Ymin+Ymin[-1:]+Ymin[-1:],c="blue",label="Lower bound")
+                plt.plot(Xbudget_f1 + Xbudget_f2[-2:],Ymax+Ymax[-1:]+Ymax[-1:],c="red",label="Upper bound")
+                plt.plot(Xbudget_f2,Ydyn,c="green",label="Dynamic method")
+            else:
+                plt.plot(Xbudget_f1 + Xbudget_f2[-2:],Ymin+Ymin[-1:]+Ymin[-1:],c="blue")
+                plt.plot(Xbudget_f1 + Xbudget_f2[-2:],Ymax+Ymax[-1:]+Ymax[-1:],c="red")
+                plt.plot(Xbudget_f2,Ydyn,c="green")
+            
+    plt.grid()
+    plt.legend(prop={'size': 15})
+    plt.xlabel("Budget",size=15)
+    plt.ylabel("Average minimum distance Indicator",size=15)
+    plt.title("Compare a dynamic approach (Machine learning - LinearRegression) and a static one (best/worst approx) \n "+type_inst+taille ,fontsize=15)
+    fig.savefig("Bounding_"+type_inst+taille+"_I"+str(info)+"_ML.png", dpi=fig.dpi)
+    plt.close()
             
                 
-            
+    
+    
+
+filename = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_20.evalINC"
+
+filename_dyn = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_10.eval_ML"         
+
+filename_dyn2 = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_20.eval12_STRAT"
+
+
         
 ##### TWHO METHOD DYNAMIC COMPARISON POPSIZE 
 def compare_dynamic_method():       
     Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))
     Smallreader = list(csv.DictReader(open(filename_dyn, newline=''), delimiter = ','))
-    for i in range(0,N):
+    Mediumreader = list(csv.DictReader(open(filename_dyn2, newline=''), delimiter = ','))
+    
+#    fig = plt.figure(figsize=(13,10))
+
+    Xbudget_f1 = set()
+    Xbudget_f2 = set()
+    Xbudget_f3 = set()
+
+    for r in Bigreader :
+        Xbudget_f1.add(int(r['Budget']))
+        
+    Xbudget_f1 = list(Xbudget_f1)
+    Xbudget_f1.sort()
+    
+    for r in Smallreader :
+        Xbudget_f2.add(int(r['Budget']))
+    
+    Xbudget_f2 = list(Xbudget_f2)
+    Xbudget_f2.sort()
+    
+    for r in Mediumreader :
+        Xbudget_f3.add(int(r['Budget']))
+    
+    Xbudget_f3 = list(Xbudget_f3)
+    Xbudget_f3.sort()
+            
+
+    for i in N : #range(0,N):
         for info in Information : 
-            X = list()
-            Ydyn = list()
+            Ydyn1 = list()
             Ydyn2 = list()
-            for b in Budget :
+            Ydyn3 = list()
+            for b in Xbudget_f1 :
                 
                 for row in Bigreader : 
-                    if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
-                        Ydyn2.append(float(row['AVG_dist']))
-                        X.append(b)
+                    if float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
+                        Ydyn1.append(float(row['AVG_dist']))
     
+            for b in Xbudget_f2 :
+
                 for row in Smallreader : 
-                    if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
-                        Ydyn.append(float(row['AVG_dist']))
+                    if float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
+                        Ydyn2.append(float(row['AVG_dist']))
                         
+                        
+            for b in Xbudget_f3 :
+
+                for row in Mediumreader : 
+                    if float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
+                        Ydyn3.append(float(row['AVG_dist']))
+                   
+            print(Xbudget_f2)
+            print("\n__________________________________\n")
+            print(Ydyn2)
+            print("\n=============================================================\n")
+            print("=============================================================\n")
+
+#            if i == 0:
+#                plt.plot(Xbudget_f1  + Xbudget_f2[-1:],Ydyn1 + Ydyn1[-1:],c="green",label="method 1")
+#                plt.plot(Xbudget_f2,Ydyn2,c="red",label="method 2")
+#                plt.plot(Xbudget_f3  + Xbudget_f2[-1:],Ydyn3 + Ydyn3[-1:],c="blue",label="method 3")
+#                
+#            else : 
+#                plt.plot(Xbudget_f1  + Xbudget_f2[-1:],Ydyn1 + Ydyn1[-1:],c="green")
+#                plt.plot(Xbudget_f2,Ydyn2,c="red")
+#                plt.plot(Xbudget_f3  + Xbudget_f2[-1:],Ydyn3 + Ydyn3[-1:],c="blue")
+
             
-            fig = plt.figure(figsize=(10,8))
-            plt.plot(X,Ydyn,c="red",label="Dynamic methodDEC")
-            plt.plot(X,Ydyn2,c="green",label="Dynamic methodINC")
-            
-            plt.grid()
-            plt.legend()
-            plt.title("Dynamically varying the Population size - "+type_inst+taille+" (T"+str(i)+") Diversification :"+str(div) )
-            fig.savefig("BoundingDECINC_"+type_inst+taille+"_T"+str(i)+"_I"+str(info)+"_D"+str(div)+".png", dpi=fig.dpi)
-            plt.close()
+#    plt.grid()
+#    plt.legend()
+#    plt.xlabel("Budget",size=15)
+#    plt.ylabel("Average minimum distance Indicator",size=15)
+#    plt.title("Dynamically varying the Parameters  - "+type_inst+taille+" using different approaches"  ,fontsize=15)
+#    fig.savefig("Compare_INC_ML_STRAT12_"+type_inst+taille+"_I"+str(info)+".png", dpi=fig.dpi)
+#    plt.close()
+    
+    
+    
+
+
+
+compare_dynamic_method()
