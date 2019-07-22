@@ -115,7 +115,7 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, vector< 
 void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 20;
-	int N = 2;
+	int N = 5;
 	string path_information = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
 	,path_information+"6", path_information+"7"};
@@ -123,16 +123,13 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string
 
 	vector<int> graines;
 
-	string prefix = "MOLS_SWITCH_OBJECTIVE_STRAT12";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "MOLS_SWITCH_OBJECTIVE_STRAT12/D0";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
 	vector<int> sizer = {2,8,20,60,100};
 //	vector<int> sizer = {100,60,20,8,2};
 
-//	vector<int> sizer = {2,8,20,60,100,200};       //C
-
-//	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 	int info = 0;
 	INFO = to_string(info);
@@ -194,10 +191,10 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 //// ORIGINAL VERSION
 void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_criteria){
 
-	int K = 8;
-	int N = 10;
-	vector< string > I = {"0"};//,"1","2","3","4","5","6","7"};
-	string testname = "Test2";
+	int K = 5;
+	int N = 20;
+	vector< string > I = {"0","1","2","3","4","5","6","7"};
+	string testname = "Test3";
 
 	vector<int> graines;
 
@@ -206,12 +203,12 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 	srand(time(NULL));
 
 //	vector<int> sizer = {2, 8, 20, 60, 100, 200};  //
-	vector<int> sizer = {200};  //
+	vector<int> sizer = {10,30,60,100,200};  //
 
 //	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 
-	for(int i = 9; i < N; i++){
+	for(int i = 3; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -238,7 +235,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 				eval_ks->update_covered_PFront();
 
 				for(int k = 0; k < K; k++){
-					k_replication = k +13 ;
+					k_replication = k ;
 					GRAIN = graines[k];
 					srand( GRAIN );
 					main_Knapsack_Cst_PSize(filename_population, 1, iter);
@@ -354,7 +351,7 @@ void main_Knapsack_ParamsCheating(string filename_instance, int size_population,
 void script_OPT_ParamsCheating(string type_inst, string taille, string WS_DM, string p_criteria){
 
 	int K_read = 30;
-	int K = 1;
+	int K = 9;
 	int N = 10;
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
@@ -396,7 +393,7 @@ void script_OPT_ParamsCheating(string type_inst, string taille, string WS_DM, st
 		}
 
 		for(int k = 0; k < K; k++){
-			k_replication = k ;
+			k_replication = k + 1;
 			GRAIN = graines[k];
 			srand( GRAIN );
 			main_Knapsack_ParamsCheating(filename_population, 1, opt_parameters, info_rate, testname);
@@ -592,9 +589,9 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 		id_type_inst = 1;
 
 	int K = 10;
-	int N = 5;
-//	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
-	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
+	int N = 10;
+	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
+//	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
 
@@ -605,15 +602,15 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 	}
 
 
-	vector< string > prefixes = {"MOLS_ML_RegLin"};                //OS and RS  use MOLS_PSize/OS
+	vector< string > prefixes = {"MOLS_OPT_PARAMETERS"};                //OS and RS  use MOLS_PSize/OS
 
 	vector<int> sizer = {-1};
 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "eval_ML";
-	string format_out = "opt_ML";
+	string format_in = "eval_CHEAT";
+	string format_out = "opt_CHEAT";
 
 	ofstream fic1(filename_indicator+"/K_"+to_string(K)+"."+format_in);
 	fic1<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
@@ -622,7 +619,7 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 //	fic2<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
 //	fic2.close();
 
-	for(int i = 3; i < N; i++){
+	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM);
 		eval_ks->set_K_replication(K);
@@ -697,7 +694,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "C";
+	string type_inst = "A";
 	string taille = "100";
 	string p_criteria = "2";
 
@@ -760,7 +757,7 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
+//	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
 ////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
@@ -820,7 +817,7 @@ int main(int argc, char** argv){
 */
 
 
-//	script_knapsack_PLSWS(type_inst,taille,WS_DM, p_criteria);
+	script_knapsack_PLSWS(type_inst,taille,WS_DM, p_criteria);
 //	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
 
 
@@ -831,6 +828,7 @@ int main(int argc, char** argv){
 */
 
 //	script_OPT_ParamsCheating(type_inst,taille,WS_DM, p_criteria);
+//	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
 
 
 

@@ -692,7 +692,8 @@ void Evaluator::save_information(string file_population, string save_path, strin
 					string file_extension;
 					if(ub == -1){
 //						file_extension = file_population+"/"+to_string(i)+"/Pop_"+to_string(k)+".pop";
-						file_extension = file_population+"/"+to_string(i)+"/"+to_string(b)+"/Pop_"+to_string(k)+".pop";
+						file_extension = file_population+"/Pop_"+to_string(k)+".pop";
+//						file_extension = file_population+"/"+to_string(i)+"/"+to_string(b)+"/Pop_"+to_string(k)+".pop";
 					}else
 						file_extension = file_population+"/"+to_string(ub)+"/"+to_string(i)+"/Pop_"+to_string(k)+".pop";
 

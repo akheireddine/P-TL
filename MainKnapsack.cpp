@@ -1161,56 +1161,23 @@ void MainKnapsack::MOLS_SWITCH_OBJECTIVE_OS(double starting_time_sec, vector< in
 			}
 
 /*
- *  	********************			UPDATE INFORMATION
- */
-//			surcharge = ((int)Population.size() < UB_Population_size) ? surcharge : (surcharge - 1);
-//			souscharge = ((int)Population.size() < UB_Population_size) ? (souscharge - 1) : souscharge;
-//
-//			cout<<"surchange : "<<surcharge<< "  souscharge :"<<souscharge<<endl;
-//			cout<<"  POP/UB : "<<Population.size()<<"/"<<UB_Population_size<<endl;
-//			if( (souscharge == 0) and cpt_info > 0 ){
-//				cpt_info--;
-//				cout<<"1 : Iteration_"<<cpt_info<<endl;
-//				set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
-//				update_WS_matrix_Population();
-//				souscharge = 5;
-//			}
-//
-//			if( (surcharge == 0) and cpt_info < (int)Informations.size() - 1 ){ //curr_epsilon < epsilon  and cpt_info > 0){
-//				cpt_info++;
-//				cout<<"2 : Iteration_"<<cpt_info<<endl;
-//				set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
-//				update_WS_matrix_Population();
-//				surcharge = 3;
-//			} else if ( surcharge == 0 and cpt_info >= (int)Informations.size() - 1 )
-//				surcharge = 3;
-//			else if (souscharge == 0 and cpt_info == 0)
-//				souscharge = 5;
-//			extrem_point = snd_extrem_point;
-//			curr_epsilon = 0.;
-/*
- *  	********************			UPDATE INFORMATION
- */
-
-
-/*
  *  	*****************************************			UPDATE UB_SIZE
  */
-//			surcharge = ((int)Population.size() < UB_Population_size) ? surcharge : (surcharge - 1);
-//			if( (surcharge == 0) and ub_pop < (int)UB_Population_list.size() - 1 ){
-//				ub_pop++;
-//				UB_Population_size = UB_Population_list[ub_pop];
-//				cout<<"Size : "<<UB_Population_list[ub_pop]<<endl;
-//				surcharge = 3;
-//			}
-
-			surcharge = ((int)Population.size() > UB_Population_size) ? surcharge : (surcharge - 1);
+			surcharge = ((int)Population.size() < UB_Population_size) ? surcharge : (surcharge - 1);
 			if( (surcharge == 0) and ub_pop < (int)UB_Population_list.size() - 1 ){
 				ub_pop++;
 				UB_Population_size = UB_Population_list[ub_pop];
 				cout<<"Size : "<<UB_Population_list[ub_pop]<<endl;
 				surcharge = 3;
 			}
+
+//			surcharge = ((int)Population.size() > UB_Population_size) ? surcharge : (surcharge - 1);
+//			if( (surcharge == 0) and ub_pop < (int)UB_Population_list.size() - 1 ){
+//				ub_pop++;
+//				UB_Population_size = UB_Population_list[ub_pop];
+//				cout<<"Size : "<<UB_Population_list[ub_pop]<<endl;
+//				surcharge = 3;
+//			}
 /*
  *  	*****************************************			UPDATE UB_SIZE
  */
@@ -1286,7 +1253,6 @@ void MainKnapsack::MOLS_DYNAMIC(double starting_time_sec, vector< int > UB_Popul
 
 	vector< float > extrem_points = get_extrem_points();
 
-//	cout<<"EXTREM POINT : "<<Tools::print_vector(extrem_points)<<endl;
 
 	while( !Population.empty() and ((clock() / CLOCKS_PER_SEC) - starting_time_sec <= TIMEOUT ) ){
 		nb_iteration++;
@@ -1358,45 +1324,47 @@ void MainKnapsack::MOLS_DYNAMIC(double starting_time_sec, vector< int > UB_Popul
 
 
 
-/*
-*  	*****************************************			UPDATE UB_SIZE
-*/			if( strategie == 2){
-				surcharge = ((int)Population.size() < UB_Population_size) ? surcharge : (surcharge - 1);
-				if( (surcharge == 0) and ub_pop < (int)UB_Population_list.size() - 1 ){
-					ub_pop++;
-					UB_Population_size = UB_Population_list[ub_pop];
-					cout<<"Size : "<<UB_Population_list[ub_pop]<<endl;
-					surcharge = 3;
-				}
-			}
-			else if( strategie == 1 ){
-				if( reached_limit(extrem_points) )
-					strategie = 2;
-			}
-
-
-/*
-*  	*****************************************			UPDATE UB_SIZE
-*/
 
 //			ATTEMPT TO ADD DOMINATED SOLUTIONS TO Population
-			if( Population.empty() )
-				limit_no_improvment--;
-			else
-				limit_no_improvment =  2;
+//			if( Population.empty() )
+//				limit_no_improvment--;
+//			else
+//				limit_no_improvment =  2;
+//
+//			int to_add = ( UB_Population_size - (int)Population.size() ) ;
+//			if( to_add > 0  and   ( (limit_no_improvment > 0) or !Population.empty() ) ){
+//				Ordered_Selection(Dominated_alt, Population, to_add);
+//			}
+//
+//			map<string, shared_ptr< AlternativeKnapsack > > tmp_dic_Alternative = dic_Alternative;
+//			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = tmp_dic_Alternative.begin(); it != tmp_dic_Alternative.end(); ++it){
+//				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 ){
+//					(*it).second.reset();
+//					dic_Alternative.erase((*it).first);
+//				}
+//			}
 
-			int to_add = ( UB_Population_size - (int)Population.size() ) ;
-			if( to_add > 0  and   ( (limit_no_improvment > 0) or !Population.empty() ) ){
-				Ordered_Selection(Dominated_alt, Population, to_add);
-			}
-
-			map<string, shared_ptr< AlternativeKnapsack > > tmp_dic_Alternative = dic_Alternative;
-			for(map<string, shared_ptr< AlternativeKnapsack > >::iterator it = tmp_dic_Alternative.begin(); it != tmp_dic_Alternative.end(); ++it){
-				if( find(Population.begin(), Population.end(), (*it).first) == Population.end()  and (*it).second.use_count() == 1 ){
-					(*it).second.reset();
-					dic_Alternative.erase((*it).first);
+/*
+ *  	*****************************************			UPDATE UB_SIZE
+*/
+			if( strategie == 2){
+					surcharge = ((int)Population.size() < UB_Population_size) ? surcharge : (surcharge - 1);
+					if( (surcharge == 0) and ub_pop < (int)UB_Population_list.size() - 1 ){
+						ub_pop++;
+						UB_Population_size = UB_Population_list[ub_pop];
+						cout<<"Size : "<<UB_Population_list[ub_pop]<<endl;
+						surcharge = 3;
+					}
 				}
-			}
+				else if( strategie == 1 ){
+					if( reached_limit(extrem_points) )
+						strategie = 2;
+				}
+
+
+/*
+ *  	*****************************************			UPDATE UB_SIZE
+*/
 
 
 			Dominated_alt.clear();
