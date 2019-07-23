@@ -1647,8 +1647,22 @@ void MainKnapsack::MOLS_OPT_PARAMETERS(double starting_time_sec, vector< map<str
 	index++;
 //	"Type", "Size", "Instance", "Budget", "PopSize", "Info", "nb_evaluation", "AVG_dist", "MaxMin", "PR", "Diversification"};
 
-	while( i < OPT_Params.size() ){//and !Population.empty() ){
+	mt19937 g( rand() );
 
+	list< int > index_params;
+	vector< int > val_shuffle;
+	for(size_t z = 0; z < OPT_Params.size(); z++)
+		val_shuffle.push_back(z);
+	shuffle(val_shuffle.begin(), val_shuffle.end(), g );
+
+	for(auto z : val_shuffle)
+		index_params.push_back(z);
+
+
+	while( !index_params.empty() ) { // i < OPT_Params.size() ){
+
+		i = index_params.front();
+		index_params.pop_front();
 
 		for(auto p : Archive){
 			Population.push_back( p->get_id_alt() );
@@ -1666,7 +1680,8 @@ void MainKnapsack::MOLS_OPT_PARAMETERS(double starting_time_sec, vector< map<str
 //		if( div == 1)
 //			save_point_file = filename_population+"/MOLS_OPT_PARAMETERS/OS/"+index_info;
 //		else
-			save_point_file = filename_population+"/MOLS_OPT_PARAMETERS";
+//		save_point_file = filename_population+"/MOLS_OPT_PARAMETERS";
+		save_point_file = filename_population+"/MOLS_OPT_PARAMETERS_SHUFFLE";
 
 
 		local_iteration = 0;

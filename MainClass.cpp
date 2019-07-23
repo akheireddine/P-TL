@@ -351,14 +351,14 @@ void main_Knapsack_ParamsCheating(string filename_instance, int size_population,
 void script_OPT_ParamsCheating(string type_inst, string taille, string WS_DM, string p_criteria){
 
 	int K_read = 30;
-	int K = 9;
+	int K = 10;
 	int N = 10;
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
 	vector<int> graines;
 
-	string prefix = "MOLS_OPT_PARAMETERS";
+	string prefix = "MOLS_OPT_PARAMETERS_SHUFFLE";
 
 	srand(time(NULL));
 
@@ -393,7 +393,7 @@ void script_OPT_ParamsCheating(string type_inst, string taille, string WS_DM, st
 		}
 
 		for(int k = 0; k < K; k++){
-			k_replication = k + 1;
+			k_replication = k ;
 			GRAIN = graines[k];
 			srand( GRAIN );
 			main_Knapsack_ParamsCheating(filename_population, 1, opt_parameters, info_rate, testname);
@@ -588,8 +588,8 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 	if(type_inst.compare("C") == 0)
 		id_type_inst = 1;
 
-	int K = 10;
-	int N = 10;
+	int K = 20;
+	int N = 5;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
 //	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
 
@@ -602,15 +602,15 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 	}
 
 
-	vector< string > prefixes = {"MOLS_OPT_PARAMETERS"};                //OS and RS  use MOLS_PSize/OS
+	vector< string > prefixes = {"MOLS_SWITCH_OBJECTIVE_STRAT12/D0/0"};                //OS and RS  use MOLS_PSize/OS
 
 	vector<int> sizer = {-1};
 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "eval_CHEAT";
-	string format_out = "opt_CHEAT";
+	string format_in = "eval_STRATD0";
+	string format_out = "opt_STRATD0";
 
 	ofstream fic1(filename_indicator+"/K_"+to_string(K)+"."+format_in);
 	fic1<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
@@ -638,7 +638,7 @@ void script_learning_opt_algo(string type_inst, string taille, string WS_DM, str
 
 	int K = 30;
 	int N = 10;
-	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
+	vector< int > Budget = {20,60,100,140,220,420,540};//,820,1220,1820,2020,3200,4020};   //A
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
@@ -817,7 +817,7 @@ int main(int argc, char** argv){
 */
 
 
-	script_knapsack_PLSWS(type_inst,taille,WS_DM, p_criteria);
+//	script_knapsack_PLSWS(type_inst,taille,WS_DM, p_criteria);
 //	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
 
 
@@ -828,7 +828,7 @@ int main(int argc, char** argv){
 */
 
 //	script_OPT_ParamsCheating(type_inst,taille,WS_DM, p_criteria);
-//	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
+	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
 
 
 
