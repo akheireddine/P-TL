@@ -92,8 +92,9 @@ public :
 	void HYBRID_PLS_WS(double starting_time_sec, int ITER);
 	void SWITCH_PLS_WS(double starting_time_sec, int ITER_PLS, int ITER_WS);
 
-	void MOLS_SWITCH_OBJECTIVE(double starting_time_sec, vector< int > UB_Population, vector< string > Informations);
-	void MOLS_SWITCH_OBJECTIVE_OS(double starting_time_sec, vector< int > UB_Population_list, vector< string > Informations);
+	void MOLS_DYN_PSize(double starting_time_sec, vector< int > UB_Population, vector< string > Informations);
+	void MOLS_DYN_PSize_OS(double starting_time_sec, vector< int > UB_Population_list, vector< string > Informations);
+	void MOLS_DYN_INFO(int Budget, vector< int > UB_Population_list, int inst_name, vector< string > Informations);
 	void MOLS_DYNAMIC(double starting_time_sec, vector< int > UB_Population_list, vector< string > Informations);
 
 	void MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);

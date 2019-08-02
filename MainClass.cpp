@@ -94,21 +94,23 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, vector< 
 
 	clock_t t = clock();
 
-//	knaps->MOLS_SWITCH_OBJECTIVE(t/CLOCKS_PER_SEC, UB , steps);
+//	knaps->MOLS_DYN_PSize(t/CLOCKS_PER_SEC, UB , steps);
 
 
-//	knaps->MOLS_SWITCH_OBJECTIVE_OS(t/CLOCKS_PER_SEC, UB , steps);
+//	knaps->MOLS_DYN_PSize_OS(t/CLOCKS_PER_SEC, UB , steps);
 
 
 	knaps->MOLS_DYNAMIC(t/CLOCKS_PER_SEC, UB, steps);
+
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
 	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
 
 
-//	delete knaps;
 }
+
+
 
 
 
@@ -156,7 +158,7 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string
 			k_replication = k  ;
 			GRAIN = graines[k];
 			srand( GRAIN );
-			main_Knapsack_PLSWS(filename_population, 1, sizer, I);
+//			main_Knapsack_PLSWS(filename_population, 1, sizer, I);
 		}
 		eval_ks.reset();
 	}
@@ -325,7 +327,73 @@ void script_knapsack_ML_RegLin(string type_inst, string taille, string WS_DM, st
 }
 
 
+//***********************************************************************************************************************************//
 
+void main_Knapsack_DYN_INFO(string filename_instance, int size_population, vector< int > UB, int Budget
+		, int inst_name, vector< string> Informations){
+
+	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
+
+	clock_t t = clock();
+
+	knaps->MOLS_DYN_INFO(Budget, UB, inst_name, Informations);
+
+	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
+
+	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
+
+}
+
+void script_knapsack_DYN_INFO(string type_inst, string taille, string WS_DM, string p_criteria ){
+
+	int K = 1;
+	int N = 10;
+	string path_information = "./Data/WS_Learning/Test2/Iteration_";
+	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
+	,path_information+"6", path_information+"7"};
+
+
+	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
+	vector<int> graines;
+
+	string prefix = "MOLS_DYN_INFO";                //OS and RS  use MOLS_PSize/OS
+
+	srand(time(NULL));
+
+	vector<int> sizer = {2,10,30,50,70,100,200,300};
+
+
+
+
+	for(int i = 9; i < N; i++){
+		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
+		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
+
+		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,filename_indicator);
+
+		eval_ks->set_WS_matrix(Tools::readMatrix(I[0]));
+
+		eval_ks->update_covered_PFront();
+
+		MainKnapsack::Generate_random_Population(eval_ks, K);
+
+		graines.clear();
+		for(int k = 0; k < K; k++){
+			graines.push_back( rand());
+		}
+
+		for(auto b : Budget){
+			for(int k = 0; k < K; k++){
+				k_replication = k  ;
+				GRAIN = graines[k];
+				srand( GRAIN );
+				main_Knapsack_DYN_INFO(filename_population, 1, sizer, b, i, I);
+			}
+		}
+		eval_ks.reset();
+	}
+}
 
 
 //***********************************************************************************************************************************//
@@ -828,7 +896,7 @@ int main(int argc, char** argv){
 */
 
 //	script_OPT_ParamsCheating(type_inst,taille,WS_DM, p_criteria);
-	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
+//	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
 
 
 
@@ -843,6 +911,14 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
+
+
+	script_knapsack_DYN_INFO(type_inst,taille,WS_DM, p_criteria);
+
+
+
+
+
 	return 1;
 
 }
