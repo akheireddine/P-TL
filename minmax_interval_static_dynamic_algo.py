@@ -11,13 +11,13 @@ taille="100"
 Information = [90]
 Informations_in = [90, 40.6012,28.1257, 11.5757]
 
-N = 5#
+N = 3 
 Budget = [20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020]
 #Budget = [50,500,1000,2000,3000,4000,5000,8000]
 
 filename = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30.eval"
 
-filename_dyn = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_20.eval_STRATD0"
+filename_dyn = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_15.eval_DYN_PSize_DEC"
 
 Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))
 Smallreader = list(csv.DictReader(open(filename_dyn, newline=''), delimiter = ','))
@@ -68,8 +68,8 @@ def compare_INF_SUP_BOUND() :
             for b in Xbudget_f2 :
     
                 for row in Smallreader : 
-    #                if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
-                    if float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
+                    if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
+#                    if float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
 #                    if int(row['Budget']) == b and int(row['Instance']) == i :
     #                if int(row['Diversification']) == div and int(row['Budget']) == b and int(row['Instance']) == i :
                         Ydyn.append(float(row['AVG_dist']))
@@ -85,7 +85,7 @@ def compare_INF_SUP_BOUND() :
             if i == 0 :
                 plt.plot(Xbudget_f1 + Xbudget_f2[-2:],Ymin+Ymin[-1:]+Ymin[-1:],c="blue",label="Lower bound")
                 plt.plot(Xbudget_f1 + Xbudget_f2[-2:],Ymax+Ymax[-1:]+Ymax[-1:],c="red",label="Upper bound")
-                plt.plot(Xbudget_f2,Ydyn,c="green",label="2PHASES method")
+                plt.plot(Xbudget_f2,Ydyn,c="green",label="Dynamic method")
             else:
                 plt.plot(Xbudget_f1 + Xbudget_f2[-2:],Ymin+Ymin[-1:]+Ymin[-1:],c="blue")
                 plt.plot(Xbudget_f1 + Xbudget_f2[-2:],Ymax+Ymax[-1:]+Ymax[-1:],c="red")
@@ -95,8 +95,8 @@ def compare_INF_SUP_BOUND() :
     plt.legend(prop={'size': 15})
     plt.xlabel("Budget",size=15)
     plt.ylabel("Average minimum distance Indicator",size=15)
-    plt.title("Compare a dynamic approach (2Phases + NO DIVERSIFICATION) and a static one (best/worst approx) \n "+type_inst+taille ,fontsize=15)
-    fig.savefig("Bounding_"+type_inst+taille+"_I"+str(info)+"_STRATD0.png", dpi=fig.dpi)
+    plt.title("Compare a dynamic approach (DECREASE PopSize Parameter + NO DIVERSIFICATION) and a static one (best/worst approx) \n "+type_inst+taille ,fontsize=15)
+    fig.savefig("Bounding_"+type_inst+taille+"_I"+str(info)+"_POPSize_DEC_DIV0.png", dpi=fig.dpi)
     plt.close()
 #            
             

@@ -100,7 +100,10 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, vector< 
 //	knaps->MOLS_DYN_PSize_OS(t/CLOCKS_PER_SEC, UB , steps);
 
 
-	knaps->MOLS_DYNAMIC(t/CLOCKS_PER_SEC, UB, steps);
+//	knaps->MOLS_DYNAMIC(t/CLOCKS_PER_SEC, UB, steps);
+
+
+	knaps->MOLS_DYN_INFO(t/CLOCKS_PER_SEC, UB , steps);
 
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
@@ -116,8 +119,8 @@ void main_Knapsack_PLSWS(string filename_instance, int size_population, vector< 
 
 void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 20;
-	int N = 5;
+	int K = 10;
+	int N = 10;
 	string path_information = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
 	,path_information+"6", path_information+"7"};
@@ -125,11 +128,11 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string
 
 	vector<int> graines;
 
-	string prefix = "MOLS_SWITCH_OBJECTIVE_STRAT12/D0";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "FINAL_MOLS_DYN_Info";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2,8,20,60,100};
+	vector<int> sizer = {40};//2,8,20,60,100};
 //	vector<int> sizer = {100,60,20,8,2};
 
 
@@ -158,7 +161,7 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string
 			k_replication = k  ;
 			GRAIN = graines[k];
 			srand( GRAIN );
-//			main_Knapsack_PLSWS(filename_population, 1, sizer, I);
+			main_Knapsack_PLSWS(filename_population, 1, sizer, I);
 		}
 		eval_ks.reset();
 	}
@@ -336,7 +339,7 @@ void main_Knapsack_DYN_INFO(string filename_instance, int size_population, vecto
 
 	clock_t t = clock();
 
-	knaps->MOLS_DYN_INFO(Budget, UB, inst_name, Informations);
+	knaps->MOLS_DYN_INFO(Budget, UB,  Informations);
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
@@ -656,8 +659,8 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 	if(type_inst.compare("C") == 0)
 		id_type_inst = 1;
 
-	int K = 20;
-	int N = 5;
+	int K = 15;
+	int N = 3;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
 //	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
 
@@ -670,15 +673,15 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 	}
 
 
-	vector< string > prefixes = {"MOLS_SWITCH_OBJECTIVE_STRAT12/D0/0"};                //OS and RS  use MOLS_PSize/OS
+	vector< string > prefixes = {"FINAL_MOLS_DYN_PSize_DEC/0"};                //OS and RS  use MOLS_PSize/OS
 
 	vector<int> sizer = {-1};
 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "eval_STRATD0";
-	string format_out = "opt_STRATD0";
+	string format_in = "eval_DYN_PSize_DEC";
+	string format_out = "opt_DYN_PSize_DEC";
 
 	ofstream fic1(filename_indicator+"/K_"+to_string(K)+"."+format_in);
 	fic1<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
@@ -885,7 +888,7 @@ int main(int argc, char** argv){
 */
 
 
-//	script_knapsack_PLSWS(type_inst,taille,WS_DM, p_criteria);
+	script_knapsack_PLSWS(type_inst,taille,WS_DM, p_criteria);
 //	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
 
 
@@ -913,7 +916,7 @@ int main(int argc, char** argv){
 */
 
 
-	script_knapsack_DYN_INFO(type_inst,taille,WS_DM, p_criteria);
+//	script_knapsack_DYN_INFO(type_inst,taille,WS_DM, p_criteria);
 
 
 

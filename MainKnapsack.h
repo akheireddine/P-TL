@@ -94,7 +94,9 @@ public :
 
 	void MOLS_DYN_PSize(double starting_time_sec, vector< int > UB_Population, vector< string > Informations);
 	void MOLS_DYN_PSize_OS(double starting_time_sec, vector< int > UB_Population_list, vector< string > Informations);
-	void MOLS_DYN_INFO(int Budget, vector< int > UB_Population_list, int inst_name, vector< string > Informations);
+	void MOLS_DYN_INFO(double starting_time_sec, vector< int > UB_Population_list, vector< string > Informations);
+	void MOLS_DYN_MULTIPLE_PARAM(int Budget, vector< int > UB_Population_list, int inst_name, vector< string > Informations);
+
 	void MOLS_DYNAMIC(double starting_time_sec, vector< int > UB_Population_list, vector< string > Informations);
 
 	void MOLS_Cst_PSize(double starting_time_sec, int UB_Population_size);
