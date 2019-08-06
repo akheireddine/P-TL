@@ -833,12 +833,12 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
 
 void best_parametrization_RegLin(float Info_rate, int budget, int &div, int &pop_size, int inst_name, vector<int> UB_Population_list){
 
-	float PopSize_norm = 300 - 2.0; //100 - 2.0;
+	float PopSize_norm = 100 - 2.0; //100 - 2.0;
 	float min_PopSize = 2.;
 
 	float Info_norm = 90.0 - 0. ;
 
-	float Budget_norm = 8000 - 20.;//4020 - 20.0;
+	float Budget_norm = 8020 - 20.;//4020 - 20.0;
 	float min_Budget = 20.;
 
 	float N_norm = 10 - 0;
@@ -846,14 +846,66 @@ void best_parametrization_RegLin(float Info_rate, int budget, int &div, int &pop
 	float avg_min = -1;
 
 
-	if( inst_name == 0 ){
+//	if( inst_name == 0 ){
+//		for(auto d : {0,1} ){
+//			for(auto p : UB_Population_list){
+//
+//				 float val_avg = (-0.2452) * (budget - min_Budget)*1.0/Budget_norm + 0.1491 * (p - min_PopSize)*1.0/PopSize_norm
+//													+ 0.0428 * Info_rate*1.0/Info_norm + 0.1269 * d + 0.0649;
+//
+//				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
+//					 div = d;
+//					 avg_min = val_avg;
+//					 pop_size = p;
+//				 }
+//			}
+//		}
+//	}
+//
+//	else if ( inst_name == 1){
+//		for(auto d : {0,1} ){
+//			for(auto p : UB_Population_list){
+//				 float val_avg = (-0.2288) * (budget - min_Budget)*1.0/Budget_norm + 0.1362 * (p - min_PopSize)*1.0/PopSize_norm
+//													+ 0.0421 * Info_rate*1.0/Info_norm + 0.1134 * d + 0.072;
+//				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
+//					 div = d;
+//					 avg_min = val_avg;
+//					 pop_size = p;
+//				 }
+//			}
+//		}
+//	}
+//	else if (inst_name == 2) {
+//		for(auto d : {0,1} ){
+//			for(auto p : UB_Population_list){
+//				 float val_avg = (-0.207) * (budget - min_Budget)*1.0/Budget_norm + 0.1248 * (p - min_PopSize)*1.0/PopSize_norm
+//													+ 0.1123 * d + 0.0686;
+//				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
+//					 div = d;
+//					 avg_min = val_avg;
+//					 pop_size = p;
+//				 }
+//			}
+//		}
+//	}
+//	else if (inst_name == 3){
+//		for(auto d : {0,1} ){
+//			for(auto p : UB_Population_list){
+//				 float val_avg = (-0.222) * (budget - min_Budget)*1.0/Budget_norm + 0.1425 * (p - min_PopSize)*1.0/PopSize_norm
+//						 + 0.0438 * Info_rate*1.0/Info_norm	 + 0.126 * d + 0.041;
+//				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
+//					 div = d;
+//					 avg_min = val_avg;
+//					 pop_size = p;
+//				 }
+//			}
+//		}
+//	}
+//	else{
 		for(auto d : {0,1} ){
 			for(auto p : UB_Population_list){
-
-
-				 float val_avg = (-0.2452) * (budget - min_Budget)*1.0/Budget_norm + 0.1491 * (p - min_PopSize)*1.0/PopSize_norm
-													+ 0.0428 * Info_rate*1.0/Info_norm + 0.1269 * d + 0.0649;
-
+				 float val_avg =  (-0.0148) * inst_name/N_norm + (-0.1922)*(budget - min_Budget)*1.0/Budget_norm
+						 + 0.1169 * (p - min_PopSize)*1.0/PopSize_norm + 0.0249 * Info_rate*1.0/Info_norm + 0.1041 * d + 0.0524;
 				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
 					 div = d;
 					 avg_min = val_avg;
@@ -861,61 +913,7 @@ void best_parametrization_RegLin(float Info_rate, int budget, int &div, int &pop
 				 }
 			}
 		}
-	}
-
-	else if ( inst_name == 1){
-		for(auto d : {0,1} ){
-			for(auto p : UB_Population_list){
-				 float val_avg = (-0.2288) * (budget - min_Budget)*1.0/Budget_norm + 0.1362 * (p - min_PopSize)*1.0/PopSize_norm
-													+ 0.0421 * Info_rate*1.0/Info_norm + 0.1134 * d + 0.072;
-				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
-					 div = d;
-					 avg_min = val_avg;
-					 pop_size = p;
-				 }
-			}
-		}
-	}
-	else if (inst_name == 2) {
-		for(auto d : {0,1} ){
-			for(auto p : UB_Population_list){
-				 float val_avg = (-0.207) * (budget - min_Budget)*1.0/Budget_norm + 0.1248 * (p - min_PopSize)*1.0/PopSize_norm
-													+ 0.1123 * d + 0.0686;
-				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
-					 div = d;
-					 avg_min = val_avg;
-					 pop_size = p;
-				 }
-			}
-		}
-	}
-	else if (inst_name == 3){
-		for(auto d : {0,1} ){
-			for(auto p : UB_Population_list){
-				 float val_avg = (-0.222) * (budget - min_Budget)*1.0/Budget_norm + 0.1425 * (p - min_PopSize)*1.0/PopSize_norm
-						 + 0.0438 * Info_rate*1.0/Info_norm	 + 0.126 * d + 0.041;
-				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
-					 div = d;
-					 avg_min = val_avg;
-					 pop_size = p;
-				 }
-			}
-		}
-	}
-	else{
-		for(auto d : {0,1} ){
-			for(auto p : UB_Population_list){
-				 float val_avg =  (-0.0162) * inst_name/N_norm + (-0.2201)*(budget - min_Budget)*1.0/Budget_norm
-						 + 0.1379 * (p - min_PopSize)*1.0/PopSize_norm + 0.0283 * Info_rate*1.0/Info_norm + 0.1225 * d + 0.062;
-				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
-					 div = d;
-					 avg_min = val_avg;
-					 pop_size = p;
-				 }
-			}
-		}
-	}
-
+//	}
 //	cout<<"Pop size/Budget/Div : "<<pop_size<<", "<<budget<<", "<<div<<"   :  "<<avg_min<<endl;
 }
 
@@ -930,8 +928,6 @@ void MainKnapsack::MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, in
 	list< string > next_Population;
 	int nb_iteration = 0, index = 0;
 	int limit_no_improvment = 2;
-
-	int update_params = 3;
 
 
 /*                          INITIALISER LES PARAMETRES                              */
@@ -954,7 +950,7 @@ void MainKnapsack::MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, in
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_information(filename_population+"/MOLS_ML_RegLin/"+INFO+"/"+to_string(Budget),alt->get_criteria_values(), nb_iteration, index, PopSize );
+		save_information(filename_population+"/FINAL_MOLS_ML_RegLin/"+INFO+"/"+to_string(Budget),alt->get_criteria_values(), nb_iteration, index, PopSize );
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -1015,15 +1011,10 @@ void MainKnapsack::MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, in
 					Population.push_back(*it);
 
 
+
+			best_parametrization_RegLin(Info_rate, (Budget - nb_iteration), diversification, PopSize, inst_name, UB_Population_list);
+
 //			ATTEMPT TO ADD DOMINATED SOLUTIONS TO Population
-
-
-			if( update_params == 0){
-				best_parametrization_RegLin(Info_rate, (Budget - nb_iteration), diversification, PopSize, inst_name, UB_Population_list);
-				update_params = 3;
-			}
-
-
 			if( diversification ){
 				if( Population.empty() )
 					limit_no_improvment--;
@@ -1044,7 +1035,6 @@ void MainKnapsack::MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, in
 				}
 			}
 
-			update_params--;
 			Dominated_alt.clear();
 			next_Population.clear();
 			index++;
@@ -1192,31 +1182,31 @@ void MainKnapsack::MOLS_DYN_PSize(double starting_time_sec, vector< int > UB_Pop
 /*
  *  	*****************************************			UPDATE UB_SIZE
  */
-			surcharge = (remains_to_explore > 0) ? (surcharge - 1) : surcharge;
-
-			if( (surcharge == 0) and ub_pop < (int)UB_Population_list.size() - 1 ){
-				ub_pop++;
-				UB_Population_size = UB_Population_list[ub_pop];
-//				cout<<"Size : "<<UB_Population_list[ub_pop]<<" (remains : "<<remains_to_explore<<")"<<endl;
-				surcharge = 3;
-				remains_to_explore = 0;
-//				if(cpt_info < (int)Informations.size() - 1 ){
-//					cpt_info++;
-//					cout<<"Information :"<<cpt_info<<endl;
-//					set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
-//					update_WS_matrix_Population();
-//				}
-			}
-
-//			surcharge = (remains_to_explore > 0) ? surcharge : (surcharge - 1);
-//			remains_to_explore = 0;
+//			surcharge = (remains_to_explore > 0) ? (surcharge - 1) : surcharge;
 //
 //			if( (surcharge == 0) and ub_pop < (int)UB_Population_list.size() - 1 ){
 //				ub_pop++;
 //				UB_Population_size = UB_Population_list[ub_pop];
-//				cout<<"Size : "<<UB_Population_list[ub_pop]<<endl;
+////				cout<<"Size : "<<UB_Population_list[ub_pop]<<" (remains : "<<remains_to_explore<<")"<<endl;
 //				surcharge = 3;
+//				remains_to_explore = 0;
+////				if(cpt_info < (int)Informations.size() - 1 ){
+////					cpt_info++;
+////					cout<<"Information :"<<cpt_info<<endl;
+////					set_WS_matrix(Tools::readMatrix(Informations[cpt_info]));
+////					update_WS_matrix_Population();
+////				}
 //			}
+
+			surcharge = (remains_to_explore > 0) ? surcharge : (surcharge - 1);
+			remains_to_explore = 0;
+
+			if( (surcharge == 0) and ub_pop < (int)UB_Population_list.size() - 1 ){
+				ub_pop++;
+				UB_Population_size = UB_Population_list[ub_pop];
+//				cout<<"Size : "<<UB_Population_list[ub_pop]<<endl;
+				surcharge = 3;
+			}
 /*
  *  	*****************************************			UPDATE UB_SIZE
  */
@@ -1554,7 +1544,6 @@ void MainKnapsack::MOLS_DYN_INFO(double starting_time_sec, vector< int > UB_Popu
 		OPT_Solution.push_back((*it)->get_criteria_values());
 	}
 }
-
 
 
 void MainKnapsack::MOLS_DYN_MULTIPLE_PARAM(int Budget, vector< int > UB_Population_list, int inst_name, vector< string > Informations){

@@ -9,7 +9,7 @@ p = "2"
 type_inst = "A"
 taille="100"
 
-filename = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30_normalize.eval"
+filename = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30.eval"
 
 filename_pred = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/predicted_value.eval"
 
@@ -18,7 +18,7 @@ Smallreader = list(csv.DictReader(open(filename_pred, newline=''), delimiter = '
 
 
 Budget = [20, 40, 50, 60, 80, 100, 120, 140, 160, 180, 200,220, 240, 280, 340, 380, 420,440, 480, 540, 580, 640, 680, 740, 780, 820, 840, 880
-          , 980, 1020, 1220, 1420, 1820, 2020, 2420, 2820, 3200, 3420, 3820, 4020]
+          , 980, 1020, 1220, 1420, 1820, 2020, 2420, 2820, 3200, 3420, 3820, 4020, 6020, 8020]
 
 Information = [90, 80, 70, 60, 50, 41, 40.6012,40, 30, 28.1257, 20, 15, 12, 11.5757, 10, 8.01411, 5, 4.2937,3.73078, 1, 0]
 
@@ -50,8 +50,8 @@ def normalize_parameters() :
 Budget_norm, Information_norm, N_norm, PopSize_norm = normalize_parameters()
 
 
-filename_in = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30._4.eval"
-filename_out = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/INDIVIDUAL/K_30_normalize_4.eval"
+filename_in = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30.eval"
+filename_out = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30_extend_normalized.eval"
 
 def normalize_eval_file(filename_eval_in, filename_eval_out):
     

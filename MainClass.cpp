@@ -132,7 +132,7 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string
 
 	srand(time(NULL));
 
-	vector<int> sizer = {40};//2,8,20,60,100};
+	vector<int> sizer = {2,8,20,60,100};
 //	vector<int> sizer = {100,60,20,8,2};
 
 
@@ -277,20 +277,20 @@ void main_Knapsack_ML_RegLin(string filename_instance, int size_population, vect
 void script_knapsack_ML_RegLin(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 10;
-	int N = 10;
+	int N = 3;
 	string path_information = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
 	,path_information+"6", path_information+"7"};
 
 
-	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
+	vector< int > Budget = {50,500,1000,2000,3000,4000};
 	vector<int> graines;
 
 	string prefix = "MOLS_ML_RegLin";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2,10,30,50,70,100,200,300};
+	vector<int> sizer = {2,10,30,50,70,100};
 
 	for(auto info : {0,1}){
 
@@ -298,7 +298,7 @@ void script_knapsack_ML_RegLin(string type_inst, string taille, string WS_DM, st
 		float Info_rate = Tools::compute_information_rate(Tools::readMatrix(I[info]), stoi(p_criteria));
 
 
-		for(int i = 3; i < N; i++){
+		for(int i = 0; i < N; i++){
 			string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 			string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 			string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -332,14 +332,14 @@ void script_knapsack_ML_RegLin(string type_inst, string taille, string WS_DM, st
 
 //***********************************************************************************************************************************//
 
-void main_Knapsack_DYN_INFO(string filename_instance, int size_population, vector< int > UB, int Budget
+void main_Knapsack_DYN_MULTIPLE_PARAM(string filename_instance, int size_population, vector< int > UB, int Budget
 		, int inst_name, vector< string> Informations){
 
 	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
 
 	clock_t t = clock();
 
-	knaps->MOLS_DYN_INFO(Budget, UB,  Informations);
+	knaps->MOLS_DYN_MULTIPLE_PARAM(Budget, UB, inst_name, Informations);
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
@@ -347,10 +347,10 @@ void main_Knapsack_DYN_INFO(string filename_instance, int size_population, vecto
 
 }
 
-void script_knapsack_DYN_INFO(string type_inst, string taille, string WS_DM, string p_criteria ){
+void script_knapsack_DYN_MULTIPLE_PARAM(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 1;
-	int N = 10;
+	int K = 3;
+	int N = 1;
 	string path_information = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
 	,path_information+"6", path_information+"7"};
@@ -359,16 +359,16 @@ void script_knapsack_DYN_INFO(string type_inst, string taille, string WS_DM, str
 	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
 	vector<int> graines;
 
-	string prefix = "MOLS_DYN_INFO";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "TEST_MOLS_DYN_MULTIPLE_PARAM";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2,10,30,50,70,100,200,300};
+	vector<int> sizer = {2,10,30,50,70,100};
 
 
 
 
-	for(int i = 9; i < N; i++){
+	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
@@ -391,7 +391,7 @@ void script_knapsack_DYN_INFO(string type_inst, string taille, string WS_DM, str
 				k_replication = k  ;
 				GRAIN = graines[k];
 				srand( GRAIN );
-				main_Knapsack_DYN_INFO(filename_population, 1, sizer, b, i, I);
+				main_Knapsack_DYN_MULTIPLE_PARAM(filename_population, 1, sizer, b, i, I);
 			}
 		}
 		eval_ks.reset();
@@ -400,84 +400,6 @@ void script_knapsack_DYN_INFO(string type_inst, string taille, string WS_DM, str
 
 
 //***********************************************************************************************************************************//
-
-
-
-void main_Knapsack_ParamsCheating(string filename_instance, int size_population, vector< map< string, float > > Parameters,
-		map<float,int> info_rate, string info_file ){
-
-	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
-
-	clock_t t = clock();
-
-	knaps->MOLS_OPT_PARAMETERS(t/CLOCKS_PER_SEC, Parameters, info_rate, info_file);
-
-	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
-
-	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
-
-	delete knaps;
-}
-
-void script_OPT_ParamsCheating(string type_inst, string taille, string WS_DM, string p_criteria){
-
-	int K_read = 30;
-	int K = 10;
-	int N = 10;
-	string testname = "./Data/WS_Learning/Test2/Iteration_";
-	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
-
-	vector<int> graines;
-
-	string prefix = "MOLS_OPT_PARAMETERS_SHUFFLE";
-
-	srand(time(NULL));
-
-
-
-	map<float, int> info_rate;
-	for(size_t i = 0; i < I.size(); i++){
-		float key = Tools::compute_information_rate(Tools::readMatrix(I[i]), stoi(p_criteria));
-		info_rate[key] = i;
-	}
-
-	string datafile = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/K_"+to_string(K_read)+".algo";
-
-	for(int i = 0; i < N; i++){
-
-		vector< map< string, float > > opt_parameters = Tools::readOPTalgoFile(datafile, i);
-
-		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
-		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
-		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
-
-		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,filename_indicator);
-		eval_ks->set_WS_matrix(Tools::readMatrix(I[0]));
-		eval_ks->update_covered_PFront();
-
-
-		MainKnapsack::Generate_random_Population(eval_ks, K);
-
-		graines.clear();
-		for(int k = 0; k < K; k++){
-			graines.push_back( rand());
-		}
-
-		for(int k = 0; k < K; k++){
-			k_replication = k ;
-			GRAIN = graines[k];
-			srand( GRAIN );
-			main_Knapsack_ParamsCheating(filename_population, 1, opt_parameters, info_rate, testname);
-		}
-		eval_ks.reset();
-	}
-
-}
-
-
-
-//***********************************************************************************************************************************//
-
 
 
 void script_save_information(string type_inst, string taille, string WS_DM, string p_criteria ){
@@ -592,7 +514,6 @@ void script_Cst_PSizeV1V2(string type_inst, string taille, string WS_DM, string 
 }
 
 
-
 //***********************************************************************************************************************************//
 
 
@@ -605,7 +526,7 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 
 	int K = 30;
 	int N = 10;
-	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
+	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};   //A
 //	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
@@ -660,8 +581,8 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 		id_type_inst = 1;
 
 	int K = 15;
-	int N = 3;
-	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020};   //A
+	int N = 10;
+	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};   //A
 //	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
@@ -671,17 +592,15 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 	for(size_t i = 0; i < I.size(); i++){
 		info_rate.push_back( Tools::compute_information_rate(Tools::readMatrix(I[i]), stoi(p_criteria)) );
 	}
+	vector< string > prefixes = {"FINAL_MOLS_DYN_Info/20"};                //OS and RS  use MOLS_PSize/OS
 
-
-	vector< string > prefixes = {"FINAL_MOLS_DYN_PSize_DEC/0"};                //OS and RS  use MOLS_PSize/OS
-
-	vector<int> sizer = {-1};
+	vector<int> sizer = {20};
 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "eval_DYN_PSize_DEC";
-	string format_out = "opt_DYN_PSize_DEC";
+	string format_in = "eval_DYN_Info_20";
+	string format_out = "opt_DYN_Info_20";
 
 	ofstream fic1(filename_indicator+"/K_"+to_string(K)+"."+format_in);
 	fic1<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
@@ -751,8 +670,6 @@ void script_learning_opt_algo(string type_inst, string taille, string WS_DM, str
 //***********************************************************************************************************************************//
 
 
-
-//***********************************************************************************************************************************//
 
 
 
@@ -888,7 +805,7 @@ int main(int argc, char** argv){
 */
 
 
-	script_knapsack_PLSWS(type_inst,taille,WS_DM, p_criteria);
+//	script_knapsack_PLSWS(type_inst,taille,WS_DM, p_criteria);
 //	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
 
 
@@ -899,7 +816,7 @@ int main(int argc, char** argv){
 */
 
 //	script_OPT_ParamsCheating(type_inst,taille,WS_DM, p_criteria);
-//	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
+	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
 
 
 
@@ -947,6 +864,79 @@ int main(int argc, char** argv){
 
 
 
+
+
+
+//void main_Knapsack_ParamsCheating(string filename_instance, int size_population, vector< map< string, float > > Parameters,
+//		map<float,int> info_rate, string info_file ){
+//
+//	MainKnapsack * knaps = new MainKnapsack(eval_ks, size_population, filename_instance, false);
+//
+//	clock_t t = clock();
+//
+//	knaps->MOLS_OPT_PARAMETERS(t/CLOCKS_PER_SEC, Parameters, info_rate, info_file);
+//
+//	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
+//
+//	cout<<"Execution time : "<<time_cpu<<" sec"<<endl<<endl;
+//
+//	delete knaps;
+//}
+//
+//void script_OPT_ParamsCheating(string type_inst, string taille, string WS_DM, string p_criteria){
+//
+//	int K_read = 30;
+//	int K = 10;
+//	int N = 10;
+//	string testname = "./Data/WS_Learning/Test2/Iteration_";
+//	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
+//
+//	vector<int> graines;
+//
+//	string prefix = "MOLS_OPT_PARAMETERS_SHUFFLE";
+//
+//	srand(time(NULL));
+//
+//
+//
+//	map<float, int> info_rate;
+//	for(size_t i = 0; i < I.size(); i++){
+//		float key = Tools::compute_information_rate(Tools::readMatrix(I[i]), stoi(p_criteria));
+//		info_rate[key] = i;
+//	}
+//
+//	string datafile = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/K_"+to_string(K_read)+".algo";
+//
+//	for(int i = 0; i < N; i++){
+//
+//		vector< map< string, float > > opt_parameters = Tools::readOPTalgoFile(datafile, i);
+//
+//		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
+//		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
+//		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
+//
+//		eval_ks = make_shared< Evaluator >(filename_instance, WS_DM,filename_indicator);
+//		eval_ks->set_WS_matrix(Tools::readMatrix(I[0]));
+//		eval_ks->update_covered_PFront();
+//
+//
+//		MainKnapsack::Generate_random_Population(eval_ks, K);
+//
+//		graines.clear();
+//		for(int k = 0; k < K; k++){
+//			graines.push_back( rand());
+//		}
+//
+//		for(int k = 0; k < K; k++){
+//			k_replication = k ;
+//			GRAIN = graines[k];
+//			srand( GRAIN );
+//			main_Knapsack_ParamsCheating(filename_population, 1, opt_parameters, info_rate, testname);
+//		}
+//		eval_ks.reset();
+//	}
+//
+//}
 
 
 

@@ -8,16 +8,16 @@ p = "2"
 type_inst = "A"
 taille="100"
 
-Information = [90]
+Information = [40.6012]
 Informations_in = [90, 40.6012,28.1257, 11.5757]
 
-N = 3 
+N = 10 
 Budget = [20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020]
 #Budget = [50,500,1000,2000,3000,4000,5000,8000]
 
 filename = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30.eval"
 
-filename_dyn = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_15.eval_DYN_PSize_DEC"
+filename_dyn = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_15.eval_DYN_PSize_INC1"
 
 Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))
 Smallreader = list(csv.DictReader(open(filename_dyn, newline=''), delimiter = ','))
@@ -95,10 +95,9 @@ def compare_INF_SUP_BOUND() :
     plt.legend(prop={'size': 15})
     plt.xlabel("Budget",size=15)
     plt.ylabel("Average minimum distance Indicator",size=15)
-    plt.title("Compare a dynamic approach (DECREASE PopSize Parameter + NO DIVERSIFICATION) and a static one (best/worst approx) \n "+type_inst+taille ,fontsize=15)
-    fig.savefig("Bounding_"+type_inst+taille+"_I"+str(info)+"_POPSize_DEC_DIV0.png", dpi=fig.dpi)
+    plt.title("Compare a dynamic approach (INCREASE PopSize Parameter) and a static one (best/worst approx)   \n Information : "+str(info)+"% - "+type_inst+taille ,fontsize=15)
+    fig.savefig("Bounding_"+type_inst+taille+"_I"+str(info)+"_POPSize_INC_DIV0.png", dpi=fig.dpi)
     plt.close()
-#            
             
             
             
