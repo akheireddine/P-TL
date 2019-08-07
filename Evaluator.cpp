@@ -2,6 +2,8 @@
 
 #include "Evaluator.h"
 #include <ilcplex/ilocplex.h>
+#include <dirent.h>
+
 //#define __PRINT__
 
 
@@ -682,20 +684,43 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 			for(size_t i = 0; i < Informations.size(); i++){
 
-				set_WS_matrix(Tools::readMatrix(Informations[i]));
+				if(i == 0){
+					set_WS_matrix(Tools::readMatrix(Informations[i]));
 
-				update_covered_PFront();
+					update_covered_PFront();
+				}
 
 				vector< float > indicator(8,0.);
 
-				for(int k = 0; k < K_replication; k++){
-					string file_extension;
-					if(ub == -1){
-//						file_extension = file_population+"/"+to_string(i)+"/Pop_"+to_string(k)+".pop";
-						file_extension = file_population+"/Pop_"+to_string(k)+".pop";
-//						file_extension = file_population+"/"+to_string(i)+"/"+to_string(b)+"/Pop_"+to_string(k)+".pop";
-					}else
-						file_extension = file_population+"/"+to_string(ub)+"/"+to_string(i)+"/Pop_"+to_string(k)+".pop";
+
+				DIR *rep;
+				const char* dirname;
+				string file_extension, dirstr;
+				if(ub == -1){
+//					dirstr = file_population+"/"+to_string(i);
+//					dirstr = file_population+"/"+to_string(i)+"/"+to_string(b);
+					dirstr = file_population;
+
+				}else{
+					dirstr = file_population+"/"+to_string(ub);
+//					dirstr = file_population+"/"+to_string(ub)+"/"+to_string(i);
+				}
+
+				dirname = dirstr.c_str();
+				cout<<"Dirname : "<<dirstr<<endl;
+				rep = opendir(dirname);
+				struct dirent *filename;
+				int k = 0;
+				while ((filename = readdir(rep)) and k < K_replication) {
+
+					file_extension = dirstr+"/"+filename->d_name;
+
+					if(file_extension.find(".pop")  == std::string::npos)
+						continue;
+
+//					cout<<file_extension<<" , "<<k<<endl;
+
+					k++;
 
 					list< vector< float > > Population;
 					vector< float > time_exec;
@@ -730,7 +755,7 @@ void Evaluator::save_information(string file_population, string save_path, strin
 					indicator[6] += PR_D3(Population);
 					indicator[7] += Population.size();
 				}
-
+				closedir(rep);
 				fic_write<<type_instance<<", "<<taille<<", "<<inst_name<<", "<<b<<", "<<ub<<", "<<info_rate[i];
 				for(size_t j = 3; j < indicator.size() - 1; j++){
 					indicator[j] *= 1.0 / K_replication;

@@ -1486,7 +1486,7 @@ void MainKnapsack::MOLS_DYN_INFO(double starting_time_sec, vector< int > UB_Popu
 			cout<<overloadPop<<"   "<<remains_to_explore<<endl;
 			if(overloadPop == 0){
 				overloadPop = 3;
-				info_index = (info_index - 1 < (int)Informations.size())? info_index + 1 : info_index;
+				info_index = (info_index + 1 < (int)Informations.size())? info_index + 1 : info_index;
 
 				vector< vector< float > > matrix_info = Tools::readMatrix(Informations[info_index]);
 				float info_rate = Tools::compute_information_rate(matrix_info, p_criteria);
@@ -1546,6 +1546,9 @@ void MainKnapsack::MOLS_DYN_INFO(double starting_time_sec, vector< int > UB_Popu
 }
 
 
+
+
+
 void MainKnapsack::MOLS_DYN_MULTIPLE_PARAM(int Budget, vector< int > UB_Population_list, int inst_name, vector< string > Informations){
 
 	shared_ptr< AlternativeKnapsack > alt;
@@ -1556,7 +1559,7 @@ void MainKnapsack::MOLS_DYN_MULTIPLE_PARAM(int Budget, vector< int > UB_Populati
 	int limit_no_improvment = 2;
 
 	int info_index = 0;
-	int overloadPop = 10, remains_to_explore = 0;
+	int overloadPop = 5, remains_to_explore = 0;
 
 	int UB_Population_size = UB_Population_list[0];
 	int Diversification = 0;
@@ -1642,8 +1645,8 @@ void MainKnapsack::MOLS_DYN_MULTIPLE_PARAM(int Budget, vector< int > UB_Populati
 			overloadPop = (remains_to_explore > 0)? overloadPop - 1 : overloadPop;
 			cout<<overloadPop<<"   "<<remains_to_explore<<endl;
 			if(overloadPop == 0){
-				overloadPop = 10;
-				info_index = ((int)Informations.size() < info_index - 1)? info_index + 1 : info_index;
+				overloadPop = 5;
+				info_index = (info_index + 1  < (int)Informations.size())? info_index + 1 : info_index;
 
 				vector< vector< float > > matrix_info = Tools::readMatrix(Informations[info_index]);
 				float info_rate = Tools::compute_information_rate(matrix_info, p_criteria);

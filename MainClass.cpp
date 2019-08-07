@@ -132,14 +132,14 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2,8,20,60,100};
+	vector<int> sizer = {60};//,60,100};
 //	vector<int> sizer = {100,60,20,8,2};
 
 
 	int info = 0;
 	INFO = to_string(info);
 
-	for(int i = 0; i < N; i++){
+	for(int i = 5; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
@@ -349,21 +349,23 @@ void main_Knapsack_DYN_MULTIPLE_PARAM(string filename_instance, int size_populat
 
 void script_knapsack_DYN_MULTIPLE_PARAM(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 3;
-	int N = 1;
+	int K = 10;
+	int N = 10;
 	string path_information = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
 	,path_information+"6", path_information+"7"};
 
 
-	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
+//	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
+	vector< int > Budget = {50,250,500,800,2020,4020,6020,8020};
+
 	vector<int> graines;
 
-	string prefix = "TEST_MOLS_DYN_MULTIPLE_PARAM";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "FINAL_MOLS_DYN_MULTIPLE_PARAM";                //OS and RS  use MOLS_PSize/OS
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2,10,30,50,70,100};
+	vector<int> sizer = {2,10,20,30,40,50,60,70,100};
 
 
 
@@ -410,18 +412,15 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 	else if (type_inst.compare("D") == 0)
 		id_type_inst = 2;
 
-	int K = 30;
+	int K = 20;
 	int N = 10;
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
 	vector< string > prefixes = {"MOLS_PSize", "MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
 
-	vector<int> sizer = {2,8,20,60,100};  //       //A
+	vector<int> sizer = {2,8,20,60,100,200};
 
-//	vector<int> sizer = {2,8,20,60,100,200};  //C
-
-//	vector<int> sizer = {2,8,20,60,100,200};        //D
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
@@ -524,8 +523,8 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 	if(type_inst.compare("C") == 0)
 		id_type_inst = 1;
 
-	int K = 30;
-	int N = 10;
+	int K = 10;
+	int N = 5;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};   //A
 //	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
 
@@ -548,7 +547,7 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "eval";
+	string format_in = "evalPareto";
 	string format_out = "opt";
 
 	ofstream fic1(filename_indicator+"/K_"+to_string(K)+"."+format_in);
@@ -580,8 +579,8 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 	if(type_inst.compare("C") == 0)
 		id_type_inst = 1;
 
-	int K = 15;
-	int N = 10;
+	int K = 10;
+	int N = 5;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};   //A
 //	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
 
@@ -592,15 +591,15 @@ void script_learning_data_SWITCH(string type_inst, string taille, string WS_DM, 
 	for(size_t i = 0; i < I.size(); i++){
 		info_rate.push_back( Tools::compute_information_rate(Tools::readMatrix(I[i]), stoi(p_criteria)) );
 	}
-	vector< string > prefixes = {"FINAL_MOLS_DYN_Info/20"};                //OS and RS  use MOLS_PSize/OS
+	vector< string > prefixes = {"FINAL_MOLS_DYN_Info"};                //OS and RS  use MOLS_PSize/OS
 
-	vector<int> sizer = {20};
+	vector<int> sizer = {60};
 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "eval_DYN_Info_20";
-	string format_out = "opt_DYN_Info_20";
+	string format_in = "eval_DYN_Info_60";
+	string format_out = "opt_DYN_Info_60";
 
 	ofstream fic1(filename_indicator+"/K_"+to_string(K)+"."+format_in);
 	fic1<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
@@ -816,7 +815,7 @@ int main(int argc, char** argv){
 */
 
 //	script_OPT_ParamsCheating(type_inst,taille,WS_DM, p_criteria);
-	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
+//	script_learning_data_SWITCH(type_inst,taille,WS_DM, p_criteria);
 
 
 
@@ -833,7 +832,7 @@ int main(int argc, char** argv){
 */
 
 
-//	script_knapsack_DYN_INFO(type_inst,taille,WS_DM, p_criteria);
+	script_knapsack_DYN_MULTIPLE_PARAM(type_inst,taille,WS_DM, p_criteria);
 
 
 
