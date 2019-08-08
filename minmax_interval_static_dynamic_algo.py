@@ -11,13 +11,13 @@ taille="100"
 Information = [90] #40.6012
 Informations_in = [90, 40.6012,28.1257, 11.5757]
 
-N = 5
+N = 7
 Budget = [20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020]
 #Budget = [50,500,1000,2000,3000,4000,5000,8000]
 
 filename = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30.evalPareto"
 
-filename_dyn = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_10.eval_DYN_Info_60"
+filename_dyn = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_10.eval_DYN_Info_MULTI_Pareto"
 
 Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))
 Smallreader = list(csv.DictReader(open(filename_dyn, newline=''), delimiter = ','))
@@ -53,9 +53,9 @@ def compare_INF_SUP_BOUND() :
     
                 for row in Bigreader:
 #                    if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
-                    if int(row['Diversification']) == div and int(row['PopSize']) == 60 and int(row['Budget']) == b and int(row['Instance']) == i  :
+#                    if int(row['Diversification']) == div and int(row['PopSize']) == 60 and int(row['Budget']) == b and int(row['Instance']) == i  :
 #                    if float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
-#                    if int(row['Budget']) == b and int(row['Instance']) == i :
+                    if int(row['Budget']) == b and int(row['Instance']) == i :
 #                    if int(row['Diversification']) == div and (float(row['Info']) in Informations_in) and int(row['Budget']) == b and int(row['Instance']) == i :
                         avg_min = float(row['AVG_dist'])
                         if (avg_min < minus) or (minus == -1) :
@@ -70,9 +70,9 @@ def compare_INF_SUP_BOUND() :
     
                 for row in Smallreader : 
 #                    if int(row['Diversification']) == div  and float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
-                    if int(row['Diversification']) == div and int(row['Budget']) == b and int(row['Instance']) == i :
+#                    if int(row['Diversification']) == div and int(row['Budget']) == b and int(row['Instance']) == i :
 #                    if float(row['Info']) == info and int(row['Budget']) == b and int(row['Instance']) == i :
-#                    if int(row['Budget']) == b and int(row['Instance']) == i :
+                    if int(row['Budget']) == b and int(row['Instance']) == i :
     #                if int(row['Diversification']) == div and int(row['Budget']) == b and int(row['Instance']) == i :
                         Ydyn.append(float(row['AVG_dist']))
             
@@ -97,16 +97,15 @@ def compare_INF_SUP_BOUND() :
     plt.legend(prop={'size': 15})
     plt.xlabel("Budget",size=15)
     plt.ylabel("Average minimum distance Indicator",size=15)
-    plt.title("Compare a dynamic approach (VARYING Uncertainty Parameter) and a static one (best/worst approx)   \n - Population size of 60 "+type_inst+taille ,fontsize=15)
+    plt.title("Compare a dynamic approach (VARYING the Uncertainty rate with remaining parameters (ML) ) \n and a static one (best/worst approx)   - "+type_inst+taille ,fontsize=15)
 #    fig.savefig("Bounding_"+type_inst+taille+"_I"+str(info)+"_POPSize_INC_DIV0.png", dpi=fig.dpi)
-    fig.savefig("Bounding_"+type_inst+taille+"_DYN_INFO_60.png", dpi=fig.dpi)
+    fig.savefig("Bounding_"+type_inst+taille+"_DYN_INFO_ML.png", dpi=fig.dpi)
     plt.close()
             
             
             
 compare_INF_SUP_BOUND()            
-            
-            
+
             
             
                 

@@ -699,8 +699,8 @@ void Evaluator::save_information(string file_population, string save_path, strin
 				if(ub == -1){
 //					dirstr = file_population+"/"+to_string(i);
 //					dirstr = file_population+"/"+to_string(i)+"/"+to_string(b);
-					dirstr = file_population;
-
+					dirstr = file_population+"/"+to_string(b);
+//					dirstr = file_population;
 				}else{
 					dirstr = file_population+"/"+to_string(ub);
 //					dirstr = file_population+"/"+to_string(ub)+"/"+to_string(i);
