@@ -8,15 +8,17 @@ p_criteria = "2"
 t = "A"
 size = "100"
 i = "0"
+ub = "100"
 #EFFICIENT SOL
 #filename = "Instances_Knapsack"+p_criteria+"/Type_"+t+"/"+size+"_items/2KP"+size+"-T"+t+"-"+i+".eff"
 
 
 #INSTANCE POPULATION
-algo = "MOLS_SWITCH_OBJECTIVE_DEC"
-filename = "./Data/Population"+p_criteria+"/"+t+"/"+size+"/T"+i+"/"+algo+"/"+i+"/Pop_0.pop"
+algo = "MOLS_PSize"
+filename = "./Data/Population"+p_criteria+"/"+t+"/"+size+"/T"+i+"/"+algo+"/"+ub+"/"+i+"/Pop_0.pop"
 
 
+print(filename)
 
 
 with open(filename) as f:

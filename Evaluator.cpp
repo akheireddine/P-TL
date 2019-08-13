@@ -684,11 +684,11 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 			for(size_t i = 0; i < Informations.size(); i++){
 
-				if(i == 0){
+//				if(i == 0){
 					set_WS_matrix(Tools::readMatrix(Informations[i]));
 
 					update_covered_PFront();
-				}
+//				}
 
 				vector< float > indicator(8,0.);
 
@@ -699,11 +699,11 @@ void Evaluator::save_information(string file_population, string save_path, strin
 				if(ub == -1){
 //					dirstr = file_population+"/"+to_string(i);
 //					dirstr = file_population+"/"+to_string(i)+"/"+to_string(b);
-					dirstr = file_population+"/"+to_string(b);
-//					dirstr = file_population;
+//					dirstr = file_population+"/"+to_string(b);
+					dirstr = file_population;
 				}else{
-					dirstr = file_population+"/"+to_string(ub);
-//					dirstr = file_population+"/"+to_string(ub)+"/"+to_string(i);
+//					dirstr = file_population+"/"+to_string(ub);
+					dirstr = file_population+"/"+to_string(ub)+"/"+to_string(i);
 				}
 
 				dirname = dirstr.c_str();
@@ -756,6 +756,7 @@ void Evaluator::save_information(string file_population, string save_path, strin
 					indicator[7] += Population.size();
 				}
 				closedir(rep);
+
 				fic_write<<type_instance<<", "<<taille<<", "<<inst_name<<", "<<b<<", "<<ub<<", "<<info_rate[i];
 				for(size_t j = 3; j < indicator.size() - 1; j++){
 					indicator[j] *= 1.0 / K_replication;
@@ -926,16 +927,18 @@ void Evaluator::best_algo_parametrized(string save_data, string filename_algo, s
 }
 
 
-void Evaluator::compute_avg_type_instances(string evaluation_save_path, string method_name, string format, int k_replic, int nb_instances, vector< int > ub_values, vector< int >  Info ){
+void Evaluator::compute_avg_type_instances(string evaluation_save_path, string method_name, string format,
+		int k_replic, int nb_instances, vector< int > ub_values, vector< int >  Info ){
 
 //	system(("if [ ! -d "+evaluation_save_path+" ]; then mkdir -p "+evaluation_save_path+"; fi").c_str());
 
 	vector< vector< float > > part_indic(ub_values.size(), vector< float >(Info.size(), 0.) );
-	vector< vector< vector< float > > > indicator(7, part_indic );
+	vector< vector< vector< float > > > indicator(11, part_indic );
+//	fic<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
 
 
-	for(int n = 0; n < nb_instances; n++){
-		string file_extension = evaluation_save_path+"/T"+to_string(n)+"/"+method_name+"/K_"+to_string(k_replic)+"."+format;
+//	for(int n = 0; n < nb_instances; n++){
+		string file_extension = evaluation_save_path+"/K_"+to_string(k_replic)+"."+format;
 		ifstream fic_read(file_extension);
 		string line;
 		vector< float > vector_line;
@@ -946,42 +949,37 @@ void Evaluator::compute_avg_type_instances(string evaluation_save_path, string m
 
 		int size = 0;
 		int info = 0;
+
 		while(!fic_read.eof()){
 			getline(fic_read,line);
-			if (line.size() == 0)
+			if (line.size() == 0  or line.find("Type,") != std::string::npos)
 				continue;
 
-			if(line.find("#__________") != std::string::npos  or line.find("__________") != std::string::npos){
-				size = (size + 1)%ub_values.size();
-				info = 0;
-				continue;
-			}
 
 			vector_line = Tools::decompose_line_to_float_vector(line);
 
-			indicator[0][size][info] += vector_line[0];
-			indicator[1][size][info] += vector_line[1];
-			indicator[2][size][info] += vector_line[2];
-			indicator[3][size][info] += vector_line[3];
-			indicator[4][size][info] += vector_line[4];
-			indicator[5][size][info] += vector_line[5];
-			indicator[6][size][info] += vector_line[6];
+			for(size_t j = 0 ; j < indicator.size(); j++)
+				indicator[j][size][info] += vector_line[j];
 
-			info++;
+			info= (info+1)%Info.size();
+
+
+//			if( info == 0 )                                ///FAUUUUUUX
+//				size = (size + 1)%ub_values.size();
 		}
 
 		fic_read.close();
-	}
+//	}
 
 	ofstream fic_write((evaluation_save_path+"/AVG_K_"+to_string(k_replic)+"."+format).c_str(), ios::app);
 
-	for(int j = 0; j < (int)ub_values.size(); j++){
-		for(int l = 0; l < (int)Info.size(); l++ ){
-			for(int i = 0; i < (int)indicator.size(); i++){
+	for(size_t j = 0; j < ub_values.size(); j++){
+		for(size_t l = 0; l < Info.size(); l++ ){
+			for(size_t i = 0; i < indicator.size(); i++){
 				indicator[i][j][l] *= 1.0 / nb_instances;
 				fic_write<<indicator[i][j][l]<<" ";
 			}
-			if(l < (int)Info.size() - 1)
+			if(l < Info.size() - 1)
 				fic_write<<endl;
 		}
 
