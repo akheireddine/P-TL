@@ -33,7 +33,15 @@ unset output
 
 
 
+div = 0
+popsize = 100
+i = 5
 
-
-
-
+set output "test3D.png"
+set terminal pngcairo size 1200,800
+set dgrid3d 410,410
+set hidden3d
+set xlabel "D1"
+set ylabel "Info"
+splot x0 = y0 = z0 = NaN, "K_20.eval" u ($5==popsize && $11==div && $3==i ?(x0=$8,y0=$6,z0=$4) : x0=x0,y0=y0,z0=z0) w lines
+unset output

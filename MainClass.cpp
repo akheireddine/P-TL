@@ -30,7 +30,7 @@ void main_Knapsack(string filename_instance, int size_population){
 void script_knapsack(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 10;
-	int N = 1;
+	int N = 10;
 	int I = 1;
 
 	vector<int> graines;
@@ -65,7 +65,6 @@ void script_knapsack(string type_inst, string taille, string WS_DM, string p_cri
 			cout<<"_________________________________ STEP"<<step<<"___________________________"<<endl;
 			eval_ks->set_WS_matrix(Tools::readMatrix("./Data/WS_Learning/Test2/Iteration_"+to_string(step)));
 
-//			eval_ks->readWS_matrix(WS_matrix_file);
 			eval_ks->update_covered_PFront();
 
 
@@ -75,7 +74,7 @@ void script_knapsack(string type_inst, string taille, string WS_DM, string p_cri
 				srand( GRAIN );
 				main_Knapsack(filename_population, 1);
 			}
-			eval_ks->save_PF_evaluation();
+//			eval_ks->save_PF_evaluation();
 		}
 
 		eval_ks.reset();
@@ -525,7 +524,7 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 	if(type_inst.compare("C") == 0)
 		id_type_inst = 1;
 
-	int K = 30;
+	int K = 20;
 	int N = 10;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};   //A
 //	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
@@ -540,7 +539,7 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 
 	vector< string > prefixes = {"MOLS_PSize"};//,"MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
 
-	vector<int> sizer = {2,8,20,60,100};  //       //A
+	vector<int> sizer = {100};//2,8,20,60,100};  //       //A
 
 //	vector<int> sizer = {2,8,20,60,100,200};       //C
 
@@ -549,7 +548,7 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "eval";
+	string format_in = "evalRAPPORT2";
 	string format_out = "opt";
 
 	ofstream fic1(filename_indicator+"/K_"+to_string(K)+"."+format_in);
@@ -683,11 +682,11 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "A";
+	string type_inst = "C";
 	string taille = "100";
 	string p_criteria = "2";
 
-//	script_knapsack(type_inst, taille, WS_DM);
+//	script_knapsack(type_inst, taille, WS_DM, p_criteria);
 //
 //	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO("./Data"+p_criteria+"/"+type_inst+"/"+taille, type_inst, taille
 //		,"MOLS_PSize", 100 , -1, 410 , "./DM_preference_point");
@@ -727,7 +726,7 @@ int main(int argc, char** argv){
   *************************************************************************************************************************
 */
 
-//	script_learning_data(type_inst, taille, WS_DM, p_criteria);
+	script_learning_data(type_inst, taille, WS_DM, p_criteria);
 //	script_learning_opt_algo(type_inst, taille, WS_DM, p_criteria);
 /*
   *************************************************************************************************************************
