@@ -195,10 +195,10 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 //// ORIGINAL VERSION
 void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_criteria){
 
-	int K = 15;
+	int K = 10;
 	int N = 5;
 	vector< string > I = {"0","1","2","3","4","5","6","7"};
-	string testname = "Test2";
+	string testname = "Test3";
 
 	vector<int> graines;
 
@@ -689,8 +689,8 @@ int main(int argc, char** argv){
 
 	string type_inst = "A";
 	string taille = "200";
-	string p_criteria = "2";
-
+	string p_criteria = "3";
+//
 //	script_knapsack(type_inst, taille, WS_DM, p_criteria);
 //
 //	Gnuplotter::Plot_SEARCH_EVOLUTION_WITH_INFO("./Data"+p_criteria+"/"+type_inst+"/"+taille, type_inst, taille
@@ -750,13 +750,13 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-//	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
+	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
 ////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
 //	script_save_information(type_inst, taille, WS_DM, p_criteria);
 
-	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
+//	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
 //
 
 /*
