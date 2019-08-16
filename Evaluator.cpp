@@ -667,7 +667,6 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 	system(("if [ ! -d "+save_path+" ]; then mkdir -p "+save_path+"; fi").c_str());
 
-	string div_str = (div == 0)? "0" : "1";
 	string filesave = save_path+"/K_"+to_string(K_replication)+"."+format;
 	ofstream fic_write(filesave.c_str(),  ios::app);
 //	fic_write<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
@@ -703,6 +702,7 @@ void Evaluator::save_information(string file_population, string save_path, strin
 					dirstr = file_population;
 				}else{
 //					dirstr = file_population+"/"+to_string(ub);
+//					dirstr = file_population+"/"+to_string(ub)+"/0";
 					dirstr = file_population+"/"+to_string(ub)+"/"+to_string(i);
 				}
 
@@ -762,7 +762,9 @@ void Evaluator::save_information(string file_population, string save_path, strin
 					indicator[j] *= 1.0 / K_replication;
 					fic_write<<", "<<indicator[j];
 				}
-				fic_write<<", "<<div_str<<endl;
+				fic_write<<", "<<div;
+				fic_write<<", "<<indicator[2]*1.0/K_replication<<endl;
+
 			}
 		}
 	}
@@ -928,27 +930,71 @@ void Evaluator::best_algo_parametrized(string save_data, string filename_algo, s
 
 
 void Evaluator::compute_avg_type_instances(string evaluation_save_path, string method_name, string format,
-		int k_replic, int nb_instances, vector< int > ub_values, vector< int >  Info ){
+		int k_replic, int nb_instances, vector< int > ub_values, vector< int >  Info, vector< int > Budget ){
 
 //	system(("if [ ! -d "+evaluation_save_path+" ]; then mkdir -p "+evaluation_save_path+"; fi").c_str());
 
 	vector< vector< float > > part_indic(ub_values.size(), vector< float >(Info.size(), 0.) );
-	vector< vector< vector< float > > > indicator(11, part_indic );
-//	fic<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
+	vector< vector< vector< float > > > indicator(12, part_indic );
+//	fic<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification, Time"<<endl;
 
 
-//	for(int n = 0; n < nb_instances; n++){
-		string file_extension = evaluation_save_path+"/K_"+to_string(k_replic)+"."+format;
-		ifstream fic_read(file_extension);
-		string line;
-		vector< float > vector_line;
+	string file_extension = evaluation_save_path+"/K_"+to_string(k_replic)+"."+format;
+	ifstream fic_read(file_extension);
+	string line;
+	vector< float > vector_line;
 
-		if (!(fic_read) or file_extension.find(format) == std::string::npos){
-			cerr<<"Error occurred compute avg type instaces "<<endl;
+	cout<<file_extension<<endl;
+	if (!(fic_read) or file_extension.find(format) == std::string::npos){
+		cerr<<"Error occurred compute avg type instaces "<<endl;
+	}
+
+	int size = 0;
+	int info = 0;
+
+	for(auto ub : Budget){
+
+		if( ub == -1){
+			while(!fic_read.eof()){
+				getline(fic_read,line);
+				if (line.size() == 0  or line.find("Type,") != std::string::npos)
+					continue;
+
+
+				vector_line = Tools::decompose_line_to_float_vector(line);
+
+				for(size_t j = 0 ; j < indicator.size(); j++)
+					indicator[j][size][info] += vector_line[j];
+
+				info= (info+1)%Info.size();
+
+
+	//			if( info == 0 )                                ///FAUUUUUUX
+	//				size = (size + 1)%ub_values.size();
+			}
+
+			fic_read.close();
+
+			ofstream fic_write((evaluation_save_path+"/AVG_K_"+to_string(k_replic)+"."+format).c_str(), ios::app);
+
+			for(size_t j = 0; j < ub_values.size(); j++){
+				for(size_t l = 0; l < Info.size(); l++ ){
+					for(size_t i = 0; i < indicator.size(); i++){
+						indicator[i][j][l] *= 1.0 / nb_instances;
+						fic_write<<indicator[i][j][l]<<" ";
+					}
+					if(l < Info.size() - 1)
+						fic_write<<endl;
+				}
+
+				fic_write<<endl<<"__________"<<ub_values[j]<<"__"<<method_name<<endl;
+			}
+
+			fic_write<<endl<<endl;;
+			fic_write.close();
+			return;
 		}
 
-		int size = 0;
-		int info = 0;
 
 		while(!fic_read.eof()){
 			getline(fic_read,line);
@@ -958,37 +1004,42 @@ void Evaluator::compute_avg_type_instances(string evaluation_save_path, string m
 
 			vector_line = Tools::decompose_line_to_float_vector(line);
 
-			for(size_t j = 0 ; j < indicator.size(); j++)
+			if(ub != vector_line[3])
+				continue;
+
+			for(size_t j = 0 ; j < indicator.size(); j++){
 				indicator[j][size][info] += vector_line[j];
+				cout<<indicator[j][size][info]<<", ";
+			}
+			cout<<endl;
 
 			info= (info+1)%Info.size();
 
-
-//			if( info == 0 )                                ///FAUUUUUUX
-//				size = (size + 1)%ub_values.size();
 		}
 
-		fic_read.close();
-//	}
 
-	ofstream fic_write((evaluation_save_path+"/AVG_K_"+to_string(k_replic)+"."+format).c_str(), ios::app);
+		ofstream fic_write((evaluation_save_path+"/AVG_K_"+to_string(k_replic)+"."+format).c_str(), ios::app);
 
-	for(size_t j = 0; j < ub_values.size(); j++){
-		for(size_t l = 0; l < Info.size(); l++ ){
-			for(size_t i = 0; i < indicator.size(); i++){
-				indicator[i][j][l] *= 1.0 / nb_instances;
-				fic_write<<indicator[i][j][l]<<" ";
+		for(size_t j = 0; j < ub_values.size(); j++){
+			for(size_t l = 0; l < Info.size(); l++ ){
+				for(size_t i = 0; i < indicator.size(); i++){
+					indicator[i][j][l] *= 1.0 / nb_instances;
+					fic_write<<indicator[i][j][l]<<" ";
+					indicator[i][j][l] = 0;
+				}
+				if(l < Info.size() - 1)
+					fic_write<<endl;
 			}
-			if(l < Info.size() - 1)
-				fic_write<<endl;
+
+			fic_write<<endl<<"__________"<<ub_values[j]<<"__"<<method_name<<endl;
 		}
 
-		fic_write<<endl<<"__________"<<ub_values[j]<<"__"<<method_name<<endl;
+		fic_write<<endl<<endl;;
+		fic_write.close();
+		fic_read.clear();
+		fic_read.seekg(0, ios::beg);
 	}
-
-	fic_write<<endl<<endl;;
-	fic_write.close();
-
+	fic_read.close();
 }
 
 

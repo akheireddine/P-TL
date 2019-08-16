@@ -153,7 +153,7 @@ public:
 			vector< int > UB_Population, vector<int> Budget, int inst_name, int type_instance, string taille,int div);
 	void save_other_information(string file_population, string save_path, string format);
 	static void compute_avg_type_instances(string evaluation_save_path, string method_name, string format,
-			int k_replic, int nb_instances, vector< int > ub_values, vector< int >  Info );
+			int k_replic, int nb_instances, vector< int > ub_values, vector< int >  Info, vector< int > Budget );
 
 	void save_best_parameters(string filename_instance, string format_in, string format_out, vector< float > I, vector< int > sizer,
 			vector< int > budget, int inst_name);
