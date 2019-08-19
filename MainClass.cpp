@@ -417,14 +417,14 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
-	vector< string > prefixes = {"MOLS_PSize"};//, "MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
+	vector< string > prefixes = {"MOLS_PSize", "MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
 
-	vector<int> sizer = {100};//2,8,20,60,100,200};
+	vector<int> sizer = {2,8,20,60,100,200};
 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "evalRAPPORT";
+	string format_in = "evalRAPPORT4";
 	ofstream fic(filename_indicator+"/K_"+to_string(K)+"."+format_in);
 	fic<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification, Time"<<endl;
 	fic.close();
@@ -448,14 +448,14 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 void save_avg_instances(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 30;
-	int N = 4;
+	int N = 10;
 	vector<int> I = {0,1,2,3,4,5,6,7};
 
 	string prefix = "MOLS_PSize";
-	string format_in = "evalRAPPORT2";
-	vector< int > sizer = {100};//2,8,20,60,100};  //       //A
-	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};
-//	vector< int > Budget(1,-1);
+	string format_in = "evalRAPPORT4";
+	vector< int > sizer = {100};//2,8,20,60,100,200};  //       //A
+//	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};
+	vector< int > Budget(1,-1);
 
 
 	string save_file = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
@@ -688,8 +688,8 @@ int main(int argc, char** argv){
 	string WS_DM = "./weighted_DM_preferences.ks";
 
 	string type_inst = "A";
-	string taille = "200";
-	string p_criteria = "3";
+	string taille = "100";
+	string p_criteria = "2";
 //
 //	script_knapsack(type_inst, taille, WS_DM, p_criteria);
 //
@@ -750,13 +750,13 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
+//	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
 ////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
-//	script_save_information(type_inst, taille, WS_DM, p_criteria);
+	script_save_information(type_inst, taille, WS_DM, p_criteria);
 
-//	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
+	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
 //
 
 /*

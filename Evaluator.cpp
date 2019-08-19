@@ -718,8 +718,6 @@ void Evaluator::save_information(string file_population, string save_path, strin
 					if(file_extension.find(".pop")  == std::string::npos)
 						continue;
 
-//					cout<<file_extension<<" , "<<k<<endl;
-
 					k++;
 
 					list< vector< float > > Population;
@@ -934,8 +932,7 @@ void Evaluator::compute_avg_type_instances(string evaluation_save_path, string m
 
 //	system(("if [ ! -d "+evaluation_save_path+" ]; then mkdir -p "+evaluation_save_path+"; fi").c_str());
 
-	vector< vector< float > > part_indic(ub_values.size(), vector< float >(Info.size(), 0.) );
-	vector< vector< vector< float > > > indicator(12, part_indic );
+	vector< vector< float > > indicator(12, vector< float >(Info.size(),0) );
 //	fic<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification, Time"<<endl;
 
 
@@ -949,97 +946,85 @@ void Evaluator::compute_avg_type_instances(string evaluation_save_path, string m
 		cerr<<"Error occurred compute avg type instaces "<<endl;
 	}
 
-	int size = 0;
 	int info = 0;
 
-	for(auto ub : Budget){
-
-		if( ub == -1){
-			while(!fic_read.eof()){
-				getline(fic_read,line);
-				if (line.size() == 0  or line.find("Type,") != std::string::npos)
-					continue;
+	ofstream fic_write((evaluation_save_path+"/AVG_K_"+to_string(k_replic)+"."+format).c_str(), ios::app);
 
 
-				vector_line = Tools::decompose_line_to_float_vector(line);
+	for(auto b : Budget){
+		for(auto ub : ub_values ){
+			if( b == -1){
+				while(!fic_read.eof()){
+					getline(fic_read,line);
+					if (line.size() == 0  or line.find("Type,") != std::string::npos)
+						continue;
 
-				for(size_t j = 0 ; j < indicator.size(); j++)
-					indicator[j][size][info] += vector_line[j];
+					vector_line = Tools::decompose_line_to_float_vector(line);
 
-				info= (info+1)%Info.size();
+					if(ub != vector_line[4])
+						continue;
+
+					for(size_t j = 0 ; j < indicator.size(); j++)
+						indicator[j][info] += vector_line[j];
+
+					info= (info+1)%Info.size();
+				}
 
 
-	//			if( info == 0 )                                ///FAUUUUUUX
-	//				size = (size + 1)%ub_values.size();
-			}
-
-			fic_read.close();
-
-			ofstream fic_write((evaluation_save_path+"/AVG_K_"+to_string(k_replic)+"."+format).c_str(), ios::app);
-
-			for(size_t j = 0; j < ub_values.size(); j++){
-				for(size_t l = 0; l < Info.size(); l++ ){
-					for(size_t i = 0; i < indicator.size(); i++){
-						indicator[i][j][l] *= 1.0 / nb_instances;
-						fic_write<<indicator[i][j][l]<<" ";
+//				for(size_t j = 0; j < ub_values.size(); j++){
+					for(size_t l = 0; l < Info.size(); l++ ){
+						for(size_t i = 0; i < indicator.size(); i++){
+							indicator[i][l] *= 1.0 / nb_instances;
+							fic_write<<indicator[i][l]<<" ";
+							indicator[i][l] = 0;
+						}
+						if(l < Info.size() - 1)
+							fic_write<<endl;
 					}
-					if(l < Info.size() - 1)
-						fic_write<<endl;
+					fic_write<<endl<<"__________"<<ub<<"__"<<method_name<<endl;
+//				}
+				fic_write<<endl<<endl;;
+			}
+
+			else{
+				while(!fic_read.eof()){
+					getline(fic_read,line);
+					if (line.size() == 0  or line.find("Type,") != std::string::npos)
+						continue;
+
+
+					vector_line = Tools::decompose_line_to_float_vector(line);
+
+					if(b != vector_line[3]    or  (ub != vector_line[4]))
+						continue;
+
+					for(size_t j = 0 ; j < indicator.size(); j++){
+						indicator[j][info] += vector_line[j];
+					}
+					info= (info+1)%Info.size();
 				}
 
-				fic_write<<endl<<"__________"<<ub_values[j]<<"__"<<method_name<<endl;
-			}
 
-			fic_write<<endl<<endl;;
-			fic_write.close();
-			return;
-		}
-
-
-		while(!fic_read.eof()){
-			getline(fic_read,line);
-			if (line.size() == 0  or line.find("Type,") != std::string::npos)
-				continue;
-
-
-			vector_line = Tools::decompose_line_to_float_vector(line);
-
-			if(ub != vector_line[3])
-				continue;
-
-			for(size_t j = 0 ; j < indicator.size(); j++){
-				indicator[j][size][info] += vector_line[j];
-				cout<<indicator[j][size][info]<<", ";
-			}
-			cout<<endl;
-
-			info= (info+1)%Info.size();
-
-		}
-
-
-		ofstream fic_write((evaluation_save_path+"/AVG_K_"+to_string(k_replic)+"."+format).c_str(), ios::app);
-
-		for(size_t j = 0; j < ub_values.size(); j++){
-			for(size_t l = 0; l < Info.size(); l++ ){
-				for(size_t i = 0; i < indicator.size(); i++){
-					indicator[i][j][l] *= 1.0 / nb_instances;
-					fic_write<<indicator[i][j][l]<<" ";
-					indicator[i][j][l] = 0;
+//				for(size_t j = 0; j < ub_values.size(); j++){
+					for(size_t l = 0; l < Info.size(); l++ ){
+						for(size_t i = 0; i < indicator.size(); i++){
+							indicator[i][l] *= 1.0 / nb_instances;
+							fic_write<<indicator[i][l]<<" ";
+							indicator[i][l] = 0;
+						}
+						if(l < Info.size() - 1)
+							fic_write<<endl;
+//					}
+					fic_write<<endl<<"__________"<<ub<<"__"<<method_name<<endl;
 				}
-				if(l < Info.size() - 1)
-					fic_write<<endl;
-			}
-
-			fic_write<<endl<<"__________"<<ub_values[j]<<"__"<<method_name<<endl;
+				fic_write<<endl<<endl;;
+			}//end else
+			fic_read.clear();
+			fic_read.seekg(0, ios::beg);
 		}
-
-		fic_write<<endl<<endl;;
-		fic_write.close();
-		fic_read.clear();
-		fic_read.seekg(0, ios::beg);
 	}
 	fic_read.close();
+	fic_write.close();
 }
 
 
