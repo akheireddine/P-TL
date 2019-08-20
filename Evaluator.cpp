@@ -689,21 +689,22 @@ void Evaluator::save_information(string file_population, string save_path, strin
 					update_covered_PFront();
 //				}
 
+				cout<<"____"<<endl;
 				vector< float > indicator(8,0.);
-
+				int nb_interaction = 0;
 
 				DIR *rep;
 				const char* dirname;
 				string file_extension, dirstr;
 				if(ub == -1){
 //					dirstr = file_population+"/"+to_string(i);
-//					dirstr = file_population+"/"+to_string(i)+"/"+to_string(b);
+					dirstr = file_population+"/"+to_string(i)+"/"+to_string(b);
 //					dirstr = file_population+"/"+to_string(b);
-					dirstr = file_population;
+//					dirstr = file_population;
 				}else{
-//					dirstr = file_population+"/"+to_string(ub);
+					dirstr = file_population+"/"+to_string(ub);
 //					dirstr = file_population+"/"+to_string(ub)+"/0";
-					dirstr = file_population+"/"+to_string(ub)+"/"+to_string(i);
+//					dirstr = file_population+"/"+to_string(ub)+"/"+to_string(i);
 				}
 
 				dirname = dirstr.c_str();
@@ -722,7 +723,7 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 					list< vector< float > > Population;
 					vector< float > time_exec;
-					vector< int > index;
+					vector< int > index; //INFO
 
 					readPopulation_File(file_extension, Population, time_exec, index);
 
@@ -738,6 +739,8 @@ void Evaluator::save_information(string file_population, string save_path, strin
 						indicator[1] += 0;
 						indicator[2] += time_exec[ b - 1 ];
 						indicator[3] += nb_iteration;
+
+						nb_interaction += index[b - 1];
 					}
 					else {
 
@@ -747,11 +750,14 @@ void Evaluator::save_information(string file_population, string save_path, strin
 						indicator[1] += 0;
 						indicator[2] += time_exec.back();      // LAST ONE
 						indicator[3] += nb_iteration;
+
+						nb_interaction += index.back();
 					}
 					indicator[4] += average_distance_D1(Population);
 					indicator[5] += maximum_distance_D2(Population);
 					indicator[6] += PR_D3(Population);
 					indicator[7] += Population.size();
+
 				}
 				closedir(rep);
 
@@ -761,8 +767,8 @@ void Evaluator::save_information(string file_population, string save_path, strin
 					fic_write<<", "<<indicator[j];
 				}
 				fic_write<<", "<<div;
-				fic_write<<", "<<indicator[2]*1.0/K_replication<<endl;
-
+				fic_write<<", "<<indicator[2]*1.0/K_replication;
+				fic_write<<", "<<nb_interaction*1.0/K_replication<<endl;
 			}
 		}
 	}
@@ -951,27 +957,27 @@ void Evaluator::compute_avg_type_instances(string evaluation_save_path, string m
 	ofstream fic_write((evaluation_save_path+"/AVG_K_"+to_string(k_replic)+"."+format).c_str(), ios::app);
 
 
-	for(auto b : Budget){
-		for(auto ub : ub_values ){
-			if( b == -1){
-				while(!fic_read.eof()){
-					getline(fic_read,line);
-					if (line.size() == 0  or line.find("Type,") != std::string::npos)
-						continue;
+	for(auto div : {0}){
+		for(auto b : Budget){
+			for(auto ub : ub_values ){
+				if( b == -1){
+					while(!fic_read.eof()){
+						getline(fic_read,line);
+						if (line.size() == 0  or line.find("Type,") != std::string::npos)
+							continue;
 
-					vector_line = Tools::decompose_line_to_float_vector(line);
+						vector_line = Tools::decompose_line_to_float_vector(line);
 
-					if(ub != vector_line[4])
-						continue;
+						if( (ub != vector_line[4])   or  (vector_line[10] != div) )
+							continue;
 
-					for(size_t j = 0 ; j < indicator.size(); j++)
-						indicator[j][info] += vector_line[j];
+						for(size_t j = 0 ; j < indicator.size(); j++)
+							indicator[j][info] += vector_line[j];
 
-					info= (info+1)%Info.size();
-				}
+						info= (info+1)%Info.size();
+					}
 
 
-//				for(size_t j = 0; j < ub_values.size(); j++){
 					for(size_t l = 0; l < Info.size(); l++ ){
 						for(size_t i = 0; i < indicator.size(); i++){
 							indicator[i][l] *= 1.0 / nb_instances;
@@ -981,46 +987,44 @@ void Evaluator::compute_avg_type_instances(string evaluation_save_path, string m
 						if(l < Info.size() - 1)
 							fic_write<<endl;
 					}
-					fic_write<<endl<<"__________"<<ub<<"__"<<method_name<<endl;
-//				}
-				fic_write<<endl<<endl;;
+//						fic_write<<endl<<"__________"<<ub<<"__"<<method_name<<endl;
+					fic_write<<endl;
+				}
+
+				else{
+					while(!fic_read.eof()){
+						getline(fic_read,line);
+						if (line.size() == 0  or line.find("Type,") != std::string::npos)
+							continue;
+
+
+						vector_line = Tools::decompose_line_to_float_vector(line);
+
+						if(b != vector_line[3]    or  (ub != vector_line[4])  or  (vector_line[10] != div) )
+							continue;
+
+						for(size_t j = 0 ; j < indicator.size(); j++){
+							indicator[j][info] += vector_line[j];
+						}
+						info= (info+1)%Info.size();
+					}
+
+
+					for(size_t l = 0; l < Info.size(); l++ ){
+						for(size_t i = 0; i < indicator.size(); i++){
+							indicator[i][l] *= 1.0 / nb_instances;
+							fic_write<<indicator[i][l]<<" ";
+							indicator[i][l] = 0;
+						}
+						if(l < Info.size() - 1)
+							fic_write<<endl;
+//						fic_write<<endl<<"__________"<<ub<<"__"<<method_name<<endl;
+					}
+					fic_write<<endl<<endl;
+				}//end else
+				fic_read.clear();
+				fic_read.seekg(0, ios::beg);
 			}
-
-			else{
-				while(!fic_read.eof()){
-					getline(fic_read,line);
-					if (line.size() == 0  or line.find("Type,") != std::string::npos)
-						continue;
-
-
-					vector_line = Tools::decompose_line_to_float_vector(line);
-
-					if(b != vector_line[3]    or  (ub != vector_line[4]))
-						continue;
-
-					for(size_t j = 0 ; j < indicator.size(); j++){
-						indicator[j][info] += vector_line[j];
-					}
-					info= (info+1)%Info.size();
-				}
-
-
-//				for(size_t j = 0; j < ub_values.size(); j++){
-					for(size_t l = 0; l < Info.size(); l++ ){
-						for(size_t i = 0; i < indicator.size(); i++){
-							indicator[i][l] *= 1.0 / nb_instances;
-							fic_write<<indicator[i][l]<<" ";
-							indicator[i][l] = 0;
-						}
-						if(l < Info.size() - 1)
-							fic_write<<endl;
-//					}
-					fic_write<<endl<<"__________"<<ub<<"__"<<method_name<<endl;
-				}
-				fic_write<<endl<<endl;;
-			}//end else
-			fic_read.clear();
-			fic_read.seekg(0, ios::beg);
 		}
 	}
 	fic_read.close();

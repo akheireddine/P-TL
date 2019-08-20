@@ -6,15 +6,14 @@ import matplotlib.pyplot as plt
 
 
 p = "2"
-type_inst = "A"
+type_inst = "C"
 taille="100"
 
-filename = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30.eval"
+filename = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_20.eval"
 
-filename_pred = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/predicted_value.eval"
 
 Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))
-Smallreader = list(csv.DictReader(open(filename_pred, newline=''), delimiter = ','))
+#Smallreader = list(csv.DictReader(open(filename_pred, newline=''), delimiter = ','))
 
 
 Budget = [20, 40, 50, 60, 80, 100, 120, 140, 160, 180, 200,220, 240, 280, 340, 380, 420,440, 480, 540, 580, 640, 680, 740, 780, 820, 840, 880
@@ -24,9 +23,8 @@ Information = [90, 80, 70, 60, 50, 41, 40.6012,40, 30, 28.1257, 20, 15, 12, 11.5
 
 N = list(range(0,10))
 
-PopSize = [ 2, 8, 10, 15, 20, 30, 40, 50, 60, 80, 100 ]
+PopSize = [ 2, 8, 10, 15, 20, 30, 40, 50, 60, 80, 100,200 ]
 
-div = 1
 
 
 
@@ -50,8 +48,8 @@ def normalize_parameters() :
 Budget_norm, Information_norm, N_norm, PopSize_norm = normalize_parameters()
 
 
-filename_in = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30.eval"
-filename_out = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30_extend_normalized.eval"
+filename_in = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_20.eval"
+filename_out = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_20_extend_normalized.eval"
 
 def normalize_eval_file(filename_eval_in, filename_eval_out):
     
@@ -96,7 +94,7 @@ def normalize_eval_file(filename_eval_in, filename_eval_out):
 
 ####################################################################################
 
-normalize_eval_file(filename_in,filename_out)
+#normalize_eval_file(filename_in,filename_out)
 
 ####################################################################################
 
@@ -109,6 +107,18 @@ def F_prediction_A100(siz, budg, inf, div, inst) :
 
     pr = 0.0145 + (-0.089) * inst + 0.2857 * budg + 0.0533 * siz + (-0.0205) * inf + 0.1441 * div
 
+
+    return round(avg,3),round(maxmin,3),round(pr,3)
+
+
+
+def F_prediction_C100(siz, budg, inf, div, inst) :
+
+    avg = 0.1017 + (-0.2423)* budg + 0.1048 * siz + 0.1467 * inf + 0.1213 * div
+
+    maxmin = 0.11 + (-0.1664) * budg + 0.0179 * siz + 0.7085 * inf + 0.0774 * div
+
+    pr = 0.0677 + (0.0246) * inst + 0.3198 * budg + (-0.0575) * inf + 0.1007 * div
 
     return round(avg,3),round(maxmin,3),round(pr,3)
 
@@ -129,7 +139,8 @@ def ML_LinearRegression(type_inst, taille, p_criteria, filename_o):
             for b in Budget_norm :
                 for info in Information_norm :
                     for d in [0,1] :
-                        predicted_avg_min,MaxMmin,PR = F_prediction_A100(s, b, info, d, i)
+#                        predicted_avg_min,MaxMmin,PR = F_prediction_A100(s, b, info, d, i)
+                        predicted_avg_min,MaxMmin,PR = F_prediction_C100(s, b, info, d, i)
                         
                         fic_write.write(id_type_inst+","+taille+","+str(i)+","+str(b)+","+str(s)+","
                                         +str(info)+",0,"+str(predicted_avg_min)+","+str(MaxMmin)+","
@@ -140,7 +151,7 @@ filename_outter = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/predicted_val
 
 ####################################################################################
 
-#ML_LinearRegression("A","100","2",filename_outter)
+#ML_LinearRegression("C","100","2",filename_outter)
 
 ####################################################################################
 
@@ -150,9 +161,11 @@ filename_outter = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/predicted_val
 ""
 
 
-PopSizeIndex = [0, 1, 4,8, 10]
+filename_pred = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/predicted_value.eval"
 
-InformationIndex = [0,6,9,13,15,17,18,20]
+PopSizeIndex = [10]#0, 1, 4,8, 10]
+
+InformationIndex = [0,6,15,20]#9,13,15,17,18,20]
 
 div = 0
 
@@ -162,7 +175,7 @@ def compare_predicted_expected_value():
     
     for si in PopSizeIndex : 
         s = PopSize_norm[si]
-        fig = plt.figure(figsize=(15,12))
+        fig = plt.figure(figsize=(13,10))
         fig.suptitle("Prediction of Average min distance from optimal front "+type_inst+taille+" (Varying uncertainty, Populatin size = "
                                                                 +str(PopSize[si])+" ,Diversification :"+str(div)+")" , fontsize=16)
         
@@ -200,12 +213,13 @@ def compare_predicted_expected_value():
                     ax.plot(X,Y,c="green")
                     ax.plot(Xpred,Ypred,c="red")
 
-        fig.savefig("PredictedD1"+type_inst+taille+"_PopS"+str(PopSize[si])+"_D"+str(div)+".png", dpi=fig.dpi*5)
-            
+        ax.legend(prop={'size': 15})
+        fig.savefig("PredictedD1"+type_inst+taille+"_PopS"+str(PopSize[si])+"_D"+str(div)+".png", dpi=fig.dpi*2)
+        ax.show()
         
 ####################################################################################
 
-#compare_predicted_expected_value()
+compare_predicted_expected_value()
 
 ####################################################################################
 

@@ -8,7 +8,7 @@ p = "2"
 type_inst = "A"
 taille="100"
 
-Information = [40.6012]#40.6012] #90
+Information = [90]#40.6012]#40.6012] #90
 Informations_in = [90, 40.6012,28.1257, 11.5757]
 
 N = [0,1,2,3,9]
@@ -16,7 +16,6 @@ Budget = [20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020]
 #Budget = [50,500,1000,2000,3000,4000,5000,8000]
 
 filename = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_30.evalPareto"
-
 filename_dyn = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_10.eval_DYN_PSize_DEC1"
 
 Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))

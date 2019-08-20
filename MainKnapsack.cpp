@@ -833,7 +833,7 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
 
 void best_parametrization_RegLin(float Info_rate, int budget, int &div, int &pop_size, int inst_name, vector<int> UB_Population_list){
 
-	float PopSize_norm = 100 - 2.0; //100 - 2.0;
+	float PopSize_norm = 200 - 2.0; //100 - 2.0;
 	float min_PopSize = 2.;
 
 	float Info_norm = 90.0 - 0. ;
@@ -846,76 +846,36 @@ void best_parametrization_RegLin(float Info_rate, int budget, int &div, int &pop
 	float avg_min = -1;
 
 
-//	if( inst_name == 0 ){
-//		for(auto d : {0,1} ){
-//			for(auto p : UB_Population_list){
-//
-//				 float val_avg = (-0.2452) * (budget - min_Budget)*1.0/Budget_norm + 0.1491 * (p - min_PopSize)*1.0/PopSize_norm
-//													+ 0.0428 * Info_rate*1.0/Info_norm + 0.1269 * d + 0.0649;
-//
-//				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
-//					 div = d;
-//					 avg_min = val_avg;
-//					 pop_size = p;
-//				 }
-//			}
+	//A-100
+//	for(auto d : {0,1} ){
+//		for(auto p : UB_Population_list){
+//			 float val_avg =  (-0.0148) * inst_name/N_norm + (-0.1922)*(budget - min_Budget)*1.0/Budget_norm
+//					 + 0.1169 * (p - min_PopSize)*1.0/PopSize_norm + 0.0249 * Info_rate*1.0/Info_norm + 0.1041 * d + 0.0524;
+//			 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
+//				 div = d;
+//				 avg_min = val_avg;
+//				 pop_size = p;
+//			 }
 //		}
 //	}
-//
-//	else if ( inst_name == 1){
-//		for(auto d : {0,1} ){
-//			for(auto p : UB_Population_list){
-//				 float val_avg = (-0.2288) * (budget - min_Budget)*1.0/Budget_norm + 0.1362 * (p - min_PopSize)*1.0/PopSize_norm
-//													+ 0.0421 * Info_rate*1.0/Info_norm + 0.1134 * d + 0.072;
-//				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
-//					 div = d;
-//					 avg_min = val_avg;
-//					 pop_size = p;
-//				 }
-//			}
-//		}
-//	}
-//	else if (inst_name == 2) {
-//		for(auto d : {0,1} ){
-//			for(auto p : UB_Population_list){
-//				 float val_avg = (-0.207) * (budget - min_Budget)*1.0/Budget_norm + 0.1248 * (p - min_PopSize)*1.0/PopSize_norm
-//													+ 0.1123 * d + 0.0686;
-//				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
-//					 div = d;
-//					 avg_min = val_avg;
-//					 pop_size = p;
-//				 }
-//			}
-//		}
-//	}
-//	else if (inst_name == 3){
-//		for(auto d : {0,1} ){
-//			for(auto p : UB_Population_list){
-//				 float val_avg = (-0.222) * (budget - min_Budget)*1.0/Budget_norm + 0.1425 * (p - min_PopSize)*1.0/PopSize_norm
-//						 + 0.0438 * Info_rate*1.0/Info_norm	 + 0.126 * d + 0.041;
-//				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
-//					 div = d;
-//					 avg_min = val_avg;
-//					 pop_size = p;
-//				 }
-//			}
-//		}
-//	}
-//	else{
-		for(auto d : {0,1} ){
-			for(auto p : UB_Population_list){
-				 float val_avg =  (-0.0148) * inst_name/N_norm + (-0.1922)*(budget - min_Budget)*1.0/Budget_norm
-						 + 0.1169 * (p - min_PopSize)*1.0/PopSize_norm + 0.0249 * Info_rate*1.0/Info_norm + 0.1041 * d + 0.0524;
-				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
-					 div = d;
-					 avg_min = val_avg;
-					 pop_size = p;
-				 }
-			}
+
+	//C-100
+	for(auto d : {0,1} ){
+		for(auto p : UB_Population_list){
+			 float val_avg =  (-0.2423)*(budget - min_Budget)*1.0/Budget_norm
+					 + 0.1048 * (p - min_PopSize)*1.0/PopSize_norm + 0.1467 * Info_rate*1.0/Info_norm + 0.1213 * d + 0.1017;
+			 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
+				 div = d;
+				 avg_min = val_avg;
+				 pop_size = p;
+			 }
 		}
-//	}
-//	cout<<"Pop size/Budget/Div : "<<pop_size<<", "<<budget<<", "<<div<<"   :  "<<avg_min<<endl;
+	}
+
+
 }
+
+
 
 
 
@@ -1014,6 +974,7 @@ void MainKnapsack::MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, in
 
 			best_parametrization_RegLin(Info_rate, (Budget - nb_iteration), diversification, PopSize, inst_name, UB_Population_list);
 
+			cout<<"PopSize : "<<PopSize<<" Div : "<<diversification<<endl;
 //			ATTEMPT TO ADD DOMINATED SOLUTIONS TO Population
 			if( diversification ){
 				if( Population.empty() )
@@ -1548,6 +1509,45 @@ void MainKnapsack::MOLS_DYN_INFO(double starting_time_sec, vector< int > UB_Popu
 
 
 
+void best_parametrization_RegLin2(float Info_rate, int budget, int &div, int pop_size, int inst_name){
+
+	float PopSize_norm = 200 - 2.0; //100 - 2.0;
+	float min_PopSize = 2.;
+
+	float Info_norm = 90.0 - 0. ;
+
+	float Budget_norm = 8020 - 20.;//4020 - 20.0;
+	float min_Budget = 20.;
+
+	float N_norm = 10 - 0;
+
+	float avg_min = -1;
+
+
+	//A-100
+//	for(auto d : {0,1} ){
+//		for(auto p : UB_Population_list){
+//			 float val_avg =  (-0.0148) * inst_name/N_norm + (-0.1922)*(budget - min_Budget)*1.0/Budget_norm
+//					 + 0.1169 * (p - min_PopSize)*1.0/PopSize_norm + 0.0249 * Info_rate*1.0/Info_norm + 0.1041 * d + 0.0524;
+//			 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
+//				 div = d;
+//				 avg_min = val_avg;
+//				 pop_size = p;
+//			 }
+//		}
+//	}
+
+	//C-100
+	for(auto d : {0,1} ){
+		 float val_avg =  (-0.2423)*(budget - min_Budget)*1.0/Budget_norm
+				 + 0.1048 * (pop_size - min_PopSize)*1.0/PopSize_norm + 0.1467 * Info_rate*1.0/Info_norm + 0.1213 * d + 0.1017;
+		 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
+			 div = d;
+			 avg_min = val_avg;
+		 }
+	}
+
+}
 
 void MainKnapsack::MOLS_DYN_MULTIPLE_PARAM(int Budget, vector< int > UB_Population_list, int inst_name, vector< string > Informations){
 
@@ -1652,7 +1652,11 @@ void MainKnapsack::MOLS_DYN_MULTIPLE_PARAM(int Budget, vector< int > UB_Populati
 				float info_rate = Tools::compute_information_rate(matrix_info, p_criteria);
 				set_WS_matrix(matrix_info);
 
-				best_parametrization_RegLin(info_rate, Budget - nb_iteration, Diversification, UB_Population_size, inst_name, UB_Population_list);
+				int max_ub = UB_Population_list.back();
+				UB_Population_size = (remains_to_explore > UB_Population_size * 3)?
+						( (UB_Population_size * 2 > max_ub)?max_ub : (UB_Population_size*2) ) : UB_Population_size;
+
+				best_parametrization_RegLin2(info_rate, Budget - nb_iteration, Diversification, UB_Population_size, inst_name);
 
 				update_WS_matrix_Population();
 

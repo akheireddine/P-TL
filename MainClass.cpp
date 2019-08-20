@@ -131,14 +131,14 @@ void script_knapsack_PLSWS(string type_inst, string taille, string WS_DM, string
 
 	srand(time(NULL));
 
-	vector<int> sizer = {60};//,60,100};
+	vector<int> sizer = {100};//,60,100};
 //	vector<int> sizer = {100,60,20,8,2};
 
 
 	int info = 0;
 	INFO = to_string(info);
 
-	for(int i = 5; i < N; i++){
+	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix;
@@ -277,7 +277,7 @@ void main_Knapsack_ML_RegLin(string filename_instance, int size_population, vect
 void script_knapsack_ML_RegLin(string type_inst, string taille, string WS_DM, string p_criteria ){
 
 	int K = 10;
-	int N = 3;
+	int N = 10;
 	string path_information = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {path_information+"0", path_information+"1", path_information+"2", path_information+"3", path_information+"4", path_information+"5"
 	,path_information+"6", path_information+"7"};
@@ -298,7 +298,7 @@ void script_knapsack_ML_RegLin(string type_inst, string taille, string WS_DM, st
 		float Info_rate = Tools::compute_information_rate(Tools::readMatrix(I[info]), stoi(p_criteria));
 
 
-		for(int i = 0; i < N; i++){
+		for(int i = 3; i < N; i++){
 			string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 			string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 			string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -365,7 +365,7 @@ void script_knapsack_DYN_MULTIPLE_PARAM(string type_inst, string taille, string 
 
 	srand(time(NULL));
 
-	vector<int> sizer = {2,10,20,30,40,50,60,70,100};
+	vector<int> sizer = {2,10,20,30,40,50,60,70,100,200};
 
 
 
@@ -412,7 +412,7 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 	else if (type_inst.compare("D") == 0)
 		id_type_inst = 2;
 
-	int K = 30;
+	int K = 20;
 	int N = 10;
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
@@ -447,15 +447,16 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 
 void save_avg_instances(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 30;
+	int K = 10;
 	int N = 10;
-	vector<int> I = {0,1,2,3,4,5,6,7};
+	vector<int> I = {0};//,1,2,3,4,5,6,7};
 
-	string prefix = "MOLS_PSize";
-	string format_in = "evalRAPPORT4";
-	vector< int > sizer = {100};//2,8,20,60,100,200};  //       //A
-//	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};
-	vector< int > Budget(1,-1);
+	string prefix = "MOLS_DYN_Info_60";
+	string format_in = "evalRAPPORT_DYN_INFO_20";
+	vector< int > sizer = {20};//2,8,20,60,100};
+	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};
+//	vector< int > Budget(1,-1);
+//	vector< int > Budget = {50,500,1000,2000,3000,4000,8000};
 
 
 	string save_file = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
@@ -529,35 +530,31 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 	if(type_inst.compare("C") == 0)
 		id_type_inst = 1;
 
-	int K = 20;
+	int K = 10;
 	int N = 10;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};   //A
-//	vector< int > Budget = {50,500,1000,2000,3000,4000,5000,8000};
+//	vector< int > Budget = {50,500,1000,2000,3000,4000,8000};
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
 
-	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
+	vector< string > I = {testname+"0"};//,testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 	vector<float> info_rate;
 	for(size_t i = 0; i < I.size(); i++){
 		info_rate.push_back( Tools::compute_information_rate(Tools::readMatrix(I[i]), stoi(p_criteria)) );
 	}
 
-	vector< string > prefixes = {"MOLS_PSize"};//,"MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
+	vector< string > prefixes = {"FINAL_MOLS_DYN_Info"};//,"MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
 
-	vector<int> sizer = {100};//2,8,20,60,100};  //       //A
-
-//	vector<int> sizer = {2,8,20,60,100,200};       //C
-
-//	vector<int> sizer = {2,8,20,60,100,200};        //D
+	vector<int> sizer = {20};//2,8,20,60,100};  //       //A
 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "evalRAPPORT2";
+	string format_in = "evalRAPPORT_DYN_INFO_20";
 	string format_out = "opt";
 
 	ofstream fic1(filename_indicator+"/K_"+to_string(K)+"."+format_in);
-	fic1<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification"<<endl;
+	fic1<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification, Time"<<endl;
 	fic1.close();
 //	ofstream fic2(filename_indicator+"/K_"+to_string(K)+"."+format_out);
 //	fic2<<"Type,  Size,  Instance,  Budget,  PopSize, Info,  nb_evaluation,  AVG_dist,  MaxMin,  PR,  Diversification"<<endl;
@@ -687,7 +684,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "A";
+	string type_inst = "C";
 	string taille = "100";
 	string p_criteria = "2";
 //
@@ -754,9 +751,9 @@ int main(int argc, char** argv){
 ////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
-	script_save_information(type_inst, taille, WS_DM, p_criteria);
-
-	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
+//	script_save_information(type_inst, taille, WS_DM, p_criteria);
+//
+//	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
 //
 
 /*
@@ -838,7 +835,7 @@ int main(int argc, char** argv){
 */
 
 
-//	script_knapsack_DYN_MULTIPLE_PARAM(type_inst,taille,WS_DM, p_criteria);
+	script_knapsack_DYN_MULTIPLE_PARAM(type_inst,taille,WS_DM, p_criteria);
 
 
 
