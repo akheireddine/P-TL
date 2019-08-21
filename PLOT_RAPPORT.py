@@ -429,8 +429,10 @@ labels= "A-100","A-200","C-100"
 
 ###############  ML apprentissage bInf bSup MOYENNE
 
-#file_plot_static = [path+"/A/100/AVG_K_30.eval"]#, path+"/C/100/AVG_K_30.evalPareto"]
-#file_plot_dyn = [path+"/A/100/AVG_K_10.evalRAPPORT_ML"]#, path+"/C/100/AVG_K_10.evalRAPPORT_ML"]
+#file_plot_static = [path+"/A/100/AVG_K_30.eval", path+"/C/100/AVG_K_20.eval"]
+#file_plot_dyn = [path+"/A/100/AVG_K_10.evalRAPPORT_ML", path+"/C/100/AVG_K_10.evalRAPPORT_ML"]
+#
+#labels= "A-100","C-100"
 #
 #info = 90
 #for i,l in zip(range(len(file_plot_static)), labels):
@@ -511,8 +513,9 @@ labels= "A-100","A-200","C-100"
 
 ###############  ML apprentissage bInf bSup MEDIANE
 
-#file_plot_static = [path+"/A/100/K_30.eval"]#, path+"/C/100/K_30.evalPareto"]
-#file_plot_dyn = [path+"/A/100/K_10.evalRAPPORT_ML"]#, path+"/C/100/K_10.evalRAPPORT_ML"]
+#file_plot_static = [path+"/A/100/K_30.eval", path+"/C/100/K_20.eval"]
+#file_plot_dyn = [path+"/A/100/K_10.evalRAPPORT_ML", path+"/C/100/K_10.evalRAPPORT_ML"]
+#labels= "A-100","C-100"
 #
 #info = 90
 #for i,l in zip(range(len(file_plot_static)), labels):
@@ -590,11 +593,222 @@ labels= "A-100","A-200","C-100"
 
 ###############  DYN apprentissage bInf bSup MOYENNE
 
+#file_plot_static = [path+"/A/100/AVG_K_30.evalPARETO", path+"/C/100/AVG_K_20.evalPareto"]
+#file_plot_dyn = [path+"/A/100/AVG_K_10.evalRAPPORT_DYN_INFO_60", path+"/C/100/AVG_K_10.evalRAPPORT_DYN_INFO_100"]
+#labels= "A-100","C-100"
+#
+#div = 0
+#PopSize = 60,100
+#for i,l in zip(range(len(file_plot_static)), labels):
+#    
+#    fig = plt.figure(figsize=(13,10))
+#    plt.minorticks_on()
+#    plt.grid(which='both')
+#    plt.grid(which='minor', alpha=0.4, linestyle='-.')
+#    
+#    plt.xlabel("Budget #sol évalué",size=15, fontweight="bold")
+#    plt.xlim(0,4000)
+#    plt.ylabel("log D1",size=15, fontweight="bold")
+#
+#    file_static,file_dyn = file_plot_static[i],file_plot_dyn[i]
+#    
+#    Bigreader = list(csv.DictReader(open(file_static, newline=''), delimiter = ','))
+#    Smallreader = list(csv.DictReader(open(file_dyn, newline=''), delimiter = ','))
+#    
+#    Xbudget_f1 = set()
+#    Xbudget_f2 = set()
+#    for r in Bigreader :
+#        Xbudget_f1.add(int(r['Budget']))
+#        
+#    Xbudget_f1 = list(Xbudget_f1)
+#    Xbudget_f1.sort()
+#    
+#    print(file_dyn)
+#    for r in Smallreader :
+#        Xbudget_f2.add(int(r['Budget']))
+#    
+#    Xbudget_f2 = list(Xbudget_f2)
+#    Xbudget_f2.sort()
+#
+#    Ymin = list()
+#    Ymax = list()
+#    Ydyn = list()
+#    
+#    for b in Xbudget_f1 : #[60,540,1220,6020] : #Xbudget_f1  :
+#        minus = -1
+#        maxus = -1
+#
+#        for row in Bigreader:
+#            if int(row['Budget']) == b and int(float(row['Diversification'])) == div and int(float(row['PopSize'])) == PopSize[i] :
+#                avg_min = float(row['AVG_dist'])
+#                if (avg_min < minus) or (minus == -1) :
+#                    minus = avg_min
+#                if (avg_min > maxus) or (maxus == -1) :
+#                    maxus = avg_min
+#            
+#        Ymin.append(np.log(minus))
+#        Ymax.append(np.log(maxus))
+#        
+#    for b in Xbudget_f2 : #[60,540,1220,6020] : #[50,500,800,6020] : #Xbudget_f2  :
+#
+#        for row in Smallreader : 
+#            if int(row['Budget']) == b and int(float(row['Diversification'])) == div and int(float(row['PopSize'])) == PopSize[i] :
+#                Ydyn.append(np.log(float(row['AVG_dist'])))
+#        
+#        
+#    
+#        
+#    if i == 0 :
+#        plt.plot(Xbudget_f1,Ymin,c="blue",label="Best approximation",marker='.',linewidth=2.0)
+#        plt.plot(Xbudget_f1,Ymax,c="red",label="Worst approximation",marker='.',linewidth=2.0)
+#        plt.plot(Xbudget_f2,Ydyn,c="green",label="$PLS_{dyn}$",marker='.',linewidth=2.0)
+#    else :
+#        plt.plot(Xbudget_f1,Ymin,c="blue",marker='.',linewidth=2.0)
+#        plt.plot(Xbudget_f1,Ymax,c="red",marker='.',linewidth=2.0)
+#        plt.plot(Xbudget_f2,Ydyn,c="green",marker='.',linewidth=2.0)
+#        
+#    plt.grid()
+#    plt.legend(prop={'size': 15})
+#    plt.title("Log Moyenne de D1 retourné par $PLS_{dyn}$ contre la meilleure et pire approximation avec l'approche statique \n Instances  "+l ,fontsize=15,fontweight="bold")
+#    fig.savefig("Compare_"+l+"_DYN_MOY.png", dpi=fig.dpi)
+#    plt.show()
+
+#
+#
+#
+################ DYN apprentissage bInf bSup MEDIANE
+
+file_plot_static = [path+"/A/100/K_30.evalPARETO", path+"/C/100/K_20.evalPareto"]
+file_plot_dyn = [path+"/A/100/K_10.evalRAPPORT_DYN_INFO_60", path+"/C/100/K_10.evalRAPPORT_DYN_INFO_100"]
+div = 0
+PopSize = 60,100
+labels= "A-100","C-100"
+colors = ['tab:blue',"tab:orange","tab:green"]
+
+fig = plt.figure(figsize=(13,10))
+plt.minorticks_on()
+plt.grid(which='both')
+plt.grid(which='minor', alpha=0.4, linestyle='-.')
+
+plt.xlabel("Budget #sol évalué",size=15, fontweight="bold")
+plt.xlim(0,3500)
+plt.ylabel("Médiane D1",size=15, fontweight="bold")
+
+for i,l in zip(range(len(file_plot_static)), labels):
+    
+
+
+    file_static,file_dyn = file_plot_static[i],file_plot_dyn[i]
+    
+    Bigreader = list(csv.DictReader(open(file_static, newline=''), delimiter = ','))
+    Smallreader = list(csv.DictReader(open(file_dyn, newline=''), delimiter = ','))
+    
+    Xbudget_f1 = set()
+    Xbudget_f2 = set()
+    for r in Bigreader :
+        Xbudget_f1.add(int(r['Budget']))
+        
+    Xbudget_f1 = list(Xbudget_f1)
+    Xbudget_f1.sort()
+    
+    for r in Smallreader :
+        Xbudget_f2.add(int(r['Budget']))
+    
+    Xbudget_f2 = list(Xbudget_f2)
+    Xbudget_f2.sort()
+
+    Ymin = list()
+    Ydyn = list()
+
+    for b in Xbudget_f1 : #[60,540,1220,6020] : #Xbudget_f1  :
+        Ytmp = list()
+
+        for row in Bigreader:
+            if int(float(row['Diversification'])) == div and int(row['Budget']) == b and int(float(row['PopSize'])) == PopSize[i] :
+                Ytmp.append(float(row['AVG_dist']))
+
+        Ytmp.sort()
+        Ymin.append(np.median(Ytmp))
+        
+    for b in Xbudget_f2 : #[60,540,1220,6020] : #[50,500,800,6020] : #Xbudget_f2  :
+        Ytmp = list()
+
+        for row in Smallreader : 
+            if int(float(row['Diversification'])) == div and int(row['Budget']) == b and int(float(row['PopSize'])) == PopSize[i] :
+                Ytmp.append((float(row['AVG_dist'])))
+        
+        Ytmp.sort()
+        Ydyn.append(np.median(Ytmp))
+    
+        
+    if i == 0 :
+        plt.plot(Xbudget_f1,Ymin,label="static method",marker='.',linewidth=2.0, color=colors[i], linestyle=':')
+        plt.plot(Xbudget_f2,Ydyn,label=l,marker='.',linewidth=2.0, color=colors[i])
+    else :
+        plt.plot(Xbudget_f1,Ymin,marker='.',linewidth=2.0, color=colors[i])
+        plt.plot(Xbudget_f2,Ydyn,marker='.',linewidth=2.0, color=colors[i])
+        
+plt.grid()
+plt.legend(prop={'size': 15})
+plt.title("Valeur médiane de D1 par $PLS_{dyn}$ et de l'approche statique \n Instances  "+l ,fontsize=15,fontweight="bold")
+fig.savefig("Compare_DYN_MED.png", dpi=fig.dpi)
+plt.show()
+
+#
+################ DYN Fréquence d'interaction / Budget
+#    
+#file_plot = [path+"/A/100/AVG_K_10.evalRAPPORT_DYN_INFO_60", path+"/C/100/AVG_K_10.evalRAPPORT_DYN_INFO_100"]
+#
+#labels= "A-100","C-100"
+#
+#fig = plt.figure(figsize=(13,10))
+#
+#plt.minorticks_on()
+#plt.grid(which='both')
+#plt.grid(which='minor', alpha=0.4, linestyle='-.')
+#
+#plt.xlabel("Budget (# sol évalué)",size=15, fontweight="bold")
+#plt.xlim(0,4000)
+#plt.ylabel("Fréquence d'intéraction",size=15, fontweight="bold")
+#
+#for f,l in zip(file_plot,labels) : 
+#    M = np.loadtxt(f)
+#    X = list()
+#    Y = list()
+#    budgets = list(set(M[:,3]))
+#    budgets.sort()
+#    for b in budgets :
+#        freq = None
+#        for m in M : 
+#            if m[3] == b :
+#                min_ind = m[7]
+#                freq = m[11]
+#                
+#        X.append(b)
+#        Y.append(freq)
+#        
+#    plt.plot(X, Y, label=l, marker='o',linewidth=4.0)
+#    
+#    
+#plt.legend(prop={'size': 15})
+#plt.title("Fréquence d'échange avec le DM pour différents budget alloué", fontweight="bold",size=20,)
+#fig.savefig("Freq_Interaction_Budget.png")
+#
+#plt.show()
+#
+#
+#
+
+
+
+
+
+
+###############  2Learning apprentissage bInf bSup MOYENNE
+
 #file_plot_static = [path+"/A/100/AVG_K_30.evalPARETO"]#, path+"/C/100/AVG_K_30.evalPARETO"]
 #file_plot_dyn = [path+"/A/100/AVG_K_10.evalRAPPORT_DYN_INFO_60"]#, path+"/C/100/AVG_K_10.evalRAPPORT_DYN_INFO_60"]
 #
-#div = 0
-#PopSize = 60
 #for i,l in zip(range(len(file_plot_static)), labels):
 #    
 #    fig = plt.figure(figsize=(13,10))
@@ -634,7 +848,7 @@ labels= "A-100","A-200","C-100"
 #        maxus = -1
 #
 #        for row in Bigreader:
-#            if int(row['Budget']) == b and int(float(row['Diversification'])) == div and int(float(row['PopSize'])) == PopSize :
+#            if int(row['Budget']) == b  :
 #                avg_min = float(row['AVG_dist'])
 #                if (avg_min < minus) or (minus == -1) :
 #                    minus = avg_min
@@ -647,16 +861,15 @@ labels= "A-100","A-200","C-100"
 #    for b in Xbudget_f2 : #[60,540,1220,6020] : #[50,500,800,6020] : #Xbudget_f2  :
 #
 #        for row in Smallreader : 
-#            if int(row['Budget']) == b and int(float(row['Diversification'])) == div and int(float(row['PopSize'])) == PopSize :
+#            if int(row['Budget']) == b  :
 #                Ydyn.append(np.log(float(row['AVG_dist'])))
-#        
 #        
 #    
 #        
 #    if i == 0 :
 #        plt.plot(Xbudget_f1,Ymin,c="blue",label="Best approximation",marker='.',linewidth=2.0)
 #        plt.plot(Xbudget_f1,Ymax,c="red",label="Worst approximation",marker='.',linewidth=2.0)
-#        plt.plot(Xbudget_f2,Ydyn,c="green",label="$PLS_{dyn}$",marker='.',linewidth=2.0)
+#        plt.plot(Xbudget_f2,Ydyn,c="green",label="$PLS_{2L}$",marker='.',linewidth=2.0)
 #    else :
 #        plt.plot(Xbudget_f1,Ymin,c="blue",marker='.',linewidth=2.0)
 #        plt.plot(Xbudget_f1,Ymax,c="red",marker='.',linewidth=2.0)
@@ -664,20 +877,17 @@ labels= "A-100","A-200","C-100"
 #        
 #    plt.grid()
 #    plt.legend(prop={'size': 15})
-#    plt.title("Log Moyenne de D1 retourné par $PLS_{dyn}$ contre la meilleure et pire approximation avec l'approche statique \n Instances  "+l ,fontsize=15,fontweight="bold")
-#    fig.savefig("Compare_"+l+"_DYN_MOY.png", dpi=fig.dpi)
+#    plt.title("Log Moyenne de D1 retourné par $PLS_{2L}$ contre la meilleure et pire approximation avec l'approche statique \n Instances  "+l ,fontsize=15,fontweight="bold")
+#    fig.savefig("Compare_"+l+"_2L_MOY.png", dpi=fig.dpi)
 #    plt.show()
 
 
 
 
-############### DYN apprentissage bInf bSup MEDIANE
+############### 2L apprentissage bInf bSup MEDIANE
 
 #file_plot_static = [path+"/A/100/K_30.evalPARETO"]#, path+"/C/100/K_30.evalPARETO"]
-#file_plot_dyn = [path+"/A/100/K_10.evalRAPPORT_DYN_INFO_60"]#, path+"/C/100/K_10.evalRAPPORT_DYN_INFO_60"]
-#div = 0
-#PopSize = 60
-#
+#file_plot_dyn = [path+"/A/100/K_10.evalRAPPORT_MULTIPLE_PARAM"]#, path+"/C/100/K_10.evalRAPPORT_DYN_MULTIPLE_PARAM"]
 #for i,l in zip(range(len(file_plot_static)), labels):
 #    
 #    fig = plt.figure(figsize=(13,10))
@@ -715,7 +925,7 @@ labels= "A-100","A-200","C-100"
 #        Ytmp = list()
 #
 #        for row in Bigreader:
-#            if int(float(row['Diversification'])) == div and int(row['Budget']) == b and int(float(row['PopSize'])) == PopSize :
+#            if int(row['Budget']) == b  :
 #                Ytmp.append(float(row['AVG_dist']))
 #
 #        Ytmp.sort()
@@ -725,7 +935,7 @@ labels= "A-100","A-200","C-100"
 #        Ytmp = list()
 #
 #        for row in Smallreader : 
-#            if int(float(row['Diversification'])) == div and int(row['Budget']) == b and int(float(row['PopSize'])) == PopSize :
+#            if int(row['Budget']) == b  :
 #                Ytmp.append((float(row['AVG_dist'])))
 #        
 #        Ytmp.sort()
@@ -734,216 +944,16 @@ labels= "A-100","A-200","C-100"
 #        
 #    if i == 0 :
 #        plt.plot(Xbudget_f1,Ymin,c="blue",label="static method",marker='.',linewidth=2.0)
-#        plt.plot(Xbudget_f2,Ydyn,c="green",label="$PLS_{dyn}$",marker='.',linewidth=2.0)
+#        plt.plot(Xbudget_f2,Ydyn,c="green",label="$PLS_{2L}$",marker='.',linewidth=2.0)
 #    else :
 #        plt.plot(Xbudget_f1,Ymin,c="blue",marker='.',linewidth=2.0)
 #        plt.plot(Xbudget_f2,Ydyn,c="green",marker='.',linewidth=2.0)
 #        
 #    plt.grid()
 #    plt.legend(prop={'size': 15})
-#    plt.title("Valeur médiane de D1 par $PLS_{dyn}$ et de l'approche statique \n Instances  "+l ,fontsize=15,fontweight="bold")
-#    fig.savefig("Compare_"+l+"_DYN_MED.png", dpi=fig.dpi)
+#    plt.title("Valeur médiane de D1 par $PLS_{2L}$ et de l'approche statique \n Instances  "+l ,fontsize=15,fontweight="bold")
+#    fig.savefig("Compare_"+l+"_2L_MED.png", dpi=fig.dpi)
 #    plt.show()
-
-
-############### DYN Fréquence d'interaction / Budget
-    
-#file_plot = [path+"/A/100/AVG_K_10.evalRAPPORT_DYN_INFO_60"]#, path+"/C/100/AVG_K_10.evalRAPPORT_DYN_INFO_60"]
-#
-#
-#fig = plt.figure(figsize=(13,10))
-#
-#plt.minorticks_on()
-#plt.grid(which='both')
-#plt.grid(which='minor', alpha=0.4, linestyle='-.')
-#
-#plt.xlabel("Budget (# sol évalué)",size=15, fontweight="bold")
-#plt.xlim(0,4000)
-#plt.ylabel("Fréquence d'intéraction",size=15, fontweight="bold")
-#
-#for f,l in zip(file_plot,labels) : 
-#    M = np.loadtxt(f)
-#    X = list()
-#    Y = list()
-#    budgets = list(set(M[:,3]))
-#    budgets.sort()
-#    for b in budgets :
-#        freq = None
-#        for m in M : 
-#            if m[3] == b :
-#                min_ind = m[7]
-#                freq = m[11]
-#                
-#        X.append(b)
-#        Y.append(freq)
-#        
-#    plt.plot(X, Y, label=l, marker='o',linewidth=4.0)
-#    
-#    
-#plt.legend(prop={'size': 15})
-#plt.title("Fréquence d'échange avec le DM pour différents budget alloué", fontweight="bold",size=20,)
-#fig.savefig("Freq_Interaction_Budget.png")
-#
-#plt.show()
-
-
-
-
-
-
-
-
-
-###############  2Learning apprentissage bInf bSup MOYENNE
-
-file_plot_static = [path+"/A/100/AVG_K_30.evalPARETO"]#, path+"/C/100/AVG_K_30.evalPARETO"]
-file_plot_dyn = [path+"/A/100/AVG_K_10.evalRAPPORT_DYN_INFO_60"]#, path+"/C/100/AVG_K_10.evalRAPPORT_DYN_INFO_60"]
-
-for i,l in zip(range(len(file_plot_static)), labels):
-    
-    fig = plt.figure(figsize=(13,10))
-    plt.minorticks_on()
-    plt.grid(which='both')
-    plt.grid(which='minor', alpha=0.4, linestyle='-.')
-    
-    plt.xlabel("Budget #sol évalué",size=15, fontweight="bold")
-    plt.xlim(0,4000)
-    plt.ylabel("log D1",size=15, fontweight="bold")
-
-    file_static,file_dyn = file_plot_static[i],file_plot_dyn[i]
-    
-    Bigreader = list(csv.DictReader(open(file_static, newline=''), delimiter = ','))
-    Smallreader = list(csv.DictReader(open(file_dyn, newline=''), delimiter = ','))
-    
-    Xbudget_f1 = set()
-    Xbudget_f2 = set()
-    for r in Bigreader :
-        Xbudget_f1.add(int(r['Budget']))
-        
-    Xbudget_f1 = list(Xbudget_f1)
-    Xbudget_f1.sort()
-    
-    for r in Smallreader :
-        Xbudget_f2.add(int(r['Budget']))
-    
-    Xbudget_f2 = list(Xbudget_f2)
-    Xbudget_f2.sort()
-
-    Ymin = list()
-    Ymax = list()
-    Ydyn = list()
-    
-    for b in Xbudget_f1 : #[60,540,1220,6020] : #Xbudget_f1  :
-        minus = -1
-        maxus = -1
-
-        for row in Bigreader:
-            if int(row['Budget']) == b  :
-                avg_min = float(row['AVG_dist'])
-                if (avg_min < minus) or (minus == -1) :
-                    minus = avg_min
-                if (avg_min > maxus) or (maxus == -1) :
-                    maxus = avg_min
-            
-        Ymin.append(np.log(minus))
-        Ymax.append(np.log(maxus))
-        
-    for b in Xbudget_f2 : #[60,540,1220,6020] : #[50,500,800,6020] : #Xbudget_f2  :
-
-        for row in Smallreader : 
-            if int(row['Budget']) == b  :
-                Ydyn.append(np.log(float(row['AVG_dist'])))
-        
-    
-        
-    if i == 0 :
-        plt.plot(Xbudget_f1,Ymin,c="blue",label="Best approximation",marker='.',linewidth=2.0)
-        plt.plot(Xbudget_f1,Ymax,c="red",label="Worst approximation",marker='.',linewidth=2.0)
-        plt.plot(Xbudget_f2,Ydyn,c="green",label="$PLS_{2L}$",marker='.',linewidth=2.0)
-    else :
-        plt.plot(Xbudget_f1,Ymin,c="blue",marker='.',linewidth=2.0)
-        plt.plot(Xbudget_f1,Ymax,c="red",marker='.',linewidth=2.0)
-        plt.plot(Xbudget_f2,Ydyn,c="green",marker='.',linewidth=2.0)
-        
-    plt.grid()
-    plt.legend(prop={'size': 15})
-    plt.title("Log Moyenne de D1 retourné par $PLS_{2L}$ contre la meilleure et pire approximation avec l'approche statique \n Instances  "+l ,fontsize=15,fontweight="bold")
-    fig.savefig("Compare_"+l+"_2L_MOY.png", dpi=fig.dpi)
-    plt.show()
-
-
-
-
-############### DYN apprentissage bInf bSup MEDIANE
-
-file_plot_static = [path+"/A/100/K_30.evalPARETO"]#, path+"/C/100/K_30.evalPARETO"]
-file_plot_dyn = [path+"/A/100/K_10.evalRAPPORT_MULTIPLE_PARAM"]#, path+"/C/100/K_10.evalRAPPORT_DYN_MULTIPLE_PARAM"]
-for i,l in zip(range(len(file_plot_static)), labels):
-    
-    fig = plt.figure(figsize=(13,10))
-    plt.minorticks_on()
-    plt.grid(which='both')
-    plt.grid(which='minor', alpha=0.4, linestyle='-.')
-    
-    plt.xlabel("Budget #sol évalué",size=15, fontweight="bold")
-    plt.xlim(0,3500)
-    plt.ylabel("Médiane D1",size=15, fontweight="bold")
-
-    file_static,file_dyn = file_plot_static[i],file_plot_dyn[i]
-    
-    Bigreader = list(csv.DictReader(open(file_static, newline=''), delimiter = ','))
-    Smallreader = list(csv.DictReader(open(file_dyn, newline=''), delimiter = ','))
-    
-    Xbudget_f1 = set()
-    Xbudget_f2 = set()
-    for r in Bigreader :
-        Xbudget_f1.add(int(r['Budget']))
-        
-    Xbudget_f1 = list(Xbudget_f1)
-    Xbudget_f1.sort()
-    
-    for r in Smallreader :
-        Xbudget_f2.add(int(r['Budget']))
-    
-    Xbudget_f2 = list(Xbudget_f2)
-    Xbudget_f2.sort()
-
-    Ymin = list()
-    Ydyn = list()
-
-    for b in Xbudget_f1 : #[60,540,1220,6020] : #Xbudget_f1  :
-        Ytmp = list()
-
-        for row in Bigreader:
-            if int(row['Budget']) == b  :
-                Ytmp.append(float(row['AVG_dist']))
-
-        Ytmp.sort()
-        Ymin.append(np.median(Ytmp))
-        
-    for b in Xbudget_f2 : #[60,540,1220,6020] : #[50,500,800,6020] : #Xbudget_f2  :
-        Ytmp = list()
-
-        for row in Smallreader : 
-            if int(row['Budget']) == b  :
-                Ytmp.append((float(row['AVG_dist'])))
-        
-        Ytmp.sort()
-        Ydyn.append(np.median(Ytmp))
-    
-        
-    if i == 0 :
-        plt.plot(Xbudget_f1,Ymin,c="blue",label="static method",marker='.',linewidth=2.0)
-        plt.plot(Xbudget_f2,Ydyn,c="green",label="$PLS_{2L}$",marker='.',linewidth=2.0)
-    else :
-        plt.plot(Xbudget_f1,Ymin,c="blue",marker='.',linewidth=2.0)
-        plt.plot(Xbudget_f2,Ydyn,c="green",marker='.',linewidth=2.0)
-        
-    plt.grid()
-    plt.legend(prop={'size': 15})
-    plt.title("Valeur médiane de D1 par $PLS_{2L}$ et de l'approche statique \n Instances  "+l ,fontsize=15,fontweight="bold")
-    fig.savefig("Compare_"+l+"_2L_MED.png", dpi=fig.dpi)
-    plt.show()
 
 
 

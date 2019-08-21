@@ -447,13 +447,13 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 
 void save_avg_instances(string type_inst, string taille, string WS_DM, string p_criteria ){
 
-	int K = 10;
+	int K = 20;
 	int N = 10;
-	vector<int> I = {0};//,1,2,3,4,5,6,7};
+	vector<int> I = {0,1,2,3,4,5,6,7};
 
-	string prefix = "MOLS_DYN_Info_60";
-	string format_in = "evalRAPPORT_DYN_INFO_20";
-	vector< int > sizer = {20};//2,8,20,60,100};
+	string prefix = "MOLS_DYN_INFO_100";
+	string format_in = "eval";
+	vector< int > sizer = {2,8,20,60,100,200};
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};
 //	vector< int > Budget(1,-1);
 //	vector< int > Budget = {50,500,1000,2000,3000,4000,8000};
@@ -533,7 +533,7 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 	int K = 10;
 	int N = 10;
 	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};   //A
-//	vector< int > Budget = {50,500,1000,2000,3000,4000,8000};
+//	vector< int > Budget = {50,500,1000,2000,3000,4000};
 
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
 
@@ -545,12 +545,12 @@ void script_learning_data(string type_inst, string taille, string WS_DM, string 
 
 	vector< string > prefixes = {"FINAL_MOLS_DYN_Info"};//,"MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
 
-	vector<int> sizer = {20};//2,8,20,60,100};  //       //A
+	vector<int> sizer = {100};//2,8,20,60,100};  //       //A
 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "evalRAPPORT_DYN_INFO_20";
+	string format_in = "evalRAPPORT_DYN_INFO_100";
 	string format_out = "opt";
 
 	ofstream fic1(filename_indicator+"/K_"+to_string(K)+"."+format_in);
@@ -753,7 +753,7 @@ int main(int argc, char** argv){
 //////
 //	script_save_information(type_inst, taille, WS_DM, p_criteria);
 //
-//	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
+	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
 //
 
 /*
@@ -835,7 +835,7 @@ int main(int argc, char** argv){
 */
 
 
-	script_knapsack_DYN_MULTIPLE_PARAM(type_inst,taille,WS_DM, p_criteria);
+//	script_knapsack_DYN_MULTIPLE_PARAM(type_inst,taille,WS_DM, p_criteria);
 
 
 

@@ -688,7 +688,6 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 					update_covered_PFront();
 //				}
-
 				cout<<"____"<<endl;
 				vector< float > indicator(8,0.);
 				int nb_interaction = 0;
