@@ -162,12 +162,14 @@ filename_outter = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/predicted_val
 
 
 filename_pred = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/predicted_value.eval"
+filename = "./Data/Evaluation"+p+"/"+type_inst+"/"+taille+"/K_20_extend_normalized.eval"
 
 PopSizeIndex = [10]#0, 1, 4,8, 10]
 
-InformationIndex = [0,6,15,20]#9,13,15,17,18,20]
+InformationIndex = [0]#,6,15,20]#9,13,15,17,18,20]
 
 div = 0
+nb_inst = 10.0
 
 def compare_predicted_expected_value():       
     Bigreader = list(csv.DictReader(open(filename, newline=''), delimiter = ','))
@@ -185,36 +187,34 @@ def compare_predicted_expected_value():
         
         for ii,inf_index in zip(InformationIndex,range(0,len(InformationIndex))) : 
             info = Information_norm[ii]
-            for i in N_norm :
-                X = list()
-                Y = list()
-                Xpred = list()
-                Ypred = list()
-                for b in Budget_norm :
-                    
-                    for row in Bigreader : 
-                        if int(float(row['Diversification'])) == div  and (float(row['Info']) == info ) and ( float(row['Budget']) == b) and float(row['Instance']) == i and float(row['PopSize']) == s :
-                            Y.append(float(row['AVG_dist']))
-                            X.append(b)
-        
-                    for row in Smallreader : 
-                        if int(float(row['Diversification'])) == div  and (float(row['Info']) == info ) and ( float(row['Budget']) == b) and float(row['Instance']) == i and float(row['PopSize']) == s :
-                            Ypred.append(float(row['AVG_dist']))
-                            Xpred.append(b)
-    
-    
-                ax = fig.add_subplot("33"+str(inf_index+1))
-                ax.legend()
+            X = list()
+            Y = list()
+            Xpred = list()
+            Ypred = list()
+            for b in Budget_norm :
+                avg_real = 0
+                avg_expect = 0
+                for row in Bigreader : 
+                    if int(float(row['Diversification'])) == div  and (float(row['Info']) == info ) and ( float(row['Budget']) == b) and float(row['PopSize']) == s :
+                        avg_real += float(row['AVG_dist'])
+                Y.append( avg_real/nb_inst )
+                X.append(b)
 
-                if i == 0 :
-                    ax.plot(X,Y,c="green",label="Expected AVG_min  ("+str(Information[ii])+"°)")
-                    ax.plot(Xpred,Ypred,c="red",label="Predicted AVG_min  ("+str(Information[ii])+"°)")
-                else:
-                    ax.plot(X,Y,c="green")
-                    ax.plot(Xpred,Ypred,c="red")
+                for row in Smallreader : 
+                    if int(float(row['Diversification'])) == div  and (float(row['Info']) == info ) and ( float(row['Budget']) == b) and float(row['PopSize']) == s :
+                        avg_expect += float(row['AVG_dist'])
+                Y.append( avg_expect/nb_inst )
+                Xpred.append(b)
+
+
+            ax = fig.add_subplot("33"+str(inf_index+1))
+            ax.legend()
+
+            ax.plot(X,Y,c="green",label="Expected $D_1$  ("+str(Information[ii])+"°)")
+            ax.plot(Xpred,Ypred,c="red",label="Predicted $D_1$  ("+str(Information[ii])+"°)")
 
         ax.legend(prop={'size': 15})
-        fig.savefig("PredictedD1"+type_inst+taille+"_PopS"+str(PopSize[si])+"_D"+str(div)+".png", dpi=fig.dpi*2)
+        fig.savefig("PredictedD1"+type_inst+taille+"_PopS"+str(PopSize[si])+"_D"+str(div)+".png")
         ax.show()
         
 ####################################################################################
