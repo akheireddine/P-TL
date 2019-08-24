@@ -831,7 +831,7 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
  * ************************************************* MACHINE LEARNING - OTHER METHODS *************************************************
  */
 
-void best_parametrization_RegLin(float Info_rate, int budget, int &div, int &pop_size, int inst_name, vector<int> UB_Population_list){
+void best_parametrization_RegLin(float &info_rate, int budget, int &div, int &pop_size, int inst_name, vector<int> UB_Population_list, vector< float > Informations){
 
 	float PopSize_norm = 200 - 2.0; //100 - 2.0;
 	float min_PopSize = 2.;
@@ -861,14 +861,17 @@ void best_parametrization_RegLin(float Info_rate, int budget, int &div, int &pop
 
 	//C-100
 	for(auto d : {0,1} ){
-		for(auto p : UB_Population_list){
-			 float val_avg =  (-0.2423)*(budget - min_Budget)*1.0/Budget_norm
-					 + 0.1048 * (p - min_PopSize)*1.0/PopSize_norm + 0.1467 * Info_rate*1.0/Info_norm + 0.1213 * d + 0.1017;
-			 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
-				 div = d;
-				 avg_min = val_avg;
-				 pop_size = p;
-			 }
+		for(auto info : Informations){
+			for(auto p : UB_Population_list){
+				 float val_avg =  (-0.2423)*(budget - min_Budget)*1.0/Budget_norm
+						 + 0.1048 * (p - min_PopSize)*1.0/PopSize_norm + 0.1467 * info*1.0/Info_norm + 0.1213 * d + 0.1017;
+				 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
+					 div = d;
+					 avg_min = val_avg;
+					 pop_size = p;
+					 info_rate = info;
+				 }
+			}
 		}
 	}
 
@@ -880,7 +883,7 @@ void best_parametrization_RegLin(float Info_rate, int budget, int &div, int &pop
 
 
 
-void MainKnapsack::MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, int inst_name, float Info_rate){
+void MainKnapsack::MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, int inst_name, vector< float > Info_rate){
 
 	shared_ptr< AlternativeKnapsack > alt;
 	list< string > Local_front;
@@ -893,7 +896,8 @@ void MainKnapsack::MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, in
 /*                          INITIALISER LES PARAMETRES                              */
 	int PopSize = UB_Population_list[0] ;
 	int diversification = 0;
-	best_parametrization_RegLin(Info_rate, Budget, diversification, PopSize, inst_name, UB_Population_list);
+	float info_rate = 90.;
+	best_parametrization_RegLin(info_rate, Budget, diversification, PopSize, inst_name, UB_Population_list, Info_rate);
 
 
 
@@ -910,7 +914,7 @@ void MainKnapsack::MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, in
 		alt = dic_Alternative[ Population.front() ];
 		Population.pop_front();
 
-		save_information(filename_population+"/FINAL_MOLS_ML_RegLin/"+INFO+"/"+to_string(Budget),alt->get_criteria_values(), nb_iteration, index, PopSize );
+		save_information(filename_population+"/"+to_string(Budget),alt->get_criteria_values(), nb_iteration, index, PopSize );
 
 		set< string > current_neighbors = alt->get_neighborhood();
 
@@ -972,9 +976,9 @@ void MainKnapsack::MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, in
 
 
 
-			best_parametrization_RegLin(Info_rate, (Budget - nb_iteration), diversification, PopSize, inst_name, UB_Population_list);
+			best_parametrization_RegLin(info_rate, (Budget - nb_iteration), diversification, PopSize, inst_name, UB_Population_list, Info_rate);
 
-			cout<<"PopSize : "<<PopSize<<" Div : "<<diversification<<endl;
+			cout<<"PopSize : "<<PopSize<<" Div : "<<diversification<< " Info : "<<info_rate<<" Budget : "<<(Budget - nb_iteration)<<endl;
 //			ATTEMPT TO ADD DOMINATED SOLUTIONS TO Population
 			if( diversification ){
 				if( Population.empty() )

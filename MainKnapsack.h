@@ -105,7 +105,7 @@ public :
 	void MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population_size);
 	void MOLS_OPT_PARAMETERS(double starting_time_sec, vector< map<string, float > > OPT_Params,
 			map<float,int> id_info, string information_file);
-	void MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, int inst_name, float Info_rate);
+	void MOLS_ML_RegLin(int Budget, vector<int> UB_Population_list, int inst_name, vector< float > Info_rate);
 
 
 	void Random_Selection(list< string > & dominated_solutions, list< string > & population, int upper_bound);

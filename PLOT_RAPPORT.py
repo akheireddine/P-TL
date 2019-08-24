@@ -758,123 +758,126 @@ labels= "A-100","A-200","C-100"
 #
 ################ DYN apprentissage bInf bSup MEDIANE
 
-file_plot_static = [path+"/A/100/K_30.evalPARETO", path+"/C/100/K_20.evalPareto"]
-file_plot_dyn = [path+"/A/100/K_10.evalRAPPORT_DYN_INFO_60", path+"/C/100/K_10.evalRAPPORT_DYN_INFO_100"]
-div = 0
-PopSize = 60,100
-labels= "A-100","C-100"
-colors = ['tab:blue',"tab:orange"]
-
-fig = plt.figure(figsize=(7,6))
-plt.minorticks_on()
-plt.grid(which='both')
-plt.grid(which='minor', alpha=0.4, linestyle='-.')
-
-plt.xlabel("Budget #sol évalué",size=15, fontweight="bold")
-plt.xlim(0,3500)
-plt.ylabel("Médiane D1",size=15, fontweight="bold")
-
-for i,l in zip(range(len(file_plot_static)), labels):
-    
-
-
-    file_static,file_dyn = file_plot_static[i],file_plot_dyn[i]
-    
-    Bigreader = list(csv.DictReader(open(file_static, newline=''), delimiter = ','))
-    Smallreader = list(csv.DictReader(open(file_dyn, newline=''), delimiter = ','))
-    
-    Xbudget_f1 = set()
-    Xbudget_f2 = set()
-    for r in Bigreader :
-        Xbudget_f1.add(int(r['Budget']))
-        
-    Xbudget_f1 = list(Xbudget_f1)
-    Xbudget_f1.sort()
-    
-    for r in Smallreader :
-        Xbudget_f2.add(int(r['Budget']))
-    
-    Xbudget_f2 = list(Xbudget_f2)
-    Xbudget_f2.sort()
-
-    Ymin = list()
-    Ydyn = list()
-
-    for b in Xbudget_f1 : #[60,540,1220,6020] : #Xbudget_f1  :
-        Ytmp = list()
-
-        for row in Bigreader:
-            if int(float(row['Diversification'])) == div and int(row['Budget']) == b and int(float(row['PopSize'])) == PopSize[i] :
-                Ytmp.append(float(row['AVG_dist']))
-
-        Ytmp.sort()
-        Ymin.append(np.median(Ytmp))
-        
-    for b in Xbudget_f2 : #[60,540,1220,6020] : #[50,500,800,6020] : #Xbudget_f2  :
-        Ytmp = list()
-
-        for row in Smallreader : 
-            if int(float(row['Diversification'])) == div and int(row['Budget']) == b and int(float(row['PopSize'])) == PopSize[i] :
-                Ytmp.append((float(row['AVG_dist'])))
-        
-        Ytmp.sort()
-        Ydyn.append(np.median(Ytmp))
-    
-        
-    plt.plot(Xbudget_f1,Ymin,label="static method - "+labels[i],marker='.',linewidth=3.0, color=colors[i], linestyle=':')
-    plt.plot(Xbudget_f2,Ydyn,label="$PLS_{dyn}$",marker='.',linewidth=3.0, color=colors[i])
-        
-plt.grid()
-plt.legend(prop={'size': 14})
-#plt.title("Valeur médiane de D1 par $PLS_{dyn}$ et de l'approche statique \n Instances  "+l ,fontsize=15,fontweight="bold")
-plt.title(labels[0]+" et "+labels[1] ,fontsize=15,fontweight="bold")
-fig.savefig("Compare_DYN_MED.png", dpi=fig.dpi)
-plt.show()
-
-#
-################ DYN Fréquence d'interaction / Budget
-#    
-#file_plot = [path+"/A/100/AVG_K_10.evalRAPPORT_DYN_INFO_60", path+"/C/100/AVG_K_10.evalRAPPORT_DYN_INFO_100"]
-#
+#file_plot_static = [path+"/A/100/K_30.evalPARETO", path+"/C/100/K_20.evalPareto"]
+#file_plot_dyn = [path+"/A/100/K_10.evalRAPPORT_DYN_INFO_60", path+"/C/100/K_10.evalRAPPORT_DYN_INFO_100"]
+#div = 0
+#PopSize = 60,100
 #labels= "A-100","C-100"
+#colors = ['tab:blue',"tab:orange"]
 #
-#fig = plt.figure(figsize=(13,10))
-#
+#fig = plt.figure(figsize=(7,6))
 #plt.minorticks_on()
 #plt.grid(which='both')
 #plt.grid(which='minor', alpha=0.4, linestyle='-.')
 #
-#plt.xlabel("Budget (# sol évalué)",size=15, fontweight="bold")
-#plt.xlim(0,4000)
-#plt.ylabel("Fréquence d'intéraction",size=15, fontweight="bold")
+#plt.xlabel("Budget #sol évalué",size=15, fontweight="bold")
+#plt.xlim(0,3500)
+#plt.ylabel("Médiane D1",size=15, fontweight="bold")
 #
-#for f,l in zip(file_plot,labels) : 
-#    M = np.loadtxt(f)
-#    X = list()
-#    Y = list()
-#    budgets = list(set(M[:,3]))
-#    budgets.sort()
-#    for b in budgets :
-#        freq = None
-#        for m in M : 
-#            if m[3] == b :
-#                min_ind = m[7]
-#                freq = m[11]
-#                
-#        X.append(b)
-#        Y.append(freq)
+#for i,l in zip(range(len(file_plot_static)), labels):
+#    
+#
+#
+#    file_static,file_dyn = file_plot_static[i],file_plot_dyn[i]
+#    
+#    Bigreader = list(csv.DictReader(open(file_static, newline=''), delimiter = ','))
+#    Smallreader = list(csv.DictReader(open(file_dyn, newline=''), delimiter = ','))
+#    
+#    Xbudget_f1 = set()
+#    Xbudget_f2 = set()
+#    for r in Bigreader :
+#        Xbudget_f1.add(int(r['Budget']))
 #        
-#    plt.plot(X, Y, label=l, marker='o',linewidth=4.0)
+#    Xbudget_f1 = list(Xbudget_f1)
+#    Xbudget_f1.sort()
 #    
+#    for r in Smallreader :
+#        Xbudget_f2.add(int(r['Budget']))
 #    
-#plt.legend(prop={'size': 15})
-#plt.title("Fréquence d'échange avec le DM pour différents budget alloué", fontweight="bold",size=20,)
-#fig.savefig("Freq_Interaction_Budget.png")
+#    Xbudget_f2 = list(Xbudget_f2)
+#    Xbudget_f2.sort()
 #
+#    Ymin = list()
+#    Ydyn = list()
+#
+#    for b in Xbudget_f1 : #[60,540,1220,6020] : #Xbudget_f1  :
+#        Ytmp = list()
+#
+#        for row in Bigreader:
+#            if int(float(row['Diversification'])) == div and int(row['Budget']) == b and int(float(row['PopSize'])) == PopSize[i] :
+#                Ytmp.append(float(row['AVG_dist']))
+#
+#        Ytmp.sort()
+#        Ymin.append(np.median(Ytmp))
+#        
+#    for b in Xbudget_f2 : #[60,540,1220,6020] : #[50,500,800,6020] : #Xbudget_f2  :
+#        Ytmp = list()
+#
+#        for row in Smallreader : 
+#            if int(float(row['Diversification'])) == div and int(row['Budget']) == b and int(float(row['PopSize'])) == PopSize[i] :
+#                Ytmp.append((float(row['AVG_dist'])))
+#        
+#        Ytmp.sort()
+#        Ydyn.append(np.median(Ytmp))
+#    
+#        
+#    plt.plot(Xbudget_f1,Ymin,label="static method - "+labels[i],marker='.',linewidth=3.0, color=colors[i], linestyle=':')
+#    plt.plot(Xbudget_f2,Ydyn,label="$PLS_{dyn}$",marker='.',linewidth=3.0, color=colors[i])
+#        
+#plt.grid()
+#plt.legend(prop={'size': 14})
+##plt.title("Valeur médiane de D1 par $PLS_{dyn}$ et de l'approche statique \n Instances  "+l ,fontsize=15,fontweight="bold")
+#plt.title(labels[0]+" et "+labels[1] ,fontsize=15,fontweight="bold")
+#fig.savefig("Compare_DYN_MED.png", dpi=fig.dpi)
 #plt.show()
+
 #
-#
-#
+################ DYN Fréquence d'interaction / Budget
+#    
+file_plot = [path+"/A/100/AVG_K_10.evalRAPPORT_DYN_INFO_60", path+"/C/100/AVG_K_10.evalRAPPORT_DYN_INFO_100"]
+
+labels= "A-100","C-100"
+
+fig = plt.figure(figsize=(13,10))
+
+plt.minorticks_on()
+plt.grid(which='both')
+plt.grid(which='minor', alpha=0.4, linestyle='-.')
+
+plt.xlabel("Budget (# sol évalué)",size=15, fontweight="bold")
+plt.xlim(0,4000)
+plt.ylabel("Fréquence d'intéraction",size=15, fontweight="bold")
+
+for f,l in zip(file_plot,labels) : 
+    M = np.loadtxt(f)
+    X = list()
+    Y = list()
+    budgets = list(set(M[:,3]))
+    budgets.sort()
+    for b in budgets :
+        freq = None
+        for m in M : 
+            if m[3] == b :
+                min_ind = m[7]
+                freq = m[11]
+                
+        X.append(b)
+        Y.append(freq)
+        
+    print(X)
+    print(Y)
+    print("====================")
+    plt.plot(X, Y, label=l, marker='o',linewidth=4.0)
+    
+    
+plt.legend(prop={'size': 15})
+plt.title("Fréquence moyenne d'échange avec le DM pour différents budget alloué", fontweight="bold",size=20,)
+fig.savefig("Freq_Interaction_Budget.png")
+
+plt.show()
+
+
+
 
 
 

@@ -683,12 +683,12 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 			for(size_t i = 0; i < Informations.size(); i++){
 
-//				if(i == 0){
+				if(i == 0){
 					set_WS_matrix(Tools::readMatrix(Informations[i]));
 
 					update_covered_PFront();
-//				}
-				cout<<"____"<<endl;
+				}
+
 				vector< float > indicator(8,0.);
 				int nb_interaction = 0;
 
@@ -697,8 +697,8 @@ void Evaluator::save_information(string file_population, string save_path, strin
 				string file_extension, dirstr;
 				if(ub == -1){
 //					dirstr = file_population+"/"+to_string(i);
-					dirstr = file_population+"/"+to_string(i)+"/"+to_string(b);
-//					dirstr = file_population+"/"+to_string(b);
+//					dirstr = file_population+"/"+to_string(i)+"/"+to_string(b);
+					dirstr = file_population+"/"+to_string(b);
 //					dirstr = file_population;
 				}else{
 					dirstr = file_population+"/"+to_string(ub);
