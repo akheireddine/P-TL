@@ -1513,9 +1513,9 @@ void MainKnapsack::MOLS_DYN_INFO(double starting_time_sec, vector< int > UB_Popu
 
 
 
-void best_parametrization_RegLin2(float Info_rate, int budget, int &div, int pop_size, int inst_name){
+void best_parametrization_RegLin2(float Info_rate, int budget, int &div, int &pop_size, int inst_name,vector<int> UB_Population_list){
 
-	float PopSize_norm = 200 - 2.0; //100 - 2.0;
+	float PopSize_norm = 100 - 2.0; //200 - 2.0;  C
 	float min_PopSize = 2.;
 
 	float Info_norm = 90.0 - 0. ;
@@ -1529,10 +1529,23 @@ void best_parametrization_RegLin2(float Info_rate, int budget, int &div, int pop
 
 
 	//A-100
+	for(auto d : {0,1} ){
+		for(auto p : UB_Population_list){
+			 float val_avg =  (-0.0148) * inst_name/N_norm + (-0.1922)*(budget - min_Budget)*1.0/Budget_norm
+					 + 0.1169 * (p - min_PopSize)*1.0/PopSize_norm + 0.0249 * Info_rate*1.0/Info_norm + 0.1041 * d + 0.0524;
+			 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
+				 div = d;
+				 avg_min = val_avg;
+				 pop_size = p;
+			 }
+		}
+	}
+
+	//C-100
 //	for(auto d : {0,1} ){
 //		for(auto p : UB_Population_list){
-//			 float val_avg =  (-0.0148) * inst_name/N_norm + (-0.1922)*(budget - min_Budget)*1.0/Budget_norm
-//					 + 0.1169 * (p - min_PopSize)*1.0/PopSize_norm + 0.0249 * Info_rate*1.0/Info_norm + 0.1041 * d + 0.0524;
+//			 float val_avg =  (-0.2423)*(budget - min_Budget)*1.0/Budget_norm
+//					 + 0.1048 * (p - min_PopSize)*1.0/PopSize_norm + 0.1467 * Info_rate*1.0/Info_norm + 0.1213 * d + 0.1017;
 //			 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
 //				 div = d;
 //				 avg_min = val_avg;
@@ -1540,16 +1553,6 @@ void best_parametrization_RegLin2(float Info_rate, int budget, int &div, int pop
 //			 }
 //		}
 //	}
-
-	//C-100
-	for(auto d : {0,1} ){
-		 float val_avg =  (-0.2423)*(budget - min_Budget)*1.0/Budget_norm
-				 + 0.1048 * (pop_size - min_PopSize)*1.0/PopSize_norm + 0.1467 * Info_rate*1.0/Info_norm + 0.1213 * d + 0.1017;
-		 if ( ((avg_min == -1) or (val_avg < avg_min)) and val_avg >= 0 ){
-			 div = d;
-			 avg_min = val_avg;
-		 }
-	}
 
 }
 
@@ -1563,10 +1566,13 @@ void MainKnapsack::MOLS_DYN_MULTIPLE_PARAM(int Budget, vector< int > UB_Populati
 	int limit_no_improvment = 2;
 
 	int info_index = 0;
-	int overloadPop = 5, remains_to_explore = 0;
+	int overloadPop = 3, remains_to_explore = 0;
 
 	int UB_Population_size = UB_Population_list[0];
 	int Diversification = 0;
+
+	vector< vector< float > > matrix_info = Tools::readMatrix(Informations[info_index]);
+	float info_rate = Tools::compute_information_rate(matrix_info, p_criteria);
 
 	//First initialization
 	for(list< string >::iterator p = Population.begin(); p != Population.end(); ++p){
@@ -1574,8 +1580,9 @@ void MainKnapsack::MOLS_DYN_MULTIPLE_PARAM(int Budget, vector< int > UB_Populati
 		Archive.push_back( dic_Alternative[ *p ] );
 	}
 
+	best_parametrization_RegLin2(info_rate, Budget - nb_iteration, Diversification, UB_Population_size, inst_name, UB_Population_list);
 
-	cout<<"info : "<<info_index<<" Popsize : "<<UB_Population_size<<", Div : "<<Diversification<<endl;
+//	cout<<"info : "<<info_index<<" Popsize : "<<UB_Population_size<<", Div : "<<Diversification<<endl;
 
 
 	while( !Population.empty() and nb_iteration < Budget ){
@@ -1649,23 +1656,22 @@ void MainKnapsack::MOLS_DYN_MULTIPLE_PARAM(int Budget, vector< int > UB_Populati
 			overloadPop = (remains_to_explore > 0)? overloadPop - 1 : overloadPop;
 			cout<<overloadPop<<"   "<<remains_to_explore<<endl;
 			if(overloadPop == 0){
-				overloadPop = 5;
+				overloadPop = 3;
 				info_index = (info_index + 1  < (int)Informations.size())? info_index + 1 : info_index;
 
 				vector< vector< float > > matrix_info = Tools::readMatrix(Informations[info_index]);
-				float info_rate = Tools::compute_information_rate(matrix_info, p_criteria);
+				info_rate = Tools::compute_information_rate(matrix_info, p_criteria);
 				set_WS_matrix(matrix_info);
 
-				int max_ub = UB_Population_list.back();
-				UB_Population_size = (remains_to_explore > UB_Population_size * 3)?
-						( (UB_Population_size * 2 > max_ub)?max_ub : (UB_Population_size*2) ) : UB_Population_size;
+//				int max_ub = UB_Population_list.back();
+//				UB_Population_size = (remains_to_explore > UB_Population_size * 3)?
+//						( (UB_Population_size * 2 > max_ub)?max_ub : (UB_Population_size*2) ) : UB_Population_size;
 
-				best_parametrization_RegLin2(info_rate, Budget - nb_iteration, Diversification, UB_Population_size, inst_name);
+				best_parametrization_RegLin2(info_rate, Budget - nb_iteration, Diversification, UB_Population_size, inst_name, UB_Population_list);
 
 				update_WS_matrix_Population();
 
 				cout<<"info : "<<info_index<<" Popsize : "<<UB_Population_size<<", Div : "<<Diversification<<endl;
-
 			}
 
 	/*
