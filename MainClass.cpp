@@ -195,8 +195,8 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 //// ORIGINAL VERSION
 void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_criteria){
 
-	int K = 15;
-	int N = 4;
+	int K = 10;
+	int N = 10;
 	vector< string > I = {"1","2","4","6","7"};
 	string testname = "Test2";
 
@@ -206,10 +206,10 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 
 	srand(time(NULL));
 
-	vector<int> sizer = {80};//2, 8, 20, 60, 100};  //
+	vector<int> sizer = {60};//2, 8, 20, 60, 100};  //
 
 
-	for(int i = 1; i < N; i++){
+	for(int i = 5; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 //		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
