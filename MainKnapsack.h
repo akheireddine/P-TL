@@ -16,7 +16,7 @@ extern list<set<int>> init_population;
 
 extern string INFO;
 extern int k_replication;
-
+extern float Ta;
 
 
 
@@ -110,6 +110,8 @@ public :
 
 	void Random_Selection(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 	void Ordered_Selection(list< string > & dominated_solutions, list< string > & population, int upper_bound);
+	void LTA(list< string > & dominated_solutions, list< string > & population, int upper_bound);
+	void TA(list< string > & dominated_solutions, list< string > & population, int upper_bound);
 
 	//EVALUATION
 	void save_information(string filename, vector< float > criteria_vect, float time_cpu, int index);

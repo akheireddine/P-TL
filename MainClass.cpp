@@ -202,14 +202,14 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 
 	vector<int> graines;
 
-	string prefix = "MOLS_PSize_DIV_NEIGHBOR/NO_INFO_NEIGHBOR";                //OS and RS  use MOLS_PSize/OS
+	string prefix = "MOLS_PSize_DIV/LTA";
 
 	srand(time(NULL));
 
-	vector<int> sizer = {60};//2, 8, 20, 60, 100};  //
+	vector<int> sizer = {60};  //
 
 
-	for(int i = 5; i < N; i++){
+	for(int i = 0; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 //		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -411,14 +411,14 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 	else if (type_inst.compare("D") == 0)
 		id_type_inst = 2;
 
-	int K = 20;
+	int K = 10;
 	int N = 10;
 	string testname = "./Data/WS_Learning/Test2/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
-	vector< string > prefixes = {"MOLS_PSize", "MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
+	vector< string > prefixes = {"MOLS_PSize_DIV_NEIGHBOR/NO_INFO_NEIGHBOR"};//, "MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
 
-	vector<int> sizer = {2,8,20,60,100,200};
+	vector<int> sizer = {60};//2,8,20,60,100,200};
 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
@@ -685,7 +685,7 @@ int main(int argc, char** argv){
 
 	string WS_DM = "./weighted_DM_preferences.ks";
 
-	string type_inst = "C";
+	string type_inst = "A";
 	string taille = "100";
 	string p_criteria = "2";
 //
@@ -753,7 +753,7 @@ int main(int argc, char** argv){
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
 //	script_save_information(type_inst, taille, WS_DM, p_criteria);
-//
+////
 //	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
 //
 

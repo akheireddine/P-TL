@@ -24,3 +24,5 @@ int k_replication = 0;
 
 
 
+float Ta = -1;
+

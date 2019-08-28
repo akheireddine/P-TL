@@ -683,11 +683,11 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 			for(size_t i = 0; i < Informations.size(); i++){
 
-				if(i == 0){
+//				if(i == 0){
 					set_WS_matrix(Tools::readMatrix(Informations[i]));
 
 					update_covered_PFront();
-				}
+//				}
 
 				vector< float > indicator(8,0.);
 				int nb_interaction = 0;

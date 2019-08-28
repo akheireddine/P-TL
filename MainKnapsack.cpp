@@ -366,8 +366,97 @@ void MainKnapsack::Ordered_Selection(list< string > & dominated_solutions, list<
 }
 
 
+void MainKnapsack::LTA(list< string > & dominated_solutions, list< string > & population, int upper_bound){
+
+	map< float, string, less<float> > ratio_items;
+
+	vector<float> random_ws = Tools::generate_random_restricted_WS_aggregator(p_criteria, WS_matrix);
+
+	for(list< string >::iterator  i = dominated_solutions.begin(); i != dominated_solutions.end(); ++i){
+
+		shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[*i];
 
 
+		//MIN TA
+		float aggreg_value = -1;
+		for(list< shared_ptr< Alternative > >::iterator alt_opt = Archive.begin(); alt_opt != Archive.end(); ++alt_opt){
+			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+			if(aggreg_value == -1   or  (val < aggreg_value)  )
+				aggreg_value =  val;
+		}
+		float val_key = aggreg_value;
+		ratio_items[val_key] = p_alt->get_id_alt();
+	}
+
+	//LEARNING
+	float Ta_tmp = 0.0;
+	for(map< float, string >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
+		Ta_tmp += (*i).first;
+	}
+	Ta_tmp /= ratio_items.size();
+
+	if( (Ta_tmp * alpha < Ta)  or (Ta == -1)){
+		Ta = Ta_tmp * alpha ;
+	}
+	else
+		Ta *= alpha;
+
+
+	int cpt= 0;
+//	int min_bound = (upper_bound != -1)? upper_bound : (int)dominated_solutions.size();
+//	min_bound = ( (int)dominated_solutions.size() < min_bound) ? (int)dominated_solutions.size() : min_bound;
+
+	for(map< float, string, less<float> >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
+
+		if( ((*i).first <= Ta)   ){ //(cpt < min_bound)  and
+			shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[(*i).second];
+			population.push_back( p_alt->get_id_alt());
+			dominated_solutions.remove((*i).second);
+			cpt++;
+		}
+	}
+
+
+}
+
+void MainKnapsack::TA(list< string > & dominated_solutions, list< string > & population, int upper_bound){
+
+	map< float, string, less<float> > ratio_items;
+
+	vector<float> random_ws = Tools::generate_random_restricted_WS_aggregator(p_criteria, WS_matrix);
+
+	for(list< string >::iterator  i = dominated_solutions.begin(); i != dominated_solutions.end(); ++i){
+
+		shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[*i];
+
+
+		//MIN TA
+		float aggreg_value = -1;
+		for(list< shared_ptr< Alternative > >::iterator alt_opt = Archive.begin(); alt_opt != Archive.end(); ++alt_opt){
+			float val =  abs(f(random_ws, (*alt_opt)->get_criteria_values()) - f(random_ws, p_alt->get_criteria_values() ));
+			if(aggreg_value == -1   or  (val < aggreg_value)  )
+				aggreg_value =  val;
+		}
+		float val_key = aggreg_value;
+		ratio_items[val_key] = p_alt->get_id_alt();
+	}
+
+
+	int cpt= 0;
+
+	for(map< float, string, less<float> >::iterator i = ratio_items.begin(); i != ratio_items.end(); ++i){
+
+		if( ((*i).first <= Ta)   ){ //(cpt < min_bound)  and
+			shared_ptr< AlternativeKnapsack > p_alt = dic_Alternative[(*i).second];
+			population.push_back( p_alt->get_id_alt());
+			dominated_solutions.remove((*i).second);
+			cpt++;
+		}
+	}
+
+	Ta *= alpha;
+
+}
 
 
 
@@ -790,6 +879,7 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
 			int to_add = ( UB_Population_size - (int)Population.size() ) ;
 			if( to_add > 0  and   ( (limit_no_improvment > 0) or !Population.empty() ) ){
 				Ordered_Selection(Dominated_alt, Population, to_add);
+				LTA(Dominated_alt, Population, to_add);
 			}
 
 			map<string, shared_ptr< AlternativeKnapsack > > tmp_dic_Alternative = dic_Alternative;
