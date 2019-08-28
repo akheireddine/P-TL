@@ -202,7 +202,7 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 
 	vector<int> graines;
 
-	string prefix = "MOLS_PSize_DIV/LTA";
+	string prefix = "MOLS_PSize_DIV/TA";
 
 	srand(time(NULL));
 
@@ -418,12 +418,12 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 
 	vector< string > prefixes = {"MOLS_PSize_DIV_NEIGHBOR/NO_INFO_NEIGHBOR"};//, "MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
 
-	vector<int> sizer = {60};//2,8,20,60,100,200};
+	vector<int> sizer = {20};//2,8,20,60,100,200};
 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "evalRAPPORT4";
+	string format_in = "evalDIV_NEIGHBOR";
 	ofstream fic(filename_indicator+"/K_"+to_string(K)+"."+format_in);
 	fic<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification, Time"<<endl;
 	fic.close();
@@ -448,15 +448,16 @@ void save_avg_instances(string type_inst, string taille, string WS_DM, string p_
 
 	int K = 10;
 	int N = 10;
-	vector<int> I = {0};//,1,2,3,4,5,6,7};
+	//	vector<int> I = {0};//,1,2,3,4,5,6,7};
+	vector<int> I = {1,2,4,6,7};
 
-	string prefix = "FINAL_FINAL_FINAL_MOLS_DYN_MULTIPLE_PARAM";
-	string format_in = "evalRAPPORT_MULTIPARAM";
-	vector< int > sizer = {-1};//2,8,20,60,100,200};
+	string prefix = "evalDIV_NEIGHBOR";
+	string format_in = "evalDIV_NEIGHBOR";
+	vector< int > sizer = {20};//2,8,20,60,100,200};
 //	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};
-//	vector< int > Budget(1,-1);
+	vector< int > Budget(1,-1);
 //	vector< int > Budget = {50,500,1000,2000,3000,4000,8000};
-	vector< int > Budget = {50,500,1000,2020,4020,8020};
+//	vector< int > Budget = {50,500,1000,2020,4020,8020};
 
 
 	string save_file = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
@@ -748,13 +749,13 @@ int main(int argc, char** argv){
 /*
   *************************************************************************************************************************
 */
-	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
+//	script_Cst_PSize(type_inst,taille,WS_DM, p_criteria);
 ////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
-//	script_save_information(type_inst, taille, WS_DM, p_criteria);
+	script_save_information(type_inst, taille, WS_DM, p_criteria);
 ////
-//	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
+	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
 //
 
 /*

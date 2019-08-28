@@ -681,8 +681,9 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 		for(auto ub : UB_Population){
 
-			for(size_t i = 0; i < Informations.size(); i++){
+//			for(size_t i = 0; i < Informations.size(); i++){
 
+			for(auto i : {1,2,4,6,7}){
 //				if(i == 0){
 					set_WS_matrix(Tools::readMatrix(Informations[i]));
 
@@ -701,9 +702,9 @@ void Evaluator::save_information(string file_population, string save_path, strin
 					dirstr = file_population+"/"+to_string(b);
 //					dirstr = file_population;
 				}else{
-					dirstr = file_population+"/"+to_string(ub);
+//					dirstr = file_population+"/"+to_string(ub);
 //					dirstr = file_population+"/"+to_string(ub)+"/0";
-//					dirstr = file_population+"/"+to_string(ub)+"/"+to_string(i);
+					dirstr = file_population+"/"+to_string(ub)+"/"+to_string(i);
 				}
 
 				dirname = dirstr.c_str();

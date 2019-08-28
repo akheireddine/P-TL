@@ -878,8 +878,9 @@ void MainKnapsack::MOLS_Cst_PSize_OS(double starting_time_sec, int UB_Population
 
 			int to_add = ( UB_Population_size - (int)Population.size() ) ;
 			if( to_add > 0  and   ( (limit_no_improvment > 0) or !Population.empty() ) ){
-				Ordered_Selection(Dominated_alt, Population, to_add);
-				LTA(Dominated_alt, Population, to_add);
+//				Ordered_Selection(Dominated_alt, Population, to_add);
+//				LTA(Dominated_alt, Population, to_add);
+				TA(Dominated_alt, Population, to_add);
 			}
 
 			map<string, shared_ptr< AlternativeKnapsack > > tmp_dic_Alternative = dic_Alternative;
