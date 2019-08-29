@@ -553,6 +553,7 @@ void Evaluator::readPopulation_File(string file_population, list< vector< float 
 		if (line.size() == 0)
 			continue;
 
+//		cout<<p_criteria<<endl;
 		vector_line = Tools::decompose_line_to_float_vector(line);
 		vector< float > criteria_value(vector_line.begin(), vector_line.begin() + p_criteria);
 		Population.push_back( criteria_value);
@@ -683,7 +684,7 @@ void Evaluator::save_information(string file_population, string save_path, strin
 
 //			for(size_t i = 0; i < Informations.size(); i++){
 
-			for(auto i : {1,2,4,6,7}){
+			for(auto i : {0,1,2,4,6,7}){
 //				if(i == 0){
 					set_WS_matrix(Tools::readMatrix(Informations[i]));
 

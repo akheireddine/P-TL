@@ -178,11 +178,11 @@ void main_Knapsack_Cst_PSize(string filename_instance, int size_population, int 
 
 	clock_t t = clock();
 
-//	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
+	knaps->MOLS_Cst_PSize(t/CLOCKS_PER_SEC,max_size_population);
 
 //	knaps->MOLS_Cst_PSize_RS(t/CLOCKS_PER_SEC,max_size_population);
 
-	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
+//	knaps->MOLS_Cst_PSize_OS(t/CLOCKS_PER_SEC,max_size_population);
 
 	float time_cpu = (clock() - t) * 1.0/CLOCKS_PER_SEC;
 
@@ -197,19 +197,19 @@ void script_Cst_PSize(string type_inst, string taille, string WS_DM, string p_cr
 
 	int K = 10;
 	int N = 10;
-	vector< string > I = {"1","2","4","6","7"};
-	string testname = "Test2";
+	vector< string > I = {"0","1","2","4","6","7"};
+	string testname = "Test3";
 
 	vector<int> graines;
 
-	string prefix = "MOLS_PSize_DIV/TA";
+	string prefix = "MOLS_PSize";
 
 	srand(time(NULL));
 
-	vector<int> sizer = {60};  //
+	vector<int> sizer = {100};  //
 
 
-	for(int i = 0; i < N; i++){
+	for(int i = 3; i < N; i++){
 		string filename_instance = "./Instances_Knapsack"+p_criteria+"/Type_"+type_inst+"/"+taille+"_items/2KP"+taille+"-T"+type_inst+"-"+to_string(i);
 		string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i)+"/"+prefix+"/K_"+to_string(K)+".eval";
 //		string filename_population = "./Data/Population"+p_criteria+"/"+type_inst+"/"+taille+"/T"+to_string(i);
@@ -412,18 +412,18 @@ void script_save_information(string type_inst, string taille, string WS_DM, stri
 		id_type_inst = 2;
 
 	int K = 10;
-	int N = 10;
-	string testname = "./Data/WS_Learning/Test2/Iteration_";
+	int N = 7;
+	string testname = "./Data/WS_Learning/Test3/Iteration_";
 	vector< string > I = {testname+"0",testname+"1",testname+"2",testname+"3",testname+"4",testname+"5",testname+"6",testname+"7"};
 
-	vector< string > prefixes = {"MOLS_PSize_DIV_NEIGHBOR/NO_INFO_NEIGHBOR"};//, "MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
+	vector< string > prefixes = {"MOLS_PSize"};//, "MOLS_PSize_DIV/OS"};                //OS and RS  use MOLS_PSize/OS
 
-	vector<int> sizer = {20};//2,8,20,60,100,200};
+	vector<int> sizer = {100};//2,8,20,60,100,200};
 
 
 	string filename_indicator = "./Data/Evaluation"+p_criteria+"/"+type_inst+"/"+taille;
 
-	string format_in = "evalDIV_NEIGHBOR";
+	string format_in = "eval";
 	ofstream fic(filename_indicator+"/K_"+to_string(K)+"."+format_in);
 	fic<<"Type, Size, Instance, Budget, PopSize, Info, nb_evaluation, AVG_dist, MaxMin, PR, Diversification, Time"<<endl;
 	fic.close();
@@ -449,11 +449,11 @@ void save_avg_instances(string type_inst, string taille, string WS_DM, string p_
 	int K = 10;
 	int N = 10;
 	//	vector<int> I = {0};//,1,2,3,4,5,6,7};
-	vector<int> I = {1,2,4,6,7};
+	vector<int> I = {0,1,2,4,6,7};
 
-	string prefix = "evalDIV_NEIGHBOR";
-	string format_in = "evalDIV_NEIGHBOR";
-	vector< int > sizer = {20};//2,8,20,60,100,200};
+	string prefix = "eval";
+	string format_in = "eval";
+	vector< int > sizer = {100};//2,8,20,60,100};
 //	vector< int > Budget = {20,60,100,140,220,420,540,820,1220,1820,2020,3200,4020,6020,8020};
 	vector< int > Budget(1,-1);
 //	vector< int > Budget = {50,500,1000,2000,3000,4000,8000};
@@ -688,7 +688,7 @@ int main(int argc, char** argv){
 
 	string type_inst = "A";
 	string taille = "100";
-	string p_criteria = "2";
+	string p_criteria = "3";
 //
 //	script_knapsack(type_inst, taille, WS_DM, p_criteria);
 //
@@ -753,10 +753,10 @@ int main(int argc, char** argv){
 ////
 //	script_Cst_PSizeV1V2(type_inst, taille, WS_DM, p_criteria);
 //////
-	script_save_information(type_inst, taille, WS_DM, p_criteria);
-////
+//	script_save_information(type_inst, taille, WS_DM, p_criteria);
+//////
 	save_avg_instances(type_inst, taille, WS_DM, p_criteria);
-//
+////
 
 /*
   *************************************************************************************************************************

@@ -992,73 +992,71 @@ labels= "A-100","A-200","C-100"
 
 
 
-
-
-file_plot_static = [path+"/A/100/K_30.evalPARETO", path+"/C/100/K_20.evalPareto"]
-file_plot_dyn = [path+"/A/100/K_10.evalRAPPORT_MULTIPARAM", path+"/C/100/K_10.evalRAPPORT_MULTIPARAM"]
-div = 0
-PopSize = 60,100
-labels= "A-100","C-100"
-colors = ['tab:blue',"tab:orange"]
-
-fig = plt.figure(figsize=(6,5))
-plt.minorticks_on()
-plt.grid(which='both')
-plt.grid(which='minor', alpha=0.4, linestyle='-.')
-
-plt.xlabel("Budget #sol évalué",size=15, fontweight="bold")
-plt.xlim(0,3500)
-plt.ylabel("Médiane D1",size=15, fontweight="bold")
-
-for i,l in zip(range(len(file_plot_static)), labels):
-    
-
-
-    file_static,file_dyn = file_plot_static[i],file_plot_dyn[i]
-    
-    Bigreader = list(csv.DictReader(open(file_static, newline=''), delimiter = ','))
-    Smallreader = list(csv.DictReader(open(file_dyn, newline=''), delimiter = ','))
-    
-    Xbudget_f1 = set()
-    Xbudget_f2 = set()
-    for r in Bigreader :
-        Xbudget_f1.add(int(r['Budget']))
-        
-    Xbudget_f1 = list(Xbudget_f1)
-    Xbudget_f1.sort()
-    
-    for r in Smallreader :
-        Xbudget_f2.add(int(r['Budget']))
-    
-    Xbudget_f2 = list(Xbudget_f2)
-    Xbudget_f2.sort()
-
-    Ymin = list()
-    Ydyn = list()
-
-    for b in  Xbudget_f1 :#[60,540,2020,4020,8020]: #[60,540,1220,6020] : #Xbudget_f1  :[60,540,1220,6020]
-        Ytmp = list()
-
-        for row in Bigreader:
-            if int(row['Budget']) == b :
-                Ytmp.append(float(row['AVG_dist']))
-
-        Ytmp.sort()
-        Ymin.append(np.median(Ytmp))
-        
-    for b in Xbudget_f2 : #[60,540,1220,6020] : #[50,500,800,6020] : #Xbudget_f2  :
-        Ytmp = list()
-
-        for row in Smallreader : 
-            if int(row['Budget']) == b :
-                Ytmp.append((float(row['AVG_dist'])))
-        
-        Ytmp.sort()
-        Ydyn.append(np.median(Ytmp))
-    
-    print(Xbudget_f2)
-    print(Ydyn)
-    print("______________________________________")
+#file_plot_static = [path+"/A/100/K_30.evalPARETO", path+"/C/100/K_20.evalPareto"]
+#file_plot_dyn = [path+"/A/100/K_10.evalRAPPORT_MULTIPARAM", path+"/C/100/K_10.evalRAPPORT_MULTIPARAM"]
+#div = 0
+#PopSize = 60,100
+#labels= "A-100","C-100"
+#colors = ['tab:blue',"tab:orange"]
+#
+#fig = plt.figure(figsize=(6,5))
+#plt.minorticks_on()
+#plt.grid(which='both')
+#plt.grid(which='minor', alpha=0.4, linestyle='-.')
+#
+#plt.xlabel("Budget #sol évalué",size=15, fontweight="bold")
+#plt.xlim(0,3500)
+#plt.ylabel("Médiane D1",size=15, fontweight="bold")
+#
+#for i,l in zip(range(len(file_plot_static)), labels):
+#    
+#
+#
+#    file_static,file_dyn = file_plot_static[i],file_plot_dyn[i]
+#    
+#    Bigreader = list(csv.DictReader(open(file_static, newline=''), delimiter = ','))
+#    Smallreader = list(csv.DictReader(open(file_dyn, newline=''), delimiter = ','))
+#    
+#    Xbudget_f1 = set()
+#    Xbudget_f2 = set()
+#    for r in Bigreader :
+#        Xbudget_f1.add(int(r['Budget']))
+#        
+#    Xbudget_f1 = list(Xbudget_f1)
+#    Xbudget_f1.sort()
+#    
+#    for r in Smallreader :
+#        Xbudget_f2.add(int(r['Budget']))
+#    
+#    Xbudget_f2 = list(Xbudget_f2)
+#    Xbudget_f2.sort()
+#
+#    Ymin = list()
+#    Ydyn = list()
+#
+#    for b in  Xbudget_f1 :#[60,540,2020,4020,8020]: #[60,540,1220,6020] : #Xbudget_f1  :[60,540,1220,6020]
+#        Ytmp = list()
+#
+#        for row in Bigreader:
+#            if int(row['Budget']) == b :
+#                Ytmp.append(float(row['AVG_dist']))
+#
+#        Ytmp.sort()
+#        Ymin.append(np.median(Ytmp))
+#        
+#    for b in Xbudget_f2 : #[60,540,1220,6020] : #[50,500,800,6020] : #Xbudget_f2  :
+#        Ytmp = list()
+#
+#        for row in Smallreader : 
+#            if int(row['Budget']) == b :
+#                Ytmp.append((float(row['AVG_dist'])))
+#        
+#        Ytmp.sort()
+#        Ydyn.append(np.median(Ytmp))
+#    
+#    print(Xbudget_f2)
+#    print(Ydyn)
+#    print("______________________________________")
         
 #    plt.plot(Xbudget_f1,Ymin,label="PLS-I - "+labels[i],marker='.',linewidth=3.0, color=colors[i], linestyle=':')
 #    plt.plot(Xbudget_f2,Ydyn,label="$PLS_{2L}$",marker='.',linewidth=3.0, color=colors[i])
@@ -1069,4 +1067,262 @@ for i,l in zip(range(len(file_plot_static)), labels):
 #plt.title(labels[0]+" et "+labels[1] ,fontsize=15,fontweight="bold")
 #fig.savefig("Compare_2L_MED.png", dpi=fig.dpi)
 #plt.show()
+
+
+
+
+
+
+#################      NEIGHBORHOOD INFO/D1
+
+#path = "./Data/Evaluation2"
+#file_plot = [ path+"/C/100/AVG_K_20.evalDIV_INFO_60"]#path+"/C/100/AVG_K_20.evalDIV_INFO_60"]
+#file_n = [ path+"/C/100/AVG_K_10.evalDIV_NEIGHBOR"]#path+"/C/100/AVG_K_10.evalDIV_NEIGHBOR"]
+#labels= ["C-100"]#,"C-100",
+#
+#
+#fig = plt.figure(figsize=(6,5))
+#
+#plt.minorticks_on()
+#plt.grid(which='both')
+#plt.grid(which='minor', alpha=0.4, linestyle='-.')
+#
+#plt.xlabel("Degré d'incertitude (°)",size=15, fontweight="bold")
+#plt.xlim(90, 0)
+#plt.ylabel("D1",size=15, fontweight="bold")
+#
+#for f,l,i in zip(file_plot,labels,range(len(labels))) : 
+#    M = np.loadtxt(f)
+#    X = list()
+#    Y = list()
+#    for m in M : 
+#        if m[4] == 60:
+#            X.append(m[5])
+#            Y.append(m[7])
+#    
+#    plt.plot(X,Y, label=l+" avec information", marker='o',linewidth=4.0)
+#    
+#start = X[0]
+#deg = Y[0]
+#
+#end = Y[-1]
+#
+#for f,l in zip(file_n,labels) : 
+#    M = np.loadtxt(f)
+#    X = [start]
+#    Y = [deg]
+#    for m in M : 
+#        X.append(m[5])
+#        Y.append(m[7])
+#    
+#    plt.plot(X, Y, label=l+" sans information", marker='o',linewidth=4.0)
+##    Y = [end]
+##    plt.plot(X,Y*len(X), label=l+" jeu optimal", marker='o',linewidth=4.0)
+#    
+#plt.legend(prop={'size': 18})
+##plt.title("Évolution de l'indicateur D1 selon le degré d'incertitude", fontweight="bold",size=20,)
+#plt.title(l,fontweight="bold",size=20,)
+#fig.savefig("Info_D1_NEIGHBOR_C100.png")
+#
+#plt.show()
+
+
+
+##########################  COMPARE DIVERSIFICATION METHOD D1/INFO D2/INFO BUDGET/INFO
+
+#path = "./Data/Evaluation2"
+#file_plot = [path+"/A/100/AVG_K_10.evalDIV_RS_60",path+"/A/100/AVG_K_10.evalDIV_LTA_60"]
+#filename= path+"/A/100/AVG_K_30.evalDIV_OS_60"
+#label = "A-100"
+#
+#labels_div = "RS","TA"
+#
+#
+#fig = plt.figure(figsize=(6,5))
+#
+#plt.minorticks_on()
+#plt.grid(which='both')
+#plt.grid(which='minor', alpha=0.4, linestyle='-.')
+#
+#plt.xlabel("Degré d'incertitude (°)",size=15, fontweight="bold")
+#plt.xlim(90, 0)
+#plt.ylabel("D1",size=15, fontweight="bold")
+#
+#M = np.loadtxt(filename)
+#X = list()
+#Y = list()
+#for m in M : 
+#    X.append(m[5])
+#    Y.append(m[7])
+#
+#plt.plot(X,Y, label="OS", marker='o',linewidth=4.0)
+#
+#start = X[0]
+#deg = Y[0]
+#
+#end = Y[-1]
+#
+#for f,l in zip(file_plot,labels_div) : 
+#    M = np.loadtxt(f)
+#    X = [start]
+#    Y = [deg]
+#    for m in M : 
+#        X.append(m[5])
+#        Y.append(m[7])
+#    
+#    plt.plot(X, Y, label=l, marker='o',linewidth=4.0)
+#    print(X)
+#    print(Y)
+#    print("_______________________")
+#plt.legend(prop={'size': 18})
+##plt.title("Évolution de l'indicateur D1 selon le degré d'incertitude", fontweight="bold",size=20,)
+#plt.title(label,fontweight="bold",size=20,)
+#fig.savefig("Info_D1_DIVS_A100.png")
+#
+#plt.show()
+#
+#
+#
+#path = "./Data/Evaluation2"
+#file_plot = [path+"/A/100/AVG_K_10.evalDIV_RS_60", path+"/A/100/AVG_K_10.evalDIV_LTA_60"]
+#filename= path+"/A/100/AVG_K_30.evalDIV_OS_60"
+#label = "A-100"
+#
+#labels_div = "RS","TA"
+#
+#
+#fig = plt.figure(figsize=(6,5))
+#
+#plt.minorticks_on()
+#plt.grid(which='both')
+#plt.grid(which='minor', alpha=0.4, linestyle='-.')
+#
+#plt.xlabel("Degré d'incertitude (°)",size=15, fontweight="bold")
+#plt.xlim(90, 0)
+#plt.ylabel("D2",size=15, fontweight="bold")
+#
+#M = np.loadtxt(filename)
+#X = list()
+#Y = list()
+#for m in M : 
+#    X.append(m[5])
+#    Y.append(m[8])
+#
+#plt.plot(X,Y, label="OS", marker='o',linewidth=4.0)
+#    
+#start = X[0]
+#deg = Y[0]
+#
+#end = Y[-1]
+#
+#for f,l in zip(file_plot,labels_div) : 
+#    M = np.loadtxt(f)
+#    X = [start]
+#    Y = [deg]
+#    for m in M : 
+#        X.append(m[5])
+#        Y.append(m[8])
+#    
+#    plt.plot(X, Y, label=l, marker='o',linewidth=4.0)
+#    
+#plt.legend(prop={'size': 18})
+##plt.title("Évolution de l'indicateur D1 selon le degré d'incertitude", fontweight="bold",size=20,)
+#plt.title(label,fontweight="bold",size=20,)
+#fig.savefig("Info_D2_DIVS_A100.png")
+#
+#plt.show()
+
+
+
+#path = "./Data/Evaluation2"
+#file_plot = [path+"/A/100/AVG_K_10.evalDIV_RS_60",path+"/A/100/AVG_K_10.evalDIV_LTA_60"]
+#filename= path+"/A/100/AVG_K_30.evalDIV_OS_60"
+#label = "A-100"
+#
+#labels_div = "RS","TA"
+#
+#
+#fig = plt.figure(figsize=(6,5))
+#
+#plt.minorticks_on()
+#plt.grid(which='both')
+#plt.grid(which='minor', alpha=0.4, linestyle='-.')
+#
+#plt.xlabel("Degré d'incertitude (°)",size=15, fontweight="bold")
+#plt.xlim(90, 0)
+#plt.ylabel("D1",size=15, fontweight="bold")
+#
+#M = np.loadtxt(filename)
+#X = list()
+#Y = list()
+#for m in M : 
+#    X.append(m[5])
+#    Y.append(m[6])
+#
+#plt.plot(X,Y, label="OS", marker='o',linewidth=4.0)
+#    
+#start = X[0]
+#deg = Y[0]
+#
+#end = Y[-1]
+#
+#for f,l in zip(file_plot,labels_div) : 
+#    M = np.loadtxt(f)
+#    X = [start]
+#    Y = [deg]
+#    for m in M : 
+#        X.append(m[5])
+#        Y.append(m[6])
+#    
+#    plt.plot(X, Y, label=l, marker='o',linewidth=4.0)
+#    
+#plt.legend(prop={'size': 18})
+##plt.title("Évolution de l'indicateur D1 selon le degré d'incertitude", fontweight="bold",size=20,)
+#plt.title(label,fontweight="bold",size=20,)
+#fig.savefig("Info_Budget_DIVS_A100.png")
+#
+#plt.show()
+
+
+
+
+
+
+
+###############INFO/D1   3 CITERIA
+
+
+
+
+path = "./Data/Evaluation3"
+file_plot = [path+"/A/100/AVG_K_10.eval"]
+labels= ["A-100"]
+
+
+fig = plt.figure(figsize=(6,5))
+
+plt.minorticks_on()
+plt.grid(which='both')
+plt.grid(which='minor', alpha=0.4, linestyle='-.')
+
+plt.xlabel("Degré d'incertitude (°)",size=15, fontweight="bold")
+plt.xlim(0.72, 0)
+plt.ylabel("D1",size=15, fontweight="bold")
+
+for f,l in zip(file_plot,labels) : 
+    M = np.loadtxt(f)
+    plt.plot(M[:,5], M[:,7], label=l, marker='o',linewidth=4.0)
+    
+    
+plt.legend(prop={'size': 20})
+#plt.title("Évolution de l'indicateur D1 selon le degré d'incertitude", fontweight="bold",size=20,)
+fig.savefig("Info_D1_3OBJ.png")
+
+plt.show()
+
+
+
+
+
+
 
